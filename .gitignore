@@ -1,0 +1,8 @@
+.env
+models/
+embeddings.npy
+docs_hash.txt
+vnev/
+__pycache__/
+*.pyc
+.idea/
