@@ -1,11 +1,28 @@
 import numpy as np
+from numpy.linalg import norm
 from sentence_transformers import SentenceTransformer
 from config import RETRIEVE_TOP_N
 
 
-def retrieve(query: str, docs: list, doc_embeddings: np.ndarray, model: SentenceTransformer, n: int = RETRIEVE_TOP_N):
+def cosine_similarity(a: np.ndarray, b: np.ndarray) -> np.ndarray:
+    b_norm = b / norm(b)
+    return np.dot(a, b_norm.T).flatten()
+
+
+def get_retrieve_n(query: str) -> int:
+    if any(kw in query for kw in ["所有", "全部", "列举", "有哪些", "几个"]):
+        return 10
+    if any(kw in query for kw in ["区别", "对比", "哪个好", "推荐"]):
+        return 6
+    return RETRIEVE_TOP_N
+
+
+def retrieve(query: str, docs: list, doc_embeddings: np.ndarray, model: SentenceTransformer, n: int = None):
+    if n is None:
+        n = get_retrieve_n(query)
+
     query_embedding = model.encode([query])
-    similarities = np.dot(doc_embeddings, query_embedding.T).flatten()
+    similarities = cosine_similarity(doc_embeddings, query_embedding[0])
     top_indices = similarities.argsort()[-n:][::-1]
 
     results = []
@@ -15,7 +32,6 @@ def retrieve(query: str, docs: list, doc_embeddings: np.ndarray, model: Sentence
             "score": float(similarities[i]),
             "index": int(i)
         })
-
     return results
 
 
@@ -29,11 +45,17 @@ def format_sources(results: list) -> str:
         lines.append(f"  [{i+1}] (相似度{r['score']:.2f}) {r['text'][:30]}...")
     return "\n".join(lines)
 
-def adaptive_retrieve(query: str, docs: list, doc_embeddings: np.ndarray, model: SentenceTransformer, client, n: int = RETRIEVE_TOP_N):
+
+def adaptive_retrieve(query: str, docs: list, doc_embeddings: np.ndarray, model: SentenceTransformer, client, n: int = None):
     results = retrieve(query, docs, doc_embeddings, model, n)
+
+    # 相似度最高的结果低于阈值才触发自适应
+    top_score = results[0]["score"] if results else 0
+    if top_score > 0.5:
+        return results
+
     context = format_context(results)
 
-    from openai import OpenAI
     from config import DEEPSEEK_MODEL
     check_response = client.chat.completions.create(
         model=DEEPSEEK_MODEL,

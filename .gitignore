@@ -6,3 +6,4 @@ vnev/
 __pycache__/
 *.pyc
 .idea/
+embeddings_normalized.npy
