@@ -1,0 +1,79 @@
+{
+  "cases": [
+    {
+      "query": "角色有几个",
+      "expected_any": [["共有5个角色"]],
+      "tag": "count"
+    },
+    {
+      "query": "有多少角色",
+      "expected_any": [["共有5个角色"]],
+      "tag": "count"
+    },
+    {
+      "query": "铁甲战士初始血量多少",
+      "expected_any": [["角色铁甲战士", "初始血量80点"]],
+      "tag": "character"
+    },
+    {
+      "query": "静默猎手的初始遗物是什么",
+      "expected_any": [["角色静默猎手", "初始遗物：RingOfTheSnake"]],
+      "tag": "character"
+    },
+    {
+      "query": "故障机器人有几个球槽",
+      "expected_any": [["角色故障机器人", "球槽数量3"]],
+      "tag": "character"
+    },
+    {
+      "query": "刀刃之舞效果是什么",
+      "expected_any": [["卡牌刀刃之舞", "添加3张小刀"]],
+      "tag": "card"
+    },
+    {
+      "query": "中和多少费",
+      "expected_any": [["卡牌中和", "费用0"]],
+      "tag": "card"
+    },
+    {
+      "query": "偏折能给多少格挡",
+      "expected_any": [["卡牌偏折", "格挡4"]],
+      "tag": "card"
+    },
+    {
+      "query": "壶铃有什么效果",
+      "expected_any": [["遗物壶铃", "休息处获得力量"]],
+      "tag": "relic"
+    },
+    {
+      "query": "海玻璃是什么遗物",
+      "expected_any": [["遗物海玻璃", "查看15张来自其他角色的牌"]],
+      "tag": "relic"
+    },
+    {
+      "query": "不死这张牌给多少格挡",
+      "expected_any": [["卡牌不死", "格挡7"]],
+      "tag": "card"
+    },
+    {
+      "query": "冲刺这张牌效果",
+      "expected_any": [["卡牌冲刺", "伤害10", "格挡10"]],
+      "tag": "card"
+    },
+    {
+      "query": "偏差认知做什么",
+      "expected_any": [["卡牌偏差认知", "获得4点集中"]],
+      "tag": "card"
+    },
+    {
+      "query": "创造性AI是几费",
+      "expected_any": [["卡牌创造性AI", "费用3"]],
+      "tag": "card"
+    },
+    {
+      "query": "亡灵契约师初始血量",
+      "expected_any": [["角色亡灵契约师", "初始血量66点"]],
+      "tag": "character"
+    }
+  ]
+}

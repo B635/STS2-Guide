@@ -4,7 +4,7 @@
 
 ## 技术栈
 
-- **向量模型**：sentence-transformers/all-MiniLM-L6-v2
+- **向量模型**：sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
 - **向量检索**：numpy 余弦相似度
 - **LLM**：DeepSeek API
 - **知识库**：JSON（自动从外部 API 拉取）
@@ -41,6 +41,22 @@ python scripts/fetch_knowledge.py
 ```bash
 python main.py
 ```
+
+## 检索评测（建议每次改检索后执行）
+
+运行评测脚本：
+
+```bash
+python scripts/eval_retrieval.py --top-k 5
+```
+
+默认评测集在 `data/retrieval_eval.json`，支持按你自己的常见问题持续扩充。
+
+建议重点观察：
+
+- Hit@1：检索第一条是否直接命中正确知识
+- Hit@3/Hit@5：前几条是否覆盖正确知识
+- MRR：正确知识平均排位是否靠前
 
 ## 数据来源
 

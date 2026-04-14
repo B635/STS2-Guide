@@ -1,4 +1,5 @@
 import hashlib
+import json
 import numpy as np
 from numpy.linalg import norm
 from sentence_transformers import SentenceTransformer
@@ -8,7 +9,12 @@ NORMALIZED_EMBEDDINGS_FILE = "./embeddings_normalized.npy"
 
 
 def get_docs_hash(docs: list) -> str:
-    return hashlib.md5(str(docs).encode()).hexdigest()
+    payload = {
+        "embedding_model": EMBEDDING_MODEL,
+        "docs": docs,
+    }
+    stable_json = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+    return hashlib.md5(stable_json.encode("utf-8")).hexdigest()
 
 
 def load_or_compute_embeddings(docs: list, model: SentenceTransformer) -> np.ndarray:
