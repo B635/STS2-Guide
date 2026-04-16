@@ -78,6 +78,23 @@ def retrieve(query: str, docs: list, doc_embeddings: np.ndarray, model: Sentence
     return results
 
 
+def multi_query_retrieve(
+    sub_queries: list,
+    docs: list,
+    doc_embeddings: np.ndarray,
+    model: SentenceTransformer,
+    n_per_query: int,
+) -> list:
+    seen = {}
+    for sub_q in sub_queries:
+        results = retrieve(sub_q, docs, doc_embeddings, model, n=n_per_query)
+        for r in results:
+            idx = r["index"]
+            if idx not in seen or r["score"] > seen[idx]["score"]:
+                seen[idx] = r
+    return sorted(seen.values(), key=lambda x: x["score"], reverse=True)
+
+
 def format_context(results: list) -> str:
     return "\n".join([r["text"] for r in results])
 

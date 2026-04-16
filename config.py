@@ -4,8 +4,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Keep model and hub cache inside the project to avoid ~/.cache permission issues.
+# HF_HOME alone covers transformers + datasets + hub caches; TRANSFORMERS_CACHE is deprecated.
 os.environ.setdefault("HF_HOME", "./models")
-os.environ.setdefault("TRANSFORMERS_CACHE", "./models")
 os.environ.setdefault("SENTENCE_TRANSFORMERS_HOME", "./models")
 os.environ.setdefault("HF_HUB_DISABLE_XET", "1")
 
@@ -29,3 +29,7 @@ MAX_HISTORY = 10
 # Reranker
 RERANKER_MODEL = "BAAI/bge-reranker-base"
 RERANKER_CANDIDATE_N = 20
+
+# Multi-query (query decomposition + multi-retrieval)
+MAX_SUB_QUERIES = 3
+MULTI_QUERY_PER_SUB_N = 10

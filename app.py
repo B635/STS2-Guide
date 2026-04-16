@@ -1,14 +1,14 @@
 import os
 os.environ["HF_HOME"] = "./models"
-os.environ["TRANSFORMERS_CACHE"] = "./models"
 os.environ["SENTENCE_TRANSFORMERS_HOME"] = "./models"
 
 import json
 import streamlit as st
-from config import KNOWLEDGE_FILE, RETRIEVE_TOP_N, RERANKER_CANDIDATE_N
+from config import KNOWLEDGE_FILE, RETRIEVE_TOP_N, RERANKER_CANDIDATE_N, MULTI_QUERY_PER_SUB_N
 from rag.embedder import load_model, load_or_compute_embeddings
 from rag.chat import create_client, rag_chat
-from rag.retriever import retrieve, adaptive_retrieve, format_context, format_sources
+from rag.retriever import retrieve, adaptive_retrieve, multi_query_retrieve, format_context, format_sources
+from rag.query_planner import decompose_query
 from rag.errors import handle_api_error, handle_file_error
 
 # ── Page config ──────────────────────────────────────────────────────────────
@@ -40,7 +40,8 @@ with st.sidebar:
     st.title("⚙️ 设置")
 
     use_reranker = st.toggle("启用 Reranker 精排", value=True, help="使用 Cross-Encoder 对候选结果重新排序，提升检索精度")
-    use_adaptive = st.toggle("启用自适应检索", value=True, help="不确定时自动扩大检索范围")
+    use_multi_query = st.toggle("启用 Query 分解", value=False, help="LLM 把复杂问题拆成多个子问题，分别检索后合并")
+    use_adaptive = st.toggle("启用自适应检索", value=True, help="不确定时自动扩大检索范围（与 Query 分解互斥）")
 
     top_n = st.slider("返回文档数", min_value=1, max_value=10, value=RETRIEVE_TOP_N)
     candidate_n = st.slider(
@@ -110,7 +111,26 @@ if question := st.chat_input("输入你的问题，例如：铁甲战士初始�
         with st.status("🔍 正在检索相关知识...", expanded=True) as status:
             try:
                 # Step 1: Retrieve candidates
-                if use_adaptive and not use_reranker:
+                if use_multi_query:
+                    sub_queries = decompose_query(question, client)
+                    if len(sub_queries) > 1:
+                        status.write(f"🧩 Query 拆解为 {len(sub_queries)} 个子问题：")
+                        for sq in sub_queries:
+                            status.write(f"  • {sq}")
+                    else:
+                        status.write("Query 无需拆解，按单查询处理")
+                    candidates = multi_query_retrieve(
+                        sub_queries, docs, embeddings, model,
+                        n_per_query=MULTI_QUERY_PER_SUB_N,
+                    )
+                    status.write(f"多查询合并：去重后 {len(candidates)} 条候选")
+                    if use_reranker:
+                        from rag.reranker import rerank as do_rerank
+                        results = do_rerank(question, candidates, reranker, top_n=top_n)
+                        status.write(f"Reranker 精排：筛选出 Top-{top_n} 文档")
+                    else:
+                        results = candidates[:top_n]
+                elif use_adaptive and not use_reranker:
                     results = adaptive_retrieve(question, docs, embeddings, model, client, n=top_n)
                     status.write(f"自适应检索完成，获取 {len(results)} 条文档")
                 elif use_reranker:
