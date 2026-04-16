@@ -74,6 +74,106 @@
       "query": "亡灵契约师初始血量",
       "expected_any": [["角色亡灵契约师", "初始血量66点"]],
       "tag": "character"
+    },
+    {
+      "query": "故障机器人初始血量是多少",
+      "expected_any": [["角色故障机器人", "初始血量75点"]],
+      "tag": "character"
+    },
+    {
+      "query": "储君的初始遗物",
+      "expected_any": [["角色储君", "初始遗物：DivineRight"]],
+      "tag": "character"
+    },
+    {
+      "query": "铁甲战士的初始遗物是什么",
+      "expected_any": [["角色铁甲战士", "初始遗物：BurningBlood"]],
+      "tag": "character"
+    },
+    {
+      "query": "亡灵契约师的初始遗物",
+      "expected_any": [["角色亡灵契约师", "初始遗物：BoundPhylactery"]],
+      "tag": "character"
+    },
+    {
+      "query": "静默猎手初始血量多少",
+      "expected_any": [["角色静默猎手", "初始血量70点"]],
+      "tag": "character"
+    },
+    {
+      "query": "余像这张牌是什么效果",
+      "expected_any": [["卡牌余像", "获得1点格挡"]],
+      "tag": "card"
+    },
+    {
+      "query": "先制打击造成多少伤害",
+      "expected_any": [["卡牌先制打击", "伤害7"]],
+      "tag": "card"
+    },
+    {
+      "query": "双重打击伤害多少",
+      "expected_any": [["卡牌双重打击", "伤害5"]],
+      "tag": "card"
+    },
+    {
+      "query": "头槌这张牌效果是什么",
+      "expected_any": [["卡牌头槌", "伤害9"]],
+      "tag": "card"
+    },
+    {
+      "query": "三角铃鼓有什么用",
+      "expected_any": [["遗物三角铃鼓", "第一回合保留你的手牌"]],
+      "tag": "relic"
+    },
+    {
+      "query": "不休陀螺遗物效果",
+      "expected_any": [["遗物不休陀螺", "没有手牌时，抽一张牌"]],
+      "tag": "relic"
+    },
+    {
+      "query": "力量药水有什么效果",
+      "expected_any": [["药水力量药水", "获得2点力量"]],
+      "tag": "potion"
+    },
+    {
+      "query": "固化药水是什么",
+      "expected_any": [["药水固化药水", "格挡变为三倍"]],
+      "tag": "potion"
+    },
+    {
+      "query": "敏捷药水效果",
+      "expected_any": [["药水敏捷药水", "获得2点敏捷"]],
+      "tag": "potion"
+    },
+    {
+      "query": "劫掠者刺客的血量是多少",
+      "expected_any": [["怪物劫掠者刺客", "血量18-23"]],
+      "tag": "monster"
+    },
+    {
+      "query": "巨斧机器人有多少血",
+      "expected_any": [["怪物巨斧机器人", "血量40-44"]],
+      "tag": "monster"
+    },
+    {
+      "query": "旧日雕像是精英怪吗",
+      "expected_any": [["怪物旧日雕像", "Elite"]],
+      "tag": "monster"
+    },
+    {
+      "query": "多尼斯异鸟血量",
+      "expected_any": [["怪物多尼斯异鸟", "血量91-94"]],
+      "tag": "monster"
+    },
+    {
+      "query": "切割这张牌造成多少伤害",
+      "expected_any": [["卡牌切割", "伤害6"]],
+      "tag": "card"
+    },
+    {
+      "query": "大限已至的效果是什么",
+      "expected_any": [["卡牌大限已至", "灾厄层数"]],
+      "tag": "card"
     }
   ]
 }

@@ -47,9 +47,20 @@ def find_first_hit_rank(results: List[Dict], case: Dict) -> Optional[int]:
     return None
 
 
-def evaluate_cases(cases: List[Dict], docs: List[str], top_k: int) -> Tuple[Dict[int, float], float, List[Dict]]:
+def evaluate_cases(
+    cases: List[Dict],
+    docs: List[str],
+    top_k: int,
+    use_reranker: bool = False,
+    candidate_n: int = 20,
+) -> Tuple[Dict[int, float], float, List[Dict]]:
     model = load_model()
     doc_embeddings = load_or_compute_embeddings(docs, model)
+
+    reranker = None
+    if use_reranker:
+        from rag.reranker import load_reranker, rerank
+        reranker = load_reranker()
 
     hit_counts = {k: 0 for k in range(1, top_k + 1)}
     reciprocal_rank_sum = 0.0
@@ -57,7 +68,13 @@ def evaluate_cases(cases: List[Dict], docs: List[str], top_k: int) -> Tuple[Dict
 
     for case in cases:
         query = case["query"]
-        results = retrieve(query, docs, doc_embeddings, model, n=top_k)
+
+        if use_reranker:
+            candidates = retrieve(query, docs, doc_embeddings, model, n=candidate_n)
+            results = rerank(query, candidates, reranker, top_n=top_k)
+        else:
+            results = retrieve(query, docs, doc_embeddings, model, n=top_k)
+
         rank = find_first_hit_rank(results, case)
 
         if rank is not None:
@@ -69,7 +86,8 @@ def evaluate_cases(cases: List[Dict], docs: List[str], top_k: int) -> Tuple[Dict
                 {
                     "query": query,
                     "top_results": [
-                        {"score": round(r["score"], 4), "text": r["text"][:120]} for r in results[:3]
+                        {"score": round(r.get("rerank_score", r["score"]), 4), "text": r["text"][:120]}
+                        for r in results[:3]
                     ],
                 }
             )
@@ -80,8 +98,17 @@ def evaluate_cases(cases: List[Dict], docs: List[str], top_k: int) -> Tuple[Dict
     return hit_rates, mrr, failures
 
 
-def print_summary(hit_rates: Dict[int, float], mrr: float, total_cases: int, failures: List[Dict], max_failures: int) -> None:
+def print_summary(
+    hit_rates: Dict[int, float],
+    mrr: float,
+    total_cases: int,
+    failures: List[Dict],
+    max_failures: int,
+    label: str = "",
+) -> None:
     print("=" * 48)
+    if label:
+        print(f"[{label}]")
     print(f"检索评测完成，总样本数: {total_cases}")
     print("-" * 48)
     print("命中率:")
@@ -104,13 +131,35 @@ def main() -> None:
     parser.add_argument("--eval-file", default=DEFAULT_EVAL_FILE, help="Path to retrieval eval json file")
     parser.add_argument("--top-k", type=int, default=5, help="Top K to evaluate")
     parser.add_argument("--max-failures", type=int, default=10, help="Max failed cases to print")
+    parser.add_argument("--reranker", action="store_true", help="Enable reranker and show comparison")
+    parser.add_argument("--candidate-n", type=int, default=20, help="Candidate pool size for reranker")
     args = parser.parse_args()
 
     docs = load_docs()
     cases = load_eval_cases(args.eval_file)
 
-    hit_rates, mrr, failures = evaluate_cases(cases, docs, args.top_k)
-    print_summary(hit_rates, mrr, len(cases), failures, args.max_failures)
+    if args.reranker:
+        print("\n--- 基线（无 Reranker）---")
+        hit_rates, mrr, failures = evaluate_cases(cases, docs, args.top_k, use_reranker=False)
+        print_summary(hit_rates, mrr, len(cases), failures, args.max_failures, label="Baseline")
+
+        print("\n--- 加入 Reranker ---")
+        rr_hit_rates, rr_mrr, rr_failures = evaluate_cases(
+            cases, docs, args.top_k, use_reranker=True, candidate_n=args.candidate_n
+        )
+        print_summary(rr_hit_rates, rr_mrr, len(cases), rr_failures, args.max_failures, label="With Reranker")
+
+        print("\n--- 指标提升对比 ---")
+        for k in sorted(hit_rates.keys()):
+            diff = rr_hit_rates[k] - hit_rates[k]
+            sign = "+" if diff >= 0 else ""
+            print(f"  Hit@{k}: {hit_rates[k]:.2%} → {rr_hit_rates[k]:.2%}  ({sign}{diff:.2%})")
+        mrr_diff = rr_mrr - mrr
+        sign = "+" if mrr_diff >= 0 else ""
+        print(f"  MRR:   {mrr:.4f} → {rr_mrr:.4f}  ({sign}{mrr_diff:.4f})")
+    else:
+        hit_rates, mrr, failures = evaluate_cases(cases, docs, args.top_k)
+        print_summary(hit_rates, mrr, len(cases), failures, args.max_failures)
 
 
 if __name__ == "__main__":
