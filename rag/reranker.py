@@ -8,7 +8,7 @@ def load_reranker() -> CrossEncoder:
     global _reranker_instance
     if _reranker_instance is None:
         print(f"加载 Reranker 模型：{RERANKER_MODEL}")
-        _reranker_instance = CrossEncoder(RERANKER_MODEL, max_length=512)
+        _reranker_instance = CrossEncoder(RERANKER_MODEL, max_length=512, device="cpu")
     return _reranker_instance
 
 
