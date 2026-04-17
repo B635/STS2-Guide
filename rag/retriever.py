@@ -22,35 +22,12 @@ def get_retrieve_n(query: str) -> int:
     return RETRIEVE_TOP_N
 
 
-def _is_count_query(query: str) -> bool:
-    return any(kw in query for kw in ["几个", "多少", "数量", "几位", "几名", "几种"])
-
-
 def _lexical_boost(query: str, doc: str) -> float:
     boost = 0.0
-
-    # 领域关键词命中，给一个稳定但有限的加权。
     domain_keywords = ["角色", "卡牌", "遗物", "药水", "怪物", "boss", "BOSS"]
     for kw in domain_keywords:
         if kw in query and kw in doc:
             boost += 0.08
-
-    # 计数类问题优先拉升“总览”文档，例如“共有5个角色”。
-    if _is_count_query(query):
-        if "共有" in doc or "总共" in doc:
-            boost += 0.18
-
-        if "角色" in query and "个角色" in doc:
-            boost += 0.6
-        if "卡牌" in query and "张卡牌" in doc:
-            boost += 0.6
-        if "遗物" in query and "个遗物" in doc:
-            boost += 0.6
-        if "药水" in query and "个药水" in doc:
-            boost += 0.6
-        if "怪物" in query and "个怪物" in doc:
-            boost += 0.6
-
     return boost
 
 

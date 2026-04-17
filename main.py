@@ -3,18 +3,14 @@ os.environ["HF_HOME"] = "./models"
 os.environ["SENTENCE_TRANSFORMERS_HOME"] = "./models"
 
 import argparse
-import json
 from config import KNOWLEDGE_FILE, RETRIEVE_TOP_N, RERANKER_CANDIDATE_N, MULTI_QUERY_PER_SUB_N
 from rag.embedder import load_model, load_or_compute_embeddings
 from rag.chat import create_client, rag_chat
 from rag.retriever import retrieve, adaptive_retrieve, multi_query_retrieve, format_context, format_sources
+from rag.knowledge import load_knowledge
+from rag.router import structured_query
 from rag.query_planner import decompose_query
 from rag.errors import handle_api_error, handle_file_error
-
-
-def load_knowledge() -> list:
-    with open(KNOWLEDGE_FILE, "r", encoding="utf-8") as f:
-        return json.load(f)["docs"]
 
 
 def main():
@@ -24,7 +20,7 @@ def main():
     args = parser.parse_args()
 
     try:
-        docs = load_knowledge()
+        docs, items, index = load_knowledge()
     except Exception as e:
         print(handle_file_error(e, KNOWLEDGE_FILE))
         return
@@ -57,7 +53,11 @@ def main():
             continue
 
         try:
-            if args.multi_query:
+            routed = structured_query(question, index, items)
+            if routed is not None:
+                print(f"  [结构化路由] 命中 {len(routed)} 条")
+                results = routed[:RETRIEVE_TOP_N]
+            elif args.multi_query:
                 sub_queries = decompose_query(question, client)
                 if len(sub_queries) > 1:
                     print(f"  [Query 分解] → {sub_queries}")

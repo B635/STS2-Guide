@@ -10,16 +10,12 @@ if ROOT_DIR not in sys.path:
 
 from config import KNOWLEDGE_FILE
 from rag.embedder import load_model, load_or_compute_embeddings
+from rag.knowledge import load_knowledge
 from rag.retriever import retrieve
+from rag.router import structured_query
 
 
 DEFAULT_EVAL_FILE = "./data/retrieval_eval.json"
-
-
-def load_docs() -> List[str]:
-    with open(KNOWLEDGE_FILE, "r", encoding="utf-8") as f:
-        payload = json.load(f)
-    return payload["docs"]
 
 
 def load_eval_cases(eval_file: str) -> List[Dict]:
@@ -50,9 +46,12 @@ def find_first_hit_rank(results: List[Dict], case: Dict) -> Optional[int]:
 def evaluate_cases(
     cases: List[Dict],
     docs: List[str],
+    items: List[Dict],
+    index: Dict,
     top_k: int,
     use_reranker: bool = False,
     candidate_n: int = 20,
+    use_router: bool = False,
 ) -> Tuple[Dict[int, float], float, List[Dict]]:
     model = load_model()
     doc_embeddings = load_or_compute_embeddings(docs, model)
@@ -69,7 +68,11 @@ def evaluate_cases(
     for case in cases:
         query = case["query"]
 
-        if use_reranker:
+        routed = structured_query(query, index, items) if use_router else None
+
+        if routed is not None:
+            results = routed[:top_k]
+        elif use_reranker:
             candidates = retrieve(query, docs, doc_embeddings, model, n=candidate_n)
             results = rerank(query, candidates, reranker, top_n=top_k)
         else:
@@ -133,21 +136,27 @@ def main() -> None:
     parser.add_argument("--max-failures", type=int, default=10, help="Max failed cases to print")
     parser.add_argument("--reranker", action="store_true", help="Enable reranker and show comparison")
     parser.add_argument("--candidate-n", type=int, default=20, help="Candidate pool size for reranker")
+    parser.add_argument("--router", action="store_true", help="Enable structured query router")
     args = parser.parse_args()
 
-    docs = load_docs()
+    docs, items, index = load_knowledge()
     cases = load_eval_cases(args.eval_file)
 
     if args.reranker:
         print("\n--- 基线（无 Reranker）---")
-        hit_rates, mrr, failures = evaluate_cases(cases, docs, args.top_k, use_reranker=False)
-        print_summary(hit_rates, mrr, len(cases), failures, args.max_failures, label="Baseline")
+        hit_rates, mrr, failures = evaluate_cases(
+            cases, docs, items, index, args.top_k, use_reranker=False, use_router=args.router
+        )
+        label = "Baseline + Router" if args.router else "Baseline"
+        print_summary(hit_rates, mrr, len(cases), failures, args.max_failures, label=label)
 
         print("\n--- 加入 Reranker ---")
         rr_hit_rates, rr_mrr, rr_failures = evaluate_cases(
-            cases, docs, args.top_k, use_reranker=True, candidate_n=args.candidate_n
+            cases, docs, items, index, args.top_k,
+            use_reranker=True, candidate_n=args.candidate_n, use_router=args.router,
         )
-        print_summary(rr_hit_rates, rr_mrr, len(cases), rr_failures, args.max_failures, label="With Reranker")
+        rr_label = "Reranker + Router" if args.router else "With Reranker"
+        print_summary(rr_hit_rates, rr_mrr, len(cases), rr_failures, args.max_failures, label=rr_label)
 
         print("\n--- 指标提升对比 ---")
         for k in sorted(hit_rates.keys()):
@@ -158,8 +167,11 @@ def main() -> None:
         sign = "+" if mrr_diff >= 0 else ""
         print(f"  MRR:   {mrr:.4f} → {rr_mrr:.4f}  ({sign}{mrr_diff:.4f})")
     else:
-        hit_rates, mrr, failures = evaluate_cases(cases, docs, args.top_k)
-        print_summary(hit_rates, mrr, len(cases), failures, args.max_failures)
+        hit_rates, mrr, failures = evaluate_cases(
+            cases, docs, items, index, args.top_k, use_router=args.router
+        )
+        label = "Baseline + Router" if args.router else "Baseline"
+        print_summary(hit_rates, mrr, len(cases), failures, args.max_failures, label=label)
 
 
 if __name__ == "__main__":
