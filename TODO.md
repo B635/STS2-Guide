@@ -4,7 +4,16 @@
 
 ---
 
-## ✅ 本次 push 已完成
+## ✅ 本次 push 已完成（知识库结构化 + 路由层）
+
+- **Add**: `.env.example` / `requirements.txt` / `scripts/probe_api.py`（环境与 API 字段探测）
+- **Change**: 知识库从扁平字符串改为按类型结构化 JSON，每条附 `embed_text`（[scripts/fetch_knowledge.py](scripts/fetch_knowledge.py)、[data/knowledge.json](data/knowledge.json)、[rag/knowledge.py](rag/knowledge.py)）
+- **Add**: 结构化查询路由 [rag/router.py](rag/router.py)：实体名精确匹配 + 计数问题直接从索引返回，命中时跳过向量检索
+- **Update**: 把路由接入 [main.py](main.py)、[app.py](app.py)、[scripts/eval_retrieval.py](scripts/eval_retrieval.py)（新增 `--router` 开关；Web UI 新增"启用结构化路由"开关）
+- **Delete**: `rag/retriever.py` 中已失效的"总览文档"词法加权分支
+- **Update**: README 与 TODO 同步到新架构
+
+## ✅ 历史 push 已完成
 
 - **Update**: 收紧 RAG system prompt，避免 LLM 用 STS1 预训练知识回答（[rag/chat.py](rag/chat.py)）
 - **Add**: Query 分解 + 多查询检索功能
@@ -34,6 +43,10 @@ mv models/models--sentence-transformers--all-MiniLM-L6-v2 models/hub/ 2>/dev/nul
 ---
 
 ## ⏳ 待开发功能
+
+### 评测集扩展（优先级高）
+- 当前 35 条评测集以单实体属性查询为主，路由层命中率过高
+- 需补充开放类问题（如"哪张卡抽牌最多"、"储君推荐什么流派"）来真实衡量向量检索与 Reranker 的贡献
 
 ### 层级 2：Chain-of-Thought 推理（中等优先级）
 - 让 LLM 在 `<thinking>` 标签内先分析，再在 `<answer>` 输出最终回答
