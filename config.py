@@ -33,3 +33,8 @@ RERANKER_CANDIDATE_N = 20
 # Multi-query (query decomposition + multi-retrieval)
 MAX_SUB_QUERIES = 3
 MULTI_QUERY_PER_SUB_N = 10
+
+# Hybrid retrieval (BM25 + Vector with RRF fusion)
+BM25_TOP_N = 20
+VECTOR_TOP_N_FOR_HYBRID = 20
+RRF_K = 60

@@ -81,19 +81,13 @@ def _entity_results(matches: List[Dict]) -> List[Dict]:
 
 def structured_query(query: str, index: Dict, items: List[Dict]) -> Optional[List[Dict]]:
     """Try to answer from structured data. Return results or None to defer."""
-    count_type = _is_pure_count_query(query)
-    if count_type is not None:
-        matches = _find_entities(query, index)
-        if not matches:
-            return [_count_result(count_type, index)]
-
     matches = _find_entities(query, index)
+
+    count_type = _is_pure_count_query(query)
+    if count_type is not None and not matches:
+        return [_count_result(count_type, index)]
+
     if not matches:
         return None
 
-    if len(matches) == 1:
-        return _entity_results(matches)
-
-    # Multiple distinct entities in one query — fall back to vector search so
-    # the reranker/LLM can sort out the relationships.
-    return None
+    return _entity_results(matches)

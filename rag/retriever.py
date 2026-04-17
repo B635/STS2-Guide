@@ -55,6 +55,45 @@ def retrieve(query: str, docs: list, doc_embeddings: np.ndarray, model: Sentence
     return results
 
 
+def rrf_fuse(ranked_lists: list, k: int, top_n: int, docs: list) -> list:
+    """Reciprocal Rank Fusion over multiple ranked result lists.
+
+    Each doc index picks up 1/(k+rank) from every list it appears in.
+    Returns top_n dicts shaped like the other retrievers' outputs.
+    """
+    scores = {}
+    for results in ranked_lists:
+        for rank, r in enumerate(results, start=1):
+            idx = r["index"]
+            scores[idx] = scores.get(idx, 0.0) + 1.0 / (k + rank)
+
+    ordered = sorted(scores.items(), key=lambda kv: kv[1], reverse=True)[:top_n]
+    return [
+        {"text": docs[idx], "score": float(score), "index": int(idx)}
+        for idx, score in ordered
+    ]
+
+
+def hybrid_retrieve(
+    query: str,
+    docs: list,
+    doc_embeddings: np.ndarray,
+    model: SentenceTransformer,
+    bm25_index,
+    vector_n: int,
+    bm25_n: int,
+    rrf_k: int,
+    top_n: int,
+    vector_query: str = None,
+) -> list:
+    # HyDE path: caller pre-computed a hypothetical doc for the dense side.
+    # BM25 always runs on the raw query so proper nouns / digits stay lexical.
+    vq = vector_query if vector_query else query
+    vector_results = retrieve(vq, docs, doc_embeddings, model, n=vector_n)
+    bm25_results = bm25_index.retrieve(query, n=bm25_n)
+    return rrf_fuse([vector_results, bm25_results], k=rrf_k, top_n=top_n, docs=docs)
+
+
 def multi_query_retrieve(
     sub_queries: list,
     docs: list,
@@ -73,7 +112,8 @@ def multi_query_retrieve(
 
 
 def format_context(results: list) -> str:
-    return "\n".join([r["text"] for r in results])
+    # Prefix each doc with [n] so the LLM can cite by index; n is 1-based.
+    return "\n".join([f"[{i + 1}] {r['text']}" for i, r in enumerate(results)])
 
 
 def format_sources(results: list) -> str:
