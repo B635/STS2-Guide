@@ -66,6 +66,16 @@
       "query": "那最弱的呢",
       "expected_keywords": ["最弱"],
       "forbidden_keywords": ["铁甲战士", "静默猎手", "BurningBlood"]
+    },
+    {
+      "tag": "spurious_injection",
+      "history": [
+        {"role": "user", "content": "战士的初始手牌有什么"},
+        {"role": "assistant", "content": "我的知识库中没有关于“初手牌”的信息。"}
+      ],
+      "query": "有哪些角色",
+      "expected_keywords": ["角色"],
+      "forbidden_keywords": ["初手牌", "手牌"]
     }
   ]
 }
