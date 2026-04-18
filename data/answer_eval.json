@@ -1,0 +1,80 @@
+{
+  "_note": "End-to-end answer quality eval. Smaller than retrieval_eval.json on purpose (cost: ~22 API calls).",
+  "cases": [
+    {
+      "query": "铁甲战士初始血量是多少",
+      "eval_type": "keyword",
+      "expected_keywords": ["80"]
+    },
+    {
+      "query": "中和这张牌多少费",
+      "eval_type": "keyword",
+      "expected_keywords": ["0"]
+    },
+    {
+      "query": "偏折能给多少格挡",
+      "eval_type": "keyword",
+      "expected_keywords": ["4"]
+    },
+    {
+      "query": "静默猎手的初始遗物是什么",
+      "eval_type": "keyword",
+      "expected_keywords": ["RingOfTheSnake"]
+    },
+    {
+      "query": "故障机器人有几个球槽",
+      "eval_type": "keyword",
+      "expected_keywords": ["3"]
+    },
+    {
+      "query": "亡灵契约师初始血量是多少",
+      "eval_type": "keyword",
+      "expected_keywords": ["66"]
+    },
+    {
+      "query": "多尼斯异鸟血量多少",
+      "eval_type": "keyword",
+      "expected_keywords": ["91", "94"]
+    },
+    {
+      "query": "力量药水有什么效果",
+      "eval_type": "keyword",
+      "expected_keywords": ["2", "力量"]
+    },
+    {
+      "query": "铁甲战士和储君血量哪个高",
+      "eval_type": "llm_judge",
+      "expected_answer": "铁甲战士初始血量80点，储君初始血量70点，铁甲战士血量更高。"
+    },
+    {
+      "query": "力量药水和肌肉药水哪个给的力量多",
+      "eval_type": "llm_judge",
+      "expected_answer": "力量药水给2点力量，肌肉药水给5点力量，肌肉药水给的力量更多。"
+    },
+    {
+      "query": "哪张卡抽牌最多",
+      "eval_type": "llm_judge",
+      "expected_answer": "独门技术可以抽牌直至手牌上限，预言可以抽6张牌，它们是抽牌最多的卡。"
+    },
+    {
+      "query": "血量最高的boss是哪个",
+      "eval_type": "llm_judge",
+      "expected_answer": "门扉缔造者血量489，是血量最高的Boss。"
+    },
+    {
+      "query": "有哪些能回血或提升最大生命值的药水",
+      "eval_type": "llm_judge",
+      "expected_answer": "鲜血药水可以回复生命值；瓶中精灵和果汁可以提升最大生命值。"
+    },
+    {
+      "query": "初始血量最低的角色是谁",
+      "eval_type": "llm_judge",
+      "expected_answer": "亡灵契约师初始血量66点，是初始血量最低的角色。"
+    },
+    {
+      "query": "铁甲战士和静默猎手的初始遗物分别是什么",
+      "eval_type": "llm_judge",
+      "expected_answer": "铁甲战士的初始遗物是BurningBlood，静默猎手的初始遗物是RingOfTheSnake。"
+    }
+  ]
+}

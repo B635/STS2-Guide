@@ -100,10 +100,12 @@ STS2-Guide/
 │   ├── fetch_knowledge.py     # 拉取知识库（按类型结构化输出）
 │   ├── probe_api.py           # 探测 Spire Codex API 字段清单
 │   ├── eval_retrieval.py      # 检索评测（Hit@K / MRR，支持 --router / --reranker / --hybrid / --hyde）
-│   └── eval_citation.py       # 引用质量评测（Citation Rate / Source Validity / Number Grounding）
+│   ├── eval_citation.py       # 引用质量评测（Citation Rate / Source Validity / Number Grounding）
+│   └── eval_answer.py         # 端到端答案评测（关键词匹配 + LLM-as-Judge）
 ├── data/
 │   ├── knowledge.json         # 按类型结构化的知识库（1048 条）
-│   └── retrieval_eval.json    # 检索评测集（53 条标注用例，含开放类问题）
+│   ├── retrieval_eval.json    # 检索评测集（53 条标注用例，含开放类问题）
+│   └── answer_eval.json       # 端到端答案评测集（15 条：8 条关键词 + 7 条 LLM-judge）
 ├── models/                    # 模型缓存目录（HF_HOME 标准布局）
 └── *.npy / docs_hash.txt      # 向量缓存和知识库哈希
 ```
@@ -224,6 +226,40 @@ python scripts/eval_retrieval.py --hyde --hybrid --reranker --router --top-k 5
 |------|------|
 | Hit@K | 前 K 条结果中包含正确答案的比例 |
 | MRR (Mean Reciprocal Rank) | 正确答案排位的倒数的平均值，越高说明正确结果越靠前 |
+
+## 端到端答案评测
+
+### 为什么 Hit@K / MRR 不够
+
+Hit@K 只回答"文档被捞上来了吗"，不回答"LLM 给用户的最终答案对不对"。文档命中了但答非所问、幻觉、漏信息这些失败模式对检索指标是不可见的——只有跑完整管线评最终回复才能发现。
+
+### 方案：关键词匹配 + LLM-as-Judge 混合打分
+
+| 模式 | 触发场景 | 打分方式 | 成本 |
+|------|---------|---------|------|
+| `keyword` | 事实类（数值、名词） | 答案需包含所有 `expected_keywords` | 0 额外 API |
+| `llm_judge` | 开放类 / 对比类 | DeepSeek 打 **faithful / relevant / complete** 三维（各 0-2） | +1 调用/条 |
+
+运行：
+
+```bash
+python scripts/eval_answer.py --hybrid --reranker --router
+```
+
+### 实测指标（15 条标注用例，全栈管线 Hybrid + Reranker + Router）
+
+| 维度 | 结果 |
+|------|------|
+| 关键词匹配通过率 | **8/8 (100%)** |
+| LLM-Judge 忠实度 (faithful) | 0.71 / 2.00 |
+| LLM-Judge 相关性 (relevant) | 1.86 / 2.00 |
+| LLM-Judge 完整性 (complete) | 1.00 / 2.00 |
+
+**观察：** 事实类问题接近满分，但开放类 / 排序类问题忠实度和完整性都拉垮——和检索评测里"HyDE + Hybrid + Reranker 在开放类问题上是短板"的结论一致。**这就是 Hit@K 看不到的失败模式**：比如"血量最高的 Boss 是哪个"，检索 Top-5 里往往捞进来血量 9999 的普通怪（佩尔的士兵），LLM 照单全收就答了怪物而不是 Boss。修复方向是 Router 对"最值 + 类型约束"类查询做结构化聚合。
+
+### 限制声明
+
+**裁判模型与生成模型同为 DeepSeek**，存在自评偏差（self-bias，模型倾向给自己打高分）。生产环境应使用更强的外部裁判模型（如 GPT-4）。本项目在个人 API 预算约束下选择透明标注此局限，而非回避评测。
 
 ## Hybrid 检索（BM25 + Vector + RRF）
 
