@@ -1,0 +1,71 @@
+{
+  "_note": "Multi-turn query rewrite eval. Each case: given history + follow-up query, rewritten query must contain expected_keywords. Covers pronouns, topic switches, and potential hallucination traps.",
+  "cases": [
+    {
+      "tag": "pronoun_resolution",
+      "history": [
+        {"role": "user", "content": "铁甲战士的初始遗物是什么"},
+        {"role": "assistant", "content": "铁甲战士的初始遗物是 BurningBlood [1]。"}
+      ],
+      "query": "那他的血量呢",
+      "expected_keywords": ["铁甲战士", "血量"]
+    },
+    {
+      "tag": "pronoun_resolution",
+      "history": [
+        {"role": "user", "content": "静默猎手初始血量是多少"},
+        {"role": "assistant", "content": "静默猎手的初始血量是70点 [1]。"}
+      ],
+      "query": "她的初始遗物是什么",
+      "expected_keywords": ["静默猎手", "初始遗物"]
+    },
+    {
+      "tag": "omitted_subject",
+      "history": [
+        {"role": "user", "content": "力量药水的效果"},
+        {"role": "assistant", "content": "力量药水获得2点力量 [1]。"}
+      ],
+      "query": "是几费的",
+      "expected_keywords": ["力量药水"]
+    },
+    {
+      "tag": "topic_switch",
+      "history": [
+        {"role": "user", "content": "铁甲战士的初始遗物"},
+        {"role": "assistant", "content": "BurningBlood [1]。"}
+      ],
+      "query": "亡灵契约师的初始血量是多少",
+      "expected_keywords": ["亡灵契约师", "血量"],
+      "forbidden_keywords": ["铁甲战士"]
+    },
+    {
+      "tag": "already_standalone",
+      "history": [
+        {"role": "user", "content": "力量药水的效果"},
+        {"role": "assistant", "content": "获得2点力量 [1]。"}
+      ],
+      "query": "中和这张牌多少费",
+      "expected_keywords": ["中和"],
+      "forbidden_keywords": ["力量药水"]
+    },
+    {
+      "tag": "pronoun_cross_type",
+      "history": [
+        {"role": "user", "content": "壶铃有什么效果"},
+        {"role": "assistant", "content": "壶铃在休息处获得力量 [1]。"}
+      ],
+      "query": "它是什么稀有度",
+      "expected_keywords": ["壶铃"]
+    },
+    {
+      "tag": "hallucination_trap",
+      "history": [
+        {"role": "user", "content": "哪张卡最强"},
+        {"role": "assistant", "content": "我的知识库中没有关于“最强”的主观评价信息。"}
+      ],
+      "query": "那最弱的呢",
+      "expected_keywords": ["最弱"],
+      "forbidden_keywords": ["铁甲战士", "静默猎手", "BurningBlood"]
+    }
+  ]
+}

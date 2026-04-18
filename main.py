@@ -14,6 +14,7 @@ from rag.knowledge import load_knowledge
 from rag.router import structured_query
 from rag.query_planner import decompose_query
 from rag.hyde import generate_hypothetical
+from rag.query_rewriter import rewrite_query
 from rag.errors import handle_api_error, handle_file_error
 
 
@@ -73,12 +74,20 @@ def main():
             continue
 
         try:
-            routed = structured_query(question, index, items)
+            # History-aware query rewriting: follow-up questions like "他的血量呢"
+            # have no entity for BM25/vector to latch onto. Rewrite into a
+            # standalone query before retrieval; generation still uses the
+            # original question since the LLM has history in context.
+            retrieve_query = rewrite_query(question, history, client, index)
+            if retrieve_query != question:
+                print(f"  [Query 改写] {question} → {retrieve_query}")
+
+            routed = structured_query(retrieve_query, index, items)
             if routed is not None:
                 print(f"  [结构化路由] 命中 {len(routed)} 条")
                 results = routed[:RETRIEVE_TOP_N]
             elif args.multi_query:
-                sub_queries = decompose_query(question, client)
+                sub_queries = decompose_query(retrieve_query, client)
                 if len(sub_queries) > 1:
                     print(f"  [Query 分解] → {sub_queries}")
                 candidates = multi_query_retrieve(
@@ -87,40 +96,40 @@ def main():
                 )
                 if reranker is not None:
                     from rag.reranker import rerank
-                    results = rerank(question, candidates, reranker, top_n=RETRIEVE_TOP_N)
+                    results = rerank(retrieve_query, candidates, reranker, top_n=RETRIEVE_TOP_N)
                 else:
                     results = candidates[:RETRIEVE_TOP_N]
             elif args.hybrid:
                 vector_query = None
                 if args.hyde:
-                    vector_query = generate_hypothetical(question, client)
+                    vector_query = generate_hypothetical(retrieve_query, client)
                     print(f"  [HyDE] 假设文档：{vector_query[:80]}...")
                 pool_n = RERANKER_CANDIDATE_N if reranker is not None else RETRIEVE_TOP_N
                 candidates = hybrid_retrieve(
-                    question, docs, doc_embeddings, model, bm25_idx,
+                    retrieve_query, docs, doc_embeddings, model, bm25_idx,
                     vector_n=VECTOR_TOP_N_FOR_HYBRID, bm25_n=BM25_TOP_N,
                     rrf_k=RRF_K, top_n=pool_n,
                     vector_query=vector_query,
                 )
                 if reranker is not None:
                     from rag.reranker import rerank
-                    results = rerank(question, candidates, reranker, top_n=RETRIEVE_TOP_N)
+                    results = rerank(retrieve_query, candidates, reranker, top_n=RETRIEVE_TOP_N)
                 else:
                     results = candidates[:RETRIEVE_TOP_N]
             elif reranker is not None:
-                vector_query = question
+                vector_query = retrieve_query
                 if args.hyde:
-                    vector_query = generate_hypothetical(question, client)
+                    vector_query = generate_hypothetical(retrieve_query, client)
                     print(f"  [HyDE] 假设文档：{vector_query[:80]}...")
                 from rag.reranker import rerank
                 candidates = retrieve(vector_query, docs, doc_embeddings, model, n=RERANKER_CANDIDATE_N)
-                results = rerank(question, candidates, reranker, top_n=RETRIEVE_TOP_N)
+                results = rerank(retrieve_query, candidates, reranker, top_n=RETRIEVE_TOP_N)
             elif args.hyde:
-                vector_query = generate_hypothetical(question, client)
+                vector_query = generate_hypothetical(retrieve_query, client)
                 print(f"  [HyDE] 假设文档：{vector_query[:80]}...")
                 results = retrieve(vector_query, docs, doc_embeddings, model, n=RETRIEVE_TOP_N)
             else:
-                results = adaptive_retrieve(question, docs, doc_embeddings, model, client)
+                results = adaptive_retrieve(retrieve_query, docs, doc_embeddings, model, client)
 
             context = format_context(results)
             answer = rag_chat(question, context, history, client)
