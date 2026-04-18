@@ -1,17 +1,13 @@
 import numpy as np
-from numpy.linalg import norm
 from sentence_transformers import SentenceTransformer
 from config import (
     RETRIEVE_TOP_N,
     ADAPTIVE_SCORE_THRESHOLD,
     ADAPTIVE_RETRIEVE_STAGES,
     ADAPTIVE_CHECK_CONTEXT_CHARS,
+    LEXICAL_BOOST_OVERSAMPLE,
 )
-
-
-def cosine_similarity(a: np.ndarray, b: np.ndarray) -> np.ndarray:
-    b_norm = b / norm(b)
-    return np.dot(a, b_norm.T).flatten()
+from rag.vector_store import VectorStore
 
 
 def get_retrieve_n(query: str) -> int:
@@ -31,28 +27,36 @@ def _lexical_boost(query: str, doc: str) -> float:
     return boost
 
 
-def retrieve(query: str, docs: list, doc_embeddings: np.ndarray, model: SentenceTransformer, n: int = None):
+def _normalize_query(model: SentenceTransformer, query: str) -> np.ndarray:
+    vec = model.encode([query])[0]
+    return vec / np.linalg.norm(vec)
+
+
+def retrieve(query: str, docs: list, store: VectorStore, model: SentenceTransformer, n: int = None):
+    """Dense retrieval over a FAISS-backed vector store.
+
+    Strategy: ask FAISS for `n * LEXICAL_BOOST_OVERSAMPLE` candidates so that
+    the in-Chinese keyword boost has room to re-rank within the pool, then
+    truncate to `n`. This preserves the old boost behavior without scanning
+    all N docs.
+    """
     if n is None:
         n = get_retrieve_n(query)
 
-    query_embedding = model.encode([query])
-    dense_scores = cosine_similarity(doc_embeddings, query_embedding[0])
+    query_vec = _normalize_query(model, query)
+    pool_n = min(n * LEXICAL_BOOST_OVERSAMPLE, store.size)
+    indices, scores = store.search(query_vec, pool_n)
 
-    combined_scores = []
-    for i, doc in enumerate(docs):
-        combined_scores.append(dense_scores[i] + _lexical_boost(query, doc))
-    combined_scores = np.array(combined_scores)
+    boosted = []
+    for idx, score in zip(indices, scores):
+        idx = int(idx)
+        if idx < 0:
+            continue
+        adjusted = float(score) + _lexical_boost(query, docs[idx])
+        boosted.append({"text": docs[idx], "score": adjusted, "index": idx})
 
-    top_indices = combined_scores.argsort()[-n:][::-1]
-
-    results = []
-    for i in top_indices:
-        results.append({
-            "text": docs[i],
-            "score": float(combined_scores[i]),
-            "index": int(i)
-        })
-    return results
+    boosted.sort(key=lambda r: r["score"], reverse=True)
+    return boosted[:n]
 
 
 def rrf_fuse(ranked_lists: list, k: int, top_n: int, docs: list) -> list:
@@ -77,7 +81,7 @@ def rrf_fuse(ranked_lists: list, k: int, top_n: int, docs: list) -> list:
 def hybrid_retrieve(
     query: str,
     docs: list,
-    doc_embeddings: np.ndarray,
+    store: VectorStore,
     model: SentenceTransformer,
     bm25_index,
     vector_n: int,
@@ -89,7 +93,7 @@ def hybrid_retrieve(
     # HyDE path: caller pre-computed a hypothetical doc for the dense side.
     # BM25 always runs on the raw query so proper nouns / digits stay lexical.
     vq = vector_query if vector_query else query
-    vector_results = retrieve(vq, docs, doc_embeddings, model, n=vector_n)
+    vector_results = retrieve(vq, docs, store, model, n=vector_n)
     bm25_results = bm25_index.retrieve(query, n=bm25_n)
     return rrf_fuse([vector_results, bm25_results], k=rrf_k, top_n=top_n, docs=docs)
 
@@ -97,13 +101,13 @@ def hybrid_retrieve(
 def multi_query_retrieve(
     sub_queries: list,
     docs: list,
-    doc_embeddings: np.ndarray,
+    store: VectorStore,
     model: SentenceTransformer,
     n_per_query: int,
 ) -> list:
     seen = {}
     for sub_q in sub_queries:
-        results = retrieve(sub_q, docs, doc_embeddings, model, n=n_per_query)
+        results = retrieve(sub_q, docs, store, model, n=n_per_query)
         for r in results:
             idx = r["index"]
             if idx not in seen or r["score"] > seen[idx]["score"]:
@@ -154,13 +158,13 @@ def _is_context_enough(query: str, results: list, client) -> bool:
     return "不够" not in check_response.choices[0].message.content
 
 
-def adaptive_retrieve(query: str, docs: list, doc_embeddings: np.ndarray, model: SentenceTransformer, client, n: int = None):
+def adaptive_retrieve(query: str, docs: list, store: VectorStore, model: SentenceTransformer, client, n: int = None):
     initial_n = n if n is not None else get_retrieve_n(query)
-    stages = _build_adaptive_stages(initial_n, len(docs))
+    stages = _build_adaptive_stages(initial_n, store.size)
 
     last_results = []
     for idx, stage_n in enumerate(stages):
-        results = retrieve(query, docs, doc_embeddings, model, n=stage_n)
+        results = retrieve(query, docs, store, model, n=stage_n)
         last_results = results
 
         top_score = results[0]["score"] if results else 0.0

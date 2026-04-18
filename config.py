@@ -38,3 +38,10 @@ MULTI_QUERY_PER_SUB_N = 10
 BM25_TOP_N = 20
 VECTOR_TOP_N_FOR_HYBRID = 20
 RRF_K = 60
+
+# Vector store backend — "flat" (exact, ≤10k docs) or "ivf" (approximate, ≥10k docs)
+VECTOR_STORE_STRATEGY = "flat"
+# Oversample multiplier when lexical_boost is applied on dense candidates.
+# FAISS returns top-K by pure cosine; boost may re-rank inside that pool, so
+# we ask FAISS for more than we need and let the boost reshuffle.
+LEXICAL_BOOST_OVERSAMPLE = 3
