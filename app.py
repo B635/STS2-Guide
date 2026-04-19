@@ -22,6 +22,7 @@ from rag.knowledge import load_knowledge
 from rag.router import structured_query
 from rag.query_planner import decompose_query
 from rag.hyde import generate_hypothetical
+from rag.query_rewriter import rewrite_query
 from rag.errors import handle_api_error, handle_file_error
 
 # ── Page config ──────────────────────────────────────────────────────────────
@@ -145,13 +146,21 @@ if question := st.chat_input("输入你的问题，例如：铁甲战士初始�
     with st.chat_message("assistant"):
         with st.status("🔍 正在检索相关知识...", expanded=True) as status:
             try:
+                # Step 0: History-aware query rewrite. Follow-ups like "他的血量呢"
+                # have no entity for retrieval to latch onto; rewrite uses the
+                # last few turns to produce a standalone query. Generation still
+                # uses the user's original wording (LLM already has history).
+                retrieve_query = rewrite_query(question, st.session_state.history, client, index)
+                if retrieve_query != question:
+                    status.write(f"✍️ Query 改写：{question} → {retrieve_query}")
+
                 # Step 1: Try structured router, fall back to vector pipeline
-                routed = structured_query(question, index, items) if use_router else None
+                routed = structured_query(retrieve_query, index, items) if use_router else None
                 if routed is not None:
                     status.write(f"🎯 结构化路由命中：{len(routed)} 条")
                     results = routed[:top_n]
                 elif use_multi_query:
-                    sub_queries = decompose_query(question, client)
+                    sub_queries = decompose_query(retrieve_query, client)
                     if len(sub_queries) > 1:
                         status.write(f"🧩 Query 拆解为 {len(sub_queries)} 个子问题：")
                         for sq in sub_queries:
@@ -165,18 +174,18 @@ if question := st.chat_input("输入你的问题，例如：铁甲战士初始�
                     status.write(f"多查询合并：去重后 {len(candidates)} 条候选")
                     if use_reranker:
                         from rag.reranker import rerank as do_rerank
-                        results = do_rerank(question, candidates, reranker, top_n=top_n)
+                        results = do_rerank(retrieve_query, candidates, reranker, top_n=top_n)
                         status.write(f"Reranker 精排：筛选出 Top-{top_n} 文档")
                     else:
                         results = candidates[:top_n]
                 elif use_hybrid:
                     vector_query = None
                     if use_hyde:
-                        vector_query = generate_hypothetical(question, client)
+                        vector_query = generate_hypothetical(retrieve_query, client)
                         status.write(f"🧠 HyDE 假设文档：{vector_query[:60]}...")
                     pool_n = candidate_n if use_reranker else top_n
                     candidates = hybrid_retrieve(
-                        question, docs, embeddings, model, bm25_idx,
+                        retrieve_query, docs, embeddings, model, bm25_idx,
                         vector_n=VECTOR_TOP_N_FOR_HYBRID, bm25_n=BM25_TOP_N,
                         rrf_k=RRF_K, top_n=pool_n,
                         vector_query=vector_query,
@@ -184,30 +193,30 @@ if question := st.chat_input("输入你的问题，例如：铁甲战士初始�
                     status.write(f"🔀 Hybrid 检索（BM25+向量 RRF）：融合后 {len(candidates)} 条候选")
                     if use_reranker:
                         from rag.reranker import rerank as do_rerank
-                        results = do_rerank(question, candidates, reranker, top_n=top_n)
+                        results = do_rerank(retrieve_query, candidates, reranker, top_n=top_n)
                         status.write(f"Reranker 精排：筛选出 Top-{top_n} 文档")
                     else:
                         results = candidates[:top_n]
                 elif use_adaptive and not use_reranker and not use_hyde:
-                    results = adaptive_retrieve(question, docs, embeddings, model, client, n=top_n)
+                    results = adaptive_retrieve(retrieve_query, docs, embeddings, model, client, n=top_n)
                     status.write(f"自适应检索完成，获取 {len(results)} 条文档")
                 elif use_reranker:
-                    vector_query = question
+                    vector_query = retrieve_query
                     if use_hyde:
-                        vector_query = generate_hypothetical(question, client)
+                        vector_query = generate_hypothetical(retrieve_query, client)
                         status.write(f"🧠 HyDE 假设文档：{vector_query[:60]}...")
                     from rag.reranker import rerank as do_rerank
                     candidates = retrieve(vector_query, docs, embeddings, model, n=candidate_n)
                     status.write(f"向量检索：召回 {len(candidates)} 条候选文档")
-                    results = do_rerank(question, candidates, reranker, top_n=top_n)
+                    results = do_rerank(retrieve_query, candidates, reranker, top_n=top_n)
                     status.write(f"Reranker 精排：筛选出 Top-{top_n} 文档")
                 elif use_hyde:
-                    vector_query = generate_hypothetical(question, client)
+                    vector_query = generate_hypothetical(retrieve_query, client)
                     status.write(f"🧠 HyDE 假设文档：{vector_query[:60]}...")
                     results = retrieve(vector_query, docs, embeddings, model, n=top_n)
                     status.write(f"向量检索完成，获取 {len(results)} 条文档")
                 else:
-                    results = retrieve(question, docs, embeddings, model, n=top_n)
+                    results = retrieve(retrieve_query, docs, embeddings, model, n=top_n)
                     status.write(f"向量检索完成，获取 {len(results)} 条文档")
 
                 # Step 2: Build context and generate answer
