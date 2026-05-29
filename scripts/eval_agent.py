@@ -61,31 +61,32 @@ def select_and_retrieve(
     plan = plan_tool(query, client, has_bm25=bm25 is not None)
     tool = plan["tool"]
     reason = plan["reason"]
+    tool_query = plan["query"]
 
     if tool == "multi_query_search":
-        sub_queries = decompose_query(query, client)
+        sub_queries = plan["sub_queries"] or decompose_query(tool_query, client)
         candidates = multi_query_retrieve(sub_queries, docs, store, model, n_per_query=cfg.top_n)
     elif tool == "hyde_hybrid_search":
-        vector_query = generate_hypothetical(query, client)
+        vector_query = generate_hypothetical(tool_query, client)
         candidates = hybrid_retrieve(
-            query, docs, store, model, bm25,
+            tool_query, docs, store, model, bm25,
             vector_n=cfg.vector_n, bm25_n=cfg.bm25_n,
             rrf_k=cfg.rrf_k, top_n=cfg.candidate_n,
             vector_query=vector_query,
         )
     elif tool == "hybrid_search":
         candidates = hybrid_retrieve(
-            query, docs, store, model, bm25,
+            tool_query, docs, store, model, bm25,
             vector_n=cfg.vector_n, bm25_n=cfg.bm25_n,
             rrf_k=cfg.rrf_k, top_n=cfg.candidate_n,
         )
     else:
         tool = "vector_search"
-        candidates = retrieve(query, docs, store, model, n=cfg.candidate_n)
+        candidates = retrieve(tool_query, docs, store, model, n=cfg.candidate_n)
 
     if reranker is not None:
         from rag.reranker import rerank
-        results = rerank(query, candidates, reranker, top_n=cfg.top_n)
+        results = rerank(tool_query, candidates, reranker, top_n=cfg.top_n)
     else:
         results = candidates[:cfg.top_n]
     return tool, reason, results

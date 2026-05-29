@@ -1,6 +1,6 @@
 # STS2-Guide：杀戮尖塔2 RAG 攻略助手
 
-基于 **RAG（Retrieval-Augmented Generation）+ Tool-Using Agent** 架构的游戏攻略问答系统。用户用自然语言提问，系统从 1048 条结构化知识中检索相关内容，可经过"结构化路由 → HyDE 改写（可选） → Hybrid 检索（BM25 + 向量 RRF 融合） → Reranker 精排"管线后交由 LLM **带引用**生成回答（每句标注 `[n]`，不可追溯的结论强制标 `[?]`）。Agent 模式下，系统会先根据问题类型自动选择结构化查询、Hybrid 检索、HyDE 增强或 Query 分解等工具，再执行检索和生成；同时提供可选 **LangGraph** 状态图实现，将 Query 改写、路由/规划、工具执行和带引用生成封装为可观测工作流。
+基于 **RAG（Retrieval-Augmented Generation）+ Tool-Using Agent** 架构的游戏攻略问答系统。用户用自然语言提问，系统从 1048 条结构化知识中检索相关内容，可经过"结构化路由 → HyDE 改写（可选） → Hybrid 检索（BM25 + 向量 RRF 融合） → Reranker 精排"管线后交由 LLM **带引用**生成回答（每句标注 `[n]`，不可追溯的结论强制标 `[?]`）。Agent 模式下，系统会先根据问题类型自动选择结构化查询、Hybrid 检索、HyDE 增强或 Query 分解等工具，再执行检索、生成和规则化校验；校验失败时会触发一次补救检索/重生成闭环。同时提供可选 **LangGraph** 状态图实现，将 Query 改写、路由/规划、工具执行、带引用生成、答案校验和失败修复封装为可观测工作流。
 
 ## 技术栈
 
@@ -19,22 +19,22 @@
 ## 核心功能
 
 ### 检索能力
-- **Tool-Using Agent**：新增轻量级 Agent 编排层，基于 LLM Planner + 启发式兜底选择 `structured_lookup`、`hybrid_search`、`hyde_hybrid_search`、`multi_query_search` 或 `vector_search` 工具，并输出可解释执行轨迹
-- **LangGraph 工作流（可选）**：将 `rewrite → route_or_plan → execute_tool → generate` 建模为状态图，便于观察 Agent 每一步状态流转，并保留默认手写 Agent 作为无框架兜底
+- **Tool-Using Agent**：新增轻量级 Agent 编排层，基于 LLM Planner + 启发式兜底选择 `structured_lookup`、`hybrid_search`、`hyde_hybrid_search`、`multi_query_search` 或 `vector_search` 工具；Planner 输出结构化参数（检索 query、top_n、过滤提示、复杂问题 sub_queries），并记录可解释执行轨迹
+- **LangGraph 工作流（可选）**：将 `rewrite → route_or_plan → execute_tool → generate → verify → repair` 建模为状态图，校验失败时最多触发一次补救检索并重新生成，便于观察 Agent 每一步状态流转，并保留默认手写 Agent 作为无框架兜底
 - **结构化路由**：识别查询中的实体名或"有几个/多少"类计数问题时，直接从按类型切分的知识库返回确定性答案，绕过向量检索以避免在 1000+ 相似短文档中的召回噪声
 - **多轮 Query 改写（History-aware Retrieval）**：follow-up 问题（"他的血量呢"）先由 LLM 结合历史重写成独立 query 再检索，并通过"实体白名单"后置校验拦截模型幻觉出的新实体，失败时回退原 query
 - **HyDE 假设文档改写**：LLM 先生成一段与 `embed_text` 同构的假设性条目做向量侧检索 query，原始 query 仍留给 BM25 —— 解决"描述性提问 vs 卡片化文档"的分布鸿沟
 - **Hybrid 检索（BM25 + Vector + RRF）**：jieba 中文分词后的 BM25 稀疏召回与稠密向量召回并行取 Top-20，再用 Reciprocal Rank Fusion 按排名融合，修正纯向量对专名/数值的弱召回
 - **语义检索**：路由未命中时走向量召回，基于余弦相似度 + 词法加权
 - **Reranker 两阶段精排**：先用 Bi-Encoder（或 Hybrid）粗召回 Top-20 候选，再用 Cross-Encoder 逐对精排取 Top-N
-- **Query 分解**：LLM 将复杂问题拆成 1-3 个子问题分别检索后合并去重（`--multi-query`，与 HyDE 互斥）
+- **复杂任务拆解 / Query 分解**：Planner 可为比较、多实体、多维度问题直接输出 1-3 个子问题；缺省时回退到 Query Planner，再分别检索、合并去重（旧版固定 pipeline 中 `--multi-query` 仍可单独使用）
 - **自适应检索**：调用 LLM 判断当前上下文是否充足，不足时自动扩大检索范围（3 → 8 → 15 → 全量）
 
 ### 生成与对话
 - **多轮对话**：保留对话历史，支持上下文关联的连续提问
 - **历史截断**：自动截断过长对话历史，避免 token 超限
 - **来源透明**：每次回答显示参考来源、相似度分数及 Reranker 分数
-- **句级引用（Citation / Grounding）**：每个陈述句末尾带 `[n]` 指向背景知识编号，无依据的结论强制用 `[?]` 标注，前端渲染为高亮 chip/红色警告；规则化评测脚本验证"引用编号有效率 / 数字可追溯率"
+- **句级引用与答案校验（Citation / Grounding）**：每个陈述句末尾带 `[n]` 指向背景知识编号，无依据的结论强制用 `[?]` 标注；在线 verifier 节点检查引用覆盖、引用编号有效性和数字可追溯性，失败时扩大检索上下文并重新生成，离线评测脚本量化"引用编号有效率 / 数字可追溯率"
 
 ### 工程能力
 - **向量缓存**：归一化向量持久化存储，知识库不变时跳过重复计算
@@ -116,7 +116,7 @@ python main.py --langgraph --reranker
 streamlit run app.py
 ```
 
-Web UI 默认使用 Agent 主流程，并在状态栏展示工具选择、选择理由和检索执行轨迹。侧边栏可打开"使用 LangGraph 工作流"，切换到状态图版本。
+Web UI 默认使用 Agent 主流程，并在状态栏展示工具选择、选择理由、检索执行轨迹和答案校验结果。侧边栏可打开"使用 LangGraph 工作流"，切换到状态图版本。
 
 ## 检索评测
 

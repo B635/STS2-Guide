@@ -3,13 +3,14 @@ from __future__ import annotations
 
 from typing import Dict, List, Optional, TypedDict
 
-from rag.agent import AgentConfig, AgentResult, AgentStep, plan_tool
+from rag.agent import AgentConfig, AgentResult, AgentStep, plan_tool, repair_retrieve
 from rag.chat import rag_chat
 from rag.hyde import generate_hypothetical
 from rag.query_planner import decompose_query
 from rag.query_rewriter import rewrite_query
 from rag.retriever import format_context, hybrid_retrieve, multi_query_retrieve, retrieve
 from rag.router import structured_query
+from rag.verifier import VerificationResult, format_verification_summary, verify_answer
 from rag.vector_store import VectorStore
 
 
@@ -26,10 +27,16 @@ class AgentGraphState(TypedDict, total=False):
     reranker: object
     config: AgentConfig
     retrieve_query: str
+    tool_query: str
+    planned_sub_queries: List[str]
+    tool_top_n: int
+    tool_filters: Dict
     selected_tool: str
     reason: str
     results: List[Dict]
     answer: str
+    verification: VerificationResult
+    verification_attempts: int
     steps: List[AgentStep]
 
 
@@ -79,9 +86,22 @@ def _route_or_plan_node(state: AgentGraphState) -> Dict:
         }
 
     plan = plan_tool(retrieve_query, state["client"], has_bm25=state.get("bm25_index") is not None)
+    plan_detail = f"query={plan['query']}; top_n={plan['top_n']}; filters={plan['filters']}"
+    if plan["sub_queries"]:
+        plan_detail += f"; sub_queries={' | '.join(plan['sub_queries'])}"
     return {
         "selected_tool": plan["tool"],
         "reason": plan["reason"],
+        "tool_query": plan["query"],
+        "planned_sub_queries": plan["sub_queries"],
+        "tool_top_n": plan["top_n"] or state["config"].top_n,
+        "tool_filters": plan["filters"],
+        "steps": _append_step(
+            state,
+            "tool_plan",
+            retrieve_query,
+            plan_detail,
+        ),
     }
 
 
@@ -91,7 +111,8 @@ def _next_after_route(state: AgentGraphState) -> str:
 
 def _execute_tool_node(state: AgentGraphState) -> Dict:
     cfg = state["config"]
-    query = state["retrieve_query"]
+    query = state.get("tool_query", state["retrieve_query"])
+    top_n = state.get("tool_top_n", cfg.top_n)
     docs = state["docs"]
     store = state["store"]
     model = state["model"]
@@ -100,7 +121,7 @@ def _execute_tool_node(state: AgentGraphState) -> Dict:
     tool = state.get("selected_tool", "vector_search")
 
     if tool == "multi_query_search":
-        sub_queries = decompose_query(query, state["client"])
+        sub_queries = state.get("planned_sub_queries") or decompose_query(query, state["client"])
         candidates = multi_query_retrieve(
             sub_queries,
             docs,
@@ -108,7 +129,7 @@ def _execute_tool_node(state: AgentGraphState) -> Dict:
             model,
             n_per_query=cfg.top_n,
         )
-        results = _maybe_rerank(query, candidates, reranker, cfg.top_n)
+        results = _maybe_rerank(query, candidates, reranker, top_n)
         return {
             "results": results,
             "steps": _append_step(
@@ -131,12 +152,12 @@ def _execute_tool_node(state: AgentGraphState) -> Dict:
                 vector_n=cfg.vector_n,
                 bm25_n=cfg.bm25_n,
                 rrf_k=cfg.rrf_k,
-                top_n=cfg.candidate_n if reranker is not None else cfg.top_n,
+                top_n=cfg.candidate_n if reranker is not None else top_n,
                 vector_query=vector_query,
             )
         else:
             candidates = retrieve(vector_query, docs, store, model, n=cfg.candidate_n)
-        results = _maybe_rerank(query, candidates, reranker, cfg.top_n)
+        results = _maybe_rerank(query, candidates, reranker, top_n)
         return {
             "results": results,
             "steps": _append_step(
@@ -157,9 +178,9 @@ def _execute_tool_node(state: AgentGraphState) -> Dict:
             vector_n=cfg.vector_n,
             bm25_n=cfg.bm25_n,
             rrf_k=cfg.rrf_k,
-            top_n=cfg.candidate_n if reranker is not None else cfg.top_n,
+            top_n=cfg.candidate_n if reranker is not None else top_n,
         )
-        results = _maybe_rerank(query, candidates, reranker, cfg.top_n)
+        results = _maybe_rerank(query, candidates, reranker, top_n)
         return {
             "results": results,
             "steps": _append_step(
@@ -175,9 +196,9 @@ def _execute_tool_node(state: AgentGraphState) -> Dict:
         docs,
         store,
         model,
-        n=cfg.candidate_n if reranker is not None else cfg.top_n,
+        n=cfg.candidate_n if reranker is not None else top_n,
     )
-    results = _maybe_rerank(query, candidates, reranker, cfg.top_n)
+    results = _maybe_rerank(query, candidates, reranker, top_n)
     return {
         "selected_tool": "vector_search",
         "results": results,
@@ -194,13 +215,75 @@ def _generate_node(state: AgentGraphState) -> Dict:
     results = state.get("results", [])
     context = format_context(results)
     answer = rag_chat(state["question"], context, state.get("history", []), state["client"])
+    attempts = state.get("verification_attempts", 0)
+    observation = (
+        f"Repair attempt {attempts} used {len(results)} source(s)."
+        if attempts
+        else f"Used {len(results)} source(s)."
+    )
     return {
         "answer": answer,
         "steps": _append_step(
             state,
             "grounded_generation",
             state["question"],
-            f"Used {len(results)} source(s).",
+            observation,
+        ),
+    }
+
+
+def _verify_node(state: AgentGraphState) -> Dict:
+    verification = verify_answer(state.get("answer", ""), state.get("results", []))
+    attempts = state.get("verification_attempts", 0) + 1
+    return {
+        "verification": verification,
+        "verification_attempts": attempts,
+        "steps": _append_step(
+            state,
+            "verify_answer",
+            state["question"],
+            format_verification_summary(verification),
+        ),
+    }
+
+
+def _next_after_verify(state: AgentGraphState) -> str:
+    verification = state.get("verification")
+    if verification is None or verification.passed:
+        return "end"
+    attempts = state.get("verification_attempts", 0)
+    if attempts <= state["config"].verification_max_retries:
+        return "repair"
+    return "end"
+
+
+def _repair_node(state: AgentGraphState) -> Dict:
+    if state.get("selected_tool") == "structured_lookup":
+        return {
+            "steps": _append_step(
+                state,
+                "verification_repair",
+                state["retrieve_query"],
+                "Verification failed; regenerating with existing structured result.",
+            ),
+        }
+
+    repair_tool, results, candidate_count = repair_retrieve(
+        state.get("tool_query", state["retrieve_query"]),
+        state["docs"],
+        state["store"],
+        state["model"],
+        state.get("bm25_index"),
+        state.get("reranker"),
+        state["config"],
+    )
+    return {
+        "results": results,
+        "steps": _append_step(
+            state,
+            "verification_repair",
+            state["retrieve_query"],
+            f"Verification failed; {repair_tool} returned {len(results)} result(s) from {candidate_count} candidate(s).",
         ),
     }
 
@@ -223,6 +306,8 @@ def build_langgraph_agent():
     graph.add_node("route_or_plan", _route_or_plan_node)
     graph.add_node("execute_tool", _execute_tool_node)
     graph.add_node("generate", _generate_node)
+    graph.add_node("verify", _verify_node)
+    graph.add_node("repair", _repair_node)
 
     graph.add_edge(START, "rewrite")
     graph.add_edge("rewrite", "route_or_plan")
@@ -235,7 +320,16 @@ def build_langgraph_agent():
         },
     )
     graph.add_edge("execute_tool", "generate")
-    graph.add_edge("generate", END)
+    graph.add_edge("generate", "verify")
+    graph.add_conditional_edges(
+        "verify",
+        _next_after_verify,
+        {
+            "repair": "repair",
+            "end": END,
+        },
+    )
+    graph.add_edge("repair", "generate")
     return graph.compile()
 
 
@@ -266,6 +360,7 @@ def run_langgraph_agent(
         "bm25_index": bm25_index,
         "reranker": reranker,
         "config": cfg,
+        "verification_attempts": 0,
         "steps": [],
     })
     return AgentResult(
@@ -274,5 +369,6 @@ def run_langgraph_agent(
         retrieve_query=final_state.get("retrieve_query", question),
         selected_tool=final_state.get("selected_tool", "vector_search"),
         reason=final_state.get("reason", "LangGraph workflow completed."),
+        verification=final_state.get("verification"),
         steps=final_state.get("steps", []),
     )
