@@ -9,3 +9,4 @@ __pycache__/
 embeddings_normalized.npy
 .claude/
 CLAUDE.md
+.venv/

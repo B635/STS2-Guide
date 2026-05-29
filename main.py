@@ -16,6 +16,8 @@ from rag.query_planner import decompose_query
 from rag.hyde import generate_hypothetical
 from rag.query_rewriter import rewrite_query
 from rag.errors import handle_api_error, handle_file_error
+from rag.agent import AgentConfig, format_agent_trace, run_agent
+from rag.langgraph_agent import run_langgraph_agent
 
 
 def main():
@@ -24,9 +26,13 @@ def main():
     parser.add_argument("--multi-query", action="store_true", help="启用 Query 分解 + 多次检索")
     parser.add_argument("--hybrid", action="store_true", help="启用 Hybrid 检索（BM25 + 向量 RRF 融合）")
     parser.add_argument("--hyde", action="store_true", help="启用 HyDE：LLM 生成假设文档给向量侧用（与 --multi-query 互斥）")
+    parser.add_argument("--legacy", action="store_true", help="使用旧版固定 RAG pipeline（默认启用 Tool-Using Agent）")
+    parser.add_argument("--langgraph", action="store_true", help="使用 LangGraph 状态图执行 Agent 工作流")
     args = parser.parse_args()
 
-    if args.hyde and args.multi_query:
+    use_agent = not args.legacy
+
+    if args.legacy and args.hyde and args.multi_query:
         print("⚠️  --hyde 与 --multi-query 互斥（都会改写 query），请只开一个")
         return
 
@@ -47,19 +53,21 @@ def main():
         print("✓ Reranker 已启用")
 
     bm25_idx = None
-    if args.hybrid:
+    if args.hybrid or use_agent:
         from rag.bm25 import build_bm25_index
         bm25_idx = build_bm25_index(docs)
-        print("✓ Hybrid 检索已启用（BM25 + 向量 RRF）")
+        print("✓ BM25 索引已构建（Hybrid/Agent 可用）")
 
     history = []
     print("杀戮尖塔2攻略助手已启动，输入'quit'退出")
     mode_parts = []
-    if args.multi_query:
+    if use_agent:
+        mode_parts.append("LangGraph Agent" if args.langgraph else "Tool-Using Agent")
+    if args.legacy and args.multi_query:
         mode_parts.append("Query 分解")
-    if args.hyde:
+    if args.legacy and args.hyde:
         mode_parts.append("HyDE 改写")
-    if args.hybrid:
+    if args.legacy and args.hybrid:
         mode_parts.append("Hybrid 检索")
     mode_parts.append("Reranker 精排" if args.reranker else "向量检索")
     print(f"模式：{' + '.join(mode_parts)}")
@@ -74,6 +82,32 @@ def main():
             continue
 
         try:
+            if use_agent:
+                runner = run_langgraph_agent if args.langgraph else run_agent
+                agent_result = runner(
+                    question,
+                    history,
+                    docs,
+                    items,
+                    index,
+                    doc_embeddings,
+                    model,
+                    client,
+                    bm25_index=bm25_idx,
+                    reranker=reranker,
+                    config=AgentConfig(top_n=RETRIEVE_TOP_N, candidate_n=RERANKER_CANDIDATE_N),
+                )
+                answer = agent_result.answer
+                results = agent_result.results
+                print(format_agent_trace(agent_result))
+
+                history.append({"role": "user", "content": question})
+                history.append({"role": "assistant", "content": answer})
+
+                print(f"\n回答：{answer}")
+                print(f"\n参考来源：\n{format_sources(results)}")
+                continue
+
             # History-aware query rewriting: follow-up questions like "他的血量呢"
             # have no entity for BM25/vector to latch onto. Rewrite into a
             # standalone query before retrieval; generation still uses the

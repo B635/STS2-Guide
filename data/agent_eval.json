@@ -1,0 +1,29 @@
+{
+  "cases": [
+    {
+      "query": "有多少角色",
+      "expected_tool": "structured_lookup",
+      "expected_any": [["共有", "角色"]]
+    },
+    {
+      "query": "铁甲战士初始血量多少",
+      "expected_tool": "structured_lookup",
+      "expected_any": [["铁甲战士", "初始血量"]]
+    },
+    {
+      "query": "有哪些药水能加力量",
+      "expected_tool": "multi_query_search",
+      "expected_any": [["药水", "力量"]]
+    },
+    {
+      "query": "有没有适合回血的药水",
+      "expected_tool": "hyde_hybrid_search",
+      "expected_any": [["药水"]]
+    },
+    {
+      "query": "单段伤害最高的卡是哪张",
+      "expected_tool": "hybrid_search",
+      "expected_any": [["卡牌", "伤害"]]
+    }
+  ]
+}

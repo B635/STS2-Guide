@@ -1,6 +1,6 @@
 # STS2-Guide：杀戮尖塔2 RAG 攻略助手
 
-基于 **RAG（Retrieval-Augmented Generation）** 架构的游戏攻略问答系统。用户用自然语言提问，系统从 1048 条结构化知识中检索相关内容，经过"结构化路由 → HyDE 改写（可选） → Hybrid 检索（BM25 + 向量 RRF 融合） → Reranker 精排"四级管线后交由 LLM **带引用**生成回答（每句标注 `[n]`，不可追溯的结论强制标 `[?]`）。
+基于 **RAG（Retrieval-Augmented Generation）+ Tool-Using Agent** 架构的游戏攻略问答系统。用户用自然语言提问，系统从 1048 条结构化知识中检索相关内容，可经过"结构化路由 → HyDE 改写（可选） → Hybrid 检索（BM25 + 向量 RRF 融合） → Reranker 精排"管线后交由 LLM **带引用**生成回答（每句标注 `[n]`，不可追溯的结论强制标 `[?]`）。Agent 模式下，系统会先根据问题类型自动选择结构化查询、Hybrid 检索、HyDE 增强或 Query 分解等工具，再执行检索和生成；同时提供可选 **LangGraph** 状态图实现，将 Query 改写、路由/规划、工具执行和带引用生成封装为可观测工作流。
 
 ## 技术栈
 
@@ -19,6 +19,8 @@
 ## 核心功能
 
 ### 检索能力
+- **Tool-Using Agent**：新增轻量级 Agent 编排层，基于 LLM Planner + 启发式兜底选择 `structured_lookup`、`hybrid_search`、`hyde_hybrid_search`、`multi_query_search` 或 `vector_search` 工具，并输出可解释执行轨迹
+- **LangGraph 工作流（可选）**：将 `rewrite → route_or_plan → execute_tool → generate` 建模为状态图，便于观察 Agent 每一步状态流转，并保留默认手写 Agent 作为无框架兜底
 - **结构化路由**：识别查询中的实体名或"有几个/多少"类计数问题时，直接从按类型切分的知识库返回确定性答案，绕过向量检索以避免在 1000+ 相似短文档中的召回噪声
 - **多轮 Query 改写（History-aware Retrieval）**：follow-up 问题（"他的血量呢"）先由 LLM 结合历史重写成独立 query 再检索，并通过"实体白名单"后置校验拦截模型幻觉出的新实体，失败时回退原 query
 - **HyDE 假设文档改写**：LLM 先生成一段与 `embed_text` 同构的假设性条目做向量侧检索 query，原始 query 仍留给 BM25 —— 解决"描述性提问 vs 卡片化文档"的分布鸿沟
@@ -54,6 +56,13 @@ pip install -r requirements.txt
 pip install streamlit
 ```
 
+macOS 环境如遇 `faiss-cpu` 源码编译失败，可优先安装二进制 wheel：
+
+```bash
+pip install --prefer-binary "faiss-cpu>=1.8.0"
+pip install -r requirements.txt
+```
+
 ### 2. 配置 API Key
 
 拷贝 `.env.example` 为 `.env` 并填入你的 DeepSeek key：
@@ -70,7 +79,7 @@ python scripts/fetch_knowledge.py
 
 ### 4. 运行
 
-**CLI 模式**（基础检索 + 自适应）：
+**CLI 模式**（默认 Tool-Using Agent，自动选择检索工具）：
 ```bash
 python main.py
 ```
@@ -90,10 +99,24 @@ python main.py --hybrid --reranker
 python main.py --hyde --hybrid --reranker
 ```
 
+**CLI 模式**（Agent + Reranker 精排，推荐交互配置）：
+```bash
+python main.py --reranker
+```
+
+**CLI 模式**（LangGraph Agent 状态图）：
+```bash
+python main.py --langgraph --reranker
+```
+
+如需对照旧版固定 pipeline，可使用 `--legacy` 搭配 `--hybrid`、`--hyde`、`--multi-query` 等参数。
+
 **Web UI 模式**（Streamlit，支持所有功能动态切换）：
 ```bash
 streamlit run app.py
 ```
+
+Web UI 默认使用 Agent 主流程，并在状态栏展示工具选择、选择理由和检索执行轨迹。侧边栏可打开"使用 LangGraph 工作流"，切换到状态图版本。
 
 ## 检索评测
 
