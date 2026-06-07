@@ -19,7 +19,7 @@
 ## 核心功能
 
 ### 检索能力
-- **Tool-Using Agent**：新增轻量级 Agent 编排层，基于 LLM Planner + 启发式兜底选择 `structured_lookup`、`hybrid_search`、`hyde_hybrid_search`、`multi_query_search` 或 `vector_search` 工具；Planner 输出结构化参数（检索 query、top_n、过滤提示、复杂问题 sub_queries），并记录可解释执行轨迹
+- **Tool-Using Agent / Function Calling**：新增轻量级 Agent 编排层，优先通过 OpenAI-compatible `tools/tool_calls` 让 LLM 在 `hybrid_search`、`hyde_hybrid_search`、`multi_query_search`、`vector_search` 中选择工具并填写结构化参数；若模型接口不支持 tool calls，则自动回退到 JSON Planner + 启发式兜底。Planner 输出检索 query、top_n、过滤提示、复杂问题 sub_queries，并记录可解释执行轨迹
 - **LangGraph 工作流（可选）**：将 `rewrite → route_or_plan → execute_tool → generate → verify → repair` 建模为状态图，校验失败时最多触发一次补救检索并重新生成，便于观察 Agent 每一步状态流转，并保留默认手写 Agent 作为无框架兜底
 - **结构化路由**：识别查询中的实体名或"有几个/多少"类计数问题时，直接从按类型切分的知识库返回确定性答案，绕过向量检索以避免在 1000+ 相似短文档中的召回噪声
 - **多轮 Query 改写（History-aware Retrieval）**：follow-up 问题（"他的血量呢"）先由 LLM 结合历史重写成独立 query 再检索，并通过"实体白名单"后置校验拦截模型幻觉出的新实体，失败时回退原 query

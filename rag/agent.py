@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from config import (
     BM25_TOP_N,
@@ -42,6 +42,113 @@ AGENT_TOOLS = {
     "vector_search",
 }
 PLANNER_TOOLS = AGENT_TOOLS - {"structured_lookup"}
+AGENT_FUNCTION_TOOLS = [
+    {
+        "type": "function",
+        "function": {
+            "name": "hybrid_search",
+            "description": "Default factual retrieval over the STS2 knowledge base using BM25 + vector search + RRF.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {"type": "string", "description": "Search query for the retrieval tool."},
+                    "top_n": {"type": "integer", "description": "Number of final documents to return, 1-10."},
+                    "filters": {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": ["", "cards", "relics", "potions", "monsters", "characters"],
+                            }
+                        },
+                    },
+                    "reason": {"type": "string", "description": "Brief reason for choosing this tool."},
+                },
+                "required": ["query", "reason"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "hyde_hybrid_search",
+            "description": "Retrieval for descriptive or open-ended questions where user wording may differ from knowledge entries.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {"type": "string", "description": "Search query used to generate the hypothetical document."},
+                    "top_n": {"type": "integer", "description": "Number of final documents to return, 1-10."},
+                    "filters": {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": ["", "cards", "relics", "potions", "monsters", "characters"],
+                            }
+                        },
+                    },
+                    "reason": {"type": "string", "description": "Brief reason for choosing this tool."},
+                },
+                "required": ["query", "reason"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "multi_query_search",
+            "description": "Retrieval for comparison, multi-entity, multi-dimensional, or strategy questions.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {"type": "string", "description": "Main search query."},
+                    "top_n": {"type": "integer", "description": "Number of final documents to return, 1-10."},
+                    "filters": {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": ["", "cards", "relics", "potions", "monsters", "characters"],
+                            }
+                        },
+                    },
+                    "sub_queries": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": f"Independent sub-queries for complex questions, at most {MAX_SUB_QUERIES}.",
+                    },
+                    "reason": {"type": "string", "description": "Brief reason for choosing this tool."},
+                },
+                "required": ["query", "reason"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "vector_search",
+            "description": "Semantic vector-search fallback when BM25/hybrid search is unavailable.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {"type": "string", "description": "Search query for vector retrieval."},
+                    "top_n": {"type": "integer", "description": "Number of final documents to return, 1-10."},
+                    "filters": {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": ["", "cards", "relics", "potions", "monsters", "characters"],
+                            }
+                        },
+                    },
+                    "reason": {"type": "string", "description": "Brief reason for choosing this tool."},
+                },
+                "required": ["query", "reason"],
+            },
+        },
+    },
+]
 
 AGENT_PLANNER_PROMPT = """你是杀戮尖塔2 RAG 系统的工具选择器。
 
@@ -164,6 +271,67 @@ def _normalize_plan(payload: Dict, query: str, fallback_tool: str, has_bm25: boo
     }
 
 
+def _payload_from_tool_call(tool_call: Any) -> Optional[Dict]:
+    function = getattr(tool_call, "function", None)
+    if function is None:
+        return None
+
+    tool_name = str(getattr(function, "name", "")).strip()
+    raw_args = getattr(function, "arguments", "{}") or "{}"
+    try:
+        args = json.loads(raw_args)
+    except (TypeError, json.JSONDecodeError):
+        args = {}
+    if not isinstance(args, dict):
+        args = {}
+
+    args["tool"] = tool_name
+    return args
+
+
+def _plan_with_function_call(query: str, client) -> Optional[Dict]:
+    response = client.chat.completions.create(
+        model=DEEPSEEK_MODEL,
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "你是杀戮尖塔2 RAG 系统的工具选择器。结构化查询已经由系统规则提前处理，"
+                    "不要选择 structured_lookup。请根据用户问题选择一个最合适的检索工具。"
+                ),
+            },
+            {
+                "role": "user",
+                "content": (
+                    "根据问题选择检索工具并填写函数参数。"
+                    f"复杂问题最多拆成 {MAX_SUB_QUERIES} 个 sub_queries。\n"
+                    f"用户问题：{query}"
+                ),
+            },
+        ],
+        tools=AGENT_FUNCTION_TOOLS,
+        tool_choice="auto",
+    )
+    message = response.choices[0].message
+    tool_calls = getattr(message, "tool_calls", None) or []
+    if not tool_calls:
+        return None
+    return _payload_from_tool_call(tool_calls[0])
+
+
+def _plan_with_json_prompt(query: str, client) -> Dict:
+    response = client.chat.completions.create(
+        model=DEEPSEEK_MODEL,
+        messages=[{"role": "user", "content": AGENT_PLANNER_PROMPT.format(
+            query=query,
+            max_sub_queries=MAX_SUB_QUERIES,
+        )}],
+        response_format={"type": "json_object"},
+    )
+    payload = json.loads(response.choices[0].message.content)
+    return payload if isinstance(payload, dict) else {}
+
+
 def plan_tool(query: str, client, has_bm25: bool) -> Dict:
     """Choose one retrieval tool. Falls back to heuristics on any LLM issue."""
     fallback = _heuristic_tool(query, has_bm25)
@@ -177,15 +345,9 @@ def plan_tool(query: str, client, has_bm25: bool) -> Dict:
         return fallback_plan
 
     try:
-        response = client.chat.completions.create(
-            model=DEEPSEEK_MODEL,
-            messages=[{"role": "user", "content": AGENT_PLANNER_PROMPT.format(
-                query=query,
-                max_sub_queries=MAX_SUB_QUERIES,
-            )}],
-            response_format={"type": "json_object"},
-        )
-        payload = json.loads(response.choices[0].message.content)
+        payload = _plan_with_function_call(query, client)
+        if payload is None:
+            payload = _plan_with_json_prompt(query, client)
         return _normalize_plan(payload, query, fallback, has_bm25)
     except Exception:
         return _normalize_plan(
