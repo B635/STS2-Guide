@@ -33,6 +33,14 @@ def is_substantive(sentence: str) -> bool:
     stripped = sentence.strip("*- |：:#").strip()
     if not stripped:
         return False
+    if sentence.lstrip().startswith("#"):
+        return False
+    if sentence.strip().startswith("**") and sentence.strip().endswith("**"):
+        return False
+    if stripped.startswith("基于当前检索到的证据"):
+        return False
+    if stripped.endswith("如下") or stripped.endswith("如下："):
+        return False
     if re.fullmatch(r"[\s\-\|=:]+", stripped):
         return False
     return len(stripped) >= 4

@@ -10,3 +10,5 @@ embeddings_normalized.npy
 .claude/
 CLAUDE.md
 .venv/
+frontend/node_modules/
+frontend/dist/

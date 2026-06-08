@@ -30,7 +30,7 @@ from rag.retriever import (
     multi_query_retrieve,
     retrieve,
 )
-from rag.router import structured_query
+from rag.router import STRATEGY_KEYWORDS, structured_query
 from rag.verifier import VerificationResult, format_verification_summary, verify_answer
 from rag.vector_store import VectorStore
 
@@ -43,6 +43,14 @@ AGENT_TOOLS = {
     "vector_search",
 }
 PLANNER_TOOLS = AGENT_TOOLS - {"structured_lookup"}
+
+ROLE_QUERY_ALIASES = {
+    "故障机器人": "defect",
+    "铁甲战士": "ironclad",
+    "亡灵契约师": "necrobinder",
+    "储君": "regent",
+    "静默猎手": "silent",
+}
 
 AGENT_PLANNER_PROMPT = """你是杀戮尖塔2 RAG 系统的工具选择器。
 
@@ -107,6 +115,85 @@ def _heuristic_tool(query: str, has_bm25: bool) -> str:
     if any(kw in query for kw in hyde_keywords):
         return "hyde_hybrid_search"
     return "hybrid_search"
+
+
+def expand_query_aliases(query: str) -> str:
+    """Add internal character color tags used by card/relic docs."""
+    additions = [alias for name, alias in ROLE_QUERY_ALIASES.items() if name in query and alias not in query.lower()]
+    if not additions:
+        return query
+    return f"{query} {' '.join(additions)}"
+
+
+def _role_aliases_in_query(query: str) -> List[str]:
+    lowered = query.lower()
+    return [
+        alias
+        for name, alias in ROLE_QUERY_ALIASES.items()
+        if name in query or alias in lowered
+    ]
+
+
+def _is_strategy_query(query: str) -> bool:
+    return any(keyword in query for keyword in STRATEGY_KEYWORDS)
+
+
+def role_strategy_context(query: str, items: List[Dict], limit: int = 8) -> List[Dict]:
+    """Return deterministic role-related context for open strategy questions."""
+    aliases = set(_role_aliases_in_query(query))
+    if not aliases or not _is_strategy_query(query):
+        return []
+
+    preferred_terms = ("仆从", "生成", "无色", "力量", "格挡", "消耗", "抽", "易伤", "虚弱")
+    candidates = []
+    for idx, item in enumerate(items):
+        text = item.get("embed_text", "")
+        item_type = item.get("_type", "")
+        color = str(item.get("color", "")).lower()
+        item_id = str(item.get("id", "")).lower()
+        name = item.get("name", "")
+
+        score = 0.0
+        if item_type == "characters" and item_id.lower() in aliases:
+            score += 4.0
+        if color in aliases:
+            score += 2.0
+            if item_type == "cards":
+                score += 0.8
+            if item_type == "relics":
+                score += 0.4
+        if "regent" in aliases and item_type == "cards" and "Minion" in text:
+            score += 2.4
+        if name in query:
+            score += 1.0
+        for term in preferred_terms:
+            if term in text:
+                score += 0.35
+
+        if score > 0:
+            candidates.append({
+                "text": text,
+                "score": score,
+                "index": idx,
+                "source": "role_strategy_context",
+            })
+
+    candidates.sort(key=lambda row: row["score"], reverse=True)
+    return candidates[:limit]
+
+
+def merge_results(*result_lists: List[Dict]) -> List[Dict]:
+    merged: Dict[int, Dict] = {}
+    order = 0
+    for results in result_lists:
+        for row in results:
+            idx = int(row.get("index", -1))
+            key = idx if idx >= 0 else -(order + 1)
+            order += 1
+            current = merged.get(key)
+            if current is None or float(row.get("score", 0.0)) > float(current.get("score", 0.0)):
+                merged[key] = row
+    return sorted(merged.values(), key=lambda row: float(row.get("score", 0.0)), reverse=True)
 
 
 def _clean_sub_queries(sub_queries, fallback_query: str) -> List[str]:
@@ -312,6 +399,7 @@ def run_agent(
     tool_query = ""
     planned_sub_queries: List[str] = []
     selected_top_n = cfg.top_n
+    role_context: List[Dict] = []
 
     retrieve_query = rewrite_query(question, history, client, index)
     if retrieve_query != question:
@@ -332,12 +420,27 @@ def run_agent(
             f"Returned {len(results)} structured result(s).",
         ))
     else:
-        plan = plan_tool(retrieve_query, client, has_bm25=bm25_index is not None)
+        planner_query = expand_query_aliases(retrieve_query)
+        if planner_query != retrieve_query:
+            steps.append(AgentStep(
+                "query_alias_expand",
+                retrieve_query,
+                f"Expanded for retrieval: {planner_query}",
+            ))
+        plan = plan_tool(planner_query, client, has_bm25=bm25_index is not None)
         tool = plan["tool"]
         reason = plan["reason"]
         tool_query = plan["query"]
         planned_sub_queries = plan["sub_queries"]
         selected_top_n = plan["top_n"] or cfg.top_n
+        role_context = role_strategy_context(tool_query, items)
+        if role_context:
+            selected_top_n = max(selected_top_n, min(len(role_context), 8))
+            steps.append(AgentStep(
+                "role_strategy_context",
+                tool_query,
+                f"Added {len(role_context)} role-specific card/relic context item(s).",
+            ))
         plan_detail = f"query={tool_query}; top_n={plan['top_n']}; filters={plan['filters']}"
         if planned_sub_queries:
             plan_detail += f"; sub_queries={' | '.join(planned_sub_queries)}"
@@ -358,6 +461,7 @@ def run_agent(
             model,
             n_per_query=MULTI_QUERY_PER_SUB_N,
         )
+        candidates = merge_results(role_context, candidates)
         results = _maybe_rerank(tool_query, candidates, reranker, selected_top_n)
         steps.append(AgentStep(
             "multi_query_search",
@@ -381,6 +485,7 @@ def run_agent(
             )
         else:
             candidates = retrieve(vector_query, docs, store, model, n=cfg.candidate_n)
+        candidates = merge_results(role_context, candidates)
         results = _maybe_rerank(tool_query, candidates, reranker, selected_top_n)
         steps.append(AgentStep(
             "hyde_hybrid_search",
@@ -399,6 +504,7 @@ def run_agent(
             rrf_k=cfg.rrf_k,
             top_n=cfg.candidate_n if reranker is not None else selected_top_n,
         )
+        candidates = merge_results(role_context, candidates)
         results = _maybe_rerank(tool_query, candidates, reranker, selected_top_n)
         steps.append(AgentStep(
             "hybrid_search",
@@ -413,6 +519,7 @@ def run_agent(
             model,
             n=cfg.candidate_n if reranker is not None else selected_top_n,
         )
+        candidates = merge_results(role_context, candidates)
         results = _maybe_rerank(tool_query or retrieve_query, candidates, reranker, selected_top_n)
         tool = "vector_search"
         steps.append(AgentStep(
@@ -447,6 +554,7 @@ def run_agent(
                 reranker,
                 cfg,
             )
+            repair_results = merge_results(role_context, repair_results)[:max(cfg.repair_top_n, selected_top_n)]
             results = repair_results
             repair_observation = (
                 f"Verification failed; {repair_tool} returned "

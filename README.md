@@ -12,9 +12,10 @@
 | 融合策略 | Reciprocal Rank Fusion (k=60) | 只用排名不用分数，天然解决 BM25 与余弦尺度不可比的问题 |
 | 向量索引 | FAISS (IndexFlatIP / IndexIVFFlat) | 通过 VectorStore 抽象层封装，策略可切换 |
 | 生成模型 | DeepSeek API | OpenAI 兼容接口，支持中文 |
-| Web UI | Streamlit | 交互式聊天界面，支持参数动态调整 |
+| Web UI | Vue 3 + Vite | 前后端分离聊天界面，展示工具轨迹、引用来源和校验结果 |
+| API 服务 | FastAPI | 将 Agent 能力封装为 `/chat` 接口，供前端或外部系统调用 |
 | 知识库 | 按类型结构化 JSON（1048 条，含 `embed_text`） | 通过 Spire Codex API 自动拉取 |
-| 语言 | Python 3.9（推荐 conda 虚拟环境） | |
+| 语言 | Python 3.9（推荐 conda 虚拟环境） + Vue 3 | |
 
 ## 核心功能
 
@@ -37,6 +38,7 @@
 - **句级引用与答案校验（Citation / Grounding）**：每个陈述句末尾带 `[n]` 指向背景知识编号，无依据的结论强制用 `[?]` 标注；在线 verifier 节点检查引用覆盖、引用编号有效性和数字可追溯性，失败时扩大检索上下文并重新生成，离线评测脚本量化"引用编号有效率 / 数字可追溯率"
 
 ### 工程能力
+- **FastAPI + Vue 前后端分离**：`api.py` 将 `run_agent` / `run_langgraph_agent` 封装为标准 `/chat` 接口，Vue 前端负责聊天交互、参数控制、工具轨迹、引用来源和 Verifier 结果展示
 - **向量缓存**：归一化向量持久化存储，知识库不变时跳过重复计算
 - **知识库自动更新**：`fetch_knowledge.py` 从公开 API 自动拉取最新游戏数据
 - **量化评测体系**：53 条标注测试集（含开放类问题），支持 Hit@K、MRR 指标评测及 Baseline/Reranker/Router 对比
@@ -52,8 +54,6 @@
 conda create -n sts2 python=3.9 -y
 conda activate sts2
 pip install -r requirements.txt
-# Web UI 额外需要 Streamlit
-pip install streamlit
 ```
 
 macOS 环境如遇 `faiss-cpu` 源码编译失败，可优先安装二进制 wheel：
@@ -78,6 +78,24 @@ python scripts/fetch_knowledge.py
 ```
 
 ### 4. 运行
+
+**Web 应用模式**（推荐，FastAPI + Vue 前后端分离）：
+
+启动后端：
+```bash
+uvicorn api:app --reload --host 127.0.0.1 --port 8000
+```
+
+启动前端：
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+浏览器打开 Vite 输出的地址，默认是 `http://127.0.0.1:5173`。Vue 前端会请求 FastAPI 的 `/chat` 接口，并展示回答、引用来源、Agent 工具选择轨迹和 Verifier 结果。
+
+Web 前端默认关闭 Reranker，以避免首次提问时下载 Cross-Encoder 模型造成长时间等待；需要最高检索精度时可在侧边栏手动开启。
 
 **CLI 模式**（默认 Tool-Using Agent，自动选择检索工具）：
 ```bash
@@ -111,12 +129,13 @@ python main.py --langgraph --reranker
 
 如需对照旧版固定 pipeline，可使用 `--legacy` 搭配 `--hybrid`、`--hyde`、`--multi-query` 等参数。
 
-**Web UI 模式**（Streamlit，支持所有功能动态切换）：
+**Legacy Streamlit Demo**（保留用于快速本地演示）：
 ```bash
+pip install streamlit
 streamlit run app.py
 ```
 
-Web UI 默认使用 Agent 主流程，并在状态栏展示工具选择、选择理由、检索执行轨迹和答案校验结果。侧边栏可打开"使用 LangGraph 工作流"，切换到状态图版本。
+主 Web 入口已替换为 Vue + FastAPI。Streamlit 版本仍可用于快速调试和对照展示。
 
 ## 检索评测
 

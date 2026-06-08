@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import Dict, List, Optional, TypedDict
 
-from rag.agent import AgentConfig, AgentResult, AgentStep, plan_tool, repair_retrieve
+from rag.agent import AgentConfig, AgentResult, AgentStep, expand_query_aliases, plan_tool, repair_retrieve
 from rag.chat import rag_chat
 from rag.hyde import generate_hypothetical
 from rag.query_planner import decompose_query
@@ -85,7 +85,17 @@ def _route_or_plan_node(state: AgentGraphState) -> Dict:
             ),
         }
 
-    plan = plan_tool(retrieve_query, state["client"], has_bm25=state.get("bm25_index") is not None)
+    planner_query = expand_query_aliases(retrieve_query)
+    steps = state.get("steps", [])
+    if planner_query != retrieve_query:
+        steps = _append_step(
+            state,
+            "query_alias_expand",
+            retrieve_query,
+            f"Expanded for retrieval: {planner_query}",
+        )
+
+    plan = plan_tool(planner_query, state["client"], has_bm25=state.get("bm25_index") is not None)
     plan_detail = f"query={plan['query']}; top_n={plan['top_n']}; filters={plan['filters']}"
     if plan["sub_queries"]:
         plan_detail += f"; sub_queries={' | '.join(plan['sub_queries'])}"
@@ -97,9 +107,9 @@ def _route_or_plan_node(state: AgentGraphState) -> Dict:
         "tool_top_n": plan["top_n"] or state["config"].top_n,
         "tool_filters": plan["filters"],
         "steps": _append_step(
-            state,
+            {**state, "steps": steps},
             "tool_plan",
-            retrieve_query,
+            planner_query,
             plan_detail,
         ),
     }

@@ -11,6 +11,20 @@ from rag.knowledge import ENTITY_TYPES
 
 
 COUNT_KEYWORDS = ("几个", "多少", "数量", "几位", "几名", "几种", "几张")
+STRATEGY_KEYWORDS = (
+    "怎么玩",
+    "如何玩",
+    "打法",
+    "玩法",
+    "攻略",
+    "思路",
+    "策略",
+    "搭配",
+    "推荐",
+    "强在哪",
+    "怎么打",
+    "适合",
+)
 TYPE_LABEL = {
     "characters": "角色",
     "cards": "卡牌",
@@ -88,6 +102,9 @@ def structured_query(query: str, index: Dict, items: List[Dict]) -> Optional[Lis
         return [_count_result(count_type, index)]
 
     if not matches:
+        return None
+
+    if any(keyword in query for keyword in STRATEGY_KEYWORDS):
         return None
 
     return _entity_results(matches)
