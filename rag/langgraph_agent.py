@@ -3,7 +3,16 @@ from __future__ import annotations
 
 from typing import Dict, List, Optional, TypedDict
 
-from rag.agent import AgentConfig, AgentResult, AgentStep, expand_query_aliases, plan_tool, repair_retrieve
+from rag.agent import (
+    AgentConfig,
+    AgentResult,
+    AgentStep,
+    expand_query_aliases,
+    merge_results,
+    plan_tool,
+    repair_retrieve,
+    role_strategy_context,
+)
 from rag.chat import rag_chat
 from rag.hyde import generate_hypothetical
 from rag.query_planner import decompose_query
@@ -31,6 +40,7 @@ class AgentGraphState(TypedDict, total=False):
     planned_sub_queries: List[str]
     tool_top_n: int
     tool_filters: Dict
+    role_context: List[Dict]
     selected_tool: str
     reason: str
     results: List[Dict]
@@ -96,6 +106,17 @@ def _route_or_plan_node(state: AgentGraphState) -> Dict:
         )
 
     plan = plan_tool(planner_query, state["client"], has_bm25=state.get("bm25_index") is not None)
+    role_context = role_strategy_context(plan["query"], state["items"])
+    tool_top_n = plan["top_n"] or state["config"].top_n
+    if role_context:
+        tool_top_n = max(tool_top_n, min(len(role_context), 8))
+        steps = _append_step(
+            {**state, "steps": steps},
+            "role_strategy_context",
+            plan["query"],
+            f"Added {len(role_context)} role-specific card/relic context item(s).",
+        )
+
     plan_detail = f"query={plan['query']}; top_n={plan['top_n']}; filters={plan['filters']}"
     if plan["sub_queries"]:
         plan_detail += f"; sub_queries={' | '.join(plan['sub_queries'])}"
@@ -104,8 +125,9 @@ def _route_or_plan_node(state: AgentGraphState) -> Dict:
         "reason": plan["reason"],
         "tool_query": plan["query"],
         "planned_sub_queries": plan["sub_queries"],
-        "tool_top_n": plan["top_n"] or state["config"].top_n,
+        "tool_top_n": tool_top_n,
         "tool_filters": plan["filters"],
+        "role_context": role_context,
         "steps": _append_step(
             {**state, "steps": steps},
             "tool_plan",
@@ -129,6 +151,7 @@ def _execute_tool_node(state: AgentGraphState) -> Dict:
     bm25_index = state.get("bm25_index")
     reranker = state.get("reranker")
     tool = state.get("selected_tool", "vector_search")
+    role_context = state.get("role_context", [])
 
     if tool == "multi_query_search":
         sub_queries = state.get("planned_sub_queries") or decompose_query(query, state["client"])
@@ -139,6 +162,7 @@ def _execute_tool_node(state: AgentGraphState) -> Dict:
             model,
             n_per_query=cfg.top_n,
         )
+        candidates = merge_results(role_context, candidates)
         results = _maybe_rerank(query, candidates, reranker, top_n)
         return {
             "results": results,
@@ -167,6 +191,7 @@ def _execute_tool_node(state: AgentGraphState) -> Dict:
             )
         else:
             candidates = retrieve(vector_query, docs, store, model, n=cfg.candidate_n)
+        candidates = merge_results(role_context, candidates)
         results = _maybe_rerank(query, candidates, reranker, top_n)
         return {
             "results": results,
@@ -190,6 +215,7 @@ def _execute_tool_node(state: AgentGraphState) -> Dict:
             rrf_k=cfg.rrf_k,
             top_n=cfg.candidate_n if reranker is not None else top_n,
         )
+        candidates = merge_results(role_context, candidates)
         results = _maybe_rerank(query, candidates, reranker, top_n)
         return {
             "results": results,
@@ -208,6 +234,7 @@ def _execute_tool_node(state: AgentGraphState) -> Dict:
         model,
         n=cfg.candidate_n if reranker is not None else top_n,
     )
+    candidates = merge_results(role_context, candidates)
     results = _maybe_rerank(query, candidates, reranker, top_n)
     return {
         "selected_tool": "vector_search",
@@ -287,6 +314,9 @@ def _repair_node(state: AgentGraphState) -> Dict:
         state.get("reranker"),
         state["config"],
     )
+    role_context = state.get("role_context", [])
+    if role_context:
+        results = merge_results(role_context, results)[:max(state["config"].repair_top_n, state.get("tool_top_n", state["config"].top_n))]
     return {
         "results": results,
         "steps": _append_step(

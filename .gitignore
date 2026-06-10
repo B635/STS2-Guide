@@ -1,4 +1,5 @@
 .env
+.DS_Store
 models/
 embeddings.npy
 docs_hash.txt
