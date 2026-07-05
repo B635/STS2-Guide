@@ -1,0 +1,953 @@
+{
+  "schema_version": 1,
+  "description": "固定选牌场景评测集，使用 data/knowledge.json 中的真实稳定 ID。预期结论来自产品规则和场景理由，不来自当前算法输出。",
+  "scenarios": [
+    {
+      "id": "output_gap_001",
+      "category": "deck_function_gap",
+      "category_label": "牌组功能缺口",
+      "description": "牌组严重缺乏输出时，伤害牌应获得 attack_coverage 加分",
+      "rationale": "牌组中 6 张防御和 1 张痛击，伤害牌占比仅约 14%，远低于 30% 阈值。Anger 应获得 attack_coverage。",
+      "state": {
+        "character": "IRONCLAD",
+        "ascension": 0,
+        "act": 1,
+        "floor": 6,
+        "energy": 3,
+        "hp": 72,
+        "max_hp": 80,
+        "deck": [
+          {"card": "STRIKE_IRONCLAD", "count": 1},
+          {"card": "DEFEND_IRONCLAD", "count": 5},
+          {"card": "BASH", "count": 1}
+        ],
+        "relics": ["BURNING_BLOOD"]
+      },
+      "options": [
+        {"card": "ANGER", "upgrades": 0},
+        {"card": "DEFEND_IRONCLAD", "upgrades": 0},
+        {"card": "SHRUG_IT_OFF", "upgrades": 0}
+      ],
+      "can_skip": true,
+      "assertions": {
+        "assert_card_factors_include": {"ANGER": ["attack_coverage"]},
+        "assert_factors_exclude": ["defense_coverage"],
+        "skip_recommended": false,
+        "decision_status": "recommend"
+      }
+    },
+    {
+      "id": "defense_gap_002",
+      "category": "deck_function_gap",
+      "category_label": "牌组功能缺口",
+      "description": "牌组缺乏防御时，格挡牌应获得 defense_coverage 加分",
+      "rationale": "牌组中 7 张攻击和 1 张痛击，格挡牌占比为 0%，远低于 25% 阈值。Shrug It Off 应获得 defense_coverage。",
+      "state": {
+        "character": "IRONCLAD",
+        "ascension": 0,
+        "act": 1,
+        "floor": 5,
+        "energy": 3,
+        "hp": 68,
+        "max_hp": 80,
+        "deck": [
+          {"card": "STRIKE_IRONCLAD", "count": 5},
+          {"card": "ANGER", "count": 2},
+          {"card": "BASH", "count": 1}
+        ],
+        "relics": ["BURNING_BLOOD"]
+      },
+      "options": [
+        {"card": "SHRUG_IT_OFF", "upgrades": 0},
+        {"card": "STRIKE_IRONCLAD", "upgrades": 0},
+        {"card": "POMMEL_STRIKE", "upgrades": 0}
+      ],
+      "can_skip": true,
+      "assertions": {
+        "assert_card_factors_include": {"SHRUG_IT_OFF": ["defense_coverage"]},
+        "assert_factors_exclude": ["attack_coverage"],
+        "card_order": ["SHRUG_IT_OFF", "POMMEL_STRIKE"],
+        "skip_recommended": false
+      }
+    },
+    {
+      "id": "draw_gap_003",
+      "category": "deck_function_gap",
+      "category_label": "牌组功能缺口",
+      "description": "牌组缺少抽牌时，抽牌卡应获得 draw_coverage 加分",
+      "rationale": "牌组 12 张牌中无任何抽牌来源，draw 占比为 0%，低于 12% 阈值。Battle Trance 应获得 draw_coverage。",
+      "state": {
+        "character": "IRONCLAD",
+        "ascension": 0,
+        "act": 1,
+        "floor": 7,
+        "energy": 3,
+        "hp": 75,
+        "max_hp": 80,
+        "deck": [
+          {"card": "STRIKE_IRONCLAD", "count": 5},
+          {"card": "DEFEND_IRONCLAD", "count": 4},
+          {"card": "IRON_WAVE", "count": 2},
+          {"card": "BASH", "count": 1}
+        ],
+        "relics": ["BURNING_BLOOD"]
+      },
+      "options": [
+        {"card": "BATTLE_TRANCE", "upgrades": 0},
+        {"card": "STRIKE_IRONCLAD", "upgrades": 0},
+        {"card": "IRON_WAVE", "upgrades": 0}
+      ],
+      "can_skip": true,
+      "assertions": {
+        "assert_card_factors_include": {"BATTLE_TRANCE": ["draw_coverage", "draw_value"]},
+        "skip_recommended": false,
+        "decision_status": "recommend"
+      }
+    },
+    {
+      "id": "aoe_gap_004",
+      "category": "deck_function_gap",
+      "category_label": "牌组功能缺口",
+      "description": "牌组没有范围伤害时，AOE 牌应获得 aoe_coverage 加分",
+      "rationale": "牌组中无任何 AOE 标签，Thunderclap 应获得 aoe_coverage。",
+      "state": {
+        "character": "IRONCLAD",
+        "ascension": 0,
+        "act": 1,
+        "floor": 5,
+        "energy": 3,
+        "hp": 70,
+        "max_hp": 80,
+        "deck": [
+          {"card": "STRIKE_IRONCLAD", "count": 5},
+          {"card": "DEFEND_IRONCLAD", "count": 4},
+          {"card": "BASH", "count": 1}
+        ],
+        "relics": ["BURNING_BLOOD"]
+      },
+      "options": [
+        {"card": "THUNDERCLAP", "upgrades": 0},
+        {"card": "STRIKE_IRONCLAD", "upgrades": 0},
+        {"card": "DEFEND_IRONCLAD", "upgrades": 0}
+      ],
+      "can_skip": true,
+      "assertions": {
+        "assert_card_factors_include": {"THUNDERCLAP": ["aoe_coverage", "aoe_value"]},
+        "card_order": ["THUNDERCLAP", "DEFEND_IRONCLAD"],
+        "skip_recommended": false
+      }
+    },
+    {
+      "id": "critical_hp_defense_005",
+      "category": "hp_context",
+      "category_label": "HP/章节/楼层上下文",
+      "description": "低血量时格挡牌应获得 critical_hp_defense 加分，高费牌应受 critical_hp_slow_card 惩罚",
+      "rationale": "HP 20/80 = 0.25 <= 0.35，Shrug It Off 应获得 critical_hp_defense（+7）。Bludgeon（cost=3）应受 critical_hp_slow_card（-4）。",
+      "state": {
+        "character": "IRONCLAD",
+        "ascension": 0,
+        "act": 1,
+        "floor": 8,
+        "energy": 3,
+        "hp": 20,
+        "max_hp": 80,
+        "deck": [
+          {"card": "STRIKE_IRONCLAD", "count": 5},
+          {"card": "DEFEND_IRONCLAD", "count": 4},
+          {"card": "BASH", "count": 1}
+        ],
+        "relics": ["BURNING_BLOOD"]
+      },
+      "options": [
+        {"card": "SHRUG_IT_OFF", "upgrades": 0},
+        {"card": "BLUDGEON", "upgrades": 0},
+        {"card": "STRIKE_IRONCLAD", "upgrades": 0}
+      ],
+      "can_skip": true,
+      "assertions": {
+        "assert_card_factors_include": {
+          "SHRUG_IT_OFF": ["critical_hp_defense"],
+          "BLUDGEON": ["critical_hp_slow_card"]
+        },
+        "card_order": ["SHRUG_IT_OFF", "BLUDGEON"],
+        "skip_recommended": false
+      }
+    },
+    {
+      "id": "critical_hp_self_harm_006",
+      "category": "hp_context",
+      "category_label": "HP/章节/楼层上下文",
+      "description": "低血量时自伤牌应受 critical_hp_self_harm 惩罚",
+      "rationale": "HP 25/80 = 0.3125 <= 0.35，Offering 应受 critical_hp_self_harm（-5）和 critical_hp_slow_card（cost>=3? No, cost=0）。Shrug 应获得 critical_hp_defense。",
+      "state": {
+        "character": "IRONCLAD",
+        "ascension": 0,
+        "act": 1,
+        "floor": 9,
+        "energy": 3,
+        "hp": 25,
+        "max_hp": 80,
+        "deck": [
+          {"card": "STRIKE_IRONCLAD", "count": 5},
+          {"card": "DEFEND_IRONCLAD", "count": 4},
+          {"card": "BASH", "count": 1}
+        ],
+        "relics": ["BURNING_BLOOD"]
+      },
+      "options": [
+        {"card": "OFFERING", "upgrades": 0},
+        {"card": "SHRUG_IT_OFF", "upgrades": 0},
+        {"card": "IRON_WAVE", "upgrades": 0}
+      ],
+      "can_skip": true,
+      "assertions": {
+        "assert_card_factors_include": {
+          "OFFERING": ["critical_hp_self_harm"],
+          "SHRUG_IT_OFF": ["critical_hp_defense"]
+        },
+        "card_order": ["SHRUG_IT_OFF", "OFFERING"],
+        "skip_recommended": false
+      }
+    },
+    {
+      "id": "early_act_frontload_007",
+      "category": "hp_context",
+      "category_label": "HP/章节/楼层上下文",
+      "description": "第一章前期伤害牌应获得 early_act_frontload 加分",
+      "rationale": "Act 1 且 floor <= 5 时，Pommel Strike 应获得 early_act_frontload（+1.5）。",
+      "state": {
+        "character": "IRONCLAD",
+        "ascension": 0,
+        "act": 1,
+        "floor": 3,
+        "energy": 3,
+        "hp": 75,
+        "max_hp": 80,
+        "deck": [
+          {"card": "STRIKE_IRONCLAD", "count": 5},
+          {"card": "DEFEND_IRONCLAD", "count": 4},
+          {"card": "BASH", "count": 1}
+        ],
+        "relics": ["BURNING_BLOOD"]
+      },
+      "options": [
+        {"card": "POMMEL_STRIKE", "upgrades": 0},
+        {"card": "DEFEND_IRONCLAD", "upgrades": 0},
+        {"card": "SHRUG_IT_OFF", "upgrades": 0}
+      ],
+      "can_skip": true,
+      "assertions": {
+        "assert_card_factors_include": {"POMMEL_STRIKE": ["early_act_frontload"]},
+        "assert_factors_exclude": ["late_act_scaling"],
+        "card_order": ["POMMEL_STRIKE", "DEFEND_IRONCLAD"],
+        "skip_recommended": false
+      }
+    },
+    {
+      "id": "late_act_scaling_008",
+      "category": "hp_context",
+      "category_label": "HP/章节/楼层上下文",
+      "description": "第二章及以后，成长/抽牌卡应获得 late_act_scaling 加分",
+      "rationale": "Act >= 2 时，Dark Embrace 同时具有 draw 和 scaling 标签，应获得 late_act_scaling（+2.0）和 scaling_value。",
+      "state": {
+        "character": "IRONCLAD",
+        "ascension": 0,
+        "act": 2,
+        "floor": 25,
+        "energy": 3,
+        "hp": 65,
+        "max_hp": 80,
+        "deck": [
+          {"card": "STRIKE_IRONCLAD", "count": 4},
+          {"card": "DEFEND_IRONCLAD", "count": 4},
+          {"card": "BASH", "count": 1},
+          {"card": "IRON_WAVE", "count": 2},
+          {"card": "SHRUG_IT_OFF", "count": 2},
+          {"card": "POMMEL_STRIKE", "count": 1}
+        ],
+        "relics": ["BURNING_BLOOD"]
+      },
+      "options": [
+        {"card": "DARK_EMBRACE", "upgrades": 0},
+        {"card": "STRIKE_IRONCLAD", "upgrades": 0},
+        {"card": "DEFEND_IRONCLAD", "upgrades": 0}
+      ],
+      "can_skip": true,
+      "assertions": {
+        "assert_card_factors_include": {"DARK_EMBRACE": ["late_act_scaling", "scaling_value"]},
+        "assert_factors_exclude": ["early_act_frontload"],
+        "card_order": ["DARK_EMBRACE", "STRIKE_IRONCLAD"],
+        "skip_recommended": false
+      }
+    },
+    {
+      "id": "relic_attack_synergy_009",
+      "category": "relic_synergy",
+      "category_label": "遗物与卡牌协同",
+      "description": "手里剑应给攻击牌 relic_synergy 加分",
+      "rationale": "Shuriken 有 supports_attack 标签，Pommel Strike 应获得 relic_synergy。Defend 不应触发。",
+      "state": {
+        "character": "IRONCLAD",
+        "ascension": 0,
+        "act": 1,
+        "floor": 6,
+        "energy": 3,
+        "hp": 70,
+        "max_hp": 80,
+        "deck": [
+          {"card": "STRIKE_IRONCLAD", "count": 4},
+          {"card": "DEFEND_IRONCLAD", "count": 4},
+          {"card": "BASH", "count": 1}
+        ],
+        "relics": ["BURNING_BLOOD", "SHURIKEN"]
+      },
+      "options": [
+        {"card": "POMMEL_STRIKE", "upgrades": 0},
+        {"card": "DEFEND_IRONCLAD", "upgrades": 0},
+        {"card": "SHRUG_IT_OFF", "upgrades": 0}
+      ],
+      "can_skip": true,
+      "assertions": {
+        "assert_card_factors_include": {"POMMEL_STRIKE": ["relic_synergy"]},
+        "assert_card_factors_exclude": {"DEFEND_IRONCLAD": ["relic_synergy"]},
+        "card_order": ["POMMEL_STRIKE", "DEFEND_IRONCLAD"],
+        "skip_recommended": false
+      }
+    },
+    {
+      "id": "relic_strength_synergy_010",
+      "category": "relic_synergy",
+      "category_label": "遗物与卡牌协同",
+      "description": "红头骨应给力量牌 relic_synergy 加分",
+      "rationale": "Red Skull 有 supports_strength 标签，Inflame 应获得 relic_synergy。",
+      "state": {
+        "character": "IRONCLAD",
+        "ascension": 0,
+        "act": 1,
+        "floor": 7,
+        "energy": 3,
+        "hp": 65,
+        "max_hp": 80,
+        "deck": [
+          {"card": "STRIKE_IRONCLAD", "count": 4},
+          {"card": "DEFEND_IRONCLAD", "count": 4},
+          {"card": "BASH", "count": 1},
+          {"card": "HEADBUTT", "count": 1}
+        ],
+        "relics": ["BURNING_BLOOD", "RED_SKULL"]
+      },
+      "options": [
+        {"card": "INFLAME", "upgrades": 0},
+        {"card": "DEFEND_IRONCLAD", "upgrades": 0},
+        {"card": "POMMEL_STRIKE", "upgrades": 0}
+      ],
+      "can_skip": true,
+      "assertions": {
+        "assert_card_factors_include": {"INFLAME": ["relic_synergy"]},
+        "assert_card_factors_exclude": {"DEFEND_IRONCLAD": ["relic_synergy"]},
+        "card_order": ["INFLAME", "DEFEND_IRONCLAD"],
+        "skip_recommended": false
+      }
+    },
+    {
+      "id": "relic_vulnerable_synergy_011",
+      "category": "relic_synergy",
+      "category_label": "遗物与卡牌协同",
+      "description": "弹珠袋提供开场易伤窗口，应提高能利用该窗口的攻击牌价值，而非奖励重复施加易伤 —— 已知产品缺口",
+      "rationale": "弹珠袋在战斗开始时给所有敌人施加易伤，这为攻击牌创造了增伤窗口。Pommel Strike（攻击牌）应利用这个窗口获得 relic_synergy。Thunderclap 的易伤施加与弹珠袋效果重叠，不应被视为协同。当前评分中 relic_pairs 不检查 supports_vulnerable，但这不影响上述语义：即使 supports_vulnerable 存在，奖励重复易伤也不合理。本场景如实验证攻击牌应获得协同、重复易伤不应获得协同；可能诚实失败，等待后续校准。",
+      "state": {
+        "character": "IRONCLAD",
+        "ascension": 0,
+        "act": 1,
+        "floor": 8,
+        "energy": 3,
+        "hp": 68,
+        "max_hp": 80,
+        "deck": [
+          {"card": "STRIKE_IRONCLAD", "count": 4},
+          {"card": "DEFEND_IRONCLAD", "count": 4},
+          {"card": "BASH", "count": 1}
+        ],
+        "relics": ["BURNING_BLOOD", "BAG_OF_MARBLES"]
+      },
+      "options": [
+        {"card": "POMMEL_STRIKE", "upgrades": 0},
+        {"card": "THUNDERCLAP", "upgrades": 0},
+        {"card": "DEFEND_IRONCLAD", "upgrades": 0}
+      ],
+      "can_skip": true,
+      "assertions": {
+        "assert_card_factors_include": {"POMMEL_STRIKE": ["relic_synergy"]},
+        "assert_card_factors_exclude": {"THUNDERCLAP": ["relic_synergy"]},
+        "card_order": ["POMMEL_STRIKE", "THUNDERCLAP"],
+        "skip_recommended": false
+      }
+    },
+    {
+      "id": "relic_block_synergy_012",
+      "category": "relic_synergy",
+      "category_label": "遗物与卡牌协同",
+      "description": "自成型黏土应给格挡牌 relic_synergy 加分",
+      "rationale": "Self-Forming Clay 有 supports_block 标签，Flame Barrier 应获得 relic_synergy。",
+      "state": {
+        "character": "IRONCLAD",
+        "ascension": 0,
+        "act": 1,
+        "floor": 5,
+        "energy": 3,
+        "hp": 60,
+        "max_hp": 80,
+        "deck": [
+          {"card": "STRIKE_IRONCLAD", "count": 4},
+          {"card": "DEFEND_IRONCLAD", "count": 4},
+          {"card": "BASH", "count": 1}
+        ],
+        "relics": ["BURNING_BLOOD", "SELF_FORMING_CLAY"]
+      },
+      "options": [
+        {"card": "FLAME_BARRIER", "upgrades": 0},
+        {"card": "STRIKE_IRONCLAD", "upgrades": 0},
+        {"card": "POMMEL_STRIKE", "upgrades": 0}
+      ],
+      "can_skip": true,
+      "assertions": {
+        "assert_card_factors_include": {"FLAME_BARRIER": ["relic_synergy"]},
+        "assert_card_factors_exclude": {"STRIKE_IRONCLAD": ["relic_synergy"]},
+        "card_order": ["FLAME_BARRIER", "STRIKE_IRONCLAD"],
+        "skip_recommended": false
+      }
+    },
+    {
+      "id": "exhaust_engine_synergy_013",
+      "category": "deck_synergy",
+      "category_label": "牌组协同",
+      "description": "牌组有耗竭收益方时，耗竭提供者应获得 effect_engine_synergy",
+      "rationale": "牌组有 Feel No Pain（exhaust_interaction），Impervious（self_exhaust）与之形成配对，应触发 effect_engine_synergy。",
+      "state": {
+        "character": "IRONCLAD",
+        "ascension": 0,
+        "act": 1,
+        "floor": 10,
+        "energy": 3,
+        "hp": 70,
+        "max_hp": 80,
+        "deck": [
+          {"card": "STRIKE_IRONCLAD", "count": 3},
+          {"card": "DEFEND_IRONCLAD", "count": 3},
+          {"card": "BASH", "count": 1},
+          {"card": "FEEL_NO_PAIN", "count": 1}
+        ],
+        "relics": ["BURNING_BLOOD"]
+      },
+      "options": [
+        {"card": "IMPERVIOUS", "upgrades": 0},
+        {"card": "STRIKE_IRONCLAD", "upgrades": 0},
+        {"card": "DEFEND_IRONCLAD", "upgrades": 0}
+      ],
+      "can_skip": true,
+      "assertions": {
+        "assert_card_factors_include": {"IMPERVIOUS": ["effect_engine_synergy"]},
+        "assert_card_factors_exclude": {"STRIKE_IRONCLAD": ["effect_engine_synergy"]},
+        "card_order": ["IMPERVIOUS", "STRIKE_IRONCLAD"],
+        "skip_recommended": false
+      }
+    },
+    {
+      "id": "duplicate_penalty_014",
+      "category": "deck_synergy",
+      "category_label": "牌组协同",
+      "description": "牌组已有 2 张同名卡时，继续增加应受 duplicate_pressure 惩罚",
+      "rationale": "牌组已有 2 张 Strike，再选第 3 张应触发 duplicate_pressure。Anger 不应有此惩罚。",
+      "state": {
+        "character": "IRONCLAD",
+        "ascension": 0,
+        "act": 1,
+        "floor": 6,
+        "energy": 3,
+        "hp": 70,
+        "max_hp": 80,
+        "deck": [
+          {"card": "STRIKE_IRONCLAD", "count": 2},
+          {"card": "DEFEND_IRONCLAD", "count": 4},
+          {"card": "BASH", "count": 1},
+          {"card": "SHRUG_IT_OFF", "count": 1}
+        ],
+        "relics": ["BURNING_BLOOD"]
+      },
+      "options": [
+        {"card": "STRIKE_IRONCLAD", "upgrades": 0},
+        {"card": "ANGER", "upgrades": 0},
+        {"card": "IRON_WAVE", "upgrades": 0}
+      ],
+      "can_skip": true,
+      "assertions": {
+        "assert_card_factors_include": {"STRIKE_IRONCLAD": ["duplicate_pressure"]},
+        "assert_card_factors_exclude": {"ANGER": ["duplicate_pressure"]},
+        "card_order": ["ANGER", "STRIKE_IRONCLAD"],
+        "skip_recommended": false
+      }
+    },
+    {
+      "id": "multi_signal_coexistence_015",
+      "category": "deck_synergy",
+      "category_label": "牌组协同",
+      "description": "牌组同时缺乏输出和防御时，铁斩波应同时获得 attack_coverage 和 defense_coverage",
+      "rationale": "牌组中仅 2 张伤害牌（25%）和 1 张格挡牌（12.5%），都低于阈值。铁斩波同时提供伤害和格挡，应同时获得 attack_coverage 和 defense_coverage 两个非零信号。",
+      "state": {
+        "character": "IRONCLAD",
+        "ascension": 0,
+        "act": 1,
+        "floor": 6,
+        "energy": 3,
+        "hp": 70,
+        "max_hp": 80,
+        "deck": [
+          {"card": "STRIKE_IRONCLAD", "count": 1},
+          {"card": "DEFEND_IRONCLAD", "count": 1},
+          {"card": "BASH", "count": 1},
+          {"card": "INFLAME", "count": 1},
+          {"card": "BATTLE_TRANCE", "count": 1},
+          {"card": "FEEL_NO_PAIN", "count": 1},
+          {"card": "DARK_EMBRACE", "count": 1},
+          {"card": "OFFERING", "count": 1}
+        ],
+        "relics": ["BURNING_BLOOD"]
+      },
+      "options": [
+        {"card": "IRON_WAVE", "upgrades": 0},
+        {"card": "STRIKE_IRONCLAD", "upgrades": 0},
+        {"card": "DEFEND_IRONCLAD", "upgrades": 0}
+      ],
+      "can_skip": true,
+      "assertions": {
+        "assert_card_factors_include": {"IRON_WAVE": ["attack_coverage", "defense_coverage"]},
+        "card_order": ["IRON_WAVE", "DEFEND_IRONCLAD"],
+        "skip_recommended": false
+      }
+    },
+    {
+      "id": "strength_attack_synergy_016",
+      "category": "deck_synergy",
+      "category_label": "牌组协同",
+      "description": "牌组已有力量来源时，攻击牌应获得 strength_attack_synergy 加分",
+      "rationale": "牌组有 Inflame（strength 标签），Sword Boomerang 应获得 strength_attack_synergy。Defend 不应触发。",
+      "state": {
+        "character": "IRONCLAD",
+        "ascension": 0,
+        "act": 1,
+        "floor": 8,
+        "energy": 3,
+        "hp": 65,
+        "max_hp": 80,
+        "deck": [
+          {"card": "STRIKE_IRONCLAD", "count": 3},
+          {"card": "DEFEND_IRONCLAD", "count": 3},
+          {"card": "BASH", "count": 1},
+          {"card": "INFLAME", "count": 1}
+        ],
+        "relics": ["BURNING_BLOOD"]
+      },
+      "options": [
+        {"card": "SWORD_BOOMERANG", "upgrades": 0},
+        {"card": "DEFEND_IRONCLAD", "upgrades": 0},
+        {"card": "SHRUG_IT_OFF", "upgrades": 0}
+      ],
+      "can_skip": true,
+      "assertions": {
+        "assert_card_factors_include": {"SWORD_BOOMERANG": ["strength_attack_synergy"]},
+        "assert_card_factors_exclude": {"DEFEND_IRONCLAD": ["strength_attack_synergy"]},
+        "skip_recommended": false
+      }
+    },
+    {
+      "id": "normal_route_danger_017",
+      "category": "route_pressure",
+      "category_label": "路线压力",
+      "description": "无精英/Boss 的普通怪物路线，route 应标记为 known 且不产生精英/Boss 因子",
+      "rationale": "三条路径全是 MONSTER，route.known=true，elite_path_ratio=0，boss_path_ratio=0。不应出现 route_elite_fit 或 route_boss_fit。",
+      "state": {
+        "character": "IRONCLAD",
+        "ascension": 0,
+        "act": 1,
+        "floor": 6,
+        "energy": 3,
+        "hp": 70,
+        "max_hp": 80,
+        "deck": [
+          {"card": "STRIKE_IRONCLAD", "count": 5},
+          {"card": "DEFEND_IRONCLAD", "count": 4},
+          {"card": "BASH", "count": 1}
+        ],
+        "relics": ["BURNING_BLOOD"],
+        "map_context": {
+          "nodes": [
+            {"node_id": "1:0:MONSTER", "kind": "MONSTER", "row": 1, "col": 0, "edges": ["2:0:MONSTER"]},
+            {"node_id": "1:1:MONSTER", "kind": "MONSTER", "row": 1, "col": 1, "edges": ["2:1:MONSTER"]},
+            {"node_id": "2:0:MONSTER", "kind": "MONSTER", "row": 2, "col": 0, "edges": ["3:0:MONSTER"]},
+            {"node_id": "2:1:MONSTER", "kind": "MONSTER", "row": 2, "col": 1, "edges": ["3:1:MONSTER"]},
+            {"node_id": "3:0:MONSTER", "kind": "MONSTER", "row": 3, "col": 0, "edges": []},
+            {"node_id": "3:1:MONSTER", "kind": "MONSTER", "row": 3, "col": 1, "edges": []}
+          ],
+          "available_next_node_ids": ["1:0:MONSTER", "1:1:MONSTER"]
+        }
+      },
+      "options": [
+        {"card": "POMMEL_STRIKE", "upgrades": 0},
+        {"card": "SHRUG_IT_OFF", "upgrades": 0},
+        {"card": "DEFEND_IRONCLAD", "upgrades": 0}
+      ],
+      "can_skip": true,
+      "assertions": {
+        "assert_factors_exclude": ["route_elite_fit", "route_boss_fit"],
+        "skip_recommended": false
+      }
+    },
+    {
+      "id": "optional_elite_route_018",
+      "category": "route_pressure",
+      "category_label": "路线压力",
+      "description": "存在可选精英路径时，攻击牌和格挡牌应获得 route_elite_fit",
+      "rationale": "两条路径中一条有精英，elite_path_ratio = 0.5。Pommel Strike（攻击）和 Shrug It Off（格挡）都应触发 route_elite_fit。",
+      "state": {
+        "character": "IRONCLAD",
+        "ascension": 0,
+        "act": 1,
+        "floor": 5,
+        "energy": 3,
+        "hp": 70,
+        "max_hp": 80,
+        "deck": [
+          {"card": "STRIKE_IRONCLAD", "count": 5},
+          {"card": "DEFEND_IRONCLAD", "count": 4},
+          {"card": "BASH", "count": 1}
+        ],
+        "relics": ["BURNING_BLOOD"],
+        "map_context": {
+          "nodes": [
+            {"node_id": "1:0:ELITE", "kind": "ELITE", "row": 1, "col": 0, "edges": ["2:0:CAMPFIRE"]},
+            {"node_id": "1:1:MONSTER", "kind": "MONSTER", "row": 1, "col": 1, "edges": ["2:1:MONSTER"]},
+            {"node_id": "2:0:CAMPFIRE", "kind": "CAMPFIRE", "row": 2, "col": 0, "edges": []},
+            {"node_id": "2:1:MONSTER", "kind": "MONSTER", "row": 2, "col": 1, "edges": []}
+          ],
+          "available_next_node_ids": ["1:0:ELITE", "1:1:MONSTER"]
+        }
+      },
+      "options": [
+        {"card": "POMMEL_STRIKE", "upgrades": 0},
+        {"card": "SHRUG_IT_OFF", "upgrades": 0},
+        {"card": "DEFEND_IRONCLAD", "upgrades": 0}
+      ],
+      "can_skip": true,
+      "assertions": {
+        "assert_card_factors_include": {
+          "POMMEL_STRIKE": ["route_elite_fit"],
+          "SHRUG_IT_OFF": ["route_elite_fit"]
+        },
+        "assert_factors_exclude": ["route_boss_fit"],
+        "skip_recommended": false
+      }
+    },
+    {
+      "id": "mandatory_elite_route_019",
+      "category": "route_pressure",
+      "category_label": "路线压力",
+      "description": "必经精英路线时所有路径都有精英，elite_path_ratio 应为 1.0",
+      "rationale": "唯一可选节点就是精英，elite_path_ratio = 1.0。攻击牌和格挡牌都应触发 route_elite_fit。",
+      "state": {
+        "character": "IRONCLAD",
+        "ascension": 0,
+        "act": 1,
+        "floor": 7,
+        "energy": 3,
+        "hp": 65,
+        "max_hp": 80,
+        "deck": [
+          {"card": "STRIKE_IRONCLAD", "count": 5},
+          {"card": "DEFEND_IRONCLAD", "count": 4},
+          {"card": "BASH", "count": 1}
+        ],
+        "relics": ["BURNING_BLOOD"],
+        "map_context": {
+          "nodes": [
+            {"node_id": "1:0:ELITE", "kind": "ELITE", "row": 1, "col": 0, "edges": ["2:0:MONSTER"]},
+            {"node_id": "2:0:MONSTER", "kind": "MONSTER", "row": 2, "col": 0, "edges": []}
+          ],
+          "available_next_node_ids": ["1:0:ELITE"]
+        }
+      },
+      "options": [
+        {"card": "POMMEL_STRIKE", "upgrades": 0},
+        {"card": "SHRUG_IT_OFF", "upgrades": 0},
+        {"card": "DEFEND_IRONCLAD", "upgrades": 0}
+      ],
+      "can_skip": true,
+      "assertions": {
+        "assert_card_factors_include": {
+          "POMMEL_STRIKE": ["route_elite_fit"],
+          "SHRUG_IT_OFF": ["route_elite_fit"]
+        },
+        "assert_factors_exclude": ["route_boss_fit"],
+        "assert_route_elite_ratio": 1.0,
+        "skip_recommended": false
+      }
+    },
+    {
+      "id": "boss_route_020",
+      "category": "route_pressure",
+      "category_label": "路线压力",
+      "description": "Boss 路径应产生 route_boss_fit 因子且 boss_path_ratio > 0",
+      "rationale": "下一节点是 Boss。Demon Form 作为持续成长牌应获得 route_boss_fit 和 scaling_value。",
+      "state": {
+        "character": "IRONCLAD",
+        "ascension": 0,
+        "act": 1,
+        "floor": 16,
+        "energy": 3,
+        "hp": 68,
+        "max_hp": 80,
+        "deck": [
+          {"card": "STRIKE_IRONCLAD", "count": 4},
+          {"card": "DEFEND_IRONCLAD", "count": 4},
+          {"card": "BASH", "count": 1},
+          {"card": "SHRUG_IT_OFF", "count": 2},
+          {"card": "IRON_WAVE", "count": 2},
+          {"card": "POMMEL_STRIKE", "count": 1}
+        ],
+        "relics": ["BURNING_BLOOD"],
+        "map_context": {
+          "nodes": [
+            {"node_id": "1:0:BOSS", "kind": "BOSS", "row": 1, "col": 0, "edges": []}
+          ],
+          "available_next_node_ids": ["1:0:BOSS"]
+        }
+      },
+      "options": [
+        {"card": "DEMON_FORM", "upgrades": 0},
+        {"card": "STRIKE_IRONCLAD", "upgrades": 0},
+        {"card": "DEFEND_IRONCLAD", "upgrades": 0}
+      ],
+      "can_skip": true,
+      "assertions": {
+        "assert_card_factors_include": {"DEMON_FORM": ["route_boss_fit", "scaling_value"]},
+        "assert_factors_exclude": ["route_elite_fit"],
+        "assert_route_boss_ratio_gt": 0,
+        "card_order": ["DEMON_FORM", "DEFEND_IRONCLAD"],
+        "skip_recommended": false
+      }
+    },
+    {
+      "id": "strong_candidate_lowers_skip_021",
+      "category": "skip_behavior",
+      "category_label": "跳过行为",
+      "description": "存在高度适配候选时，跳过分应显著降低",
+      "rationale": "低血量下 Impervious（30 格挡）高度适配（critical_hp_defense +7），跳过分应被压低到 45 以下且 skip_eligible=false。",
+      "state": {
+        "character": "IRONCLAD",
+        "ascension": 0,
+        "act": 1,
+        "floor": 6,
+        "energy": 3,
+        "hp": 25,
+        "max_hp": 80,
+        "deck": [
+          {"card": "STRIKE_IRONCLAD", "count": 5},
+          {"card": "DEFEND_IRONCLAD", "count": 1},
+          {"card": "BASH", "count": 1}
+        ],
+        "relics": ["BURNING_BLOOD"]
+      },
+      "options": [
+        {"card": "IMPERVIOUS", "upgrades": 0},
+        {"card": "STRIKE_IRONCLAD", "upgrades": 0},
+        {"card": "ANGER", "upgrades": 0}
+      ],
+      "can_skip": true,
+      "assertions": {
+        "skip_recommended": false,
+        "skip_eligible": false,
+        "assert_skip_score_below": 45
+      }
+    },
+    {
+      "id": "mature_deck_skip_022",
+      "category": "skip_behavior",
+      "category_label": "跳过行为",
+      "description": "大牌组成熟时跳过分应显著上升",
+      "rationale": "牌组 28 张，远超过 12 张基准，deck_size 因子应为正（约 +14.4）。候选都是基础牌且多重复，跳过分应至少 45。",
+      "state": {
+        "character": "IRONCLAD",
+        "ascension": 0,
+        "act": 2,
+        "floor": 30,
+        "energy": 3,
+        "hp": 70,
+        "max_hp": 80,
+        "deck": [
+          {"card": "STRIKE_IRONCLAD", "count": 6},
+          {"card": "DEFEND_IRONCLAD", "count": 6},
+          {"card": "BASH", "count": 1},
+          {"card": "SHRUG_IT_OFF", "count": 3},
+          {"card": "IRON_WAVE", "count": 3},
+          {"card": "POMMEL_STRIKE", "count": 3},
+          {"card": "INFLAME", "count": 1},
+          {"card": "DEMON_FORM", "count": 1},
+          {"card": "TRUE_GRIT", "count": 1},
+          {"card": "BATTLE_TRANCE", "count": 1},
+          {"card": "HEADBUTT", "count": 1},
+          {"card": "FLAME_BARRIER", "count": 1}
+        ],
+        "relics": ["BURNING_BLOOD"]
+      },
+      "options": [
+        {"card": "STRIKE_IRONCLAD", "upgrades": 0},
+        {"card": "DEFEND_IRONCLAD", "upgrades": 0},
+        {"card": "PERFECTED_STRIKE", "upgrades": 0}
+      ],
+      "can_skip": true,
+      "assertions": {
+        "assert_skip_score_above": 45
+      }
+    },
+    {
+      "id": "cannot_skip_023",
+      "category": "skip_behavior",
+      "category_label": "跳过行为",
+      "description": "can_skip=false 时跳过应为 ineligible，决策状态不能为 skip",
+      "rationale": "当奖励不允许跳过时，skip_candidate.eligible 应为 false，decision_status 必须为 recommend。",
+      "state": {
+        "character": "IRONCLAD",
+        "ascension": 0,
+        "act": 1,
+        "floor": 1,
+        "energy": 3,
+        "hp": 80,
+        "max_hp": 80,
+        "deck": [
+          {"card": "STRIKE_IRONCLAD", "count": 5},
+          {"card": "DEFEND_IRONCLAD", "count": 4},
+          {"card": "BASH", "count": 1}
+        ],
+        "relics": ["BURNING_BLOOD"]
+      },
+      "options": [
+        {"card": "STRIKE_IRONCLAD", "upgrades": 0},
+        {"card": "DEFEND_IRONCLAD", "upgrades": 0},
+        {"card": "ANGER", "upgrades": 0}
+      ],
+      "can_skip": false,
+      "assertions": {
+        "skip_recommended": false,
+        "skip_eligible": false,
+        "decision_status": "recommend"
+      }
+    },
+    {
+      "id": "low_info_uncertain_024",
+      "category": "skip_behavior",
+      "category_label": "跳过行为",
+      "description": "低信息候选应触发 uncertain 决策状态",
+      "rationale": "Entrench 和 Havoc 都是仅有 card_type:skill 的低信息卡牌，state_score 约为 50 且 margin 极小。应触发 uncertain 而非 recommend。",
+      "state": {
+        "character": "IRONCLAD",
+        "ascension": 0,
+        "act": 1,
+        "floor": 5,
+        "energy": 3,
+        "hp": 70,
+        "max_hp": 80,
+        "deck": [
+          {"card": "STRIKE_IRONCLAD", "count": 5},
+          {"card": "DEFEND_IRONCLAD", "count": 4},
+          {"card": "BASH", "count": 1}
+        ],
+        "relics": ["BURNING_BLOOD"]
+      },
+      "options": [
+        {"card": "ENTRENCH", "upgrades": 0},
+        {"card": "HAVOC", "upgrades": 0}
+      ],
+      "can_skip": true,
+      "assertions": {
+        "decision_status": "uncertain",
+        "skip_recommended": false
+      }
+    },
+    {
+      "id": "weak_candidates_raise_skip_025",
+      "category": "skip_behavior",
+      "category_label": "跳过行为",
+      "description": "所有候选适配度偏低时跳过分应上升",
+      "rationale": "Strike 和 Defend 对已有大量类似牌的大牌组价值低，跳过分应较高（>= 48）。",
+      "state": {
+        "character": "IRONCLAD",
+        "ascension": 0,
+        "act": 2,
+        "floor": 22,
+        "energy": 3,
+        "hp": 68,
+        "max_hp": 80,
+        "deck": [
+          {"card": "STRIKE_IRONCLAD", "count": 5},
+          {"card": "DEFEND_IRONCLAD", "count": 4},
+          {"card": "BASH", "count": 1},
+          {"card": "SHRUG_IT_OFF", "count": 2},
+          {"card": "IRON_WAVE", "count": 2},
+          {"card": "POMMEL_STRIKE", "count": 2},
+          {"card": "INFLAME", "count": 1},
+          {"card": "DEMON_FORM", "count": 1},
+          {"card": "TRUE_GRIT", "count": 1},
+          {"card": "BATTLE_TRANCE", "count": 1},
+          {"card": "HEADBUTT", "count": 1},
+          {"card": "FLAME_BARRIER", "count": 1}
+        ],
+        "relics": ["BURNING_BLOOD"]
+      },
+      "options": [
+        {"card": "STRIKE_IRONCLAD", "upgrades": 0},
+        {"card": "DEFEND_IRONCLAD", "upgrades": 0}
+      ],
+      "can_skip": true,
+      "assertions": {
+        "assert_skip_score_above": 48
+      }
+    },
+    {
+      "id": "all_duplicates_skip_026",
+      "category": "skip_behavior",
+      "category_label": "跳过行为",
+      "description": "所有候选都已在牌组中时，跳过应获得较高分数",
+      "rationale": "三张候选全是已有牌，应触发 all_duplicates（+6）。跳过分应 >= 38。",
+      "state": {
+        "character": "IRONCLAD",
+        "ascension": 0,
+        "act": 2,
+        "floor": 20,
+        "energy": 3,
+        "hp": 70,
+        "max_hp": 80,
+        "deck": [
+          {"card": "STRIKE_IRONCLAD", "count": 5},
+          {"card": "DEFEND_IRONCLAD", "count": 4},
+          {"card": "BASH", "count": 1},
+          {"card": "SHRUG_IT_OFF", "count": 2},
+          {"card": "IRON_WAVE", "count": 2},
+          {"card": "POMMEL_STRIKE", "count": 2},
+          {"card": "INFLAME", "count": 1},
+          {"card": "TRUE_GRIT", "count": 1},
+          {"card": "HEADBUTT", "count": 1},
+          {"card": "FLAME_BARRIER", "count": 1}
+        ],
+        "relics": ["BURNING_BLOOD"]
+      },
+      "options": [
+        {"card": "STRIKE_IRONCLAD", "upgrades": 0},
+        {"card": "DEFEND_IRONCLAD", "upgrades": 0},
+        {"card": "BASH", "upgrades": 0}
+      ],
+      "can_skip": true,
+      "assertions": {
+        "assert_skip_score_above": 38
+      }
+    }
+  ]
+}

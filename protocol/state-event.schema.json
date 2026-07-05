@@ -1,0 +1,448 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sts2-guide.local/protocol/state-event.schema.json",
+  "title": "STS2 Guide State Event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "event_id",
+    "event_type",
+    "emitted_at",
+    "run_id",
+    "sequence",
+    "state"
+  ],
+  "properties": {
+    "schema_version": {
+      "enum": [1, 2, 3]
+    },
+    "event_id": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 200
+    },
+    "event_type": {
+      "enum": [
+        "card_reward",
+        "decision_closed",
+        "map_choice",
+        "merchant",
+        "rest_site",
+        "run_ended"
+      ]
+    },
+    "emitted_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "source": {
+      "type": "string",
+      "default": "sts2-guide-readonly-mod"
+    },
+    "game_version": {
+      "type": ["string", "null"]
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 200
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "state": {
+      "$ref": "#/$defs/runState"
+    },
+    "options": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "$ref": "#/$defs/decisionOption"
+      },
+      "default": []
+    },
+    "decision": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/decisionContext"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "parent_event_id": {
+      "type": ["string", "null"],
+      "minLength": 3,
+      "maxLength": 200
+    },
+    "outcome": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/decisionOutcome"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "map_context": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/mapChoiceContext"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "run_result": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/runResult"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "$defs": {
+    "deckCard": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["card"],
+      "properties": {
+        "card": {
+          "type": "string",
+          "minLength": 1
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 99,
+          "default": 1
+        },
+        "upgrades": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9,
+          "default": 0
+        },
+        "enchantment": {
+          "type": ["string", "null"]
+        },
+        "enchantment_amount": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "affliction": {
+          "type": ["string", "null"]
+        },
+        "affliction_amount": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        }
+      }
+    },
+    "decisionOption": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["card"],
+      "properties": {
+        "card": {
+          "type": "string",
+          "minLength": 1
+        },
+        "upgrades": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9,
+          "default": 0
+        },
+        "enchantment": {
+          "type": ["string", "null"]
+        },
+        "enchantment_amount": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "affliction": {
+          "type": ["string", "null"]
+        },
+        "affliction_amount": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        }
+      }
+    },
+    "potionState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["potion", "slot"],
+      "properties": {
+        "potion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "slot": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 99
+        }
+      }
+    },
+    "relicState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["relic"],
+      "properties": {
+        "relic": {
+          "type": "string",
+          "minLength": 1
+        },
+        "display_amount": {
+          "type": ["integer", "null"]
+        },
+        "stack_count": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 1
+        },
+        "status": {
+          "type": ["string", "null"]
+        }
+      }
+    },
+    "decisionContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "can_skip": {
+          "type": "boolean",
+          "default": true
+        },
+        "can_reroll": {
+          "type": "boolean",
+          "default": false
+        },
+        "reward_source": {
+          "type": ["string", "null"]
+        }
+      }
+    },
+    "decisionOutcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind"],
+      "properties": {
+        "kind": {
+          "enum": ["selected", "skipped", "closed_unknown"]
+        },
+        "selected_card": {
+          "type": ["string", "null"]
+        },
+        "selected_option_index": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "maximum": 9
+        }
+      }
+    },
+    "runResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["outcome", "ended_at"],
+      "properties": {
+        "outcome": {
+          "enum": ["win", "loss", "abandon"]
+        },
+        "final_score": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "started_at": {
+          "type": ["string", "null"],
+          "format": "date-time"
+        },
+        "ended_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "mapNode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["node_id", "kind", "row", "col"],
+      "properties": {
+        "node_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "enum": ["MONSTER", "ELITE", "CAMPFIRE", "SHOP", "EVENT", "BOSS", "TREASURE", "UNKNOWN"]
+        },
+        "row": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "col": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "edges": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "label": {
+          "type": ["string", "null"]
+        }
+      }
+    },
+    "mapChoiceContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "map_name": {
+          "type": ["string", "null"]
+        },
+        "player_row": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "nodes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/mapNode"
+          },
+          "default": []
+        },
+        "node_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "current_node_id": {
+          "type": ["string", "null"],
+          "minLength": 1
+        },
+        "available_next_node_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "default": []
+        },
+        "boss_node_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "default": []
+        }
+      }
+    },
+    "runState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["character"],
+      "properties": {
+        "character": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ascension": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 0
+        },
+        "act": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 1
+        },
+        "floor": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 0
+        },
+        "hp": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "max_hp": {
+          "type": ["integer", "null"],
+          "minimum": 1
+        },
+        "gold": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "energy": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 99,
+          "default": 3
+        },
+        "deck": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/deckCard"
+          },
+          "default": []
+        },
+        "relics": {
+          "type": "array",
+          "maxItems": 99,
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "relic_states": {
+          "type": "array",
+          "maxItems": 99,
+          "items": {
+            "$ref": "#/$defs/relicState"
+          },
+          "default": []
+        },
+        "potions": {
+          "type": "array",
+          "maxItems": 99,
+          "items": {
+            "$ref": "#/$defs/potionState"
+          },
+          "default": []
+        },
+        "max_potion_slots": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "maximum": 99
+        },
+        "modifiers": {
+          "type": "array",
+          "maxItems": 99,
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "capture_warnings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        }
+      }
+    }
+  }
+}

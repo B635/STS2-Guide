@@ -1,0 +1,5894 @@
+{
+  "schema_version": 1,
+  "source": {
+    "id": "spire_codex_api",
+    "name": "Spire Codex API",
+    "base_url": "https://spire-codex.com/api",
+    "terms_url": "https://github.com/ptrlrd/spire-codex/blob/main/API_TERMS.md",
+    "endpoints": {
+      "cards": "https://spire-codex.com/api/runs/scores/cards",
+      "relics": "https://spire-codex.com/api/runs/scores/relics",
+      "potions": "https://spire-codex.com/api/runs/scores/potions"
+    }
+  },
+  "data_type": "aggregate_scores",
+  "game_version": "mixed",
+  "observed_versions": [
+    "v0.99.1",
+    "v0.99.0",
+    "v0.98.3",
+    "v0.98.2",
+    "v0.98.1",
+    "v0.98.0",
+    "v0.107.1",
+    "v0.107.0",
+    "v0.106.1",
+    "v0.106.0",
+    "v0.105.1",
+    "v0.105.0",
+    "v0.104.0",
+    "v0.103.3",
+    "v0.103.2",
+    "v0.103.1",
+    "v0.103.0",
+    "v0.102.0",
+    "v0.101.0",
+    "v0.100.0",
+    "NON-RELEASE-VERSION"
+  ],
+  "fetched_at": "2026-07-01T12:11:31.908709+00:00",
+  "methodology": "Spire Codex Codex Score: Bayesian-shrunk community win-rate aggregate. Correlational prior only; not causal card value.",
+  "entities": {
+    "cards": {
+      "ABRASIVE": {
+        "score": 96.0,
+        "elo": 2089.7,
+        "picks": 25234,
+        "wins": 14555,
+        "win_rate": 57.7
+      },
+      "ACCELERANT": {
+        "score": 88.0,
+        "elo": 2049.2,
+        "picks": 20041,
+        "wins": 11096,
+        "win_rate": 55.4
+      },
+      "ACCURACY": {
+        "score": 78.0,
+        "elo": 2081.6,
+        "picks": 57817,
+        "wins": 30292,
+        "win_rate": 52.4
+      },
+      "ACROBATICS": {
+        "score": 81.0,
+        "elo": 2077.5,
+        "picks": 62346,
+        "wins": 33202,
+        "win_rate": 53.3
+      },
+      "ADAPTIVE_STRIKE": {
+        "score": 56.0,
+        "elo": 1956.3,
+        "picks": 13027,
+        "wins": 5954,
+        "win_rate": 45.7
+      },
+      "ADRENALINE": {
+        "score": 100.0,
+        "elo": 2279.0,
+        "picks": 38739,
+        "wins": 24146,
+        "win_rate": 62.3
+      },
+      "AFTERIMAGE": {
+        "score": 100.0,
+        "elo": 2199.7,
+        "picks": 32726,
+        "wins": 20626,
+        "win_rate": 63.0
+      },
+      "AFTERLIFE": {
+        "score": 50.0,
+        "elo": 1845.5,
+        "picks": 32376,
+        "wins": 14192,
+        "win_rate": 43.8
+      },
+      "AGGRESSION": {
+        "score": 90.0,
+        "elo": 1986.7,
+        "picks": 17658,
+        "wins": 9872,
+        "win_rate": 55.9
+      },
+      "ALCHEMIZE": {
+        "score": 100.0,
+        "elo": 1766.9,
+        "picks": 6597,
+        "wins": 4183,
+        "win_rate": 63.4
+      },
+      "ALIGNMENT": {
+        "score": 75.0,
+        "elo": 1967.8,
+        "picks": 31241,
+        "wins": 16064,
+        "win_rate": 51.4
+      },
+      "ALL_FOR_ONE": {
+        "score": 88.0,
+        "elo": 2056.6,
+        "picks": 18141,
+        "wins": 10057,
+        "win_rate": 55.4
+      },
+      "ANGER": {
+        "score": 33.0,
+        "elo": 1827.0,
+        "picks": 43513,
+        "wins": 16904,
+        "win_rate": 38.8
+      },
+      "ANOINTED": {
+        "score": 100.0,
+        "elo": 1625.2,
+        "picks": 2830,
+        "wins": 2036,
+        "win_rate": 71.9
+      },
+      "ANTICIPATE": {
+        "score": 51.0,
+        "elo": 1777.0,
+        "picks": 39298,
+        "wins": 17366,
+        "win_rate": 44.2
+      },
+      "ARMAMENTS": {
+        "score": 42.0,
+        "elo": 1905.1,
+        "picks": 69448,
+        "wins": 28807,
+        "win_rate": 41.5
+      },
+      "ARSENAL": {
+        "score": 90.0,
+        "elo": 2018.8,
+        "picks": 12866,
+        "wins": 7203,
+        "win_rate": 56.0
+      },
+      "ASHEN_STRIKE": {
+        "score": 60.0,
+        "elo": 1879.6,
+        "picks": 22179,
+        "wins": 10447,
+        "win_rate": 47.1
+      },
+      "ASSASSINATE": {
+        "score": 95.0,
+        "elo": 2055.8,
+        "picks": 24679,
+        "wins": 14186,
+        "win_rate": 57.5
+      },
+      "ASTRAL_PULSE": {
+        "score": 29.0,
+        "elo": 1777.8,
+        "picks": 41063,
+        "wins": 15499,
+        "win_rate": 37.7
+      },
+      "AUTOMATION": {
+        "score": 98.0,
+        "elo": 1942.0,
+        "picks": 16661,
+        "wins": 9721,
+        "win_rate": 58.3
+      },
+      "BACKFLIP": {
+        "score": 67.0,
+        "elo": 1967.2,
+        "picks": 77619,
+        "wins": 38094,
+        "win_rate": 49.1
+      },
+      "BACKSTAB": {
+        "score": 57.0,
+        "elo": 1966.2,
+        "picks": 33952,
+        "wins": 15603,
+        "win_rate": 46.0
+      },
+      "BALL_LIGHTNING": {
+        "score": 21.0,
+        "elo": 1870.7,
+        "picks": 43650,
+        "wins": 15405,
+        "win_rate": 35.3
+      },
+      "BANSHEES_CRY": {
+        "score": 99.0,
+        "elo": 1958.9,
+        "picks": 9225,
+        "wins": 5414,
+        "win_rate": 58.7
+      },
+      "BARRAGE": {
+        "score": 23.0,
+        "elo": 1747.2,
+        "picks": 20987,
+        "wins": 7514,
+        "win_rate": 35.8
+      },
+      "BARRICADE": {
+        "score": 93.0,
+        "elo": 2068.9,
+        "picks": 23228,
+        "wins": 13213,
+        "win_rate": 56.9
+      },
+      "BATTLE_TRANCE": {
+        "score": 73.0,
+        "elo": 2019.3,
+        "picks": 44762,
+        "wins": 22779,
+        "win_rate": 50.9
+      },
+      "BEACON_OF_HOPE": {
+        "score": 100.0,
+        "elo": 1966.1,
+        "picks": 15482,
+        "wins": 11758,
+        "win_rate": 75.9
+      },
+      "BEAM_CELL": {
+        "score": 41.0,
+        "elo": 1891.5,
+        "picks": 46647,
+        "wins": 19319,
+        "win_rate": 41.4
+      },
+      "BEAT_DOWN": {
+        "score": 100.0,
+        "elo": 1627.9,
+        "picks": 3441,
+        "wins": 2264,
+        "win_rate": 65.8
+      },
+      "BEAT_INTO_SHAPE": {
+        "score": 68.0,
+        "elo": 1967.0,
+        "picks": 15391,
+        "wins": 7601,
+        "win_rate": 49.4
+      },
+      "BEGONE": {
+        "score": 57.0,
+        "elo": 1833.3,
+        "picks": 34974,
+        "wins": 16102,
+        "win_rate": 46.0
+      },
+      "BELIEVE_IN_YOU": {
+        "score": 93.0,
+        "elo": 2021.1,
+        "picks": 24302,
+        "wins": 13838,
+        "win_rate": 56.9
+      },
+      "BIASED_COGNITION": {
+        "score": 55.0,
+        "elo": null,
+        "picks": 2032,
+        "wins": 924,
+        "win_rate": 45.5
+      },
+      "BIG_BANG": {
+        "score": 100.0,
+        "elo": 2280.2,
+        "picks": 34541,
+        "wins": 20583,
+        "win_rate": 59.6
+      },
+      "BLACK_HOLE": {
+        "score": 61.0,
+        "elo": 1982.0,
+        "picks": 38574,
+        "wins": 18240,
+        "win_rate": 47.3
+      },
+      "BLADE_DANCE": {
+        "score": 58.0,
+        "elo": 2009.5,
+        "picks": 77188,
+        "wins": 35750,
+        "win_rate": 46.3
+      },
+      "BLADE_OF_INK": {
+        "score": 100.0,
+        "elo": 2107.7,
+        "picks": 19398,
+        "wins": 11689,
+        "win_rate": 60.3
+      },
+      "BLIGHT_STRIKE": {
+        "score": 30.0,
+        "elo": 1810.7,
+        "picks": 31910,
+        "wins": 12129,
+        "win_rate": 38.0
+      },
+      "BLOODLETTING": {
+        "score": 52.0,
+        "elo": 1977.5,
+        "picks": 89201,
+        "wins": 39783,
+        "win_rate": 44.6
+      },
+      "BLOOD_WALL": {
+        "score": 45.0,
+        "elo": 1864.5,
+        "picks": 42367,
+        "wins": 17944,
+        "win_rate": 42.4
+      },
+      "BLUDGEON": {
+        "score": 42.0,
+        "elo": 1859.8,
+        "picks": 22550,
+        "wins": 9348,
+        "win_rate": 41.5
+      },
+      "BLUR": {
+        "score": 74.0,
+        "elo": 2012.5,
+        "picks": 38501,
+        "wins": 19655,
+        "win_rate": 51.1
+      },
+      "BODY_SLAM": {
+        "score": 63.0,
+        "elo": 1813.6,
+        "picks": 38914,
+        "wins": 18613,
+        "win_rate": 47.8
+      },
+      "BOLAS": {
+        "score": 100.0,
+        "elo": 1672.7,
+        "picks": 5428,
+        "wins": 3301,
+        "win_rate": 60.8
+      },
+      "BOMBARDMENT": {
+        "score": 87.0,
+        "elo": 2010.1,
+        "picks": 17488,
+        "wins": 9643,
+        "win_rate": 55.1
+      },
+      "BONE_SHARDS": {
+        "score": 41.0,
+        "elo": 1827.4,
+        "picks": 16604,
+        "wins": 6875,
+        "win_rate": 41.4
+      },
+      "BOOST_AWAY": {
+        "score": 43.0,
+        "elo": 1883.6,
+        "picks": 44751,
+        "wins": 18723,
+        "win_rate": 41.8
+      },
+      "BOOT_SEQUENCE": {
+        "score": 53.0,
+        "elo": 2028.1,
+        "picks": 32914,
+        "wins": 14756,
+        "win_rate": 44.8
+      },
+      "BORROWED_TIME": {
+        "score": 81.0,
+        "elo": 1997.0,
+        "picks": 30695,
+        "wins": 16344,
+        "win_rate": 53.2
+      },
+      "BOUNCING_FLASK": {
+        "score": 55.0,
+        "elo": 1875.9,
+        "picks": 23477,
+        "wins": 10665,
+        "win_rate": 45.4
+      },
+      "BRAND": {
+        "score": 82.0,
+        "elo": 2028.3,
+        "picks": 21625,
+        "wins": 11587,
+        "win_rate": 53.6
+      },
+      "BREAK": {
+        "score": 60.0,
+        "elo": null,
+        "picks": 13345,
+        "wins": 6276,
+        "win_rate": 47.0
+      },
+      "BREAKTHROUGH": {
+        "score": 25.0,
+        "elo": 1771.2,
+        "picks": 38971,
+        "wins": 14203,
+        "win_rate": 36.4
+      },
+      "BUBBLE_BUBBLE": {
+        "score": 61.0,
+        "elo": 1920.8,
+        "picks": 24581,
+        "wins": 11591,
+        "win_rate": 47.2
+      },
+      "BUFFER": {
+        "score": 82.0,
+        "elo": 2031.3,
+        "picks": 16317,
+        "wins": 8759,
+        "win_rate": 53.7
+      },
+      "BULK_UP": {
+        "score": 60.0,
+        "elo": 1907.0,
+        "picks": 22261,
+        "wins": 10436,
+        "win_rate": 46.9
+      },
+      "BULLET_TIME": {
+        "score": 84.0,
+        "elo": 2008.8,
+        "picks": 19000,
+        "wins": 10276,
+        "win_rate": 54.1
+      },
+      "BULLY": {
+        "score": 66.0,
+        "elo": 1986.5,
+        "picks": 31809,
+        "wins": 15543,
+        "win_rate": 48.9
+      },
+      "BULWARK": {
+        "score": 65.0,
+        "elo": 2069.6,
+        "picks": 38666,
+        "wins": 18718,
+        "win_rate": 48.4
+      },
+      "BUNDLE_OF_JOY": {
+        "score": 92.0,
+        "elo": 1918.2,
+        "picks": 12203,
+        "wins": 6900,
+        "win_rate": 56.5
+      },
+      "BURNING_PACT": {
+        "score": 75.0,
+        "elo": 1955.6,
+        "picks": 33209,
+        "wins": 17058,
+        "win_rate": 51.4
+      },
+      "BURST": {
+        "score": 94.0,
+        "elo": 2080.0,
+        "picks": 24705,
+        "wins": 14164,
+        "win_rate": 57.3
+      },
+      "BURY": {
+        "score": 63.0,
+        "elo": 1740.0,
+        "picks": 10979,
+        "wins": 5256,
+        "win_rate": 47.9
+      },
+      "CALAMITY": {
+        "score": 100.0,
+        "elo": 1677.9,
+        "picks": 3398,
+        "wins": 2154,
+        "win_rate": 63.4
+      },
+      "CALCIFY": {
+        "score": 56.0,
+        "elo": 1881.1,
+        "picks": 18720,
+        "wins": 8574,
+        "win_rate": 45.8
+      },
+      "CALCULATED_GAMBLE": {
+        "score": 88.0,
+        "elo": 2040.4,
+        "picks": 43496,
+        "wins": 24154,
+        "win_rate": 55.5
+      },
+      "CALL_OF_THE_VOID": {
+        "score": 94.0,
+        "elo": 2061.3,
+        "picks": 19596,
+        "wins": 11214,
+        "win_rate": 57.2
+      },
+      "CAPACITOR": {
+        "score": 47.0,
+        "elo": 2086.2,
+        "picks": 45160,
+        "wins": 19425,
+        "win_rate": 43.0
+      },
+      "CAPTURE_SPIRIT": {
+        "score": 69.0,
+        "elo": 2003.0,
+        "picks": 31475,
+        "wins": 15619,
+        "win_rate": 49.6
+      },
+      "CASCADE": {
+        "score": 93.0,
+        "elo": 1999.9,
+        "picks": 18437,
+        "wins": 10496,
+        "win_rate": 56.9
+      },
+      "CATASTROPHE": {
+        "score": 85.0,
+        "elo": 1740.2,
+        "picks": 6845,
+        "wins": 3731,
+        "win_rate": 54.5
+      },
+      "CELESTIAL_MIGHT": {
+        "score": 32.0,
+        "elo": 1607.8,
+        "picks": 17050,
+        "wins": 6572,
+        "win_rate": 38.5
+      },
+      "CHAOS": {
+        "score": 38.0,
+        "elo": 1875.9,
+        "picks": 17890,
+        "wins": 7222,
+        "win_rate": 40.4
+      },
+      "CHARGE": {
+        "score": 70.0,
+        "elo": 1946.6,
+        "picks": 28429,
+        "wins": 14197,
+        "win_rate": 49.9
+      },
+      "CHARGE_BATTERY": {
+        "score": 34.0,
+        "elo": 2004.3,
+        "picks": 70103,
+        "wins": 27482,
+        "win_rate": 39.2
+      },
+      "CHILD_OF_THE_STARS": {
+        "score": 71.0,
+        "elo": 2005.3,
+        "picks": 43111,
+        "wins": 21735,
+        "win_rate": 50.4
+      },
+      "CHILL": {
+        "score": 56.0,
+        "elo": 1985.8,
+        "picks": 28561,
+        "wins": 13034,
+        "win_rate": 45.6
+      },
+      "CINDER": {
+        "score": 16.0,
+        "elo": 1574.7,
+        "picks": 12210,
+        "wins": 4125,
+        "win_rate": 33.8
+      },
+      "CLAW": {
+        "score": 28.0,
+        "elo": 1978.2,
+        "picks": 46572,
+        "wins": 17452,
+        "win_rate": 37.5
+      },
+      "CLEANSE": {
+        "score": 76.0,
+        "elo": 1875.0,
+        "picks": 20067,
+        "wins": 10364,
+        "win_rate": 51.6
+      },
+      "CLOAK_AND_DAGGER": {
+        "score": 58.0,
+        "elo": 1974.2,
+        "picks": 72605,
+        "wins": 33648,
+        "win_rate": 46.3
+      },
+      "CLOAK_OF_STARS": {
+        "score": 51.0,
+        "elo": 1864.8,
+        "picks": 53397,
+        "wins": 23637,
+        "win_rate": 44.3
+      },
+      "COLD_SNAP": {
+        "score": 26.0,
+        "elo": 1835.3,
+        "picks": 39013,
+        "wins": 14401,
+        "win_rate": 36.9
+      },
+      "COLLISION_COURSE": {
+        "score": 43.0,
+        "elo": 1697.5,
+        "picks": 23405,
+        "wins": 9777,
+        "win_rate": 41.8
+      },
+      "COLOSSUS": {
+        "score": 67.0,
+        "elo": 2075.9,
+        "picks": 40745,
+        "wins": 19988,
+        "win_rate": 49.1
+      },
+      "COMET": {
+        "score": 89.0,
+        "elo": 2007.1,
+        "picks": 18325,
+        "wins": 10236,
+        "win_rate": 55.9
+      },
+      "COMPACT": {
+        "score": 57.0,
+        "elo": 2020.2,
+        "picks": 30193,
+        "wins": 13884,
+        "win_rate": 46.0
+      },
+      "COMPILE_DRIVER": {
+        "score": 54.0,
+        "elo": 1738.3,
+        "picks": 24848,
+        "wins": 11217,
+        "win_rate": 45.1
+      },
+      "CONFLAGRATION": {
+        "score": 67.0,
+        "elo": 1991.9,
+        "picks": 18961,
+        "wins": 9309,
+        "win_rate": 49.1
+      },
+      "CONQUEROR": {
+        "score": 60.0,
+        "elo": 1965.9,
+        "picks": 27687,
+        "wins": 12998,
+        "win_rate": 46.9
+      },
+      "CONSUMING_SHADOW": {
+        "score": 53.0,
+        "elo": 1899.0,
+        "picks": 9745,
+        "wins": 4362,
+        "win_rate": 44.8
+      },
+      "CONVERGENCE": {
+        "score": 72.0,
+        "elo": 2014.6,
+        "picks": 35452,
+        "wins": 17908,
+        "win_rate": 50.5
+      },
+      "COOLANT": {
+        "score": 74.0,
+        "elo": 1943.4,
+        "picks": 12101,
+        "wins": 6181,
+        "win_rate": 51.1
+      },
+      "COOLHEADED": {
+        "score": 48.0,
+        "elo": 1942.4,
+        "picks": 58712,
+        "wins": 25489,
+        "win_rate": 43.4
+      },
+      "COORDINATE": {
+        "score": 79.0,
+        "elo": 1751.6,
+        "picks": 6864,
+        "wins": 3612,
+        "win_rate": 52.6
+      },
+      "CORROSIVE_WAVE": {
+        "score": 93.0,
+        "elo": 2001.9,
+        "picks": 18857,
+        "wins": 10712,
+        "win_rate": 56.8
+      },
+      "CORRUPTION": {
+        "score": 84.0,
+        "elo": null,
+        "picks": 1950,
+        "wins": 1063,
+        "win_rate": 54.5
+      },
+      "COSMIC_INDIFFERENCE": {
+        "score": 61.0,
+        "elo": 1909.0,
+        "picks": 58544,
+        "wins": 27614,
+        "win_rate": 47.2
+      },
+      "COUNTDOWN": {
+        "score": 54.0,
+        "elo": 2013.9,
+        "picks": 34111,
+        "wins": 15401,
+        "win_rate": 45.1
+      },
+      "CRASH_LANDING": {
+        "score": 72.0,
+        "elo": 1855.0,
+        "picks": 9386,
+        "wins": 4743,
+        "win_rate": 50.5
+      },
+      "CREATIVE_AI": {
+        "score": 78.0,
+        "elo": 2146.9,
+        "picks": 21782,
+        "wins": 11396,
+        "win_rate": 52.3
+      },
+      "CRESCENT_SPEAR": {
+        "score": 40.0,
+        "elo": 1776.9,
+        "picks": 30940,
+        "wins": 12659,
+        "win_rate": 40.9
+      },
+      "CRIMSON_MANTLE": {
+        "score": 96.0,
+        "elo": 2077.6,
+        "picks": 23519,
+        "wins": 13589,
+        "win_rate": 57.8
+      },
+      "CRUELTY": {
+        "score": 82.0,
+        "elo": 2135.8,
+        "picks": 26672,
+        "wins": 14293,
+        "win_rate": 53.6
+      },
+      "CRUSH_UNDER": {
+        "score": 37.0,
+        "elo": 1795.1,
+        "picks": 37712,
+        "wins": 15131,
+        "win_rate": 40.1
+      },
+      "DAGGER_SPRAY": {
+        "score": 29.0,
+        "elo": 1749.4,
+        "picks": 34389,
+        "wins": 12943,
+        "win_rate": 37.6
+      },
+      "DAGGER_THROW": {
+        "score": 49.0,
+        "elo": 1879.1,
+        "picks": 57248,
+        "wins": 25061,
+        "win_rate": 43.8
+      },
+      "DANSE_MACABRE": {
+        "score": 74.0,
+        "elo": 1800.0,
+        "picks": 16245,
+        "wins": 8298,
+        "win_rate": 51.1
+      },
+      "DARKNESS": {
+        "score": 38.0,
+        "elo": 1912.2,
+        "picks": 19994,
+        "wins": 8075,
+        "win_rate": 40.4
+      },
+      "DARK_EMBRACE": {
+        "score": 96.0,
+        "elo": 1925.7,
+        "picks": 13499,
+        "wins": 7822,
+        "win_rate": 57.9
+      },
+      "DARK_SHACKLES": {
+        "score": 100.0,
+        "elo": 1944.5,
+        "picks": 15771,
+        "wins": 9421,
+        "win_rate": 59.7
+      },
+      "DASH": {
+        "score": 45.0,
+        "elo": 1833.7,
+        "picks": 20837,
+        "wins": 8824,
+        "win_rate": 42.3
+      },
+      "DEADLY_POISON": {
+        "score": 40.0,
+        "elo": 1839.3,
+        "picks": 43347,
+        "wins": 17795,
+        "win_rate": 41.1
+      },
+      "DEATHBRINGER": {
+        "score": 57.0,
+        "elo": 2040.9,
+        "picks": 33179,
+        "wins": 15289,
+        "win_rate": 46.1
+      },
+      "DEATHS_DOOR": {
+        "score": 62.0,
+        "elo": 1947.9,
+        "picks": 24595,
+        "wins": 11686,
+        "win_rate": 47.5
+      },
+      "DEATH_MARCH": {
+        "score": 66.0,
+        "elo": 1778.3,
+        "picks": 12993,
+        "wins": 6332,
+        "win_rate": 48.7
+      },
+      "DEBILITATE": {
+        "score": 97.0,
+        "elo": 2025.8,
+        "picks": 33488,
+        "wins": 19503,
+        "win_rate": 58.2
+      },
+      "DECISIONS_DECISIONS": {
+        "score": 100.0,
+        "elo": 2100.3,
+        "picks": 23063,
+        "wins": 13839,
+        "win_rate": 60.0
+      },
+      "DEFILE": {
+        "score": 33.0,
+        "elo": 1726.8,
+        "picks": 24536,
+        "wins": 9532,
+        "win_rate": 38.8
+      },
+      "DEFLECT": {
+        "score": 56.0,
+        "elo": 1871.4,
+        "picks": 53056,
+        "wins": 24354,
+        "win_rate": 45.9
+      },
+      "DEFRAGMENT": {
+        "score": 78.0,
+        "elo": 2182.5,
+        "picks": 24455,
+        "wins": 12843,
+        "win_rate": 52.5
+      },
+      "DEFY": {
+        "score": 58.0,
+        "elo": 1966.7,
+        "picks": 66465,
+        "wins": 30860,
+        "win_rate": 46.4
+      },
+      "DELAY": {
+        "score": 63.0,
+        "elo": 1964.5,
+        "picks": 26800,
+        "wins": 12829,
+        "win_rate": 47.9
+      },
+      "DEMESNE": {
+        "score": 100.0,
+        "elo": 2202.4,
+        "picks": 27878,
+        "wins": 16792,
+        "win_rate": 60.2
+      },
+      "DEMONIC_SHIELD": {
+        "score": 91.0,
+        "elo": 1905.7,
+        "picks": 18297,
+        "wins": 10325,
+        "win_rate": 56.4
+      },
+      "DEMON_FORM": {
+        "score": 74.0,
+        "elo": 2041.3,
+        "picks": 23422,
+        "wins": 12003,
+        "win_rate": 51.2
+      },
+      "DEVASTATE": {
+        "score": 47.0,
+        "elo": 1794.3,
+        "picks": 16365,
+        "wins": 7041,
+        "win_rate": 43.0
+      },
+      "DEVOUR_LIFE": {
+        "score": 84.0,
+        "elo": 2015.8,
+        "picks": 16748,
+        "wins": 9056,
+        "win_rate": 54.1
+      },
+      "DIRGE": {
+        "score": 79.0,
+        "elo": 2019.3,
+        "picks": 33085,
+        "wins": 17406,
+        "win_rate": 52.6
+      },
+      "DISCOVERY": {
+        "score": 81.0,
+        "elo": 1946.3,
+        "picks": 15332,
+        "wins": 8177,
+        "win_rate": 53.3
+      },
+      "DISMANTLE": {
+        "score": 50.0,
+        "elo": 1912.1,
+        "picks": 28993,
+        "wins": 12748,
+        "win_rate": 44.0
+      },
+      "DODGE_AND_ROLL": {
+        "score": 56.0,
+        "elo": 1779.1,
+        "picks": 35581,
+        "wins": 16295,
+        "win_rate": 45.8
+      },
+      "DOMINATE": {
+        "score": 71.0,
+        "elo": 2110.4,
+        "picks": 44696,
+        "wins": 22472,
+        "win_rate": 50.3
+      },
+      "DOUBLE_ENERGY": {
+        "score": 55.0,
+        "elo": 2000.0,
+        "picks": 28108,
+        "wins": 12785,
+        "win_rate": 45.5
+      },
+      "DRAIN_POWER": {
+        "score": 37.0,
+        "elo": 1804.2,
+        "picks": 35062,
+        "wins": 14079,
+        "win_rate": 40.2
+      },
+      "DRAMATIC_ENTRANCE": {
+        "score": 57.0,
+        "elo": 1855.8,
+        "picks": 13319,
+        "wins": 6154,
+        "win_rate": 46.2
+      },
+      "DREDGE": {
+        "score": 91.0,
+        "elo": 1896.2,
+        "picks": 20549,
+        "wins": 11573,
+        "win_rate": 56.3
+      },
+      "DRUM_OF_BATTLE": {
+        "score": 75.0,
+        "elo": 1775.4,
+        "picks": 12968,
+        "wins": 6673,
+        "win_rate": 51.5
+      },
+      "DYING_STAR": {
+        "score": 93.0,
+        "elo": 2054.0,
+        "picks": 21084,
+        "wins": 11979,
+        "win_rate": 56.8
+      },
+      "ECHOING_SLASH": {
+        "score": 49.0,
+        "elo": 1876.1,
+        "picks": 13194,
+        "wins": 5771,
+        "win_rate": 43.7
+      },
+      "ECHO_FORM": {
+        "score": 88.0,
+        "elo": 2285.4,
+        "picks": 29769,
+        "wins": 16487,
+        "win_rate": 55.4
+      },
+      "EIDOLON": {
+        "score": 67.0,
+        "elo": 1651.7,
+        "picks": 4121,
+        "wins": 2028,
+        "win_rate": 49.2
+      },
+      "END_OF_DAYS": {
+        "score": 67.0,
+        "elo": 2064.0,
+        "picks": 20026,
+        "wins": 9804,
+        "win_rate": 49.0
+      },
+      "ENERGY_SURGE": {
+        "score": 86.0,
+        "elo": 2168.0,
+        "picks": 29536,
+        "wins": 16201,
+        "win_rate": 54.9
+      },
+      "ENFEEBLING_TOUCH": {
+        "score": 83.0,
+        "elo": 2106.2,
+        "picks": 40852,
+        "wins": 22002,
+        "win_rate": 53.9
+      },
+      "ENTROPY": {
+        "score": 100.0,
+        "elo": 1758.1,
+        "picks": 5894,
+        "wins": 3656,
+        "win_rate": 62.0
+      },
+      "ENVENOM": {
+        "score": 85.0,
+        "elo": 2071.6,
+        "picks": 24002,
+        "wins": 13094,
+        "win_rate": 54.6
+      },
+      "EQUILIBRIUM": {
+        "score": 84.0,
+        "elo": 1787.7,
+        "picks": 8375,
+        "wins": 4549,
+        "win_rate": 54.3
+      },
+      "ERADICATE": {
+        "score": 94.0,
+        "elo": 1953.2,
+        "picks": 13839,
+        "wins": 7923,
+        "win_rate": 57.3
+      },
+      "ESCAPE_PLAN": {
+        "score": 84.0,
+        "elo": 2035.7,
+        "picks": 42526,
+        "wins": 22992,
+        "win_rate": 54.1
+      },
+      "ETERNAL_ARMOR": {
+        "score": 100.0,
+        "elo": 1699.2,
+        "picks": 5263,
+        "wins": 3379,
+        "win_rate": 64.2
+      },
+      "EVIL_EYE": {
+        "score": 58.0,
+        "elo": 1902.0,
+        "picks": 25823,
+        "wins": 11979,
+        "win_rate": 46.4
+      },
+      "EXPECT_A_FIGHT": {
+        "score": 57.0,
+        "elo": 1890.6,
+        "picks": 25487,
+        "wins": 11716,
+        "win_rate": 46.0
+      },
+      "EXPERTISE": {
+        "score": 86.0,
+        "elo": 1792.3,
+        "picks": 16089,
+        "wins": 8820,
+        "win_rate": 54.8
+      },
+      "EXPOSE": {
+        "score": 85.0,
+        "elo": 2077.5,
+        "picks": 49631,
+        "wins": 26974,
+        "win_rate": 54.3
+      },
+      "FAN_OF_KNIVES": {
+        "score": 91.0,
+        "elo": 2125.8,
+        "picks": 29119,
+        "wins": 16397,
+        "win_rate": 56.3
+      },
+      "FASTEN": {
+        "score": 65.0,
+        "elo": 1979.2,
+        "picks": 20432,
+        "wins": 9884,
+        "win_rate": 48.4
+      },
+      "FEAR": {
+        "score": 52.0,
+        "elo": 1815.6,
+        "picks": 37147,
+        "wins": 16602,
+        "win_rate": 44.7
+      },
+      "FEED": {
+        "score": 51.0,
+        "elo": 1930.0,
+        "picks": 15524,
+        "wins": 6887,
+        "win_rate": 44.4
+      },
+      "FEEL_NO_PAIN": {
+        "score": 78.0,
+        "elo": 1883.1,
+        "picks": 27235,
+        "wins": 14231,
+        "win_rate": 52.3
+      },
+      "FERAL": {
+        "score": 56.0,
+        "elo": 1959.2,
+        "picks": 27958,
+        "wins": 12815,
+        "win_rate": 45.8
+      },
+      "FETCH": {
+        "score": 65.0,
+        "elo": 1960.9,
+        "picks": 28306,
+        "wins": 13699,
+        "win_rate": 48.4
+      },
+      "FIEND_FIRE": {
+        "score": 84.0,
+        "elo": 1886.7,
+        "picks": 12995,
+        "wins": 7065,
+        "win_rate": 54.4
+      },
+      "FIGHT_ME": {
+        "score": 40.0,
+        "elo": 1800.9,
+        "picks": 17189,
+        "wins": 7029,
+        "win_rate": 40.9
+      },
+      "FIGHT_THROUGH": {
+        "score": 51.0,
+        "elo": 1916.4,
+        "picks": 20001,
+        "wins": 8879,
+        "win_rate": 44.4
+      },
+      "FINESSE": {
+        "score": 93.0,
+        "elo": 1998.2,
+        "picks": 22287,
+        "wins": 12662,
+        "win_rate": 56.8
+      },
+      "FINISHER": {
+        "score": 70.0,
+        "elo": 1901.0,
+        "picks": 27641,
+        "wins": 13825,
+        "win_rate": 50.0
+      },
+      "FISTICUFFS": {
+        "score": 67.0,
+        "elo": 1827.4,
+        "picks": 9884,
+        "wins": 4862,
+        "win_rate": 49.2
+      },
+      "FLAK_CANNON": {
+        "score": 78.0,
+        "elo": 2029.8,
+        "picks": 13587,
+        "wins": 7134,
+        "win_rate": 52.5
+      },
+      "FLAME_BARRIER": {
+        "score": 49.0,
+        "elo": 1991.7,
+        "picks": 38829,
+        "wins": 16947,
+        "win_rate": 43.6
+      },
+      "FLANKING": {
+        "score": 100.0,
+        "elo": 2033.2,
+        "picks": 28394,
+        "wins": 18051,
+        "win_rate": 63.6
+      },
+      "FLASH_OF_STEEL": {
+        "score": 91.0,
+        "elo": 1941.8,
+        "picks": 17588,
+        "wins": 9881,
+        "win_rate": 56.2
+      },
+      "FLATTEN": {
+        "score": 38.0,
+        "elo": 1855.4,
+        "picks": 40552,
+        "wins": 16404,
+        "win_rate": 40.5
+      },
+      "FLECHETTES": {
+        "score": 60.0,
+        "elo": 1754.2,
+        "picks": 15030,
+        "wins": 7069,
+        "win_rate": 47.0
+      },
+      "FLICK_FLACK": {
+        "score": 39.0,
+        "elo": 1799.4,
+        "picks": 42977,
+        "wins": 17488,
+        "win_rate": 40.7
+      },
+      "FOCUSED_STRIKE": {
+        "score": 23.0,
+        "elo": 1789.2,
+        "picks": 30660,
+        "wins": 10953,
+        "win_rate": 35.7
+      },
+      "FOLLOW_THROUGH": {
+        "score": 49.0,
+        "elo": 1663.2,
+        "picks": 13484,
+        "wins": 5889,
+        "win_rate": 43.7
+      },
+      "FOOTWORK": {
+        "score": 71.0,
+        "elo": 2046.9,
+        "picks": 55263,
+        "wins": 27794,
+        "win_rate": 50.3
+      },
+      "FORBIDDEN_GRIMOIRE": {
+        "score": 99.0,
+        "elo": null,
+        "picks": 4742,
+        "wins": 2793,
+        "win_rate": 58.9
+      },
+      "FOREGONE_CONCLUSION": {
+        "score": 93.0,
+        "elo": 1912.2,
+        "picks": 12528,
+        "wins": 7141,
+        "win_rate": 57.0
+      },
+      "FORGOTTEN_RITUAL": {
+        "score": 69.0,
+        "elo": 1864.6,
+        "picks": 21335,
+        "wins": 10605,
+        "win_rate": 49.7
+      },
+      "FRIENDSHIP": {
+        "score": 81.0,
+        "elo": 2056.4,
+        "picks": 43097,
+        "wins": 22915,
+        "win_rate": 53.2
+      },
+      "FTL": {
+        "score": 51.0,
+        "elo": 1959.0,
+        "picks": 27566,
+        "wins": 12205,
+        "win_rate": 44.3
+      },
+      "FURNACE": {
+        "score": 59.0,
+        "elo": 1995.0,
+        "picks": 34478,
+        "wins": 16113,
+        "win_rate": 46.7
+      },
+      "FUSION": {
+        "score": 43.0,
+        "elo": 1887.8,
+        "picks": 18677,
+        "wins": 7801,
+        "win_rate": 41.8
+      },
+      "GAMMA_BLAST": {
+        "score": 69.0,
+        "elo": 1902.6,
+        "picks": 26630,
+        "wins": 13248,
+        "win_rate": 49.7
+      },
+      "GANG_UP": {
+        "score": 100.0,
+        "elo": 1881.9,
+        "picks": 13756,
+        "wins": 8107,
+        "win_rate": 58.9
+      },
+      "GATHER_LIGHT": {
+        "score": 48.0,
+        "elo": 1993.5,
+        "picks": 76350,
+        "wins": 33218,
+        "win_rate": 43.5
+      },
+      "GENESIS": {
+        "score": 84.0,
+        "elo": 2113.3,
+        "picks": 23619,
+        "wins": 12808,
+        "win_rate": 54.2
+      },
+      "GENETIC_ALGORITHM": {
+        "score": 62.0,
+        "elo": 1999.9,
+        "picks": 15728,
+        "wins": 7463,
+        "win_rate": 47.5
+      },
+      "GLACIER": {
+        "score": 52.0,
+        "elo": 2022.8,
+        "picks": 31143,
+        "wins": 13861,
+        "win_rate": 44.5
+      },
+      "GLASSWORK": {
+        "score": 34.0,
+        "elo": 1914.1,
+        "picks": 20423,
+        "wins": 7989,
+        "win_rate": 39.1
+      },
+      "GLIMMER": {
+        "score": 83.0,
+        "elo": 1843.4,
+        "picks": 18333,
+        "wins": 9883,
+        "win_rate": 53.9
+      },
+      "GLIMPSE_BEYOND": {
+        "score": 100.0,
+        "elo": 2115.3,
+        "picks": 16523,
+        "wins": 11158,
+        "win_rate": 67.5
+      },
+      "GLITTERSTREAM": {
+        "score": 47.0,
+        "elo": 1799.2,
+        "picks": 38288,
+        "wins": 16494,
+        "win_rate": 43.1
+      },
+      "GLOW": {
+        "score": 59.0,
+        "elo": 1958.0,
+        "picks": 71356,
+        "wins": 33278,
+        "win_rate": 46.6
+      },
+      "GOLD_AXE": {
+        "score": 100.0,
+        "elo": 1895.6,
+        "picks": 9850,
+        "wins": 6391,
+        "win_rate": 64.9
+      },
+      "GO_FOR_THE_EYES": {
+        "score": 45.0,
+        "elo": 1896.1,
+        "picks": 49038,
+        "wins": 20794,
+        "win_rate": 42.4
+      },
+      "GRAND_FINALE": {
+        "score": 66.0,
+        "elo": 1742.5,
+        "picks": 7436,
+        "wins": 3627,
+        "win_rate": 48.8
+      },
+      "GRAPPLE": {
+        "score": 59.0,
+        "elo": 1809.7,
+        "picks": 4287,
+        "wins": 1997,
+        "win_rate": 46.6
+      },
+      "GRAVEBLAST": {
+        "score": 70.0,
+        "elo": 1837.8,
+        "picks": 38301,
+        "wins": 19201,
+        "win_rate": 50.1
+      },
+      "GRAVE_WARDEN": {
+        "score": 52.0,
+        "elo": 2010.4,
+        "picks": 75637,
+        "wins": 33736,
+        "win_rate": 44.6
+      },
+      "GUARDS": {
+        "score": 92.0,
+        "elo": 1967.0,
+        "picks": 15153,
+        "wins": 8571,
+        "win_rate": 56.6
+      },
+      "GUIDING_STAR": {
+        "score": 53.0,
+        "elo": 1716.8,
+        "picks": 28796,
+        "wins": 12937,
+        "win_rate": 44.9
+      },
+      "GUNK_UP": {
+        "score": 30.0,
+        "elo": 1758.8,
+        "picks": 24599,
+        "wins": 9352,
+        "win_rate": 38.0
+      },
+      "HAILSTORM": {
+        "score": 48.0,
+        "elo": 1889.6,
+        "picks": 22153,
+        "wins": 9607,
+        "win_rate": 43.4
+      },
+      "HAMMER_TIME": {
+        "score": 100.0,
+        "elo": 1996.0,
+        "picks": 11300,
+        "wins": 6660,
+        "win_rate": 58.9
+      },
+      "HAND_OF_GREED": {
+        "score": 74.0,
+        "elo": 1539.5,
+        "picks": 2845,
+        "wins": 1456,
+        "win_rate": 51.2
+      },
+      "HAND_TRICK": {
+        "score": 61.0,
+        "elo": 1880.2,
+        "picks": 19646,
+        "wins": 9283,
+        "win_rate": 47.3
+      },
+      "HANG": {
+        "score": 80.0,
+        "elo": 2061.3,
+        "picks": 17885,
+        "wins": 9488,
+        "win_rate": 53.1
+      },
+      "HAUNT": {
+        "score": 67.0,
+        "elo": 1926.7,
+        "picks": 28302,
+        "wins": 13924,
+        "win_rate": 49.2
+      },
+      "HAVOC": {
+        "score": 54.0,
+        "elo": 1643.2,
+        "picks": 19510,
+        "wins": 8790,
+        "win_rate": 45.1
+      },
+      "HAZE": {
+        "score": 57.0,
+        "elo": 1949.2,
+        "picks": 30778,
+        "wins": 14159,
+        "win_rate": 46.0
+      },
+      "HEADBUTT": {
+        "score": 51.0,
+        "elo": 1798.2,
+        "picks": 41799,
+        "wins": 18498,
+        "win_rate": 44.3
+      },
+      "HEAVENLY_DRILL": {
+        "score": 91.0,
+        "elo": 1952.7,
+        "picks": 9849,
+        "wins": 5553,
+        "win_rate": 56.4
+      },
+      "HEGEMONY": {
+        "score": 54.0,
+        "elo": 1831.9,
+        "picks": 18218,
+        "wins": 8244,
+        "win_rate": 45.3
+      },
+      "HEIRLOOM_HAMMER": {
+        "score": 75.0,
+        "elo": 1856.7,
+        "picks": 9717,
+        "wins": 5007,
+        "win_rate": 51.5
+      },
+      "HELIX_DRILL": {
+        "score": 80.0,
+        "elo": 1947.7,
+        "picks": 8534,
+        "wins": 4520,
+        "win_rate": 53.0
+      },
+      "HELLRAISER": {
+        "score": 71.0,
+        "elo": 2041.4,
+        "picks": 22031,
+        "wins": 11053,
+        "win_rate": 50.2
+      },
+      "HEMOKINESIS": {
+        "score": 40.0,
+        "elo": 1751.0,
+        "picks": 14052,
+        "wins": 5743,
+        "win_rate": 40.9
+      },
+      "HIDDEN_CACHE": {
+        "score": 52.0,
+        "elo": 1952.5,
+        "picks": 71157,
+        "wins": 31673,
+        "win_rate": 44.5
+      },
+      "HIDDEN_DAGGERS": {
+        "score": 80.0,
+        "elo": 2086.5,
+        "picks": 35861,
+        "wins": 18962,
+        "win_rate": 52.9
+      },
+      "HIDDEN_GEM": {
+        "score": 100.0,
+        "elo": 1998.7,
+        "picks": 24143,
+        "wins": 14988,
+        "win_rate": 62.1
+      },
+      "HIGH_FIVE": {
+        "score": 57.0,
+        "elo": 1924.6,
+        "picks": 24734,
+        "wins": 11391,
+        "win_rate": 46.1
+      },
+      "HOLOGRAM": {
+        "score": 54.0,
+        "elo": 1970.4,
+        "picks": 61861,
+        "wins": 27888,
+        "win_rate": 45.1
+      },
+      "HOTFIX": {
+        "score": 40.0,
+        "elo": 1912.0,
+        "picks": 51988,
+        "wins": 21351,
+        "win_rate": 41.1
+      },
+      "HOWL_FROM_BEYOND": {
+        "score": 44.0,
+        "elo": 1821.1,
+        "picks": 17730,
+        "wins": 7488,
+        "win_rate": 42.2
+      },
+      "HUDDLE_UP": {
+        "score": 100.0,
+        "elo": 1875.7,
+        "picks": 13594,
+        "wins": 8713,
+        "win_rate": 64.1
+      },
+      "HYPERBEAM": {
+        "score": 49.0,
+        "elo": 1786.1,
+        "picks": 6138,
+        "wins": 2677,
+        "win_rate": 43.6
+      },
+      "ICE_LANCE": {
+        "score": 68.0,
+        "elo": 1957.4,
+        "picks": 13675,
+        "wins": 6774,
+        "win_rate": 49.5
+      },
+      "IGNITION": {
+        "score": 100.0,
+        "elo": 2042.8,
+        "picks": 11880,
+        "wins": 7116,
+        "win_rate": 59.9
+      },
+      "IMPATIENCE": {
+        "score": 100.0,
+        "elo": 1725.8,
+        "picks": 6601,
+        "wins": 3964,
+        "win_rate": 60.1
+      },
+      "IMPERVIOUS": {
+        "score": 87.0,
+        "elo": 2029.3,
+        "picks": 21122,
+        "wins": 11642,
+        "win_rate": 55.1
+      },
+      "INFERNAL_BLADE": {
+        "score": 50.0,
+        "elo": 1944.1,
+        "picks": 28348,
+        "wins": 12467,
+        "win_rate": 44.0
+      },
+      "INFERNO": {
+        "score": 54.0,
+        "elo": 1887.2,
+        "picks": 21134,
+        "wins": 9520,
+        "win_rate": 45.0
+      },
+      "INFINITE_BLADES": {
+        "score": 74.0,
+        "elo": 2030.2,
+        "picks": 50599,
+        "wins": 25929,
+        "win_rate": 51.2
+      },
+      "INFLAME": {
+        "score": 47.0,
+        "elo": 1974.0,
+        "picks": 42528,
+        "wins": 18373,
+        "win_rate": 43.2
+      },
+      "INTERCEPT": {
+        "score": 89.0,
+        "elo": 1669.4,
+        "picks": 4535,
+        "wins": 2531,
+        "win_rate": 55.8
+      },
+      "INVOKE": {
+        "score": 54.0,
+        "elo": 1977.6,
+        "picks": 69770,
+        "wins": 31585,
+        "win_rate": 45.3
+      },
+      "IRON_WAVE": {
+        "score": 36.0,
+        "elo": 1801.0,
+        "picks": 38150,
+        "wins": 15116,
+        "win_rate": 39.6
+      },
+      "ITERATION": {
+        "score": 70.0,
+        "elo": 1890.5,
+        "picks": 22937,
+        "wins": 11478,
+        "win_rate": 50.0
+      },
+      "I_AM_INVINCIBLE": {
+        "score": 76.0,
+        "elo": 1939.3,
+        "picks": 13960,
+        "wins": 7225,
+        "win_rate": 51.8
+      },
+      "JACKPOT": {
+        "score": 100.0,
+        "elo": 1834.4,
+        "picks": 9572,
+        "wins": 5851,
+        "win_rate": 61.1
+      },
+      "JACK_OF_ALL_TRADES": {
+        "score": 83.0,
+        "elo": 1815.0,
+        "picks": 8663,
+        "wins": 4666,
+        "win_rate": 53.9
+      },
+      "JUGGERNAUT": {
+        "score": 75.0,
+        "elo": 1952.8,
+        "picks": 14930,
+        "wins": 7684,
+        "win_rate": 51.5
+      },
+      "JUGGLING": {
+        "score": 65.0,
+        "elo": 1810.1,
+        "picks": 20744,
+        "wins": 10042,
+        "win_rate": 48.4
+      },
+      "KINGLY_KICK": {
+        "score": 38.0,
+        "elo": 1764.3,
+        "picks": 13225,
+        "wins": 5335,
+        "win_rate": 40.3
+      },
+      "KINGLY_PUNCH": {
+        "score": 35.0,
+        "elo": 1791.6,
+        "picks": 14528,
+        "wins": 5715,
+        "win_rate": 39.3
+      },
+      "KNIFE_TRAP": {
+        "score": 100.0,
+        "elo": 2114.5,
+        "picks": 27309,
+        "wins": 16637,
+        "win_rate": 60.9
+      },
+      "KNOCKDOWN": {
+        "score": 100.0,
+        "elo": 1796.1,
+        "picks": 5948,
+        "wins": 4484,
+        "win_rate": 75.4
+      },
+      "KNOCKOUT_BLOW": {
+        "score": 32.0,
+        "elo": 1734.8,
+        "picks": 12730,
+        "wins": 4899,
+        "win_rate": 38.5
+      },
+      "KNOW_THY_PLACE": {
+        "score": 58.0,
+        "elo": 1889.4,
+        "picks": 56546,
+        "wins": 26255,
+        "win_rate": 46.4
+      },
+      "LARGESSE": {
+        "score": 94.0,
+        "elo": 1893.0,
+        "picks": 14861,
+        "wins": 8490,
+        "win_rate": 57.1
+      },
+      "LEADING_STRIKE": {
+        "score": 53.0,
+        "elo": 1928.3,
+        "picks": 64214,
+        "wins": 28913,
+        "win_rate": 45.0
+      },
+      "LEAP": {
+        "score": 28.0,
+        "elo": 1844.6,
+        "picks": 40744,
+        "wins": 15276,
+        "win_rate": 37.5
+      },
+      "LEGION_OF_BONE": {
+        "score": 100.0,
+        "elo": 1958.7,
+        "picks": 18051,
+        "wins": 10769,
+        "win_rate": 59.7
+      },
+      "LEG_SWEEP": {
+        "score": 68.0,
+        "elo": 1922.6,
+        "picks": 28888,
+        "wins": 14276,
+        "win_rate": 49.4
+      },
+      "LETHALITY": {
+        "score": 70.0,
+        "elo": 2068.4,
+        "picks": 43261,
+        "wins": 21592,
+        "win_rate": 49.9
+      },
+      "LIFT": {
+        "score": 91.0,
+        "elo": 1747.2,
+        "picks": 7062,
+        "wins": 3975,
+        "win_rate": 56.3
+      },
+      "LIGHTNING_ROD": {
+        "score": 30.0,
+        "elo": 1943.2,
+        "picks": 58437,
+        "wins": 22132,
+        "win_rate": 37.9
+      },
+      "LOOP": {
+        "score": 42.0,
+        "elo": 2019.3,
+        "picks": 34147,
+        "wins": 14201,
+        "win_rate": 41.6
+      },
+      "LUNAR_BLAST": {
+        "score": 77.0,
+        "elo": 1757.1,
+        "picks": 8789,
+        "wins": 4569,
+        "win_rate": 52.0
+      },
+      "MACHINE_LEARNING": {
+        "score": 90.0,
+        "elo": 2137.6,
+        "picks": 22451,
+        "wins": 12573,
+        "win_rate": 56.0
+      },
+      "MAKE_IT_SO": {
+        "score": 90.0,
+        "elo": 1988.7,
+        "picks": 15647,
+        "wins": 8745,
+        "win_rate": 55.9
+      },
+      "MALAISE": {
+        "score": 100.0,
+        "elo": 1918.8,
+        "picks": 14032,
+        "wins": 8867,
+        "win_rate": 63.2
+      },
+      "MANGLE": {
+        "score": 91.0,
+        "elo": 1944.9,
+        "picks": 16230,
+        "wins": 9148,
+        "win_rate": 56.4
+      },
+      "MANIFEST_AUTHORITY": {
+        "score": 69.0,
+        "elo": 1943.6,
+        "picks": 24731,
+        "wins": 12322,
+        "win_rate": 49.8
+      },
+      "MASTER_OF_STRATEGY": {
+        "score": 100.0,
+        "elo": 1864.1,
+        "picks": 13694,
+        "wins": 9600,
+        "win_rate": 70.1
+      },
+      "MASTER_PLANNER": {
+        "score": 87.0,
+        "elo": 2010.6,
+        "picks": 16850,
+        "wins": 9265,
+        "win_rate": 55.0
+      },
+      "MAYHEM": {
+        "score": 100.0,
+        "elo": 1843.1,
+        "picks": 11731,
+        "wins": 7536,
+        "win_rate": 64.2
+      },
+      "MELANCHOLY": {
+        "score": 50.0,
+        "elo": 1795.0,
+        "picks": 13508,
+        "wins": 5942,
+        "win_rate": 44.0
+      },
+      "MEMENTO_MORI": {
+        "score": 61.0,
+        "elo": 1718.2,
+        "picks": 12724,
+        "wins": 6000,
+        "win_rate": 47.2
+      },
+      "METEOR_SHOWER": {
+        "score": 63.0,
+        "elo": null,
+        "picks": 10379,
+        "wins": 4982,
+        "win_rate": 48.0
+      },
+      "METEOR_STRIKE": {
+        "score": 76.0,
+        "elo": 1866.9,
+        "picks": 9255,
+        "wins": 4790,
+        "win_rate": 51.8
+      },
+      "MIMIC": {
+        "score": 100.0,
+        "elo": 1797.4,
+        "picks": 6640,
+        "wins": 4684,
+        "win_rate": 70.5
+      },
+      "MIND_BLAST": {
+        "score": 93.0,
+        "elo": 1722.4,
+        "picks": 6333,
+        "wins": 3616,
+        "win_rate": 57.1
+      },
+      "MIRAGE": {
+        "score": 72.0,
+        "elo": 1810.4,
+        "picks": 17526,
+        "wins": 8854,
+        "win_rate": 50.5
+      },
+      "MISERY": {
+        "score": 93.0,
+        "elo": 2096.2,
+        "picks": 22065,
+        "wins": 12581,
+        "win_rate": 57.0
+      },
+      "MODDED": {
+        "score": 76.0,
+        "elo": 2144.3,
+        "picks": 23832,
+        "wins": 12315,
+        "win_rate": 51.7
+      },
+      "MOLTEN_FIST": {
+        "score": 50.0,
+        "elo": 1955.1,
+        "picks": 61283,
+        "wins": 26933,
+        "win_rate": 43.9
+      },
+      "MOMENTUM_STRIKE": {
+        "score": 24.0,
+        "elo": 1784.3,
+        "picks": 29395,
+        "wins": 10628,
+        "win_rate": 36.2
+      },
+      "MONARCHS_GAZE": {
+        "score": 93.0,
+        "elo": 1908.8,
+        "picks": 11308,
+        "wins": 6424,
+        "win_rate": 56.8
+      },
+      "MONOLOGUE": {
+        "score": 64.0,
+        "elo": 1833.3,
+        "picks": 16802,
+        "wins": 8097,
+        "win_rate": 48.2
+      },
+      "MULTI_CAST": {
+        "score": 61.0,
+        "elo": 1905.1,
+        "picks": 11115,
+        "wins": 5250,
+        "win_rate": 47.2
+      },
+      "MURDER": {
+        "score": 85.0,
+        "elo": 1893.6,
+        "picks": 14099,
+        "wins": 7688,
+        "win_rate": 54.5
+      },
+      "NECRO_MASTERY": {
+        "score": 79.0,
+        "elo": 2039.6,
+        "picks": 18360,
+        "wins": 9671,
+        "win_rate": 52.7
+      },
+      "NEGATIVE_PULSE": {
+        "score": 35.0,
+        "elo": 1991.8,
+        "picks": 62585,
+        "wins": 24689,
+        "win_rate": 39.4
+      },
+      "NEUROSURGE": {
+        "score": 100.0,
+        "elo": 2103.2,
+        "picks": 21188,
+        "wins": 13122,
+        "win_rate": 61.9
+      },
+      "NEUTRON_AEGIS": {
+        "score": 79.0,
+        "elo": 1908.7,
+        "picks": 12152,
+        "wins": 6389,
+        "win_rate": 52.6
+      },
+      "NIGHTMARE": {
+        "score": 94.0,
+        "elo": 1961.7,
+        "picks": 16163,
+        "wins": 9262,
+        "win_rate": 57.3
+      },
+      "NOSTALGIA": {
+        "score": 100.0,
+        "elo": 1742.0,
+        "picks": 6211,
+        "wins": 4042,
+        "win_rate": 65.1
+      },
+      "NOXIOUS_FUMES": {
+        "score": 60.0,
+        "elo": 2038.2,
+        "picks": 49342,
+        "wins": 23133,
+        "win_rate": 46.9
+      },
+      "NO_ESCAPE": {
+        "score": 59.0,
+        "elo": 2056.0,
+        "picks": 32787,
+        "wins": 15292,
+        "win_rate": 46.6
+      },
+      "NULL": {
+        "score": 46.0,
+        "elo": 1846.2,
+        "picks": 17175,
+        "wins": 7346,
+        "win_rate": 42.8
+      },
+      "OBLIVION": {
+        "score": 85.0,
+        "elo": 2076.0,
+        "picks": 19422,
+        "wins": 10603,
+        "win_rate": 54.6
+      },
+      "OFFERING": {
+        "score": 100.0,
+        "elo": 2165.2,
+        "picks": 30574,
+        "wins": 18319,
+        "win_rate": 59.9
+      },
+      "OMNISLICE": {
+        "score": 55.0,
+        "elo": 1824.9,
+        "picks": 10755,
+        "wins": 4877,
+        "win_rate": 45.3
+      },
+      "ONE_TWO_PUNCH": {
+        "score": 75.0,
+        "elo": 2033.9,
+        "picks": 21713,
+        "wins": 11180,
+        "win_rate": 51.5
+      },
+      "ORBIT": {
+        "score": 78.0,
+        "elo": 2037.5,
+        "picks": 43727,
+        "wins": 22895,
+        "win_rate": 52.4
+      },
+      "OUTBREAK": {
+        "score": 60.0,
+        "elo": 1883.0,
+        "picks": 29349,
+        "wins": 13775,
+        "win_rate": 46.9
+      },
+      "OVERCLOCK": {
+        "score": 71.0,
+        "elo": 2004.9,
+        "picks": 27832,
+        "wins": 13972,
+        "win_rate": 50.2
+      },
+      "PACTS_END": {
+        "score": 76.0,
+        "elo": 1955.0,
+        "picks": 12930,
+        "wins": 6711,
+        "win_rate": 51.9
+      },
+      "PAGESTORM": {
+        "score": 88.0,
+        "elo": 1799.9,
+        "picks": 17222,
+        "wins": 9524,
+        "win_rate": 55.3
+      },
+      "PALE_BLUE_DOT": {
+        "score": 100.0,
+        "elo": 1743.2,
+        "picks": 14565,
+        "wins": 8632,
+        "win_rate": 59.3
+      },
+      "PANACHE": {
+        "score": 86.0,
+        "elo": 1890.6,
+        "picks": 13890,
+        "wins": 7626,
+        "win_rate": 54.9
+      },
+      "PANIC_BUTTON": {
+        "score": 90.0,
+        "elo": 1605.6,
+        "picks": 3645,
+        "wins": 2046,
+        "win_rate": 56.1
+      },
+      "PARRY": {
+        "score": 61.0,
+        "elo": 1927.6,
+        "picks": 29373,
+        "wins": 13865,
+        "win_rate": 47.2
+      },
+      "PARSE": {
+        "score": 91.0,
+        "elo": 1872.7,
+        "picks": 18973,
+        "wins": 10669,
+        "win_rate": 56.2
+      },
+      "PARTICLE_WALL": {
+        "score": 68.0,
+        "elo": 1970.2,
+        "picks": 31976,
+        "wins": 15819,
+        "win_rate": 49.5
+      },
+      "PATTER": {
+        "score": 54.0,
+        "elo": 1871.1,
+        "picks": 33889,
+        "wins": 15357,
+        "win_rate": 45.3
+      },
+      "PERFECTED_STRIKE": {
+        "score": 28.0,
+        "elo": 1882.2,
+        "picks": 46106,
+        "wins": 17261,
+        "win_rate": 37.4
+      },
+      "PHANTOM_BLADES": {
+        "score": 73.0,
+        "elo": 1975.0,
+        "picks": 31083,
+        "wins": 15816,
+        "win_rate": 50.9
+      },
+      "PHOTON_CUT": {
+        "score": 52.0,
+        "elo": 1723.8,
+        "picks": 27303,
+        "wins": 12155,
+        "win_rate": 44.5
+      },
+      "PIERCING_WAIL": {
+        "score": 70.0,
+        "elo": 1997.2,
+        "picks": 80667,
+        "wins": 40240,
+        "win_rate": 49.9
+      },
+      "PILLAGE": {
+        "score": 64.0,
+        "elo": 1851.6,
+        "picks": 21628,
+        "wins": 10450,
+        "win_rate": 48.3
+      },
+      "PILLAR_OF_CREATION": {
+        "score": 81.0,
+        "elo": 1857.2,
+        "picks": 21591,
+        "wins": 11537,
+        "win_rate": 53.4
+      },
+      "PINPOINT": {
+        "score": 57.0,
+        "elo": 1796.2,
+        "picks": 18176,
+        "wins": 8395,
+        "win_rate": 46.2
+      },
+      "POISONED_STAB": {
+        "score": 33.0,
+        "elo": 1804.7,
+        "picks": 38209,
+        "wins": 14813,
+        "win_rate": 38.8
+      },
+      "POKE": {
+        "score": 39.0,
+        "elo": 1862.8,
+        "picks": 41895,
+        "wins": 16979,
+        "win_rate": 40.5
+      },
+      "POMMEL_STRIKE": {
+        "score": 49.0,
+        "elo": 1997.1,
+        "picks": 78151,
+        "wins": 34211,
+        "win_rate": 43.8
+      },
+      "POUNCE": {
+        "score": 46.0,
+        "elo": 1759.7,
+        "picks": 15028,
+        "wins": 6413,
+        "win_rate": 42.7
+      },
+      "PRECISE_CUT": {
+        "score": 51.0,
+        "elo": 1735.7,
+        "picks": 13658,
+        "wins": 6057,
+        "win_rate": 44.3
+      },
+      "PREDATOR": {
+        "score": 47.0,
+        "elo": 1658.7,
+        "picks": 13710,
+        "wins": 5893,
+        "win_rate": 43.0
+      },
+      "PREPARED": {
+        "score": 64.0,
+        "elo": 2053.4,
+        "picks": 94555,
+        "wins": 45528,
+        "win_rate": 48.1
+      },
+      "PREP_TIME": {
+        "score": 67.0,
+        "elo": 1784.5,
+        "picks": 8248,
+        "wins": 4062,
+        "win_rate": 49.2
+      },
+      "PRIMAL_FORCE": {
+        "score": 50.0,
+        "elo": 1838.7,
+        "picks": 11677,
+        "wins": 5122,
+        "win_rate": 43.9
+      },
+      "PRODUCTION": {
+        "score": 89.0,
+        "elo": 2024.6,
+        "picks": 24268,
+        "wins": 13496,
+        "win_rate": 55.6
+      },
+      "PROLONG": {
+        "score": 88.0,
+        "elo": 1881.9,
+        "picks": 13225,
+        "wins": 7313,
+        "win_rate": 55.3
+      },
+      "PROPHESIZE": {
+        "score": 94.0,
+        "elo": 1692.5,
+        "picks": 9382,
+        "wins": 5385,
+        "win_rate": 57.4
+      },
+      "PROTECTOR": {
+        "score": 52.0,
+        "elo": null,
+        "picks": 7722,
+        "wins": 3452,
+        "win_rate": 44.7
+      },
+      "PROWESS": {
+        "score": 72.0,
+        "elo": 1945.2,
+        "picks": 15556,
+        "wins": 7871,
+        "win_rate": 50.6
+      },
+      "PULL_AGGRO": {
+        "score": 39.0,
+        "elo": 1822.1,
+        "picks": 39205,
+        "wins": 15889,
+        "win_rate": 40.5
+      },
+      "PULL_FROM_BELOW": {
+        "score": 76.0,
+        "elo": 1801.7,
+        "picks": 13671,
+        "wins": 7093,
+        "win_rate": 51.9
+      },
+      "PURITY": {
+        "score": 100.0,
+        "elo": 1815.3,
+        "picks": 8463,
+        "wins": 5203,
+        "win_rate": 61.5
+      },
+      "PUTREFY": {
+        "score": 79.0,
+        "elo": 1978.8,
+        "picks": 28383,
+        "wins": 14947,
+        "win_rate": 52.7
+      },
+      "PYRE": {
+        "score": 79.0,
+        "elo": 2186.8,
+        "picks": 34472,
+        "wins": 18214,
+        "win_rate": 52.8
+      },
+      "QUADCAST": {
+        "score": 31.0,
+        "elo": null,
+        "picks": 7666,
+        "wins": 2928,
+        "win_rate": 38.2
+      },
+      "QUASAR": {
+        "score": 73.0,
+        "elo": 1861.8,
+        "picks": 19764,
+        "wins": 10059,
+        "win_rate": 50.9
+      },
+      "RADIATE": {
+        "score": 70.0,
+        "elo": 1908.2,
+        "picks": 25228,
+        "wins": 12575,
+        "win_rate": 49.8
+      },
+      "RAGE": {
+        "score": 52.0,
+        "elo": 1985.5,
+        "picks": 38019,
+        "wins": 16962,
+        "win_rate": 44.6
+      },
+      "RAINBOW": {
+        "score": 57.0,
+        "elo": 1920.8,
+        "picks": 11458,
+        "wins": 5293,
+        "win_rate": 46.2
+      },
+      "RALLY": {
+        "score": 100.0,
+        "elo": 1820.6,
+        "picks": 7744,
+        "wins": 5489,
+        "win_rate": 70.9
+      },
+      "RAMPAGE": {
+        "score": 33.0,
+        "elo": 1849.1,
+        "picks": 21276,
+        "wins": 8289,
+        "win_rate": 39.0
+      },
+      "RATTLE": {
+        "score": 51.0,
+        "elo": 1859.3,
+        "picks": 18099,
+        "wins": 8023,
+        "win_rate": 44.3
+      },
+      "REANIMATE": {
+        "score": 85.0,
+        "elo": 2035.3,
+        "picks": 18201,
+        "wins": 9910,
+        "win_rate": 54.4
+      },
+      "REAP": {
+        "score": 36.0,
+        "elo": 1687.1,
+        "picks": 22115,
+        "wins": 8778,
+        "win_rate": 39.7
+      },
+      "REAPER_FORM": {
+        "score": 84.0,
+        "elo": 2106.6,
+        "picks": 22507,
+        "wins": 12186,
+        "win_rate": 54.1
+      },
+      "REAVE": {
+        "score": 39.0,
+        "elo": 1793.1,
+        "picks": 31364,
+        "wins": 12802,
+        "win_rate": 40.8
+      },
+      "REBOOT": {
+        "score": 92.0,
+        "elo": 2047.5,
+        "picks": 17017,
+        "wins": 9643,
+        "win_rate": 56.7
+      },
+      "REFINE_BLADE": {
+        "score": 46.0,
+        "elo": 1891.7,
+        "picks": 50372,
+        "wins": 21616,
+        "win_rate": 42.9
+      },
+      "REFLECT": {
+        "score": 61.0,
+        "elo": 2055.0,
+        "picks": 40375,
+        "wins": 19135,
+        "win_rate": 47.4
+      },
+      "REFLEX": {
+        "score": 84.0,
+        "elo": 1949.4,
+        "picks": 26146,
+        "wins": 14175,
+        "win_rate": 54.2
+      },
+      "REFRACT": {
+        "score": 27.0,
+        "elo": 1801.1,
+        "picks": 14725,
+        "wins": 5472,
+        "win_rate": 37.2
+      },
+      "REND": {
+        "score": 100.0,
+        "elo": 1537.5,
+        "picks": 2096,
+        "wins": 1446,
+        "win_rate": 69.0
+      },
+      "RESONANCE": {
+        "score": 63.0,
+        "elo": 1805.2,
+        "picks": 16353,
+        "wins": 7807,
+        "win_rate": 47.7
+      },
+      "RESTLESSNESS": {
+        "score": 94.0,
+        "elo": 1769.2,
+        "picks": 8218,
+        "wins": 4708,
+        "win_rate": 57.3
+      },
+      "RICOCHET": {
+        "score": 49.0,
+        "elo": 1809.9,
+        "picks": 44405,
+        "wins": 19449,
+        "win_rate": 43.8
+      },
+      "RIGHT_HAND_HAND": {
+        "score": 61.0,
+        "elo": 1893.7,
+        "picks": 20802,
+        "wins": 9829,
+        "win_rate": 47.3
+      },
+      "ROCKET_PUNCH": {
+        "score": 67.0,
+        "elo": 1865.2,
+        "picks": 17751,
+        "wins": 8711,
+        "win_rate": 49.1
+      },
+      "ROLLING_BOULDER": {
+        "score": 92.0,
+        "elo": 1770.3,
+        "picks": 8359,
+        "wins": 4747,
+        "win_rate": 56.8
+      },
+      "ROYALTIES": {
+        "score": 70.0,
+        "elo": 1926.4,
+        "picks": 12340,
+        "wins": 6179,
+        "win_rate": 50.1
+      },
+      "ROYAL_GAMBLE": {
+        "score": 72.0,
+        "elo": 1995.4,
+        "picks": 33089,
+        "wins": 16731,
+        "win_rate": 50.6
+      },
+      "RUPTURE": {
+        "score": 59.0,
+        "elo": 1931.6,
+        "picks": 34854,
+        "wins": 16265,
+        "win_rate": 46.7
+      },
+      "SACRIFICE": {
+        "score": 68.0,
+        "elo": 1803.0,
+        "picks": 6427,
+        "wins": 3174,
+        "win_rate": 49.4
+      },
+      "SALVO": {
+        "score": 100.0,
+        "elo": 1624.6,
+        "picks": 3626,
+        "wins": 2465,
+        "win_rate": 68.0
+      },
+      "SCAVENGE": {
+        "score": 62.0,
+        "elo": 1933.5,
+        "picks": 16098,
+        "wins": 7643,
+        "win_rate": 47.5
+      },
+      "SCOURGE": {
+        "score": 45.0,
+        "elo": 1912.6,
+        "picks": 46260,
+        "wins": 19641,
+        "win_rate": 42.5
+      },
+      "SCRAPE": {
+        "score": 60.0,
+        "elo": 1827.2,
+        "picks": 15955,
+        "wins": 7479,
+        "win_rate": 46.9
+      },
+      "SCRAWL": {
+        "score": 100.0,
+        "elo": 1704.8,
+        "picks": 5372,
+        "wins": 3864,
+        "win_rate": 71.9
+      },
+      "SCULPTING_STRIKE": {
+        "score": 59.0,
+        "elo": 1704.8,
+        "picks": 14971,
+        "wins": 6988,
+        "win_rate": 46.7
+      },
+      "SEANCE": {
+        "score": 100.0,
+        "elo": 2010.6,
+        "picks": 16759,
+        "wins": 9912,
+        "win_rate": 59.1
+      },
+      "SECOND_WIND": {
+        "score": 68.0,
+        "elo": 1834.2,
+        "picks": 20335,
+        "wins": 10063,
+        "win_rate": 49.5
+      },
+      "SECRET_TECHNIQUE": {
+        "score": 100.0,
+        "elo": 1767.0,
+        "picks": 7895,
+        "wins": 5609,
+        "win_rate": 71.0
+      },
+      "SECRET_WEAPON": {
+        "score": 100.0,
+        "elo": 1729.4,
+        "picks": 6039,
+        "wins": 4021,
+        "win_rate": 66.6
+      },
+      "SEEKER_STRIKE": {
+        "score": 83.0,
+        "elo": 1714.0,
+        "picks": 6475,
+        "wins": 3497,
+        "win_rate": 54.0
+      },
+      "SEEKING_EDGE": {
+        "score": 73.0,
+        "elo": 2055.0,
+        "picks": 21025,
+        "wins": 10723,
+        "win_rate": 51.0
+      },
+      "SENTRY_MODE": {
+        "score": 83.0,
+        "elo": 2003.9,
+        "picks": 16361,
+        "wins": 8797,
+        "win_rate": 53.8
+      },
+      "SERPENT_FORM": {
+        "score": 95.0,
+        "elo": 2040.9,
+        "picks": 21926,
+        "wins": 12582,
+        "win_rate": 57.4
+      },
+      "SETUP_STRIKE": {
+        "score": 33.0,
+        "elo": 1820.4,
+        "picks": 42750,
+        "wins": 16649,
+        "win_rate": 38.9
+      },
+      "SEVEN_STARS": {
+        "score": 74.0,
+        "elo": 1975.1,
+        "picks": 16086,
+        "wins": 8256,
+        "win_rate": 51.3
+      },
+      "SEVERANCE": {
+        "score": 64.0,
+        "elo": 1875.6,
+        "picks": 20123,
+        "wins": 9706,
+        "win_rate": 48.2
+      },
+      "SHADOWMELD": {
+        "score": 82.0,
+        "elo": 1947.7,
+        "picks": 16752,
+        "wins": 8967,
+        "win_rate": 53.5
+      },
+      "SHADOW_SHIELD": {
+        "score": 38.0,
+        "elo": 1927.3,
+        "picks": 22326,
+        "wins": 9012,
+        "win_rate": 40.4
+      },
+      "SHADOW_STEP": {
+        "score": 81.0,
+        "elo": 1966.7,
+        "picks": 17294,
+        "wins": 9233,
+        "win_rate": 53.4
+      },
+      "SHARED_FATE": {
+        "score": 100.0,
+        "elo": 1918.6,
+        "picks": 11780,
+        "wins": 7199,
+        "win_rate": 61.1
+      },
+      "SHATTER": {
+        "score": 47.0,
+        "elo": 1994.0,
+        "picks": 15883,
+        "wins": 6837,
+        "win_rate": 43.0
+      },
+      "SHINING_STRIKE": {
+        "score": 55.0,
+        "elo": 1953.4,
+        "picks": 30292,
+        "wins": 13744,
+        "win_rate": 45.4
+      },
+      "SHOCKWAVE": {
+        "score": 91.0,
+        "elo": 1871.5,
+        "picks": 11887,
+        "wins": 6692,
+        "win_rate": 56.3
+      },
+      "SHROUD": {
+        "score": 67.0,
+        "elo": 1935.7,
+        "picks": 27468,
+        "wins": 13446,
+        "win_rate": 49.0
+      },
+      "SHRUG_IT_OFF": {
+        "score": 48.0,
+        "elo": 1991.8,
+        "picks": 89103,
+        "wins": 38631,
+        "win_rate": 43.4
+      },
+      "SIC_EM": {
+        "score": 47.0,
+        "elo": 1880.0,
+        "picks": 19761,
+        "wins": 8507,
+        "win_rate": 43.0
+      },
+      "SIGNAL_BOOST": {
+        "score": 82.0,
+        "elo": 2087.3,
+        "picks": 19639,
+        "wins": 10502,
+        "win_rate": 53.5
+      },
+      "SKEWER": {
+        "score": 58.0,
+        "elo": 1639.6,
+        "picks": 9311,
+        "wins": 4314,
+        "win_rate": 46.3
+      },
+      "SKIM": {
+        "score": 80.0,
+        "elo": 1946.1,
+        "picks": 24235,
+        "wins": 12841,
+        "win_rate": 53.0
+      },
+      "SLEIGHT_OF_FLESH": {
+        "score": 69.0,
+        "elo": 1945.3,
+        "picks": 28948,
+        "wins": 14389,
+        "win_rate": 49.7
+      },
+      "SLICE": {
+        "score": 42.0,
+        "elo": 1740.8,
+        "picks": 30749,
+        "wins": 12794,
+        "win_rate": 41.6
+      },
+      "SMOKESTACK": {
+        "score": 46.0,
+        "elo": 1907.0,
+        "picks": 18037,
+        "wins": 7735,
+        "win_rate": 42.9
+      },
+      "SNAKEBITE": {
+        "score": 43.0,
+        "elo": 1778.7,
+        "picks": 35212,
+        "wins": 14736,
+        "win_rate": 41.8
+      },
+      "SNAP": {
+        "score": 47.0,
+        "elo": 1788.3,
+        "picks": 34788,
+        "wins": 15013,
+        "win_rate": 43.2
+      },
+      "SNEAKY": {
+        "score": 100.0,
+        "elo": 2100.2,
+        "picks": 18699,
+        "wins": 12341,
+        "win_rate": 66.0
+      },
+      "SOLAR_STRIKE": {
+        "score": 40.0,
+        "elo": 1805.5,
+        "picks": 39197,
+        "wins": 16053,
+        "win_rate": 41.0
+      },
+      "SOUL_STORM": {
+        "score": 75.0,
+        "elo": 1939.3,
+        "picks": 13786,
+        "wins": 7121,
+        "win_rate": 51.7
+      },
+      "SOW": {
+        "score": 18.0,
+        "elo": 1726.6,
+        "picks": 25265,
+        "wins": 8653,
+        "win_rate": 34.2
+      },
+      "SPECTRUM_SHIFT": {
+        "score": 77.0,
+        "elo": 1918.7,
+        "picks": 27948,
+        "wins": 14530,
+        "win_rate": 52.0
+      },
+      "SPEEDSTER": {
+        "score": 67.0,
+        "elo": 1835.2,
+        "picks": 25969,
+        "wins": 12751,
+        "win_rate": 49.1
+      },
+      "SPINNER": {
+        "score": 68.0,
+        "elo": 2053.4,
+        "picks": 17779,
+        "wins": 8790,
+        "win_rate": 49.4
+      },
+      "SPIRIT_OF_ASH": {
+        "score": 90.0,
+        "elo": 1915.4,
+        "picks": 11948,
+        "wins": 6712,
+        "win_rate": 56.2
+      },
+      "SPITE": {
+        "score": 58.0,
+        "elo": 1812.6,
+        "picks": 18098,
+        "wins": 8401,
+        "win_rate": 46.4
+      },
+      "SPLASH": {
+        "score": 82.0,
+        "elo": 1939.5,
+        "picks": 12622,
+        "wins": 6750,
+        "win_rate": 53.5
+      },
+      "SPOILS_OF_BATTLE": {
+        "score": 52.0,
+        "elo": 1839.7,
+        "picks": 40073,
+        "wins": 17909,
+        "win_rate": 44.7
+      },
+      "SPUR": {
+        "score": 57.0,
+        "elo": 1973.2,
+        "picks": 28861,
+        "wins": 13264,
+        "win_rate": 46.0
+      },
+      "SQUEEZE": {
+        "score": 76.0,
+        "elo": 1947.4,
+        "picks": 14064,
+        "wins": 7304,
+        "win_rate": 51.9
+      },
+      "STAMPEDE": {
+        "score": 50.0,
+        "elo": 1957.4,
+        "picks": 38395,
+        "wins": 16882,
+        "win_rate": 44.0
+      },
+      "STARDUST": {
+        "score": 69.0,
+        "elo": 1933.6,
+        "picks": 29188,
+        "wins": 14468,
+        "win_rate": 49.6
+      },
+      "STOKE": {
+        "score": 88.0,
+        "elo": 1932.4,
+        "picks": 14818,
+        "wins": 8215,
+        "win_rate": 55.4
+      },
+      "STOMP": {
+        "score": 38.0,
+        "elo": 1881.9,
+        "picks": 24869,
+        "wins": 10051,
+        "win_rate": 40.4
+      },
+      "STONE_ARMOR": {
+        "score": 58.0,
+        "elo": 1913.2,
+        "picks": 30723,
+        "wins": 14279,
+        "win_rate": 46.5
+      },
+      "STORM": {
+        "score": 57.0,
+        "elo": 1968.9,
+        "picks": 28060,
+        "wins": 12966,
+        "win_rate": 46.2
+      },
+      "STORM_OF_STEEL": {
+        "score": 93.0,
+        "elo": 2001.6,
+        "picks": 20372,
+        "wins": 11564,
+        "win_rate": 56.8
+      },
+      "STRANGLE": {
+        "score": 66.0,
+        "elo": 1897.8,
+        "picks": 27221,
+        "wins": 13288,
+        "win_rate": 48.8
+      },
+      "STRATAGEM": {
+        "score": 84.0,
+        "elo": 1811.1,
+        "picks": 5564,
+        "wins": 3023,
+        "win_rate": 54.3
+      },
+      "SUBROUTINE": {
+        "score": 64.0,
+        "elo": 2034.5,
+        "picks": 36078,
+        "wins": 17332,
+        "win_rate": 48.0
+      },
+      "SUCKER_PUNCH": {
+        "score": 49.0,
+        "elo": 1723.0,
+        "picks": 28939,
+        "wins": 12641,
+        "win_rate": 43.7
+      },
+      "SUMMON_FORTH": {
+        "score": 64.0,
+        "elo": 1996.6,
+        "picks": 30540,
+        "wins": 14749,
+        "win_rate": 48.3
+      },
+      "SUNDER": {
+        "score": 15.0,
+        "elo": 1747.9,
+        "picks": 12125,
+        "wins": 4056,
+        "win_rate": 33.5
+      },
+      "SUPERCRITICAL": {
+        "score": 79.0,
+        "elo": 2126.5,
+        "picks": 22302,
+        "wins": 11779,
+        "win_rate": 52.8
+      },
+      "SUPERMASSIVE": {
+        "score": 73.0,
+        "elo": 1802.6,
+        "picks": 12163,
+        "wins": 6208,
+        "win_rate": 51.0
+      },
+      "SUPPRESS": {
+        "score": 73.0,
+        "elo": null,
+        "picks": 10233,
+        "wins": 5223,
+        "win_rate": 51.0
+      },
+      "SWEEPING_BEAM": {
+        "score": 28.0,
+        "elo": 1775.5,
+        "picks": 28932,
+        "wins": 10774,
+        "win_rate": 37.2
+      },
+      "SWORD_BOOMERANG": {
+        "score": 44.0,
+        "elo": 1712.5,
+        "picks": 26763,
+        "wins": 11297,
+        "win_rate": 42.2
+      },
+      "SWORD_SAGE": {
+        "score": 86.0,
+        "elo": 2070.3,
+        "picks": 18978,
+        "wins": 10407,
+        "win_rate": 54.8
+      },
+      "SYNCHRONIZE": {
+        "score": 48.0,
+        "elo": 1829.4,
+        "picks": 15237,
+        "wins": 6626,
+        "win_rate": 43.5
+      },
+      "SYNTHESIS": {
+        "score": 46.0,
+        "elo": 1763.0,
+        "picks": 12400,
+        "wins": 5312,
+        "win_rate": 42.8
+      },
+      "TACTICIAN": {
+        "score": 79.0,
+        "elo": 2001.3,
+        "picks": 38737,
+        "wins": 20384,
+        "win_rate": 52.6
+      },
+      "TAG_TEAM": {
+        "score": 86.0,
+        "elo": 1771.4,
+        "picks": 7512,
+        "wins": 4114,
+        "win_rate": 54.8
+      },
+      "TANK": {
+        "score": 100.0,
+        "elo": 1739.9,
+        "picks": 4678,
+        "wins": 2878,
+        "win_rate": 61.5
+      },
+      "TAUNT": {
+        "score": 61.0,
+        "elo": 2056.8,
+        "picks": 45243,
+        "wins": 21331,
+        "win_rate": 47.1
+      },
+      "TEAR_ASUNDER": {
+        "score": 83.0,
+        "elo": 1947.7,
+        "picks": 11648,
+        "wins": 6274,
+        "win_rate": 53.9
+      },
+      "TEMPEST": {
+        "score": 48.0,
+        "elo": 1940.4,
+        "picks": 23665,
+        "wins": 10275,
+        "win_rate": 43.4
+      },
+      "TERRAFORMING": {
+        "score": 60.0,
+        "elo": 1753.3,
+        "picks": 12015,
+        "wins": 5637,
+        "win_rate": 46.9
+      },
+      "TESLA_COIL": {
+        "score": 35.0,
+        "elo": 1943.1,
+        "picks": 26053,
+        "wins": 10251,
+        "win_rate": 39.3
+      },
+      "THE_BOMB": {
+        "score": 39.0,
+        "elo": 1733.5,
+        "picks": 6655,
+        "wins": 2710,
+        "win_rate": 40.7
+      },
+      "THE_GAMBIT": {
+        "score": 100.0,
+        "elo": 1579.6,
+        "picks": 3138,
+        "wins": 1917,
+        "win_rate": 61.1
+      },
+      "THE_HUNT": {
+        "score": 59.0,
+        "elo": 1866.7,
+        "picks": 12945,
+        "wins": 6032,
+        "win_rate": 46.6
+      },
+      "THE_SCYTHE": {
+        "score": 54.0,
+        "elo": 1903.0,
+        "picks": 12614,
+        "wins": 5716,
+        "win_rate": 45.3
+      },
+      "THE_SEALED_THRONE": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 7357,
+        "wins": 4436,
+        "win_rate": 60.3
+      },
+      "THE_SMITH": {
+        "score": 79.0,
+        "elo": 2054.1,
+        "picks": 21393,
+        "wins": 11252,
+        "win_rate": 52.6
+      },
+      "THINKING_AHEAD": {
+        "score": 99.0,
+        "elo": 1814.3,
+        "picks": 8778,
+        "wins": 5154,
+        "win_rate": 58.7
+      },
+      "THRASH": {
+        "score": 73.0,
+        "elo": 1974.7,
+        "picks": 19451,
+        "wins": 9896,
+        "win_rate": 50.9
+      },
+      "THRUMMING_HATCHET": {
+        "score": 56.0,
+        "elo": 1680.2,
+        "picks": 5976,
+        "wins": 2728,
+        "win_rate": 45.6
+      },
+      "THUNDER": {
+        "score": 44.0,
+        "elo": 2028.2,
+        "picks": 35724,
+        "wins": 15079,
+        "win_rate": 42.2
+      },
+      "THUNDERCLAP": {
+        "score": 39.0,
+        "elo": 1842.9,
+        "picks": 49593,
+        "wins": 20223,
+        "win_rate": 40.8
+      },
+      "TIMES_UP": {
+        "score": 86.0,
+        "elo": 1996.2,
+        "picks": 15341,
+        "wins": 8423,
+        "win_rate": 54.9
+      },
+      "TOOLS_OF_THE_TRADE": {
+        "score": 100.0,
+        "elo": 2098.6,
+        "picks": 26057,
+        "wins": 15914,
+        "win_rate": 61.1
+      },
+      "TRACKING": {
+        "score": 100.0,
+        "elo": 2071.8,
+        "picks": 23074,
+        "wins": 14264,
+        "win_rate": 61.8
+      },
+      "TRANSFIGURE": {
+        "score": 94.0,
+        "elo": 2076.6,
+        "picks": 20545,
+        "wins": 11783,
+        "win_rate": 57.4
+      },
+      "TRASH_TO_TREASURE": {
+        "score": 78.0,
+        "elo": 2014.3,
+        "picks": 14514,
+        "wins": 7622,
+        "win_rate": 52.5
+      },
+      "TREMBLE": {
+        "score": 47.0,
+        "elo": 1907.0,
+        "picks": 67114,
+        "wins": 28887,
+        "win_rate": 43.0
+      },
+      "TRUE_GRIT": {
+        "score": 51.0,
+        "elo": 1817.5,
+        "picks": 48210,
+        "wins": 21380,
+        "win_rate": 44.3
+      },
+      "TURBO": {
+        "score": 51.0,
+        "elo": 1971.7,
+        "picks": 45254,
+        "wins": 19994,
+        "win_rate": 44.2
+      },
+      "TWIN_STRIKE": {
+        "score": 34.0,
+        "elo": 1807.7,
+        "picks": 39160,
+        "wins": 15330,
+        "win_rate": 39.1
+      },
+      "TYRANNY": {
+        "score": 100.0,
+        "elo": 1934.6,
+        "picks": 13010,
+        "wins": 7875,
+        "win_rate": 60.5
+      },
+      "ULTIMATE_DEFEND": {
+        "score": 68.0,
+        "elo": 1825.6,
+        "picks": 25040,
+        "wins": 12341,
+        "win_rate": 49.3
+      },
+      "ULTIMATE_STRIKE": {
+        "score": 56.0,
+        "elo": 1696.3,
+        "picks": 25872,
+        "wins": 11813,
+        "win_rate": 45.7
+      },
+      "UNDEATH": {
+        "score": 79.0,
+        "elo": 2050.8,
+        "picks": 18920,
+        "wins": 9989,
+        "win_rate": 52.8
+      },
+      "UNMOVABLE": {
+        "score": 91.0,
+        "elo": 2095.7,
+        "picks": 24656,
+        "wins": 13913,
+        "win_rate": 56.4
+      },
+      "UNRELENTING": {
+        "score": 40.0,
+        "elo": 1853.0,
+        "picks": 20242,
+        "wins": 8315,
+        "win_rate": 41.1
+      },
+      "UNTOUCHABLE": {
+        "score": 59.0,
+        "elo": 1849.7,
+        "picks": 52593,
+        "wins": 24567,
+        "win_rate": 46.7
+      },
+      "UPPERCUT": {
+        "score": 57.0,
+        "elo": 1911.6,
+        "picks": 28272,
+        "wins": 13060,
+        "win_rate": 46.2
+      },
+      "UPROAR": {
+        "score": 31.0,
+        "elo": 1699.1,
+        "picks": 17523,
+        "wins": 6696,
+        "win_rate": 38.2
+      },
+      "UP_MY_SLEEVE": {
+        "score": 69.0,
+        "elo": 2028.7,
+        "picks": 41152,
+        "wins": 20439,
+        "win_rate": 49.7
+      },
+      "VEILPIERCER": {
+        "score": 69.0,
+        "elo": 1864.1,
+        "picks": 12146,
+        "wins": 6047,
+        "win_rate": 49.8
+      },
+      "VICIOUS": {
+        "score": 74.0,
+        "elo": 1906.2,
+        "picks": 33443,
+        "wins": 17128,
+        "win_rate": 51.2
+      },
+      "VOID_FORM": {
+        "score": 93.0,
+        "elo": 2206.9,
+        "picks": 29315,
+        "wins": 16724,
+        "win_rate": 57.0
+      },
+      "VOLLEY": {
+        "score": 62.0,
+        "elo": 1677.0,
+        "picks": 5675,
+        "wins": 2701,
+        "win_rate": 47.6
+      },
+      "VOLTAIC": {
+        "score": 70.0,
+        "elo": 2079.4,
+        "picks": 19226,
+        "wins": 9636,
+        "win_rate": 50.1
+      },
+      "WELL_LAID_PLANS": {
+        "score": 49.0,
+        "elo": 1971.8,
+        "picks": 14256,
+        "wins": 6211,
+        "win_rate": 43.6
+      },
+      "WHIRLWIND": {
+        "score": 49.0,
+        "elo": 1890.8,
+        "picks": 26422,
+        "wins": 11580,
+        "win_rate": 43.8
+      },
+      "WHITE_NOISE": {
+        "score": 54.0,
+        "elo": 2118.3,
+        "picks": 38084,
+        "wins": 17254,
+        "win_rate": 45.3
+      },
+      "WISP": {
+        "score": 57.0,
+        "elo": 1985.7,
+        "picks": 70248,
+        "wins": 32359,
+        "win_rate": 46.1
+      },
+      "WRAITH_FORM": {
+        "score": 74.0,
+        "elo": null,
+        "picks": 1925,
+        "wins": 989,
+        "win_rate": 51.4
+      },
+      "WROUGHT_IN_WAR": {
+        "score": 35.0,
+        "elo": 1799.0,
+        "picks": 35132,
+        "wins": 13862,
+        "win_rate": 39.5
+      }
+    },
+    "relics": {
+      "AKABEKO": {
+        "score": 64.0,
+        "elo": null,
+        "picks": 68995,
+        "wins": 39530,
+        "win_rate": 57.3
+      },
+      "ALCHEMICAL_COFFER": {
+        "score": 49.0,
+        "elo": null,
+        "picks": 8172,
+        "wins": 4321,
+        "win_rate": 52.9
+      },
+      "AMETHYST_AUBERGINE": {
+        "score": 42.0,
+        "elo": null,
+        "picks": 94070,
+        "wins": 47755,
+        "win_rate": 50.8
+      },
+      "ANCHOR": {
+        "score": 66.0,
+        "elo": null,
+        "picks": 132666,
+        "wins": 76802,
+        "win_rate": 57.9
+      },
+      "ARCANE_SCROLL": {
+        "score": 0.0,
+        "elo": null,
+        "picks": 75851,
+        "wins": 23252,
+        "win_rate": 30.7
+      },
+      "ARCHAIC_TOOTH": {
+        "score": 20.0,
+        "elo": null,
+        "picks": 42668,
+        "wins": 18869,
+        "win_rate": 44.2
+      },
+      "ART_OF_WAR": {
+        "score": 71.0,
+        "elo": null,
+        "picks": 32335,
+        "wins": 19238,
+        "win_rate": 59.5
+      },
+      "ASTROLABE": {
+        "score": 61.0,
+        "elo": null,
+        "picks": 15245,
+        "wins": 8622,
+        "win_rate": 56.6
+      },
+      "BAG_OF_MARBLES": {
+        "score": 63.0,
+        "elo": null,
+        "picks": 112902,
+        "wins": 64418,
+        "win_rate": 57.1
+      },
+      "BAG_OF_PREPARATION": {
+        "score": 69.0,
+        "elo": null,
+        "picks": 136060,
+        "wins": 80315,
+        "win_rate": 59.0
+      },
+      "BEATING_REMNANT": {
+        "score": 69.0,
+        "elo": null,
+        "picks": 27505,
+        "wins": 16216,
+        "win_rate": 59.0
+      },
+      "BEAUTIFUL_BRACELET": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 11954,
+        "wins": 9666,
+        "win_rate": 80.9
+      },
+      "BELLOWS": {
+        "score": 83.0,
+        "elo": null,
+        "picks": 44425,
+        "wins": 27984,
+        "win_rate": 63.0
+      },
+      "BELT_BUCKLE": {
+        "score": 86.0,
+        "elo": null,
+        "picks": 9334,
+        "wins": 5983,
+        "win_rate": 64.1
+      },
+      "BIG_HAT": {
+        "score": 97.0,
+        "elo": null,
+        "picks": 2957,
+        "wins": 1993,
+        "win_rate": 67.4
+      },
+      "BIG_MUSHROOM": {
+        "score": 91.0,
+        "elo": null,
+        "picks": 14196,
+        "wins": 9299,
+        "win_rate": 65.5
+      },
+      "BIIIG_HUG": {
+        "score": 46.0,
+        "elo": null,
+        "picks": 9014,
+        "wins": 4691,
+        "win_rate": 52.0
+      },
+      "BING_BONG": {
+        "score": 37.0,
+        "elo": null,
+        "picks": 17433,
+        "wins": 8586,
+        "win_rate": 49.3
+      },
+      "BLACK_BLOOD": {
+        "score": 8.0,
+        "elo": null,
+        "picks": 9464,
+        "wins": 3844,
+        "win_rate": 40.6
+      },
+      "BLACK_STAR": {
+        "score": 51.0,
+        "elo": null,
+        "picks": 11054,
+        "wins": 5919,
+        "win_rate": 53.5
+      },
+      "BLESSED_ANTLER": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 13168,
+        "wins": 9390,
+        "win_rate": 71.3
+      },
+      "BLOOD_SOAKED_ROSE": {
+        "score": 97.0,
+        "elo": null,
+        "picks": 10479,
+        "wins": 7058,
+        "win_rate": 67.4
+      },
+      "BLOOD_VIAL": {
+        "score": 59.0,
+        "elo": null,
+        "picks": 125549,
+        "wins": 70353,
+        "win_rate": 56.0
+      },
+      "BONE_FLUTE": {
+        "score": 91.0,
+        "elo": null,
+        "picks": 18566,
+        "wins": 12190,
+        "win_rate": 65.7
+      },
+      "BONE_TEA": {
+        "score": 5.0,
+        "elo": null,
+        "picks": 20581,
+        "wins": 8186,
+        "win_rate": 39.8
+      },
+      "BOOKMARK": {
+        "score": 77.0,
+        "elo": null,
+        "picks": 2849,
+        "wins": 1752,
+        "win_rate": 61.5
+      },
+      "BOOK_OF_FIVE_RINGS": {
+        "score": 43.0,
+        "elo": null,
+        "picks": 91091,
+        "wins": 46657,
+        "win_rate": 51.2
+      },
+      "BOOK_REPAIR_KNIFE": {
+        "score": 81.0,
+        "elo": null,
+        "picks": 8492,
+        "wins": 5301,
+        "win_rate": 62.4
+      },
+      "BOOMING_CONCH": {
+        "score": 0.0,
+        "elo": null,
+        "picks": 20903,
+        "wins": 6888,
+        "win_rate": 33.0
+      },
+      "BOUND_PHYLACTERY": {
+        "score": 0.0,
+        "elo": null,
+        "picks": 157759,
+        "wins": 50981,
+        "win_rate": 32.3
+      },
+      "BOWLER_HAT": {
+        "score": 40.0,
+        "elo": null,
+        "picks": 53028,
+        "wins": 26540,
+        "win_rate": 50.0
+      },
+      "BREAD": {
+        "score": 89.0,
+        "elo": null,
+        "picks": 15939,
+        "wins": 10370,
+        "win_rate": 65.1
+      },
+      "BRILLIANT_SCARF": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 12187,
+        "wins": 9298,
+        "win_rate": 76.3
+      },
+      "BRIMSTONE": {
+        "score": 51.0,
+        "elo": null,
+        "picks": 1972,
+        "wins": 1057,
+        "win_rate": 53.6
+      },
+      "BRONZE_SCALES": {
+        "score": 65.0,
+        "elo": null,
+        "picks": 125287,
+        "wins": 72298,
+        "win_rate": 57.7
+      },
+      "BURNING_BLOOD": {
+        "score": 0.0,
+        "elo": null,
+        "picks": 183490,
+        "wins": 58179,
+        "win_rate": 31.7
+      },
+      "BURNING_STICKS": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 10436,
+        "wins": 7395,
+        "win_rate": 70.9
+      },
+      "BYRDPIP": {
+        "score": 0.0,
+        "elo": null,
+        "picks": 15312,
+        "wins": 5286,
+        "win_rate": 34.5
+      },
+      "CALLING_BELL": {
+        "score": 41.0,
+        "elo": null,
+        "picks": 11049,
+        "wins": 5592,
+        "win_rate": 50.6
+      },
+      "CANDELABRA": {
+        "score": 72.0,
+        "elo": null,
+        "picks": 77144,
+        "wins": 46150,
+        "win_rate": 59.8
+      },
+      "CAPTAINS_WHEEL": {
+        "score": 79.0,
+        "elo": null,
+        "picks": 33897,
+        "wins": 20990,
+        "win_rate": 61.9
+      },
+      "CAULDRON": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 3252,
+        "wins": 2426,
+        "win_rate": 74.6
+      },
+      "CENTENNIAL_PUZZLE": {
+        "score": 70.0,
+        "elo": null,
+        "picks": 121735,
+        "wins": 71990,
+        "win_rate": 59.1
+      },
+      "CHANDELIER": {
+        "score": 78.0,
+        "elo": null,
+        "picks": 35141,
+        "wins": 21674,
+        "win_rate": 61.7
+      },
+      "CHARONS_ASHES": {
+        "score": 77.0,
+        "elo": null,
+        "picks": 3622,
+        "wins": 2219,
+        "win_rate": 61.3
+      },
+      "CHEMICAL_X": {
+        "score": 99.0,
+        "elo": null,
+        "picks": 9934,
+        "wins": 6742,
+        "win_rate": 67.9
+      },
+      "CHOICES_PARADOX": {
+        "score": 97.0,
+        "elo": null,
+        "picks": 15992,
+        "wins": 10773,
+        "win_rate": 67.4
+      },
+      "CHOSEN_CHEESE": {
+        "score": 13.0,
+        "elo": null,
+        "picks": 47449,
+        "wins": 20023,
+        "win_rate": 42.2
+      },
+      "CIRCLET": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 142,
+        "wins": 117,
+        "win_rate": 82.4
+      },
+      "CLAWS": {
+        "score": 92.0,
+        "elo": null,
+        "picks": 8784,
+        "wins": 5789,
+        "win_rate": 65.9
+      },
+      "CLOAK_CLASP": {
+        "score": 83.0,
+        "elo": null,
+        "picks": 33138,
+        "wins": 20953,
+        "win_rate": 63.2
+      },
+      "CRACKED_CORE": {
+        "score": 0.0,
+        "elo": null,
+        "picks": 152309,
+        "wins": 45685,
+        "win_rate": 30.0
+      },
+      "CROSSBOW": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 12219,
+        "wins": 9501,
+        "win_rate": 77.8
+      },
+      "CURSED_PEARL": {
+        "score": 0.0,
+        "elo": null,
+        "picks": 48332,
+        "wins": 15776,
+        "win_rate": 32.6
+      },
+      "DARKSTONE_PERIAPT": {
+        "score": 0.0,
+        "elo": null,
+        "picks": 6987,
+        "wins": 2560,
+        "win_rate": 36.6
+      },
+      "DATA_DISK": {
+        "score": 79.0,
+        "elo": null,
+        "picks": 20725,
+        "wins": 12811,
+        "win_rate": 61.8
+      },
+      "DAUGHTER_OF_THE_WIND": {
+        "score": 54.0,
+        "elo": null,
+        "picks": 22285,
+        "wins": 12106,
+        "win_rate": 54.3
+      },
+      "DELICATE_FROND": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 10552,
+        "wins": 7837,
+        "win_rate": 74.3
+      },
+      "DEMON_TONGUE": {
+        "score": 83.0,
+        "elo": null,
+        "picks": 3969,
+        "wins": 2513,
+        "win_rate": 63.3
+      },
+      "DIAMOND_DIADEM": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 5398,
+        "wins": 3797,
+        "win_rate": 70.3
+      },
+      "DINGY_RUG": {
+        "score": 81.0,
+        "elo": null,
+        "picks": 8264,
+        "wins": 5175,
+        "win_rate": 62.6
+      },
+      "DISTINGUISHED_CAPE": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 12979,
+        "wins": 9000,
+        "win_rate": 69.3
+      },
+      "DIVINE_DESTINY": {
+        "score": 33.0,
+        "elo": null,
+        "picks": 7881,
+        "wins": 3796,
+        "win_rate": 48.2
+      },
+      "DIVINE_RIGHT": {
+        "score": 0.0,
+        "elo": null,
+        "picks": 159152,
+        "wins": 53877,
+        "win_rate": 33.9
+      },
+      "DOLLYS_MIRROR": {
+        "score": 97.0,
+        "elo": null,
+        "picks": 22231,
+        "wins": 14958,
+        "win_rate": 67.3
+      },
+      "DRAGON_FRUIT": {
+        "score": 65.0,
+        "elo": null,
+        "picks": 15500,
+        "wins": 8922,
+        "win_rate": 57.6
+      },
+      "DREAM_CATCHER": {
+        "score": 0.0,
+        "elo": null,
+        "picks": 7979,
+        "wins": 2631,
+        "win_rate": 33.0
+      },
+      "DRIFTWOOD": {
+        "score": 34.0,
+        "elo": null,
+        "picks": 13761,
+        "wins": 6659,
+        "win_rate": 48.4
+      },
+      "DUSTY_TOME": {
+        "score": 58.0,
+        "elo": null,
+        "picks": 16440,
+        "wins": 9143,
+        "win_rate": 55.6
+      },
+      "ECTOPLASM": {
+        "score": 42.0,
+        "elo": null,
+        "picks": 1469,
+        "wins": 743,
+        "win_rate": 50.6
+      },
+      "ELECTRIC_SHRYMP": {
+        "score": 36.0,
+        "elo": null,
+        "picks": 16767,
+        "wins": 8216,
+        "win_rate": 49.0
+      },
+      "EMBER_TEA": {
+        "score": 1.0,
+        "elo": null,
+        "picks": 7379,
+        "wins": 2828,
+        "win_rate": 38.3
+      },
+      "EMOTION_CHIP": {
+        "score": 71.0,
+        "elo": null,
+        "picks": 2905,
+        "wins": 1728,
+        "win_rate": 59.5
+      },
+      "EMPTY_CAGE": {
+        "score": 54.0,
+        "elo": null,
+        "picks": 11234,
+        "wins": 6120,
+        "win_rate": 54.5
+      },
+      "ETERNAL_FEATHER": {
+        "score": 71.0,
+        "elo": null,
+        "picks": 74062,
+        "wins": 43985,
+        "win_rate": 59.4
+      },
+      "FAKE_ANCHOR": {
+        "score": 52.0,
+        "elo": null,
+        "picks": 8145,
+        "wins": 4378,
+        "win_rate": 53.8
+      },
+      "FAKE_BLOOD_VIAL": {
+        "score": 36.0,
+        "elo": null,
+        "picks": 7063,
+        "wins": 3456,
+        "win_rate": 48.9
+      },
+      "FAKE_HAPPY_FLOWER": {
+        "score": 55.0,
+        "elo": null,
+        "picks": 9328,
+        "wins": 5093,
+        "win_rate": 54.6
+      },
+      "FAKE_LEES_WAFFLE": {
+        "score": 26.0,
+        "elo": null,
+        "picks": 6400,
+        "wins": 2943,
+        "win_rate": 46.0
+      },
+      "FAKE_MANGO": {
+        "score": 42.0,
+        "elo": null,
+        "picks": 6514,
+        "wins": 3314,
+        "win_rate": 50.9
+      },
+      "FAKE_MERCHANTS_RUG": {
+        "score": 90.0,
+        "elo": null,
+        "picks": 375,
+        "wins": 251,
+        "win_rate": 66.9
+      },
+      "FAKE_ORICHALCUM": {
+        "score": 40.0,
+        "elo": null,
+        "picks": 3591,
+        "wins": 1804,
+        "win_rate": 50.2
+      },
+      "FAKE_SNECKO_EYE": {
+        "score": 0.0,
+        "elo": null,
+        "picks": 490,
+        "wins": 179,
+        "win_rate": 36.5
+      },
+      "FAKE_STRIKE_DUMMY": {
+        "score": 30.0,
+        "elo": null,
+        "picks": 3573,
+        "wins": 1680,
+        "win_rate": 47.0
+      },
+      "FAKE_VENERABLE_TEA_SET": {
+        "score": 56.0,
+        "elo": null,
+        "picks": 7997,
+        "wins": 4400,
+        "win_rate": 55.0
+      },
+      "FENCING_MANUAL": {
+        "score": 85.0,
+        "elo": null,
+        "picks": 19667,
+        "wins": 12506,
+        "win_rate": 63.6
+      },
+      "FESTIVE_POPPER": {
+        "score": 63.0,
+        "elo": null,
+        "picks": 109619,
+        "wins": 62697,
+        "win_rate": 57.2
+      },
+      "FIDDLE": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 6497,
+        "wins": 4804,
+        "win_rate": 73.9
+      },
+      "FORGOTTEN_SOUL": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 21107,
+        "wins": 14668,
+        "win_rate": 69.5
+      },
+      "FRAGRANT_MUSHROOM": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 30330,
+        "wins": 21990,
+        "win_rate": 72.5
+      },
+      "FRESNEL_LENS": {
+        "score": 0.0,
+        "elo": null,
+        "picks": 28256,
+        "wins": 8174,
+        "win_rate": 28.9
+      },
+      "FROZEN_EGG": {
+        "score": 52.0,
+        "elo": null,
+        "picks": 26120,
+        "wins": 14067,
+        "win_rate": 53.9
+      },
+      "FUNERARY_MASK": {
+        "score": 91.0,
+        "elo": null,
+        "picks": 10079,
+        "wins": 6621,
+        "win_rate": 65.7
+      },
+      "FUR_COAT": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 14141,
+        "wins": 10208,
+        "win_rate": 72.2
+      },
+      "GALACTIC_DUST": {
+        "score": 87.0,
+        "elo": null,
+        "picks": 9450,
+        "wins": 6092,
+        "win_rate": 64.5
+      },
+      "GAMBLING_CHIP": {
+        "score": 77.0,
+        "elo": null,
+        "picks": 34858,
+        "wins": 21404,
+        "win_rate": 61.4
+      },
+      "GAME_PIECE": {
+        "score": 78.0,
+        "elo": null,
+        "picks": 32831,
+        "wins": 20264,
+        "win_rate": 61.7
+      },
+      "GHOST_SEED": {
+        "score": 91.0,
+        "elo": null,
+        "picks": 13187,
+        "wins": 8655,
+        "win_rate": 65.6
+      },
+      "GIRYA": {
+        "score": 47.0,
+        "elo": null,
+        "picks": 24328,
+        "wins": 12702,
+        "win_rate": 52.2
+      },
+      "GLASS_EYE": {
+        "score": 21.0,
+        "elo": null,
+        "picks": 15151,
+        "wins": 6759,
+        "win_rate": 44.6
+      },
+      "GLITTER": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 17093,
+        "wins": 12524,
+        "win_rate": 73.3
+      },
+      "GNARLED_HAMMER": {
+        "score": 92.0,
+        "elo": null,
+        "picks": 12645,
+        "wins": 8334,
+        "win_rate": 65.9
+      },
+      "GOLDEN_COMPASS": {
+        "score": 62.0,
+        "elo": null,
+        "picks": 20506,
+        "wins": 11660,
+        "win_rate": 56.9
+      },
+      "GOLDEN_PEARL": {
+        "score": 0.0,
+        "elo": null,
+        "picks": 45558,
+        "wins": 15049,
+        "win_rate": 33.0
+      },
+      "GOLD_PLATED_CABLES": {
+        "score": 71.0,
+        "elo": null,
+        "picks": 6911,
+        "wins": 4122,
+        "win_rate": 59.6
+      },
+      "GORGET": {
+        "score": 67.0,
+        "elo": null,
+        "picks": 129348,
+        "wins": 75422,
+        "win_rate": 58.3
+      },
+      "GREMLIN_HORN": {
+        "score": 62.0,
+        "elo": null,
+        "picks": 70515,
+        "wins": 40100,
+        "win_rate": 56.9
+      },
+      "HAND_DRILL": {
+        "score": 1.0,
+        "elo": null,
+        "picks": 6481,
+        "wins": 2486,
+        "win_rate": 38.4
+      },
+      "HAPPY_FLOWER": {
+        "score": 68.0,
+        "elo": null,
+        "picks": 133585,
+        "wins": 78229,
+        "win_rate": 58.6
+      },
+      "HELICAL_DART": {
+        "score": 92.0,
+        "elo": null,
+        "picks": 4107,
+        "wins": 2712,
+        "win_rate": 66.0
+      },
+      "HISTORY_COURSE": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 10021,
+        "wins": 8967,
+        "win_rate": 89.5
+      },
+      "HORN_CLEAT": {
+        "score": 74.0,
+        "elo": null,
+        "picks": 74422,
+        "wins": 44890,
+        "win_rate": 60.3
+      },
+      "ICE_CREAM": {
+        "score": 80.0,
+        "elo": null,
+        "picks": 35940,
+        "wins": 22361,
+        "win_rate": 62.2
+      },
+      "INFUSED_CORE": {
+        "score": 10.0,
+        "elo": null,
+        "picks": 8089,
+        "wins": 3325,
+        "win_rate": 41.1
+      },
+      "INTIMIDATING_HELMET": {
+        "score": 80.0,
+        "elo": null,
+        "picks": 31901,
+        "wins": 19873,
+        "win_rate": 62.3
+      },
+      "IRON_CLUB": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 13105,
+        "wins": 10721,
+        "win_rate": 81.8
+      },
+      "IVORY_TILE": {
+        "score": 91.0,
+        "elo": null,
+        "picks": 2896,
+        "wins": 1907,
+        "win_rate": 65.8
+      },
+      "JEWELED_MASK": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 23557,
+        "wins": 16516,
+        "win_rate": 70.1
+      },
+      "JEWELRY_BOX": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 14272,
+        "wins": 10632,
+        "win_rate": 74.5
+      },
+      "JOSS_PAPER": {
+        "score": 67.0,
+        "elo": null,
+        "picks": 55514,
+        "wins": 32334,
+        "win_rate": 58.2
+      },
+      "JUZU_BRACELET": {
+        "score": 38.0,
+        "elo": null,
+        "picks": 99744,
+        "wins": 49440,
+        "win_rate": 49.6
+      },
+      "KIFUDA": {
+        "score": 96.0,
+        "elo": null,
+        "picks": 16989,
+        "wins": 11373,
+        "win_rate": 66.9
+      },
+      "KUNAI": {
+        "score": 76.0,
+        "elo": null,
+        "picks": 34218,
+        "wins": 20823,
+        "win_rate": 60.9
+      },
+      "KUSARIGAMA": {
+        "score": 65.0,
+        "elo": null,
+        "picks": 66027,
+        "wins": 38086,
+        "win_rate": 57.7
+      },
+      "LANTERN": {
+        "score": 63.0,
+        "elo": null,
+        "picks": 140009,
+        "wins": 79893,
+        "win_rate": 57.1
+      },
+      "LARGE_CAPSULE": {
+        "score": 0.0,
+        "elo": null,
+        "picks": 49363,
+        "wins": 15877,
+        "win_rate": 32.2
+      },
+      "LASTING_CANDY": {
+        "score": 39.0,
+        "elo": null,
+        "picks": 49523,
+        "wins": 24657,
+        "win_rate": 49.8
+      },
+      "LAVA_LAMP": {
+        "score": 92.0,
+        "elo": null,
+        "picks": 7125,
+        "wins": 4701,
+        "win_rate": 66.0
+      },
+      "LAVA_ROCK": {
+        "score": 0.0,
+        "elo": null,
+        "picks": 22977,
+        "wins": 8231,
+        "win_rate": 35.8
+      },
+      "LEAD_PAPERWEIGHT": {
+        "score": 0.0,
+        "elo": null,
+        "picks": 48941,
+        "wins": 16069,
+        "win_rate": 32.8
+      },
+      "LEAFY_POULTICE": {
+        "score": 0.0,
+        "elo": null,
+        "picks": 60848,
+        "wins": 22015,
+        "win_rate": 36.2
+      },
+      "LEES_WAFFLE": {
+        "score": 74.0,
+        "elo": null,
+        "picks": 19557,
+        "wins": 11794,
+        "win_rate": 60.3
+      },
+      "LETTER_OPENER": {
+        "score": 66.0,
+        "elo": null,
+        "picks": 70310,
+        "wins": 40689,
+        "win_rate": 57.9
+      },
+      "LIZARD_TAIL": {
+        "score": 90.0,
+        "elo": null,
+        "picks": 35452,
+        "wins": 23140,
+        "win_rate": 65.3
+      },
+      "LOOMING_FRUIT": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 13027,
+        "wins": 9303,
+        "win_rate": 71.4
+      },
+      "LORDS_PARASOL": {
+        "score": 98.0,
+        "elo": null,
+        "picks": 10593,
+        "wins": 7180,
+        "win_rate": 67.8
+      },
+      "LOST_COFFER": {
+        "score": 0.0,
+        "elo": null,
+        "picks": 40408,
+        "wins": 12983,
+        "win_rate": 32.1
+      },
+      "LOST_WISP": {
+        "score": 46.0,
+        "elo": null,
+        "picks": 9836,
+        "wins": 5111,
+        "win_rate": 52.0
+      },
+      "LUCKY_FYSH": {
+        "score": 42.0,
+        "elo": null,
+        "picks": 52426,
+        "wins": 26642,
+        "win_rate": 50.8
+      },
+      "LUNAR_PASTRY": {
+        "score": 98.0,
+        "elo": null,
+        "picks": 4542,
+        "wins": 3074,
+        "win_rate": 67.7
+      },
+      "MANGO": {
+        "score": 77.0,
+        "elo": null,
+        "picks": 34986,
+        "wins": 21471,
+        "win_rate": 61.4
+      },
+      "MASSIVE_SCROLL": {
+        "score": 24.0,
+        "elo": null,
+        "picks": 36465,
+        "wins": 16541,
+        "win_rate": 45.4
+      },
+      "MAW_BANK": {
+        "score": 10.0,
+        "elo": null,
+        "picks": 4971,
+        "wins": 2043,
+        "win_rate": 41.1
+      },
+      "MEAL_TICKET": {
+        "score": 42.0,
+        "elo": null,
+        "picks": 99840,
+        "wins": 50584,
+        "win_rate": 50.7
+      },
+      "MEAT_CLEAVER": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 14988,
+        "wins": 11356,
+        "win_rate": 75.8
+      },
+      "MEAT_ON_THE_BONE": {
+        "score": 70.0,
+        "elo": null,
+        "picks": 33171,
+        "wins": 19600,
+        "win_rate": 59.1
+      },
+      "MEMBERSHIP_CARD": {
+        "score": 73.0,
+        "elo": null,
+        "picks": 35185,
+        "wins": 21112,
+        "win_rate": 60.0
+      },
+      "MERCURY_HOURGLASS": {
+        "score": 69.0,
+        "elo": null,
+        "picks": 69885,
+        "wins": 41194,
+        "win_rate": 58.9
+      },
+      "METRONOME": {
+        "score": 71.0,
+        "elo": null,
+        "picks": 3811,
+        "wins": 2273,
+        "win_rate": 59.6
+      },
+      "MINIATURE_CANNON": {
+        "score": 68.0,
+        "elo": null,
+        "picks": 61772,
+        "wins": 36137,
+        "win_rate": 58.5
+      },
+      "MINIATURE_TENT": {
+        "score": 83.0,
+        "elo": null,
+        "picks": 39912,
+        "wins": 25236,
+        "win_rate": 63.2
+      },
+      "MINI_REGENT": {
+        "score": 87.0,
+        "elo": null,
+        "picks": 3518,
+        "wins": 2264,
+        "win_rate": 64.4
+      },
+      "MOLTEN_EGG": {
+        "score": 47.0,
+        "elo": null,
+        "picks": 25614,
+        "wins": 13402,
+        "win_rate": 52.3
+      },
+      "MR_STRUGGLES": {
+        "score": 46.0,
+        "elo": null,
+        "picks": 18311,
+        "wins": 9543,
+        "win_rate": 52.1
+      },
+      "MUMMIFIED_HAND": {
+        "score": 84.0,
+        "elo": null,
+        "picks": 35781,
+        "wins": 22642,
+        "win_rate": 63.3
+      },
+      "MUSIC_BOX": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 15841,
+        "wins": 11535,
+        "win_rate": 72.8
+      },
+      "MYSTIC_LIGHTER": {
+        "score": 98.0,
+        "elo": null,
+        "picks": 9021,
+        "wins": 6097,
+        "win_rate": 67.6
+      },
+      "NEOWS_TORMENT": {
+        "score": 0.0,
+        "elo": null,
+        "picks": 20810,
+        "wins": 6653,
+        "win_rate": 32.0
+      },
+      "NEW_LEAF": {
+        "score": 0.0,
+        "elo": null,
+        "picks": 49776,
+        "wins": 17290,
+        "win_rate": 34.7
+      },
+      "NINJA_SCROLL": {
+        "score": 84.0,
+        "elo": null,
+        "picks": 4523,
+        "wins": 2870,
+        "win_rate": 63.5
+      },
+      "NUNCHAKU": {
+        "score": 66.0,
+        "elo": null,
+        "picks": 72548,
+        "wins": 42044,
+        "win_rate": 58.0
+      },
+      "NUTRITIOUS_OYSTER": {
+        "score": 0.0,
+        "elo": null,
+        "picks": 20201,
+        "wins": 6467,
+        "win_rate": 32.0
+      },
+      "NUTRITIOUS_SOUP": {
+        "score": 20.0,
+        "elo": null,
+        "picks": 25067,
+        "wins": 11050,
+        "win_rate": 44.1
+      },
+      "ODDLY_SMOOTH_STONE": {
+        "score": 65.0,
+        "elo": null,
+        "picks": 129510,
+        "wins": 74558,
+        "win_rate": 57.6
+      },
+      "OLD_COIN": {
+        "score": 55.0,
+        "elo": null,
+        "picks": 24486,
+        "wins": 13363,
+        "win_rate": 54.6
+      },
+      "ORANGE_DOUGH": {
+        "score": 91.0,
+        "elo": null,
+        "picks": 3019,
+        "wins": 1986,
+        "win_rate": 65.8
+      },
+      "ORICHALCUM": {
+        "score": 66.0,
+        "elo": null,
+        "picks": 69258,
+        "wins": 40152,
+        "win_rate": 58.0
+      },
+      "ORNAMENTAL_FAN": {
+        "score": 66.0,
+        "elo": null,
+        "picks": 74943,
+        "wins": 43482,
+        "win_rate": 58.0
+      },
+      "ORRERY": {
+        "score": 79.0,
+        "elo": null,
+        "picks": 21917,
+        "wins": 13565,
+        "win_rate": 61.9
+      },
+      "PAELS_BLOOD": {
+        "score": 52.0,
+        "elo": null,
+        "picks": 23634,
+        "wins": 12697,
+        "win_rate": 53.7
+      },
+      "PAELS_CLAW": {
+        "score": 28.0,
+        "elo": null,
+        "picks": 14015,
+        "wins": 6507,
+        "win_rate": 46.4
+      },
+      "PAELS_EYE": {
+        "score": 24.0,
+        "elo": null,
+        "picks": 7462,
+        "wins": 3384,
+        "win_rate": 45.3
+      },
+      "PAELS_FLESH": {
+        "score": 19.0,
+        "elo": null,
+        "picks": 31231,
+        "wins": 13734,
+        "win_rate": 44.0
+      },
+      "PAELS_GROWTH": {
+        "score": 26.0,
+        "elo": null,
+        "picks": 13450,
+        "wins": 6183,
+        "win_rate": 46.0
+      },
+      "PAELS_HORN": {
+        "score": 9.0,
+        "elo": null,
+        "picks": 14179,
+        "wins": 5772,
+        "win_rate": 40.7
+      },
+      "PAELS_LEGION": {
+        "score": 37.0,
+        "elo": null,
+        "picks": 13638,
+        "wins": 6703,
+        "win_rate": 49.1
+      },
+      "PAELS_TEARS": {
+        "score": 17.0,
+        "elo": null,
+        "picks": 25509,
+        "wins": 11048,
+        "win_rate": 43.3
+      },
+      "PAELS_TOOTH": {
+        "score": 26.0,
+        "elo": null,
+        "picks": 16558,
+        "wins": 7608,
+        "win_rate": 45.9
+      },
+      "PAELS_WING": {
+        "score": 19.0,
+        "elo": null,
+        "picks": 27967,
+        "wins": 12232,
+        "win_rate": 43.7
+      },
+      "PANDORAS_BOX": {
+        "score": 64.0,
+        "elo": null,
+        "picks": 13071,
+        "wins": 7499,
+        "win_rate": 57.4
+      },
+      "PANTOGRAPH": {
+        "score": 70.0,
+        "elo": null,
+        "picks": 75215,
+        "wins": 44507,
+        "win_rate": 59.2
+      },
+      "PAPER_KRANE": {
+        "score": 97.0,
+        "elo": null,
+        "picks": 5251,
+        "wins": 3546,
+        "win_rate": 67.5
+      },
+      "PAPER_PHROG": {
+        "score": 83.0,
+        "elo": null,
+        "picks": 13220,
+        "wins": 8342,
+        "win_rate": 63.1
+      },
+      "PARRYING_SHIELD": {
+        "score": 66.0,
+        "elo": null,
+        "picks": 69579,
+        "wins": 40419,
+        "win_rate": 58.1
+      },
+      "PEAR": {
+        "score": 71.0,
+        "elo": null,
+        "picks": 73768,
+        "wins": 43786,
+        "win_rate": 59.4
+      },
+      "PENDULUM": {
+        "score": 67.0,
+        "elo": null,
+        "picks": 123175,
+        "wins": 71694,
+        "win_rate": 58.2
+      },
+      "PEN_NIB": {
+        "score": 68.0,
+        "elo": null,
+        "picks": 71321,
+        "wins": 41809,
+        "win_rate": 58.6
+      },
+      "PERMAFROST": {
+        "score": 69.0,
+        "elo": null,
+        "picks": 83558,
+        "wins": 49204,
+        "win_rate": 58.9
+      },
+      "PETRIFIED_TOAD": {
+        "score": 64.0,
+        "elo": null,
+        "picks": 66753,
+        "wins": 38276,
+        "win_rate": 57.3
+      },
+      "PHILOSOPHERS_STONE": {
+        "score": 98.0,
+        "elo": null,
+        "picks": 1251,
+        "wins": 851,
+        "win_rate": 68.0
+      },
+      "PHYLACTERY_UNBOUND": {
+        "score": 44.0,
+        "elo": null,
+        "picks": 10459,
+        "wins": 5376,
+        "win_rate": 51.4
+      },
+      "PLANISPHERE": {
+        "score": 44.0,
+        "elo": null,
+        "picks": 55299,
+        "wins": 28378,
+        "win_rate": 51.3
+      },
+      "POCKETWATCH": {
+        "score": 85.0,
+        "elo": null,
+        "picks": 31634,
+        "wins": 20188,
+        "win_rate": 63.8
+      },
+      "POLLINOUS_CORE": {
+        "score": 80.0,
+        "elo": null,
+        "picks": 14244,
+        "wins": 8867,
+        "win_rate": 62.3
+      },
+      "POMANDER": {
+        "score": 0.0,
+        "elo": null,
+        "picks": 24645,
+        "wins": 8273,
+        "win_rate": 33.6
+      },
+      "POTION_BELT": {
+        "score": 64.0,
+        "elo": null,
+        "picks": 128090,
+        "wins": 73431,
+        "win_rate": 57.3
+      },
+      "POWER_CELL": {
+        "score": 80.0,
+        "elo": null,
+        "picks": 2927,
+        "wins": 1825,
+        "win_rate": 62.4
+      },
+      "PRAYER_WHEEL": {
+        "score": 70.0,
+        "elo": null,
+        "picks": 33789,
+        "wins": 20050,
+        "win_rate": 59.3
+      },
+      "PRECARIOUS_SHEARS": {
+        "score": 4.0,
+        "elo": null,
+        "picks": 49316,
+        "wins": 19476,
+        "win_rate": 39.5
+      },
+      "PRECISE_SCISSORS": {
+        "score": 0.0,
+        "elo": null,
+        "picks": 30248,
+        "wins": 11049,
+        "win_rate": 36.5
+      },
+      "PRESERVED_FOG": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 14607,
+        "wins": 10388,
+        "win_rate": 71.1
+      },
+      "PRISMATIC_GEM": {
+        "score": 53.0,
+        "elo": null,
+        "picks": 6733,
+        "wins": 3643,
+        "win_rate": 54.1
+      },
+      "PUMPKIN_CANDLE": {
+        "score": 45.0,
+        "elo": null,
+        "picks": 10777,
+        "wins": 5556,
+        "win_rate": 51.6
+      },
+      "PUNCH_DAGGER": {
+        "score": 82.0,
+        "elo": null,
+        "picks": 16473,
+        "wins": 10348,
+        "win_rate": 62.8
+      },
+      "RADIANT_PEARL": {
+        "score": 46.0,
+        "elo": null,
+        "picks": 10836,
+        "wins": 5635,
+        "win_rate": 52.0
+      },
+      "RAINBOW_RING": {
+        "score": 80.0,
+        "elo": null,
+        "picks": 33264,
+        "wins": 20687,
+        "win_rate": 62.2
+      },
+      "RAZOR_TOOTH": {
+        "score": 77.0,
+        "elo": null,
+        "picks": 35335,
+        "wins": 21702,
+        "win_rate": 61.4
+      },
+      "RED_MASK": {
+        "score": 64.0,
+        "elo": null,
+        "picks": 111572,
+        "wins": 64039,
+        "win_rate": 57.4
+      },
+      "RED_SKULL": {
+        "score": 80.0,
+        "elo": null,
+        "picks": 22143,
+        "wins": 13767,
+        "win_rate": 62.2
+      },
+      "REGALITE": {
+        "score": 90.0,
+        "elo": null,
+        "picks": 7067,
+        "wins": 4619,
+        "win_rate": 65.4
+      },
+      "REGAL_PILLOW": {
+        "score": 60.0,
+        "elo": null,
+        "picks": 127245,
+        "wins": 71329,
+        "win_rate": 56.1
+      },
+      "REPTILE_TRINKET": {
+        "score": 62.0,
+        "elo": null,
+        "picks": 66442,
+        "wins": 37708,
+        "win_rate": 56.8
+      },
+      "RINGING_TRIANGLE": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 8082,
+        "wins": 5795,
+        "win_rate": 71.7
+      },
+      "RING_OF_THE_DRAKE": {
+        "score": 55.0,
+        "elo": null,
+        "picks": 7484,
+        "wins": 4099,
+        "win_rate": 54.8
+      },
+      "RING_OF_THE_SNAKE": {
+        "score": 0.0,
+        "elo": null,
+        "picks": 188557,
+        "wins": 64833,
+        "win_rate": 34.4
+      },
+      "RIPPLE_BASIN": {
+        "score": 67.0,
+        "elo": null,
+        "picks": 60658,
+        "wins": 35383,
+        "win_rate": 58.3
+      },
+      "ROYAL_POISON": {
+        "score": 86.0,
+        "elo": null,
+        "picks": 6900,
+        "wins": 4420,
+        "win_rate": 64.1
+      },
+      "ROYAL_STAMP": {
+        "score": 98.0,
+        "elo": null,
+        "picks": 22438,
+        "wins": 15166,
+        "win_rate": 67.6
+      },
+      "RUINED_HELMET": {
+        "score": 84.0,
+        "elo": null,
+        "picks": 5136,
+        "wins": 3254,
+        "win_rate": 63.4
+      },
+      "RUNIC_CAPACITOR": {
+        "score": 68.0,
+        "elo": null,
+        "picks": 5505,
+        "wins": 3229,
+        "win_rate": 58.7
+      },
+      "RUNIC_PYRAMID": {
+        "score": 87.0,
+        "elo": null,
+        "picks": 10709,
+        "wins": 6897,
+        "win_rate": 64.4
+      },
+      "SAI": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 17873,
+        "wins": 13997,
+        "win_rate": 78.3
+      },
+      "SAND_CASTLE": {
+        "score": 26.0,
+        "elo": null,
+        "picks": 15161,
+        "wins": 6980,
+        "win_rate": 46.0
+      },
+      "SCREAMING_FLAGON": {
+        "score": 77.0,
+        "elo": null,
+        "picks": 6966,
+        "wins": 4284,
+        "win_rate": 61.5
+      },
+      "SCROLL_BOXES": {
+        "score": 0.0,
+        "elo": null,
+        "picks": 44215,
+        "wins": 13300,
+        "win_rate": 30.1
+      },
+      "SEAL_OF_GOLD": {
+        "score": 54.0,
+        "elo": null,
+        "picks": 8696,
+        "wins": 4738,
+        "win_rate": 54.5
+      },
+      "SEA_GLASS": {
+        "score": 24.0,
+        "elo": null,
+        "picks": 8674,
+        "wins": 3924,
+        "win_rate": 45.2
+      },
+      "SELF_FORMING_CLAY": {
+        "score": 87.0,
+        "elo": null,
+        "picks": 8729,
+        "wins": 5615,
+        "win_rate": 64.3
+      },
+      "SERE_TALON": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 7535,
+        "wins": 5186,
+        "win_rate": 68.8
+      },
+      "SHOVEL": {
+        "score": 47.0,
+        "elo": null,
+        "picks": 25612,
+        "wins": 13388,
+        "win_rate": 52.3
+      },
+      "SHURIKEN": {
+        "score": 75.0,
+        "elo": null,
+        "picks": 33741,
+        "wins": 20509,
+        "win_rate": 60.8
+      },
+      "SIGNET_RING": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 17938,
+        "wins": 13315,
+        "win_rate": 74.2
+      },
+      "SILVER_CRUCIBLE": {
+        "score": 0.0,
+        "elo": null,
+        "picks": 20960,
+        "wins": 4767,
+        "win_rate": 22.7
+      },
+      "SLING_OF_COURAGE": {
+        "score": 83.0,
+        "elo": null,
+        "picks": 7006,
+        "wins": 4415,
+        "win_rate": 63.0
+      },
+      "SMALL_CAPSULE": {
+        "score": 0.0,
+        "elo": null,
+        "picks": 29957,
+        "wins": 10055,
+        "win_rate": 33.6
+      },
+      "SNECKO_EYE": {
+        "score": 87.0,
+        "elo": null,
+        "picks": 2189,
+        "wins": 1412,
+        "win_rate": 64.5
+      },
+      "SNECKO_SKULL": {
+        "score": 86.0,
+        "elo": null,
+        "picks": 18706,
+        "wins": 11970,
+        "win_rate": 64.0
+      },
+      "SOZU": {
+        "score": 47.0,
+        "elo": null,
+        "picks": 3238,
+        "wins": 1697,
+        "win_rate": 52.4
+      },
+      "SPARKLING_ROUGE": {
+        "score": 70.0,
+        "elo": null,
+        "picks": 71296,
+        "wins": 42247,
+        "win_rate": 59.3
+      },
+      "SPIKED_GAUNTLETS": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 10825,
+        "wins": 7664,
+        "win_rate": 70.8
+      },
+      "STONE_CALENDAR": {
+        "score": 67.0,
+        "elo": null,
+        "picks": 32674,
+        "wins": 19063,
+        "win_rate": 58.3
+      },
+      "STONE_CRACKER": {
+        "score": 66.0,
+        "elo": null,
+        "picks": 72076,
+        "wins": 41883,
+        "win_rate": 58.1
+      },
+      "STONE_HUMIDIFIER": {
+        "score": 0.0,
+        "elo": null,
+        "picks": 21681,
+        "wins": 7280,
+        "win_rate": 33.6
+      },
+      "STORYBOOK": {
+        "score": 64.0,
+        "elo": null,
+        "picks": 14654,
+        "wins": 8418,
+        "win_rate": 57.4
+      },
+      "STRAWBERRY": {
+        "score": 64.0,
+        "elo": null,
+        "picks": 129503,
+        "wins": 74162,
+        "win_rate": 57.3
+      },
+      "STRIKE_DUMMY": {
+        "score": 61.0,
+        "elo": null,
+        "picks": 120036,
+        "wins": 67782,
+        "win_rate": 56.5
+      },
+      "STURDY_CLAMP": {
+        "score": 85.0,
+        "elo": null,
+        "picks": 35473,
+        "wins": 22627,
+        "win_rate": 63.8
+      },
+      "SWORD_OF_JADE": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 14177,
+        "wins": 11317,
+        "win_rate": 79.8
+      },
+      "SWORD_OF_STONE": {
+        "score": 0.0,
+        "elo": null,
+        "picks": 30904,
+        "wins": 2643,
+        "win_rate": 8.6
+      },
+      "SYMBIOTIC_VIRUS": {
+        "score": 68.0,
+        "elo": null,
+        "picks": 8793,
+        "wins": 5163,
+        "win_rate": 58.7
+      },
+      "TANXS_WHISTLE": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 9183,
+        "wins": 6887,
+        "win_rate": 75.0
+      },
+      "TEA_OF_DISCOURTESY": {
+        "score": 21.0,
+        "elo": null,
+        "picks": 15230,
+        "wins": 6776,
+        "win_rate": 44.5
+      },
+      "THE_ABACUS": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 7765,
+        "wins": 5539,
+        "win_rate": 71.3
+      },
+      "THE_BOOT": {
+        "score": 0.0,
+        "elo": null,
+        "picks": 5908,
+        "wins": 2217,
+        "win_rate": 37.5
+      },
+      "THE_COURIER": {
+        "score": 67.0,
+        "elo": null,
+        "picks": 31348,
+        "wins": 18264,
+        "win_rate": 58.3
+      },
+      "THROWING_AXE": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 17015,
+        "wins": 12277,
+        "win_rate": 72.2
+      },
+      "TINGSHA": {
+        "score": 91.0,
+        "elo": null,
+        "picks": 11842,
+        "wins": 7768,
+        "win_rate": 65.6
+      },
+      "TINY_MAILBOX": {
+        "score": 69.0,
+        "elo": null,
+        "picks": 62929,
+        "wins": 37147,
+        "win_rate": 59.0
+      },
+      "TOASTY_MITTENS": {
+        "score": 58.0,
+        "elo": null,
+        "picks": 3169,
+        "wins": 1764,
+        "win_rate": 55.7
+      },
+      "TOOLBOX": {
+        "score": 94.0,
+        "elo": null,
+        "picks": 13040,
+        "wins": 8655,
+        "win_rate": 66.4
+      },
+      "TOUCH_OF_OROBAS": {
+        "score": 23.0,
+        "elo": null,
+        "picks": 37850,
+        "wins": 17035,
+        "win_rate": 45.0
+      },
+      "TOUGH_BANDAGES": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 5337,
+        "wins": 3715,
+        "win_rate": 69.6
+      },
+      "TOXIC_EGG": {
+        "score": 62.0,
+        "elo": null,
+        "picks": 27223,
+        "wins": 15431,
+        "win_rate": 56.7
+      },
+      "TOY_BOX": {
+        "score": 45.0,
+        "elo": null,
+        "picks": 9715,
+        "wins": 5016,
+        "win_rate": 51.6
+      },
+      "TRI_BOOMERANG": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 17429,
+        "wins": 12666,
+        "win_rate": 72.7
+      },
+      "TUNGSTEN_ROD": {
+        "score": 76.0,
+        "elo": null,
+        "picks": 28509,
+        "wins": 17422,
+        "win_rate": 61.1
+      },
+      "TUNING_FORK": {
+        "score": 69.0,
+        "elo": null,
+        "picks": 71493,
+        "wins": 42152,
+        "win_rate": 59.0
+      },
+      "TWISTED_FUNNEL": {
+        "score": 85.0,
+        "elo": null,
+        "picks": 8701,
+        "wins": 5534,
+        "win_rate": 63.6
+      },
+      "UNCEASING_TOP": {
+        "score": 72.0,
+        "elo": null,
+        "picks": 32918,
+        "wins": 19726,
+        "win_rate": 59.9
+      },
+      "UNDYING_SIGIL": {
+        "score": 79.0,
+        "elo": null,
+        "picks": 2789,
+        "wins": 1731,
+        "win_rate": 62.1
+      },
+      "UNSETTLING_LAMP": {
+        "score": 71.0,
+        "elo": null,
+        "picks": 32601,
+        "wins": 19429,
+        "win_rate": 59.6
+      },
+      "VAJRA": {
+        "score": 62.0,
+        "elo": null,
+        "picks": 130506,
+        "wins": 73939,
+        "win_rate": 56.7
+      },
+      "VAMBRACE": {
+        "score": 67.0,
+        "elo": null,
+        "picks": 72057,
+        "wins": 41971,
+        "win_rate": 58.2
+      },
+      "VELVET_CHOKER": {
+        "score": 72.0,
+        "elo": null,
+        "picks": 776,
+        "wins": 467,
+        "win_rate": 60.2
+      },
+      "VENERABLE_TEA_SET": {
+        "score": 63.0,
+        "elo": null,
+        "picks": 127267,
+        "wins": 72747,
+        "win_rate": 57.2
+      },
+      "VERY_HOT_COCOA": {
+        "score": 39.0,
+        "elo": null,
+        "picks": 38966,
+        "wins": 19387,
+        "win_rate": 49.8
+      },
+      "VEXING_PUZZLEBOX": {
+        "score": 78.0,
+        "elo": null,
+        "picks": 30279,
+        "wins": 18654,
+        "win_rate": 61.6
+      },
+      "VITRUVIAN_MINION": {
+        "score": 76.0,
+        "elo": null,
+        "picks": 1846,
+        "wins": 1130,
+        "win_rate": 61.2
+      },
+      "WAR_HAMMER": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 10408,
+        "wins": 7499,
+        "win_rate": 72.1
+      },
+      "WAR_PAINT": {
+        "score": 66.0,
+        "elo": null,
+        "picks": 130706,
+        "wins": 75715,
+        "win_rate": 57.9
+      },
+      "WHETSTONE": {
+        "score": 62.0,
+        "elo": null,
+        "picks": 128646,
+        "wins": 73241,
+        "win_rate": 56.9
+      },
+      "WHISPERING_EARRING": {
+        "score": 98.0,
+        "elo": null,
+        "picks": 14256,
+        "wins": 9652,
+        "win_rate": 67.7
+      },
+      "WHITE_BEAST_STATUE": {
+        "score": 49.0,
+        "elo": null,
+        "picks": 25113,
+        "wins": 13260,
+        "win_rate": 52.8
+      },
+      "WHITE_STAR": {
+        "score": 51.0,
+        "elo": null,
+        "picks": 22503,
+        "wins": 12023,
+        "win_rate": 53.4
+      },
+      "WING_CHARM": {
+        "score": 91.0,
+        "elo": null,
+        "picks": 7977,
+        "wins": 5221,
+        "win_rate": 65.5
+      },
+      "WONGOS_MYSTERY_TICKET": {
+        "score": 55.0,
+        "elo": null,
+        "picks": 6093,
+        "wins": 3336,
+        "win_rate": 54.8
+      },
+      "WONGO_CUSTOMER_APPRECIATION_BADGE": {
+        "score": 51.0,
+        "elo": null,
+        "picks": 9,
+        "wins": 5,
+        "win_rate": 55.6
+      },
+      "YUMMY_COOKIE": {
+        "score": 30.0,
+        "elo": null,
+        "picks": 42514,
+        "wins": 20060,
+        "win_rate": 47.2
+      }
+    },
+    "potions": {
+      "ASHWATER": {
+        "score": 37.0,
+        "elo": null,
+        "picks": 3890,
+        "wins": 1370,
+        "win_rate": 35.2
+      },
+      "ATTACK_POTION": {
+        "score": 52.0,
+        "elo": null,
+        "picks": 6043,
+        "wins": 2395,
+        "win_rate": 39.6
+      },
+      "BEETLE_JUICE": {
+        "score": 64.0,
+        "elo": null,
+        "picks": 2013,
+        "wins": 875,
+        "win_rate": 43.5
+      },
+      "BLESSING_OF_THE_FORGE": {
+        "score": 61.0,
+        "elo": null,
+        "picks": 11239,
+        "wins": 4772,
+        "win_rate": 42.5
+      },
+      "BLOCK_POTION": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 9361,
+        "wins": 5334,
+        "win_rate": 57.0
+      },
+      "BLOOD_POTION": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 4522,
+        "wins": 3646,
+        "win_rate": 80.6
+      },
+      "BONE_BREW": {
+        "score": 43.0,
+        "elo": null,
+        "picks": 425,
+        "wins": 156,
+        "win_rate": 36.7
+      },
+      "BOTTLED_POTENTIAL": {
+        "score": 65.0,
+        "elo": null,
+        "picks": 3966,
+        "wins": 1739,
+        "win_rate": 43.8
+      },
+      "CLARITY": {
+        "score": 19.0,
+        "elo": null,
+        "picks": 5386,
+        "wins": 1598,
+        "win_rate": 29.7
+      },
+      "COLORLESS_POTION": {
+        "score": 39.0,
+        "elo": null,
+        "picks": 5393,
+        "wins": 1927,
+        "win_rate": 35.7
+      },
+      "COSMIC_CONCOCTION": {
+        "score": 74.0,
+        "elo": null,
+        "picks": 284,
+        "wins": 135,
+        "win_rate": 47.5
+      },
+      "CUNNING_POTION": {
+        "score": 68.0,
+        "elo": null,
+        "picks": 681,
+        "wins": 306,
+        "win_rate": 44.9
+      },
+      "CURE_ALL": {
+        "score": 71.0,
+        "elo": null,
+        "picks": 3601,
+        "wins": 1642,
+        "win_rate": 45.6
+      },
+      "DEXTERITY_POTION": {
+        "score": 0.0,
+        "elo": null,
+        "picks": 18914,
+        "wins": 4331,
+        "win_rate": 22.9
+      },
+      "DISTILLED_CHAOS": {
+        "score": 73.0,
+        "elo": null,
+        "picks": 1150,
+        "wins": 534,
+        "win_rate": 46.4
+      },
+      "DROPLET_OF_PRECOGNITION": {
+        "score": 48.0,
+        "elo": null,
+        "picks": 3196,
+        "wins": 1231,
+        "win_rate": 38.5
+      },
+      "DUPLICATOR": {
+        "score": 77.0,
+        "elo": null,
+        "picks": 13790,
+        "wins": 6537,
+        "win_rate": 47.4
+      },
+      "ENERGY_POTION": {
+        "score": 58.0,
+        "elo": null,
+        "picks": 23865,
+        "wins": 9895,
+        "win_rate": 41.5
+      },
+      "ENTROPIC_BREW": {
+        "score": 97.0,
+        "elo": null,
+        "picks": 1782,
+        "wins": 954,
+        "win_rate": 53.5
+      },
+      "ESSENCE_OF_DARKNESS": {
+        "score": 32.0,
+        "elo": null,
+        "picks": 439,
+        "wins": 146,
+        "win_rate": 33.3
+      },
+      "EXPLOSIVE_AMPOULE": {
+        "score": 27.0,
+        "elo": null,
+        "picks": 13803,
+        "wins": 4431,
+        "win_rate": 32.1
+      },
+      "FAIRY_IN_A_BOTTLE": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 19035,
+        "wins": 17727,
+        "win_rate": 93.1
+      },
+      "FIRE_POTION": {
+        "score": 55.0,
+        "elo": null,
+        "picks": 14768,
+        "wins": 6003,
+        "win_rate": 40.6
+      },
+      "FLEX_POTION": {
+        "score": 33.0,
+        "elo": null,
+        "picks": 33964,
+        "wins": 11536,
+        "win_rate": 34.0
+      },
+      "FOCUS_POTION": {
+        "score": 0.0,
+        "elo": null,
+        "picks": 2544,
+        "wins": 310,
+        "win_rate": 12.2
+      },
+      "FORTIFIER": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 11315,
+        "wins": 6690,
+        "win_rate": 59.1
+      },
+      "FOUL_POTION": {
+        "score": 0.0,
+        "elo": null,
+        "picks": 6746,
+        "wins": 1451,
+        "win_rate": 21.5
+      },
+      "FRUIT_JUICE": {
+        "score": 25.0,
+        "elo": null,
+        "picks": 491,
+        "wins": 151,
+        "win_rate": 30.8
+      },
+      "FYSH_OIL": {
+        "score": 0.0,
+        "elo": null,
+        "picks": 6226,
+        "wins": 1135,
+        "win_rate": 18.2
+      },
+      "GAMBLERS_BREW": {
+        "score": 64.0,
+        "elo": null,
+        "picks": 9246,
+        "wins": 4004,
+        "win_rate": 43.3
+      },
+      "GHOST_IN_A_JAR": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 1547,
+        "wins": 1243,
+        "win_rate": 80.3
+      },
+      "GIGANTIFICATION_POTION": {
+        "score": 64.0,
+        "elo": null,
+        "picks": 6872,
+        "wins": 2972,
+        "win_rate": 43.2
+      },
+      "GLOWWATER_POTION": {
+        "score": 0.0,
+        "elo": null,
+        "picks": 2192,
+        "wins": 264,
+        "win_rate": 12.0
+      },
+      "HEART_OF_IRON": {
+        "score": 49.0,
+        "elo": null,
+        "picks": 2878,
+        "wins": 1119,
+        "win_rate": 38.9
+      },
+      "KINGS_COURAGE": {
+        "score": 0.0,
+        "elo": null,
+        "picks": 1093,
+        "wins": 253,
+        "win_rate": 23.1
+      },
+      "LIQUID_BRONZE": {
+        "score": 0.0,
+        "elo": null,
+        "picks": 5527,
+        "wins": 714,
+        "win_rate": 12.9
+      },
+      "LIQUID_MEMORIES": {
+        "score": 88.0,
+        "elo": null,
+        "picks": 3114,
+        "wins": 1583,
+        "win_rate": 50.8
+      },
+      "LUCKY_TONIC": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 6358,
+        "wins": 4445,
+        "win_rate": 69.9
+      },
+      "MAZALETHS_GIFT": {
+        "score": 0.0,
+        "elo": null,
+        "picks": 3440,
+        "wins": 403,
+        "win_rate": 11.7
+      },
+      "OROBIC_ACID": {
+        "score": 47.0,
+        "elo": null,
+        "picks": 1299,
+        "wins": 496,
+        "win_rate": 38.2
+      },
+      "POISON_POTION": {
+        "score": 6.0,
+        "elo": null,
+        "picks": 1604,
+        "wins": 411,
+        "win_rate": 25.6
+      },
+      "POTION_OF_BINDING": {
+        "score": 48.0,
+        "elo": null,
+        "picks": 4213,
+        "wins": 1623,
+        "win_rate": 38.5
+      },
+      "POTION_OF_CAPACITY": {
+        "score": 0.0,
+        "elo": null,
+        "picks": 2320,
+        "wins": 207,
+        "win_rate": 8.9
+      },
+      "POTION_OF_DOOM": {
+        "score": 13.0,
+        "elo": null,
+        "picks": 2079,
+        "wins": 579,
+        "win_rate": 27.8
+      },
+      "POTION_SHAPED_ROCK": {
+        "score": 95.0,
+        "elo": null,
+        "picks": 5739,
+        "wins": 3030,
+        "win_rate": 52.8
+      },
+      "POT_OF_GHOULS": {
+        "score": 74.0,
+        "elo": null,
+        "picks": 488,
+        "wins": 230,
+        "win_rate": 47.1
+      },
+      "POWDERED_DEMISE": {
+        "score": 0.0,
+        "elo": null,
+        "picks": 5194,
+        "wins": 800,
+        "win_rate": 15.4
+      },
+      "POWER_POTION": {
+        "score": 0.0,
+        "elo": null,
+        "picks": 6980,
+        "wins": 1470,
+        "win_rate": 21.1
+      },
+      "RADIANT_TINCTURE": {
+        "score": 44.0,
+        "elo": null,
+        "picks": 7885,
+        "wins": 2933,
+        "win_rate": 37.2
+      },
+      "REGEN_POTION": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 4090,
+        "wins": 2266,
+        "win_rate": 55.4
+      },
+      "SHACKLING_POTION": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 2328,
+        "wins": 1345,
+        "win_rate": 57.8
+      },
+      "SHIP_IN_A_BOTTLE": {
+        "score": 100.0,
+        "elo": null,
+        "picks": 1261,
+        "wins": 730,
+        "win_rate": 57.9
+      },
+      "SKILL_POTION": {
+        "score": 47.0,
+        "elo": null,
+        "picks": 5802,
+        "wins": 2224,
+        "win_rate": 38.3
+      },
+      "SNECKO_OIL": {
+        "score": 64.0,
+        "elo": null,
+        "picks": 2353,
+        "wins": 1024,
+        "win_rate": 43.5
+      },
+      "SOLDIERS_STEW": {
+        "score": 0.0,
+        "elo": null,
+        "picks": 621,
+        "wins": 139,
+        "win_rate": 22.4
+      },
+      "SPEED_POTION": {
+        "score": 64.0,
+        "elo": null,
+        "picks": 31935,
+        "wins": 13811,
+        "win_rate": 43.2
+      },
+      "STABLE_SERUM": {
+        "score": 10.0,
+        "elo": null,
+        "picks": 17623,
+        "wins": 4788,
+        "win_rate": 27.2
+      },
+      "STAR_POTION": {
+        "score": 12.0,
+        "elo": null,
+        "picks": 5219,
+        "wins": 1448,
+        "win_rate": 27.7
+      },
+      "STRENGTH_POTION": {
+        "score": 0.0,
+        "elo": null,
+        "picks": 19869,
+        "wins": 3435,
+        "win_rate": 17.3
+      },
+      "SWIFT_POTION": {
+        "score": 49.0,
+        "elo": null,
+        "picks": 14897,
+        "wins": 5783,
+        "win_rate": 38.8
+      },
+      "TOUCH_OF_INSANITY": {
+        "score": 59.0,
+        "elo": null,
+        "picks": 11853,
+        "wins": 4967,
+        "win_rate": 41.9
+      },
+      "VULNERABLE_POTION": {
+        "score": 10.0,
+        "elo": null,
+        "picks": 22118,
+        "wins": 6032,
+        "win_rate": 27.3
+      },
+      "WEAK_POTION": {
+        "score": 51.0,
+        "elo": null,
+        "picks": 11225,
+        "wins": 4433,
+        "win_rate": 39.5
+      }
+    }
+  }
+}

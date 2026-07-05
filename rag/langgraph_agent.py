@@ -17,7 +17,13 @@ from rag.chat import rag_chat
 from rag.hyde import generate_hypothetical
 from rag.query_planner import decompose_query
 from rag.query_rewriter import rewrite_query
-from rag.retriever import format_context, hybrid_retrieve, multi_query_retrieve, retrieve
+from rag.retriever import (
+    attach_result_metadata,
+    format_context,
+    hybrid_retrieve,
+    multi_query_retrieve,
+    retrieve,
+)
 from rag.router import structured_query
 from rag.verifier import VerificationResult, format_verification_summary, verify_answer
 from rag.vector_store import VectorStore
@@ -106,7 +112,11 @@ def _route_or_plan_node(state: AgentGraphState) -> Dict:
         )
 
     plan = plan_tool(planner_query, state["client"], has_bm25=state.get("bm25_index") is not None)
-    role_context = role_strategy_context(plan["query"], state["items"])
+    role_context = role_strategy_context(
+        plan["query"],
+        state["items"],
+        state["index"],
+    )
     tool_top_n = plan["top_n"] or state["config"].top_n
     if role_context:
         tool_top_n = max(tool_top_n, min(len(role_context), 8))
@@ -162,7 +172,7 @@ def _execute_tool_node(state: AgentGraphState) -> Dict:
             model,
             n_per_query=cfg.top_n,
         )
-        candidates = merge_results(role_context, candidates)
+        candidates = merge_results(candidates, role_context)
         results = _maybe_rerank(query, candidates, reranker, top_n)
         return {
             "results": results,
@@ -191,7 +201,7 @@ def _execute_tool_node(state: AgentGraphState) -> Dict:
             )
         else:
             candidates = retrieve(vector_query, docs, store, model, n=cfg.candidate_n)
-        candidates = merge_results(role_context, candidates)
+        candidates = merge_results(candidates, role_context)
         results = _maybe_rerank(query, candidates, reranker, top_n)
         return {
             "results": results,
@@ -215,7 +225,7 @@ def _execute_tool_node(state: AgentGraphState) -> Dict:
             rrf_k=cfg.rrf_k,
             top_n=cfg.candidate_n if reranker is not None else top_n,
         )
-        candidates = merge_results(role_context, candidates)
+        candidates = merge_results(candidates, role_context)
         results = _maybe_rerank(query, candidates, reranker, top_n)
         return {
             "results": results,
@@ -234,7 +244,7 @@ def _execute_tool_node(state: AgentGraphState) -> Dict:
         model,
         n=cfg.candidate_n if reranker is not None else top_n,
     )
-    candidates = merge_results(role_context, candidates)
+    candidates = merge_results(candidates, role_context)
     results = _maybe_rerank(query, candidates, reranker, top_n)
     return {
         "selected_tool": "vector_search",
@@ -249,7 +259,7 @@ def _execute_tool_node(state: AgentGraphState) -> Dict:
 
 
 def _generate_node(state: AgentGraphState) -> Dict:
-    results = state.get("results", [])
+    results = attach_result_metadata(state.get("results", []), state["items"])
     context = format_context(results)
     answer = rag_chat(state["question"], context, state.get("history", []), state["client"])
     attempts = state.get("verification_attempts", 0)
@@ -260,6 +270,7 @@ def _generate_node(state: AgentGraphState) -> Dict:
     )
     return {
         "answer": answer,
+        "results": results,
         "steps": _append_step(
             state,
             "grounded_generation",
@@ -316,7 +327,7 @@ def _repair_node(state: AgentGraphState) -> Dict:
     )
     role_context = state.get("role_context", [])
     if role_context:
-        results = merge_results(role_context, results)[:max(state["config"].repair_top_n, state.get("tool_top_n", state["config"].top_n))]
+        results = merge_results(results, role_context)[:max(state["config"].repair_top_n, state.get("tool_top_n", state["config"].top_n))]
     return {
         "results": results,
         "steps": _append_step(

@@ -4,13 +4,13 @@ os.environ["SENTENCE_TRANSFORMERS_HOME"] = "./models"
 
 import argparse
 from config import (
-    KNOWLEDGE_FILE, RETRIEVE_TOP_N, RERANKER_CANDIDATE_N, MULTI_QUERY_PER_SUB_N,
+    KNOWLEDGE_FILE, RELATIONAL_DB_FILE, RETRIEVE_TOP_N, RERANKER_CANDIDATE_N, MULTI_QUERY_PER_SUB_N,
     BM25_TOP_N, VECTOR_TOP_N_FOR_HYBRID, RRF_K,
 )
 from rag.embedder import load_model, load_or_compute_embeddings
 from rag.chat import create_client, rag_chat
 from rag.retriever import retrieve, adaptive_retrieve, multi_query_retrieve, hybrid_retrieve, format_context, format_sources
-from rag.knowledge import load_knowledge
+from rag.knowledge import load_knowledge, load_runtime_knowledge
 from rag.router import structured_query
 from rag.query_planner import decompose_query
 from rag.hyde import generate_hypothetical
@@ -18,6 +18,7 @@ from rag.query_rewriter import rewrite_query
 from rag.errors import handle_api_error, handle_file_error
 from rag.agent import AgentConfig, format_agent_trace, run_agent
 from rag.langgraph_agent import run_langgraph_agent
+from storage.relational import RelationalRepository
 
 
 def main():
@@ -37,7 +38,11 @@ def main():
         return
 
     try:
-        docs, items, index = load_knowledge()
+        if args.legacy:
+            docs, items, index = load_knowledge()
+        else:
+            repository = RelationalRepository(RELATIONAL_DB_FILE)
+            docs, items, index = load_runtime_knowledge(repository)
     except Exception as e:
         print(handle_file_error(e, KNOWLEDGE_FILE))
         return

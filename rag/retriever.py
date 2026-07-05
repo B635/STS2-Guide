@@ -10,6 +10,41 @@ from config import (
 from rag.vector_store import VectorStore
 
 
+RESULT_METADATA_FIELDS = {
+    "source_title": "title",
+    "source_author": "author",
+    "source_url": "url",
+    "original_url": "original_url",
+    "section": "section",
+    "source_language": "language",
+    "published_at": "published_at",
+    "updated_at": "updated_at",
+}
+
+
+def attach_result_metadata(results: list, items: list) -> list:
+    """Attach source metadata using the stable docs/items positional alignment."""
+    enriched = []
+    for result in results:
+        row = dict(result)
+        item = row.get("item")
+        idx = row.get("index")
+        if item is None and isinstance(idx, (int, np.integer)) and 0 <= int(idx) < len(items):
+            item = items[int(idx)]
+
+        if isinstance(item, dict):
+            row["source_type"] = item.get("_type")
+            row["source_id"] = item.get("id")
+            if "title" not in row:
+                row["title"] = item.get("source_title") or item.get("name")
+            for item_key, result_key in RESULT_METADATA_FIELDS.items():
+                value = item.get(item_key)
+                if value not in (None, ""):
+                    row[result_key] = value
+        enriched.append(row)
+    return enriched
+
+
 def get_retrieve_n(query: str) -> int:
     if any(kw in query for kw in ["所有", "全部", "列举", "有哪些", "几个"]):
         return 10
@@ -117,7 +152,19 @@ def multi_query_retrieve(
 
 def format_context(results: list) -> str:
     # Prefix each doc with [n] so the LLM can cite by index; n is 1-based.
-    return "\n".join([f"[{i + 1}] {r['text']}" for i, r in enumerate(results)])
+    rows = []
+    for i, result in enumerate(results, start=1):
+        source_bits = []
+        if result.get("source_type") == "guides":
+            if result.get("title"):
+                source_bits.append(f"攻略《{result['title']}》")
+            if result.get("author"):
+                source_bits.append(f"作者 {result['author']}")
+            if result.get("section"):
+                source_bits.append(f"章节 {result['section']}")
+        source_prefix = f"（{'；'.join(source_bits)}）" if source_bits else ""
+        rows.append(f"[{i}] {source_prefix}{result['text']}")
+    return "\n".join(rows)
 
 
 def format_sources(results: list) -> str:

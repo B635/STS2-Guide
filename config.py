@@ -18,6 +18,30 @@ EMBEDDING_CACHE_DIR = "./models"
 EMBEDDINGS_FILE = "./embeddings.npy"
 DOCS_HASH_FILE = "./docs_hash.txt"
 KNOWLEDGE_FILE = "./data/knowledge.json"
+GUIDES_FILE = "./data/guides.json"
+COMMUNITY_SCORES_FILE = "./data/community_scores.json"
+LOCAL_CARD_TIERS_FILE = os.getenv(
+    "STS2_LOCAL_CARD_TIERS_FILE",
+    "./data/local/mobalytics_card_tiers.json",
+)
+RELATIONAL_DB_FILE = os.getenv(
+    "STS2_RELATIONAL_DB_FILE",
+    "./data/sts2_guide.db",
+)
+
+# Community aggregate scores are a weak prior, not a prediction target.
+ADVISOR_COMMUNITY_SCORE_WEIGHT = float(
+    os.getenv("ADVISOR_COMMUNITY_SCORE_WEIGHT", "0.25")
+)
+ADVISOR_COMMUNITY_SCORE_MIN_PICKS = int(
+    os.getenv("ADVISOR_COMMUNITY_SCORE_MIN_PICKS", "200")
+)
+
+# Long-form community guides are split before embedding.  The current
+# multilingual MiniLM model has a relatively small sequence window, so keep
+# chunks deliberately compact and preserve a small amount of local overlap.
+GUIDE_CHUNK_MAX_CHARS = 190
+GUIDE_CHUNK_OVERLAP_CHARS = 30
 
 RETRIEVE_TOP_N = 3
 ADAPTIVE_SCORE_THRESHOLD = 0.5

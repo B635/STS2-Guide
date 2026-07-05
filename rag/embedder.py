@@ -1,5 +1,6 @@
 import hashlib
 import json
+from pathlib import Path
 import numpy as np
 from numpy.linalg import norm
 from sentence_transformers import SentenceTransformer
@@ -7,6 +8,33 @@ from config import EMBEDDING_MODEL, EMBEDDING_CACHE_DIR, EMBEDDINGS_FILE, DOCS_H
 from rag.vector_store import build_vector_store, VectorStore
 
 NORMALIZED_EMBEDDINGS_FILE = "./embeddings_normalized.npy"
+
+
+def validate_embedding_documents(docs: list, model: SentenceTransformer) -> None:
+    """Fail fast instead of silently truncating long documents."""
+    tokenizer = getattr(model, "tokenizer", None)
+    max_seq_length = int(getattr(model, "max_seq_length", 0) or 0)
+    if tokenizer is None or max_seq_length <= 0 or not docs:
+        return
+
+    encoded = tokenizer(
+        docs,
+        add_special_tokens=True,
+        truncation=False,
+        padding=False,
+    )
+    lengths = [len(input_ids) for input_ids in encoded["input_ids"]]
+    over_limit = [
+        (idx, length)
+        for idx, length in enumerate(lengths)
+        if length > max_seq_length
+    ]
+    if over_limit:
+        sample = ", ".join(f"#{idx}={length}" for idx, length in over_limit[:5])
+        raise ValueError(
+            f"{len(over_limit)} document(s) exceed embedding max_seq_length="
+            f"{max_seq_length} tokens ({sample}). Re-chunk before embedding."
+        )
 
 
 def get_docs_hash(docs: list) -> str:
@@ -20,6 +48,7 @@ def get_docs_hash(docs: list) -> str:
 
 def _compute_normalized(docs: list, model: SentenceTransformer) -> np.ndarray:
     import os
+    validate_embedding_documents(docs, model)
     current_hash = get_docs_hash(docs)
 
     if os.path.exists(NORMALIZED_EMBEDDINGS_FILE) and os.path.exists(DOCS_HASH_FILE):
@@ -54,4 +83,23 @@ def load_or_compute_embeddings(docs: list, model: SentenceTransformer) -> Vector
 
 
 def load_model() -> SentenceTransformer:
-    return SentenceTransformer(EMBEDDING_MODEL, cache_folder=EMBEDDING_CACHE_DIR)
+    """Load a downloaded snapshot directly before considering the network."""
+    model_parts = EMBEDDING_MODEL.split("/", 1)
+    if len(model_parts) == 1:
+        model_parts = ["sentence-transformers", model_parts[0]]
+    cache_name = f"models--{model_parts[0]}--{model_parts[1]}"
+    repository_cache = Path(EMBEDDING_CACHE_DIR) / cache_name
+    main_ref = repository_cache / "refs" / "main"
+    if main_ref.is_file():
+        revision = main_ref.read_text(encoding="utf-8").strip()
+        snapshot = repository_cache / "snapshots" / revision
+        if (snapshot / "modules.json").is_file():
+            return SentenceTransformer(
+                str(snapshot),
+                local_files_only=True,
+            )
+
+    return SentenceTransformer(
+        EMBEDDING_MODEL,
+        cache_folder=EMBEDDING_CACHE_DIR,
+    )

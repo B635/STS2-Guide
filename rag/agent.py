@@ -22,9 +22,11 @@ from config import (
 from rag.chat import rag_chat
 from rag.agent_schema import AGENT_FUNCTION_TOOLS
 from rag.hyde import generate_hypothetical
+from rag.knowledge import ENTITY_TYPES
 from rag.query_planner import decompose_query
 from rag.query_rewriter import rewrite_query
 from rag.retriever import (
+    attach_result_metadata,
     format_context,
     hybrid_retrieve,
     multi_query_retrieve,
@@ -138,7 +140,12 @@ def _is_strategy_query(query: str) -> bool:
     return any(keyword in query for keyword in STRATEGY_KEYWORDS)
 
 
-def role_strategy_context(query: str, items: List[Dict], limit: int = 8) -> List[Dict]:
+def role_strategy_context(
+    query: str,
+    items: List[Dict],
+    structured_index: Optional[Dict] = None,
+    limit: int = 8,
+) -> List[Dict]:
     """Return deterministic role-related context for open strategy questions."""
     aliases = set(_role_aliases_in_query(query))
     if not aliases or not _is_strategy_query(query):
@@ -146,7 +153,17 @@ def role_strategy_context(query: str, items: List[Dict], limit: int = 8) -> List
 
     preferred_terms = ("仆从", "生成", "无色", "力量", "格挡", "消耗", "抽", "易伤", "虚弱")
     candidates = []
-    for idx, item in enumerate(items):
+    combined = [(idx, item) for idx, item in enumerate(items)]
+    seen_ids = {str(item.get("id", "")) for item in items}
+    for entity_type in ENTITY_TYPES:
+        for item in (structured_index or {}).get(entity_type, []):
+            item_id = str(item.get("id", ""))
+            if item_id in seen_ids:
+                continue
+            seen_ids.add(item_id)
+            combined.append((-1, item))
+
+    for idx, item in combined:
         text = item.get("embed_text", "")
         item_type = item.get("_type", "")
         color = str(item.get("color", "")).lower()
@@ -171,29 +188,49 @@ def role_strategy_context(query: str, items: List[Dict], limit: int = 8) -> List
                 score += 0.35
 
         if score > 0:
-            candidates.append({
+            row = {
                 "text": text,
                 "score": score,
                 "index": idx,
                 "source": "role_strategy_context",
-            })
+            }
+            if idx < 0:
+                row["item"] = item
+            candidates.append(row)
 
     candidates.sort(key=lambda row: row["score"], reverse=True)
     return candidates[:limit]
 
 
 def merge_results(*result_lists: List[Dict]) -> List[Dict]:
+    """Fuse heterogeneous result lists by rank instead of incomparable scores."""
     merged: Dict[int, Dict] = {}
-    order = 0
+    fusion_scores: Dict[int, float] = {}
+    negative_key = -1
     for results in result_lists:
-        for row in results:
+        for rank, row in enumerate(results, start=1):
             idx = int(row.get("index", -1))
-            key = idx if idx >= 0 else -(order + 1)
-            order += 1
-            current = merged.get(key)
-            if current is None or float(row.get("score", 0.0)) > float(current.get("score", 0.0)):
-                merged[key] = row
-    return sorted(merged.values(), key=lambda row: float(row.get("score", 0.0)), reverse=True)
+            if idx >= 0:
+                key = idx
+            else:
+                key = negative_key
+                negative_key -= 1
+            if key not in merged:
+                merged[key] = dict(row)
+            fusion_scores[key] = fusion_scores.get(key, 0.0) + 1.0 / (60 + rank)
+
+    ordered_keys = sorted(
+        merged,
+        key=lambda key: fusion_scores[key],
+        reverse=True,
+    )
+    output = []
+    for key in ordered_keys:
+        row = merged[key]
+        row["component_score"] = row.get("score")
+        row["score"] = fusion_scores[key]
+        output.append(row)
+    return output
 
 
 def _clean_sub_queries(sub_queries, fallback_query: str) -> List[str]:
@@ -433,7 +470,7 @@ def run_agent(
         tool_query = plan["query"]
         planned_sub_queries = plan["sub_queries"]
         selected_top_n = plan["top_n"] or cfg.top_n
-        role_context = role_strategy_context(tool_query, items)
+        role_context = role_strategy_context(tool_query, items, index)
         if role_context:
             selected_top_n = max(selected_top_n, min(len(role_context), 8))
             steps.append(AgentStep(
@@ -461,7 +498,7 @@ def run_agent(
             model,
             n_per_query=MULTI_QUERY_PER_SUB_N,
         )
-        candidates = merge_results(role_context, candidates)
+        candidates = merge_results(candidates, role_context)
         results = _maybe_rerank(tool_query, candidates, reranker, selected_top_n)
         steps.append(AgentStep(
             "multi_query_search",
@@ -485,7 +522,7 @@ def run_agent(
             )
         else:
             candidates = retrieve(vector_query, docs, store, model, n=cfg.candidate_n)
-        candidates = merge_results(role_context, candidates)
+        candidates = merge_results(candidates, role_context)
         results = _maybe_rerank(tool_query, candidates, reranker, selected_top_n)
         steps.append(AgentStep(
             "hyde_hybrid_search",
@@ -504,7 +541,7 @@ def run_agent(
             rrf_k=cfg.rrf_k,
             top_n=cfg.candidate_n if reranker is not None else selected_top_n,
         )
-        candidates = merge_results(role_context, candidates)
+        candidates = merge_results(candidates, role_context)
         results = _maybe_rerank(tool_query, candidates, reranker, selected_top_n)
         steps.append(AgentStep(
             "hybrid_search",
@@ -519,7 +556,7 @@ def run_agent(
             model,
             n=cfg.candidate_n if reranker is not None else selected_top_n,
         )
-        candidates = merge_results(role_context, candidates)
+        candidates = merge_results(candidates, role_context)
         results = _maybe_rerank(tool_query or retrieve_query, candidates, reranker, selected_top_n)
         tool = "vector_search"
         steps.append(AgentStep(
@@ -528,6 +565,7 @@ def run_agent(
             f"Retrieved {len(candidates)} candidate(s), returned {len(results)}.",
         ))
 
+    results = attach_result_metadata(results, items)
     context = format_context(results)
     answer = rag_chat(question, context, history, client)
     steps.append(AgentStep("grounded_generation", question, f"Used {len(results)} source(s)."))
@@ -554,7 +592,7 @@ def run_agent(
                 reranker,
                 cfg,
             )
-            repair_results = merge_results(role_context, repair_results)[:max(cfg.repair_top_n, selected_top_n)]
+            repair_results = merge_results(repair_results, role_context)[:max(cfg.repair_top_n, selected_top_n)]
             results = repair_results
             repair_observation = (
                 f"Verification failed; {repair_tool} returned "
@@ -566,6 +604,8 @@ def run_agent(
             retrieve_query,
             repair_observation,
         ))
+        repair_results = attach_result_metadata(repair_results, items)
+        results = repair_results
         context = format_context(repair_results)
         answer = rag_chat(question, context, history, client)
         steps.append(AgentStep(

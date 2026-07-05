@@ -1,0 +1,42 @@
+{
+  "cases": [
+    {
+      "query": "亡灵契约师如何用坟冢爆射、清淤和重构打循环？",
+      "expected_guides": [
+        "necrobinder-true-potential"
+      ]
+    },
+    {
+      "query": "亡灵契约师的进攻和爆发构筑怎么玩？",
+      "expected_guides": [
+        "offensive-necrobinder"
+      ]
+    },
+    {
+      "query": "亡灵契约师整体应该怎么玩？",
+      "expected_guides": [
+        "necrobinder-true-potential",
+        "offensive-necrobinder"
+      ]
+    },
+    {
+      "query": "杀戮尖塔2新手入门应该先学什么？",
+      "expected_guides": [
+        "getting-started",
+        "new-players-guide"
+      ]
+    },
+    {
+      "query": "新手应该如何选牌、构筑牌组和规划路线？",
+      "expected_guides": [
+        "new-players-guide"
+      ]
+    },
+    {
+      "query": "如何理解怪物遭遇、Boss和敌人的行动模式？",
+      "expected_guides": [
+        "understanding-encounters"
+      ]
+    }
+  ]
+}

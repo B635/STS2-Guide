@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sts2-guide.local/protocol/advice-event.schema.json",
+  "title": "STS2 Guide Card Reward Advice",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "event_id",
+    "event_type",
+    "status",
+    "run_id",
+    "sequence",
+    "processed_at",
+    "advice"
+  ],
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "minLength": 3
+    },
+    "event_type": {
+      "const": "card_reward"
+    },
+    "status": {
+      "const": "processed"
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 3
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "processed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "advice": {
+      "type": "object",
+      "required": [
+        "recommendations",
+        "skip_candidate",
+        "recommended_option_index"
+      ],
+      "properties": {
+        "recommended_option_index": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "recommendations": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10,
+          "items": {
+            "type": "object",
+            "required": [
+              "card_id",
+              "option_index",
+              "score",
+              "known"
+            ],
+            "properties": {
+              "card_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "option_index": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9
+              },
+              "score": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "known": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "skip_candidate": {
+          "type": "object",
+          "required": ["choice", "score"],
+          "properties": {
+            "choice": {
+              "const": "skip"
+            },
+            "score": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "schema_version": 3,
+  "event_id": "example-run:1",
+  "event_type": "card_reward",
+  "emitted_at": "2026-07-02T08:00:00.0000000+00:00",
+  "source": "sts2-guide-readonly-mod",
+  "game_version": "0.107.1",
+  "run_id": "example-run",
+  "sequence": 1,
+  "state": {
+    "character": "IRONCLAD",
+    "ascension": 0,
+    "act": 1,
+    "floor": 3,
+    "hp": 72,
+    "max_hp": 80,
+    "gold": 116,
+    "energy": 3,
+    "deck": [
+      {
+        "card": "STRIKE_IRONCLAD",
+        "count": 4,
+        "upgrades": 0,
+        "enchantment": null,
+        "enchantment_amount": null,
+        "affliction": null,
+        "affliction_amount": null
+      },
+      {
+        "card": "DEFEND_IRONCLAD",
+        "count": 4,
+        "upgrades": 0
+      },
+      {
+        "card": "BASH",
+        "count": 1,
+        "upgrades": 0
+      }
+    ],
+    "relics": ["BURNING_BLOOD"],
+    "relic_states": [
+      {
+        "relic": "BURNING_BLOOD",
+        "display_amount": null,
+        "stack_count": 1,
+        "status": "ACTIVE"
+      }
+    ],
+    "potions": [
+      {
+        "potion": "FIRE_POTION",
+        "slot": 0
+      }
+    ],
+    "max_potion_slots": 3,
+    "modifiers": [],
+    "capture_warnings": []
+  },
+  "options": [
+    {
+      "card": "POMMEL_STRIKE",
+      "upgrades": 0
+    },
+    {
+      "card": "UPPERCUT",
+      "upgrades": 0
+    },
+    {
+      "card": "ANGER",
+      "upgrades": 0
+    }
+  ],
+  "decision": {
+    "can_skip": true,
+    "can_reroll": false,
+    "reward_source": "MONSTER"
+  },
+  "parent_event_id": null,
+  "outcome": null
+}
