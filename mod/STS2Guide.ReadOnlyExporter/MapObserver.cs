@@ -14,6 +14,7 @@ internal static class MapScreenOpenedObservationPatch
     [HarmonyPostfix]
     internal static void AfterMapOpened()
     {
+        Log.Info("[STS2-Guide] NMapScreen.Open patch triggered.");
         try
         {
             EmitMapEvent();
@@ -29,8 +30,20 @@ internal static class MapScreenOpenedObservationPatch
 
     private static void EmitMapEvent()
     {
+        var hadPlayer = RunStateReader.GetObservedPlayer() is not null;
+        Log.Info("[STS2-Guide] MapObserver: had observed player=" + hadPlayer);
+
+        // Try RunManager.State.Players before giving up — this works
+        // before the first combat (e.g. after Neow, when the map opens).
+        if (!hadPlayer)
+        {
+            var ok = RunStateReader.TryObserveFromRunManager();
+            Log.Info("[STS2-Guide] MapObserver: TryObserveFromRunManager returned " + ok);
+        }
+
         if (!RunStateReader.TryCapture(out var state) || state is null)
         {
+            Log.Info("[STS2-Guide] MapObserver: TryCapture failed, aborting map event.");
             return;
         }
         var player = RunStateReader.GetObservedPlayer();

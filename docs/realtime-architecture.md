@@ -31,7 +31,7 @@ STS2
 
 - 只注册 Harmony Postfix，不改写游戏返回值；
 - 读取真实游戏 API 中的角色、牌组、HP、遗物、药水、候选牌和地图；
-- 使用稳定 ID 生成 schema v3 事件；
+- 使用稳定 ID 生成 schema v4 事件；Python 消费端保留对 v1-v3 回放夹具的兼容；
 - 不打分、不联网、不自动点击、不修改游戏或存档；
 - 建议的 `run_id + event_id + 候选稳定 ID` 全部匹配后才显示面板。
 
@@ -108,6 +108,34 @@ P0 读取真实节点、坐标、类型、`MapPoint.Children` 连边、可选下
 
 ## 后续扩展
 
-P1 在 P0 验收后增加路线、商店、篝火、Boss 遗物等独立决策类型。每个模块必须具备
-真实状态捕获、协议、确定性基线、回放测试和真机验收。RAG 只在用户展开解释时提供
-攻略证据，不接管实时决策。
+P1 在 P0 验收后增加路线、商店、篝火、Boss 遗物等决策类型。增加这些能力前先完成
+P0.5 决策内核收口，避免把当前 `card_reward` 分支复制成多套相互独立的实时管线。
+
+目标结构：
+
+```text
+真实游戏 API
+  → Game Adapter（只负责读取与类型转换）
+  → World State（当前局权威状态）
+  → Decision Detector（识别当前真实决策）
+  → Decision Kernel（身份、生命周期、过期与降级校验）
+  → Policy Registry
+       ├─ Card Reward Policy
+       ├─ Route Policy
+       ├─ Shop Policy
+       ├─ Campfire Policy
+       └─ Boss Relic / Event Policy
+  → Recommendation
+  → Context Drawer
+```
+
+公共概念的职责：
+
+- `WorldState`：只描述当前局事实，不夹带某个策略的评分结果；
+- `DecisionRequest`：描述决策类型、实际候选、约束、稳定身份和所引用的状态版本；
+- `Policy`：声明支持的决策类型，并对同一请求产生确定性候选评价；
+- `Recommendation`：统一携带候选身份、排序、分数、多维因子、缺失数据和策略版本；
+- `Context Drawer`：只渲染已经通过 Run、决策和候选一致性校验的当前建议。
+
+每个策略模块必须具备真实状态捕获、确定性基线、失败降级、单元测试、回放测试和真机
+验收。RAG 只在用户展开解释时提供攻略证据，不接管实时决策。

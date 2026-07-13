@@ -19,8 +19,24 @@ from typing import Dict, Iterable, Iterator, List, Optional
 from storage.effect_tags import EFFECT_TAG_VERSION, derive_effect_tags
 
 
-CATALOG_TYPES = ("characters", "cards", "relics", "potions", "monsters")
-SCHEMA_VERSION = 7
+CATALOG_TYPES = (
+    "characters",
+    "cards",
+    "relics",
+    "potions",
+    "monsters",
+    "encounters",
+    "events",
+    "acts",
+    "powers",
+    "intents",
+    "keywords",
+    "enchantments",
+    "afflictions",
+    "orbs",
+    "modifiers",
+)
+SCHEMA_VERSION = 8
 
 
 def _utc_now() -> str:
@@ -145,6 +161,104 @@ class RelationalRepository:
                         REFERENCES catalog_entities(entity_key) ON DELETE CASCADE,
                     pool TEXT,
                     rarity_key TEXT
+                );
+
+                CREATE TABLE IF NOT EXISTS monsters (
+                    entity_key TEXT PRIMARY KEY
+                        REFERENCES catalog_entities(entity_key) ON DELETE CASCADE,
+                    monster_type TEXT,
+                    min_hp INTEGER,
+                    max_hp INTEGER,
+                    min_hp_ascension INTEGER,
+                    max_hp_ascension INTEGER,
+                    attack_pattern_json TEXT NOT NULL DEFAULT '{}'
+                );
+
+                CREATE TABLE IF NOT EXISTS monster_moves (
+                    monster_key TEXT NOT NULL
+                        REFERENCES monsters(entity_key) ON DELETE CASCADE,
+                    move_id TEXT NOT NULL,
+                    ordinal INTEGER NOT NULL,
+                    name TEXT NOT NULL DEFAULT '',
+                    intent TEXT,
+                    damage_normal INTEGER,
+                    damage_ascension INTEGER,
+                    hit_count INTEGER,
+                    block INTEGER,
+                    heal INTEGER,
+                    powers_json TEXT NOT NULL DEFAULT '[]',
+                    PRIMARY KEY(monster_key, move_id)
+                );
+
+                CREATE TABLE IF NOT EXISTS encounters (
+                    entity_key TEXT PRIMARY KEY
+                        REFERENCES catalog_entities(entity_key) ON DELETE CASCADE,
+                    room_type TEXT,
+                    act TEXT,
+                    is_weak INTEGER NOT NULL DEFAULT 0,
+                    tags_json TEXT NOT NULL DEFAULT '[]'
+                );
+
+                CREATE TABLE IF NOT EXISTS encounter_monsters (
+                    encounter_key TEXT NOT NULL
+                        REFERENCES encounters(entity_key) ON DELETE CASCADE,
+                    ordinal INTEGER NOT NULL,
+                    monster_external_id TEXT NOT NULL,
+                    monster_name TEXT NOT NULL DEFAULT '',
+                    PRIMARY KEY(encounter_key, ordinal)
+                );
+                CREATE INDEX IF NOT EXISTS idx_encounter_monsters_id
+                    ON encounter_monsters(monster_external_id, encounter_key);
+
+                CREATE TABLE IF NOT EXISTS events (
+                    entity_key TEXT PRIMARY KEY
+                        REFERENCES catalog_entities(entity_key) ON DELETE CASCADE,
+                    event_type TEXT,
+                    act TEXT,
+                    preconditions_json TEXT NOT NULL DEFAULT 'null'
+                );
+
+                CREATE TABLE IF NOT EXISTS event_pages (
+                    event_key TEXT NOT NULL
+                        REFERENCES events(entity_key) ON DELETE CASCADE,
+                    page_id TEXT NOT NULL,
+                    ordinal INTEGER NOT NULL,
+                    description TEXT NOT NULL DEFAULT '',
+                    PRIMARY KEY(event_key, page_id)
+                );
+
+                CREATE TABLE IF NOT EXISTS event_options (
+                    event_key TEXT NOT NULL
+                        REFERENCES events(entity_key) ON DELETE CASCADE,
+                    page_id TEXT NOT NULL,
+                    option_id TEXT NOT NULL,
+                    ordinal INTEGER NOT NULL,
+                    title TEXT NOT NULL DEFAULT '',
+                    description TEXT NOT NULL DEFAULT '',
+                    PRIMARY KEY(event_key, page_id, option_id)
+                );
+
+                CREATE TABLE IF NOT EXISTS acts (
+                    entity_key TEXT PRIMARY KEY
+                        REFERENCES catalog_entities(entity_key) ON DELETE CASCADE,
+                    num_rooms INTEGER
+                );
+
+                CREATE TABLE IF NOT EXISTS act_entity_memberships (
+                    act_key TEXT NOT NULL
+                        REFERENCES acts(entity_key) ON DELETE CASCADE,
+                    relation_type TEXT NOT NULL,
+                    ordinal INTEGER NOT NULL,
+                    target_external_id TEXT NOT NULL,
+                    PRIMARY KEY(act_key, relation_type, ordinal)
+                );
+                CREATE INDEX IF NOT EXISTS idx_act_membership_target
+                    ON act_entity_memberships(relation_type, target_external_id);
+
+                CREATE TABLE IF NOT EXISTS mechanic_constants (
+                    constant_key TEXT PRIMARY KEY,
+                    value_json TEXT NOT NULL,
+                    imported_at TEXT NOT NULL
                 );
 
                 CREATE TABLE IF NOT EXISTS run_summaries (
@@ -490,7 +604,11 @@ class RelationalRepository:
                         payload.get(entity_type, [])
                     ):
                         external_id = str(item.get("id") or "").strip()
-                        name = str(item.get("name") or external_id).strip()
+                        name = str(
+                            item.get("name")
+                            or item.get("title")
+                            or external_id
+                        ).strip()
                         if not external_id or not name:
                             continue
                         entity_key = f"{entity_type}:{external_id}"
@@ -546,6 +664,157 @@ class RelationalRepository:
                                     item.get("rarity_key"),
                                 ),
                             )
+                        elif entity_type == "monsters":
+                            connection.execute(
+                                """
+                                INSERT INTO monsters(
+                                    entity_key, monster_type, min_hp, max_hp,
+                                    min_hp_ascension, max_hp_ascension,
+                                    attack_pattern_json
+                                ) VALUES (?, ?, ?, ?, ?, ?, ?)
+                                """,
+                                (
+                                    entity_key,
+                                    item.get("type"),
+                                    item.get("min_hp"),
+                                    item.get("max_hp"),
+                                    item.get("min_hp_ascension"),
+                                    item.get("max_hp_ascension"),
+                                    _json_dumps(item.get("attack_pattern") or {}),
+                                ),
+                            )
+                            for move_ordinal, move in enumerate(
+                                item.get("moves") or []
+                            ):
+                                damage = move.get("damage") or {}
+                                connection.execute(
+                                    """
+                                    INSERT INTO monster_moves(
+                                        monster_key, move_id, ordinal, name,
+                                        intent, damage_normal,
+                                        damage_ascension, hit_count, block,
+                                        heal, powers_json
+                                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                                    """,
+                                    (
+                                        entity_key,
+                                        str(move.get("id") or move_ordinal),
+                                        move_ordinal,
+                                        str(move.get("name") or ""),
+                                        move.get("intent"),
+                                        damage.get("normal"),
+                                        damage.get("ascension"),
+                                        damage.get("hit_count"),
+                                        move.get("block"),
+                                        move.get("heal"),
+                                        _json_dumps(move.get("powers") or []),
+                                    ),
+                                )
+                        elif entity_type == "encounters":
+                            connection.execute(
+                                """
+                                INSERT INTO encounters(
+                                    entity_key, room_type, act, is_weak,
+                                    tags_json
+                                ) VALUES (?, ?, ?, ?, ?)
+                                """,
+                                (
+                                    entity_key,
+                                    item.get("room_type"),
+                                    item.get("act"),
+                                    int(bool(item.get("is_weak"))),
+                                    _json_dumps(item.get("tags") or []),
+                                ),
+                            )
+                            for member_ordinal, monster in enumerate(
+                                item.get("monsters") or []
+                            ):
+                                connection.execute(
+                                    """
+                                    INSERT INTO encounter_monsters(
+                                        encounter_key, ordinal,
+                                        monster_external_id, monster_name
+                                    ) VALUES (?, ?, ?, ?)
+                                    """,
+                                    (
+                                        entity_key,
+                                        member_ordinal,
+                                        str(monster.get("id") or ""),
+                                        str(monster.get("name") or ""),
+                                    ),
+                                )
+                        elif entity_type == "events":
+                            connection.execute(
+                                """
+                                INSERT INTO events(
+                                    entity_key, event_type, act,
+                                    preconditions_json
+                                ) VALUES (?, ?, ?, ?)
+                                """,
+                                (
+                                    entity_key,
+                                    item.get("type"),
+                                    item.get("act"),
+                                    _json_dumps(item.get("preconditions")),
+                                ),
+                            )
+                            self._insert_event_page(
+                                connection,
+                                entity_key,
+                                "__ROOT__",
+                                -1,
+                                str(item.get("description") or ""),
+                                item.get("options") or [],
+                            )
+                            for page_ordinal, page in enumerate(
+                                item.get("pages") or []
+                            ):
+                                self._insert_event_page(
+                                    connection,
+                                    entity_key,
+                                    str(page.get("id") or page_ordinal),
+                                    page_ordinal,
+                                    str(page.get("description") or ""),
+                                    page.get("options") or [],
+                                )
+                        elif entity_type == "acts":
+                            connection.execute(
+                                "INSERT INTO acts(entity_key, num_rooms) VALUES (?, ?)",
+                                (entity_key, item.get("num_rooms")),
+                            )
+                            for relation_type in (
+                                "bosses", "ancients", "events", "encounters"
+                            ):
+                                for member_ordinal, target_id in enumerate(
+                                    item.get(relation_type) or []
+                                ):
+                                    connection.execute(
+                                        """
+                                        INSERT INTO act_entity_memberships(
+                                            act_key, relation_type, ordinal,
+                                            target_external_id
+                                        ) VALUES (?, ?, ?, ?)
+                                        """,
+                                        (
+                                            entity_key,
+                                            relation_type,
+                                            member_ordinal,
+                                            str(target_id),
+                                        ),
+                                    )
+
+                connection.execute("DELETE FROM mechanic_constants")
+                for constant_key, value in (
+                    payload.get("mechanics") or {}
+                ).items():
+                    connection.execute(
+                        """
+                        INSERT INTO mechanic_constants(
+                            constant_key, value_json, imported_at
+                        ) VALUES (?, ?, ?)
+                        """,
+                        (constant_key, _json_dumps(value), imported_at),
+                    )
 
                 connection.execute(
                     """
@@ -577,6 +846,41 @@ class RelationalRepository:
             ):
                 self._rebuild_effect_tags(connection)
         return catalog_changed
+
+    @staticmethod
+    def _insert_event_page(
+        connection: sqlite3.Connection,
+        event_key: str,
+        page_id: str,
+        ordinal: int,
+        description: str,
+        options: Iterable[Dict],
+    ) -> None:
+        connection.execute(
+            """
+            INSERT INTO event_pages(
+                event_key, page_id, ordinal, description
+            ) VALUES (?, ?, ?, ?)
+            """,
+            (event_key, page_id, ordinal, description),
+        )
+        for option_ordinal, option in enumerate(options):
+            connection.execute(
+                """
+                INSERT INTO event_options(
+                    event_key, page_id, option_id, ordinal,
+                    title, description
+                ) VALUES (?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    event_key,
+                    page_id,
+                    str(option.get("id") or option_ordinal),
+                    option_ordinal,
+                    str(option.get("title") or ""),
+                    str(option.get("description") or ""),
+                ),
+            )
 
     @staticmethod
     def _rebuild_effect_tags(
@@ -789,6 +1093,113 @@ class RelationalRepository:
 
     def find_relic(self, identifier: str) -> Optional[Dict]:
         return self.find_entity("relics", identifier)
+
+    def encounter_profile(self, identifier: str) -> Optional[Dict]:
+        encounter = self.find_entity("encounters", identifier)
+        if encounter is None:
+            return None
+        with self.connect() as connection:
+            rows = connection.execute(
+                """
+                SELECT em.ordinal, em.monster_external_id, em.monster_name,
+                       m.monster_type, m.min_hp, m.max_hp,
+                       m.min_hp_ascension, m.max_hp_ascension,
+                       m.attack_pattern_json
+                FROM encounter_monsters AS em
+                LEFT JOIN catalog_entities AS ce
+                  ON ce.entity_type = 'monsters'
+                 AND ce.external_id = em.monster_external_id
+                LEFT JOIN monsters AS m ON m.entity_key = ce.entity_key
+                WHERE em.encounter_key = ?
+                ORDER BY em.ordinal
+                """,
+                (encounter["_entity_key"],),
+            ).fetchall()
+        encounter["_monsters"] = [
+            {
+                "id": row["monster_external_id"],
+                "name": row["monster_name"],
+                "type": row["monster_type"],
+                "min_hp": row["min_hp"],
+                "max_hp": row["max_hp"],
+                "min_hp_ascension": row["min_hp_ascension"],
+                "max_hp_ascension": row["max_hp_ascension"],
+                "attack_pattern": json.loads(
+                    row["attack_pattern_json"] or "{}"
+                ),
+            }
+            for row in rows
+        ]
+        return encounter
+
+    def event_tree(self, identifier: str) -> Optional[Dict]:
+        event = self.find_entity("events", identifier)
+        if event is None:
+            return None
+        with self.connect() as connection:
+            pages = connection.execute(
+                """
+                SELECT page_id, ordinal, description
+                FROM event_pages
+                WHERE event_key = ?
+                ORDER BY ordinal, page_id
+                """,
+                (event["_entity_key"],),
+            ).fetchall()
+            options = connection.execute(
+                """
+                SELECT page_id, option_id, ordinal, title, description
+                FROM event_options
+                WHERE event_key = ?
+                ORDER BY page_id, ordinal
+                """,
+                (event["_entity_key"],),
+            ).fetchall()
+        options_by_page: Dict[str, List[Dict]] = {}
+        for row in options:
+            options_by_page.setdefault(row["page_id"], []).append(
+                {
+                    "id": row["option_id"],
+                    "title": row["title"],
+                    "description": row["description"],
+                }
+            )
+        event["_pages"] = [
+            {
+                "id": row["page_id"],
+                "description": row["description"],
+                "options": options_by_page.get(row["page_id"], []),
+            }
+            for row in pages
+        ]
+        return event
+
+    def act_members(
+        self,
+        identifier: str,
+        relation_type: Optional[str] = None,
+    ) -> Optional[Dict[str, List[str]]]:
+        act = self.find_entity("acts", identifier)
+        if act is None:
+            return None
+        query = """
+            SELECT relation_type, target_external_id
+            FROM act_entity_memberships
+            WHERE act_key = ?
+        """
+        parameters: List[object] = [act["_entity_key"]]
+        if relation_type is not None:
+            query += " AND relation_type = ?"
+            parameters.append(relation_type)
+        query += " ORDER BY relation_type, ordinal"
+        with self.connect() as connection:
+            rows = connection.execute(query, parameters).fetchall()
+        result: Dict[str, List[str]] = {}
+        for row in rows:
+            result.setdefault(row["relation_type"], []).append(
+                row["target_external_id"]
+            )
+        return result
 
     def find_latest_entity_stat(
         self,

@@ -2,6 +2,7 @@ using System.Reflection;
 using System.Text.Json;
 using Godot;
 using MegaCrit.Sts2.Core.Logging;
+using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
 using MegaCrit.Sts2.Core.Nodes.Screens.CardSelection;
 
 namespace STS2Guide.ReadOnlyExporter;
@@ -53,6 +54,20 @@ internal static class CardRewardAdvicePanel
                 Log.Info(
                     "[STS2-Guide] Advice panel skipped: no pending card options."
                 );
+                return;
+            }
+
+            // Safety guard: the pending decision must be an exact match
+            // (count, order, and stable IDs) with the visible card models
+            // on this screen.  Neow blessings and other unsupported reward
+            // types may present mismatched candidates.
+            if (!PendingMatchesScreen(screen, _pending))
+            {
+                Log.Info(
+                    "[STS2-Guide] Advice panel skipped: pending decision "
+                    + "does not match visible screen candidates."
+                );
+                _pending = null;
                 return;
             }
 
@@ -669,5 +684,120 @@ internal static class CardRewardAdvicePanel
         return index >= 0 && index < _cardNames.Count
             ? _cardNames[index]
             : $"卡牌 {index + 1}";
+    }
+
+    /// <summary>
+    /// Verify the pending decision card IDs match the visible card models
+    /// on the selection screen.
+    ///
+    /// API shape verified from the current STS2 assembly/source.  The complete
+    /// exact-match behavior still requires the P0 real-machine regression:
+    ///   NCardRewardSelectionScreen._cardRow  : Control (GetNode("UI/CardRow"))
+    ///   _cardRow children                   : GetChildren() yields NGridCardHolder
+    ///   NGridCardHolder.CardModel           : CardModel (direct public property)
+    ///
+    /// References:
+    ///   hongyipan152/STS2SourceCode —
+    ///     src/Core/Nodes/Screens/CardSelection/NCardRewardSelectionScreen.cs
+    ///   Gennadiyev/STS2MCP — McpMod.StateBuilder.cs
+    /// </summary>
+    private static bool PendingMatchesScreen(
+        NCardRewardSelectionScreen screen,
+        PendingDecisionView pending)
+    {
+        var visibleIds = new System.Collections.Generic.List<string>();
+        string? failStage = "start";
+        try
+        {
+            // 1. Read _cardRow field.
+            failStage = "_cardRow field";
+            var cardRow = CardRowField?.GetValue(screen) as Control;
+            if (cardRow is null)
+            {
+                failStage += "=null";
+                return false;
+            }
+
+            // 2. Enumerate children through Godot's strongly-typed API.
+            //
+            // Do not use MethodInfo.Invoke(cardRow, null) here.  Godot's
+            // GetChildren(bool includeInternal = false) has an optional
+            // parameter at the C# call site, but reflection still requires
+            // the argument and throws TargetParameterCountException when
+            // invoked with a null argument array.
+            failStage = "GetChildren";
+            var children = cardRow.GetChildren();
+
+            // 3. Read CardModel from each NGridCardHolder child.
+            //    Non-holder children are UI decorations and are not candidates.
+            //    There is deliberately no property-name reflection fallback:
+            //    an unknown holder type is an unsupported API shape and must
+            //    fail closed rather than being guessed into a recommendation.
+            failStage = "holder.CardModel";
+            foreach (var child in children)
+            {
+                if (child is null) continue;
+
+                var childType = child.GetType();
+                var childTypeName = childType.FullName ?? "(unknown)";
+
+                if (child is not NGridCardHolder holder)
+                {
+                    Log.Info(
+                        $"[STS2-Guide] PendingMatchesScreen child: type={childTypeName}"
+                        + "  isNGridCardHolder=false; skipped"
+                    );
+                    continue;
+                }
+
+                var model = holder.CardModel;
+                Log.Info(
+                    $"[STS2-Guide] PendingMatchesScreen child: type={childTypeName}"
+                    + "  isNGridCardHolder=true"
+                    + $"  CardModel={model?.GetType().FullName ?? "null"}"
+                );
+                if (model is null) continue;
+                var id = StableIds.FromType(model.GetType(), "Model", "Card");
+                if (string.IsNullOrWhiteSpace(id)) continue;
+                visibleIds.Add(id);
+                Log.Info(
+                    $"[STS2-Guide] PendingMatchesScreen card: stableId={id}"
+                );
+            }
+
+            // 4. Exact match: same count, same order, same stable IDs.
+            failStage = "count";
+            if (visibleIds.Count != pending.CardIds.Count) return false;
+            failStage = "id_match";
+            for (int i = 0; i < visibleIds.Count; i++)
+            {
+                if (!string.Equals(
+                    visibleIds[i], pending.CardIds[i],
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    failStage = $"id_mismatch[{i}]: visible={visibleIds[i]} pending={pending.CardIds[i]}";
+                    return false;
+                }
+            }
+            return true;
+        }
+        catch (Exception ex)
+        {
+            failStage = $"exception:{ex.GetType().Name}:{ex.Message}";
+            return false;
+        }
+        finally
+        {
+            if (!(visibleIds.Count == pending.CardIds.Count
+                  && visibleIds.SequenceEqual(
+                      pending.CardIds, StringComparer.OrdinalIgnoreCase)))
+            {
+                Log.Info(
+                    $"[STS2-Guide] PendingMatchesScreen FAILED at {failStage}."
+                    + $"  pending=[{string.Join(",", pending.CardIds)}]"
+                    + $"  visible=[{string.Join(",", visibleIds)}]"
+                );
+            }
+        }
     }
 }

@@ -1,5 +1,5 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "event_id": "example-run:1",
   "event_type": "card_reward",
   "emitted_at": "2026-07-02T08:00:00.0000000+00:00",

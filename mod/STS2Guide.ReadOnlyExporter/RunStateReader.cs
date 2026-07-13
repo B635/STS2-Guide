@@ -1,7 +1,7 @@
-using System.Reflection;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Logging;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Runs;
 
 namespace STS2Guide.ReadOnlyExporter;
 
@@ -22,14 +22,15 @@ internal static class RunStateReader
         }
     }
 
-    internal static void Observe(Player player)
+    internal static void Observe(Player? player)
     {
+        if (player is null) return;
         lock (Gate)
         {
-            if (_observedPlayer is null || IsLocalPlayer(player))
-            {
-                _observedPlayer = player;
-            }
+            // P0 supports single-player only.  Every verified observation
+            // source (CardReward.Player, Player.PopulateCombatState and
+            // RunState.Players[0]) therefore refers to the one active player.
+            _observedPlayer = player;
         }
     }
 
@@ -41,6 +42,69 @@ internal static class RunStateReader
         }
     }
 
+    /// <summary>
+    /// Try to observe the local player via RunManager.Instance.DebugOnlyGetState()
+    /// (public API), then reads the first player from the public
+    /// RunState.Players collection.  P0 supports single-player only.
+    ///
+    /// This works before the first combat (e.g. after Neow, when the map opens)
+    /// because RunManager holds state from Launch time onward.
+    ///
+    /// </summary>
+    internal static bool TryObserveFromRunManager()
+    {
+        if (GetObservedPlayer() is not null)
+        {
+            Log.Info("[STS2-Guide] TryObserveFromRunManager: already have observed player, skipping.");
+            return true;
+        }
+        try
+        {
+            // Stage 1: RunManager.Instance
+            var manager = RunManager.Instance;
+            if (manager is null)
+            {
+                Log.Info("[STS2-Guide] TryObserveFromRunManager: RunManager.Instance is null.");
+                return false;
+            }
+            Log.Info("[STS2-Guide] TryObserveFromRunManager: RunManager.Instance OK.");
+
+            // Stage 2: DebugOnlyGetState() — public API (verified by STS2MCP)
+            var state = manager.DebugOnlyGetState();
+            if (state is null)
+            {
+                Log.Info("[STS2-Guide] TryObserveFromRunManager: DebugOnlyGetState() returned null.");
+                return false;
+            }
+            Log.Info("[STS2-Guide] TryObserveFromRunManager: DebugOnlyGetState() OK. Type=" + state.GetType().FullName);
+
+            // Stage 3: RunState.Players is a public IReadOnlyList<Player> in
+            // the current game assembly.  Do not reflect or guess a
+            // LocalContext namespace for the single-player P0 path.
+            var player = state.Players.FirstOrDefault();
+            Log.Info(
+                "[STS2-Guide] TryObserveFromRunManager: Players count="
+                + state.Players.Count
+                + " firstPlayer="
+                + (player is not null ? "found" : "null")
+            );
+
+            if (player is not null)
+            {
+                Observe(player);
+                Log.Info("[STS2-Guide] TryObserveFromRunManager: Player observed successfully via DebugOnlyGetState.");
+                return true;
+            }
+            Log.Info("[STS2-Guide] TryObserveFromRunManager: No player found after all stages.");
+        }
+        catch (Exception ex)
+        {
+            Log.Error(
+                "[STS2-Guide] TryObserveFromRunManager: exception " + ex.GetType().Name + " — " + ex.Message);
+        }
+        return false;
+    }
+
     internal static bool TryCapture(out RunStateSnapshot? snapshot)
     {
         Player? player;
@@ -50,7 +114,18 @@ internal static class RunStateReader
         }
         if (player is null)
         {
-            Log.Info("[STS2-Guide] No observed player; state event skipped.");
+            Log.Info("[STS2-Guide] TryCapture: no observed player, trying TryObserveFromRunManager...");
+            if (TryObserveFromRunManager())
+            {
+                lock (Gate)
+                {
+                    player = _observedPlayer;
+                }
+            }
+        }
+        if (player is null)
+        {
+            Log.Info("[STS2-Guide] TryCapture: still no observed player after retry; state event skipped.");
             snapshot = null;
             return false;
         }
@@ -229,33 +304,4 @@ internal static class RunStateReader
         return potions;
     }
 
-    private static bool IsLocalPlayer(Player player)
-    {
-        foreach (var name in new[] {
-            "IsLocalPlayer",
-            "IsLocal",
-            "IsControlledByLocalUser",
-        })
-        {
-            var property = player.GetType().GetProperty(
-                name,
-                BindingFlags.Public
-                | BindingFlags.NonPublic
-                | BindingFlags.Instance
-            );
-            try
-            {
-                if (property?.PropertyType == typeof(bool)
-                    && property.GetValue(player) is true)
-                {
-                    return true;
-                }
-            }
-            catch
-            {
-                // A missing version-specific property is harmless.
-            }
-        }
-        return false;
-    }
 }

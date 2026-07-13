@@ -3,6 +3,7 @@ import json
 import time
 import re
 import os
+from datetime import datetime, timezone
 
 BASE_URL = "https://spire-codex.com/api"
 LANG = "zhs"
@@ -18,13 +19,35 @@ def clean_text(text):
     return text.strip()
 
 
-def fetch_with_delay(endpoint, params=None):
-    if params is None:
-        params = {}
-    params["lang"] = LANG
-    response = requests.get(f"{BASE_URL}/{endpoint}", params=params)
-    time.sleep(RATE_LIMIT_DELAY)
-    return response.json()
+def fetch_with_delay(endpoint, params=None, retries=4):
+    query = dict(params or {})
+    query["lang"] = LANG
+    last_error = None
+    for attempt in range(retries):
+        try:
+            response = requests.get(
+                f"{BASE_URL}/{endpoint}",
+                params=query,
+                timeout=(5, 30),
+                headers={"User-Agent": "STS2-Guide/1.0"},
+            )
+            if response.status_code == 429:
+                retry_after = float(
+                    response.headers.get("Retry-After", attempt + 1)
+                )
+                time.sleep(max(retry_after, RATE_LIMIT_DELAY))
+                continue
+            response.raise_for_status()
+            return response.json()
+        except (requests.RequestException, ValueError) as exc:
+            last_error = exc
+            if attempt + 1 < retries:
+                time.sleep(2 ** attempt)
+        finally:
+            time.sleep(RATE_LIMIT_DELAY)
+    raise RuntimeError(
+        f"Failed to fetch {endpoint} after {retries} attempts: {last_error}"
+    ) from last_error
 
 
 def pick(d, keys):
@@ -207,6 +230,17 @@ def build_monster(raw):
     return fields
 
 
+def build_structured_entity(raw, entity_type):
+    """Keep source structure while adding deterministic local search text."""
+    fields = dict(raw)
+    name = clean_text(raw.get("name") or raw.get("title") or raw.get("id"))
+    description = clean_text(raw.get("description") or "")
+    fields["name"] = name
+    fields["description"] = description
+    fields["embed_text"] = f"{entity_type} {name}：{description}".strip("：")
+    return fields
+
+
 def fetch_all():
     print("正在拉取角色数据...")
     characters = [build_character(c) for c in fetch_with_delay("characters")]
@@ -228,22 +262,77 @@ def fetch_all():
     monsters = [build_monster(m) for m in fetch_with_delay("monsters")]
     print(f"获取到 {len(monsters)} 个怪物")
 
-    return {
+    result = {
         "characters": characters,
         "cards": cards,
         "relics": relics,
         "potions": potions,
         "monsters": monsters,
     }
+    structured_endpoints = (
+        "encounters",
+        "events",
+        "acts",
+        "powers",
+        "intents",
+        "keywords",
+        "enchantments",
+        "afflictions",
+        "orbs",
+        "modifiers",
+    )
+    for entity_type in structured_endpoints:
+        print(f"正在拉取 {entity_type} 数据...")
+        raw_items = fetch_with_delay(entity_type)
+        if not isinstance(raw_items, list):
+            raise RuntimeError(f"{entity_type} endpoint returned a non-list")
+        result[entity_type] = [
+            build_structured_entity(item, entity_type)
+            for item in raw_items
+            if isinstance(item, dict)
+        ]
+        print(f"获取到 {len(result[entity_type])} 条 {entity_type}")
+
+    mechanics = fetch_with_delay("mechanics/constants")
+    merchant = fetch_with_delay("merchant/config")
+    if not isinstance(mechanics, dict) or not isinstance(merchant, dict):
+        raise RuntimeError("mechanics endpoints returned invalid payloads")
+    result["mechanics"] = {
+        **mechanics,
+        "merchant_config": merchant,
+    }
+    result["_source"] = {
+        "id": "spire_codex_api",
+        "base_url": BASE_URL,
+        "language": LANG,
+        "terms_url": (
+            "https://github.com/ptrlrd/spire-codex/blob/main/API_TERMS.md"
+        ),
+        "fetched_at": datetime.now(timezone.utc).isoformat(),
+        "entity_count": sum(
+            len(value) for value in result.values() if isinstance(value, list)
+        ),
+    }
+    return result
 
 
 def main():
     knowledge = fetch_all()
-    total = sum(len(v) for v in knowledge.values())
+    total = sum(
+        len(knowledge.get(entity_type, []))
+        for entity_type in (
+            "characters", "cards", "relics", "potions", "monsters",
+            "encounters", "events", "acts", "powers", "intents",
+            "keywords", "enchantments", "afflictions", "orbs", "modifiers",
+        )
+    )
     print(f"\n共生成 {total} 条结构化条目")
 
-    with open(KNOWLEDGE_FILE, "w", encoding="utf-8") as f:
+    temp_file = f"{KNOWLEDGE_FILE}.tmp"
+    with open(temp_file, "w", encoding="utf-8") as f:
         json.dump(knowledge, f, ensure_ascii=False, indent=2)
+        f.write("\n")
+    os.replace(temp_file, KNOWLEDGE_FILE)
 
     print(f"知识库已更新：{KNOWLEDGE_FILE}")
 

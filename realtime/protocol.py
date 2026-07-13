@@ -9,7 +9,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 MIN_SUPPORTED_SCHEMA_VERSION = 1
-CURRENT_SCHEMA_VERSION = 3
+CURRENT_SCHEMA_VERSION = 4
 
 
 class EventType(str, Enum):
@@ -141,6 +141,7 @@ class MapChoiceContext(BaseModel):
     current_node_id: Optional[str] = Field(default=None, min_length=1)
     available_next_node_ids: List[str] = Field(default_factory=list)
     boss_node_ids: List[str] = Field(default_factory=list)
+    boss_encounter_ids: List[str] = Field(default_factory=list)
 
 
 class GameStateEvent(BaseModel):

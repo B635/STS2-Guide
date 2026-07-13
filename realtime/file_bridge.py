@@ -49,7 +49,23 @@ def _atomic_write_json(path: Path, payload: Dict) -> None:
         json.dumps(payload, ensure_ascii=False, separators=(",", ":")),
         encoding="utf-8",
     )
-    os.replace(temporary, path)
+    # Bounded retry for transient PermissionError (antivirus, reader
+    # holding the file).  Total wait ≤ ~0.75 s; persistent failures
+    # after 5 attempts surface as a real error rather than hiding a
+    # multi-instance problem.
+    deadline = time.monotonic() + 1.0
+    last_exc: Optional[PermissionError] = None
+    for attempt in range(5):
+        try:
+            os.replace(temporary, path)
+            return
+        except PermissionError as exc:
+            last_exc = exc
+            if time.monotonic() >= deadline:
+                break
+            time.sleep(0.05 * (attempt + 1))
+    if last_exc is not None:
+        raise last_exc
 
 
 class GameStateFileBridge:

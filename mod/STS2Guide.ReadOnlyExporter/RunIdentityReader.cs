@@ -66,9 +66,10 @@ internal static class RunIdentityReader
             );
         }
 
-        Log.Error(
-            "[STS2-Guide] Stable seed/start_time unavailable; "
-            + "this run cannot be restored across a game restart."
+        Log.Info(
+            "[STS2-Guide] Stable seed/start_time is not available at this "
+            + "observation point; using a temporary identity and retrying "
+            + "when the current player state becomes available."
         );
         return new RunIdentity(
             $"temporary-{Guid.NewGuid():N}",

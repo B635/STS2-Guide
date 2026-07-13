@@ -4,7 +4,8 @@
 
 ## 存储边界
 
-- SQLite：结构化实体、卡牌/遗物效果标签、来源快照、社区聚合统计和每局最终摘要。
+- SQLite：结构化实体、卡牌/遗物效果标签、敌人行动、遭遇池、事件选项树、章节/机制、
+  来源快照元数据、社区聚合统计和每局最终摘要。
 - `active-run.json`：唯一可替换的当前局检查点；用于保存退出后的恢复，不是历史库。
 - `events/`：短生命周期事件队列，处理后删除。
 - 原文快照 + FAISS：攻略正文和语义切片，只用于可选解释，不参与实时评分。
@@ -20,6 +21,11 @@ P0 实时链不得向 `run_states`、`decision_events`、`decision_outcomes` 或
 catalog_entities
   ├── cards
   ├── relics
+  ├── monsters ── monster_moves
+  ├── encounters ── encounter_monsters
+  ├── events ── event_pages ── event_options
+  ├── acts ── act_entity_memberships
+  ├── structured payload_json（其余低频实体）
   └── entity_effect_tags
 
 data_sources
@@ -28,6 +34,28 @@ data_sources
 
 run_summaries
 ```
+
+`catalog_entities` 是稳定 ID、名称、描述和来源 payload 的公共目录，不等于把所有查询都
+塞进一列 JSON。实时或规则层需要过滤、连接和数值计算的字段必须规范化：
+
+- 卡牌/遗物/药水/角色：费用、类型、稀有度、池、初始资源和效果关系；
+- 敌人：HP、Ascension HP、行动、意图、伤害/格挡/治疗、固有 Power 和行动状态机；
+- 遭遇：章节、房间类型、强弱池、敌人组成；
+- 事件：章节、前置条件、页面、选项及页面间稳定 ID；
+- 章节：Boss、事件和遭遇集合；机制常量：按稳定键保存数值与适用版本。
+
+图片 URL、风味文本、对话和暂时不参与过滤的嵌套字段可以留在 `payload_json`。攻略正文、
+构筑说明和策略文章才进入原文快照与向量索引；事件文本、卡牌描述、怪物技能说明的权威
+结构副本仍在 SQLite，最多额外生成可重建的解释索引，不能只存在向量库。
+
+## Spire Codex 构建期导入
+
+- API：`https://spire-codex.com/api/*`，公开社区使用，实体端点限流 60 次/分钟；
+- 批量入口：`/api/exports/{lang}`；当前中文导出包含 16 个 JSON 文件；
+- 实时后台不调用该 API，只读取已验证并版本化的本地 SQLite；
+- 源 JSON 下载到暂存区后先校验顶层类型、稳定 ID 唯一性、引用完整性和字段漂移，再事务导入；
+- `source_snapshots` 记录 URL、语言、内容哈希、抓取时间和可选游戏/数据版本；
+- API 数据无正确性或稳定性保证，升级时通过 staging 数据库迁移，不能原地破坏可用 catalog。
 
 `entity_effect_tags` 使用实体稳定 ID 保存 `tag + magnitude + source_field`：
 

@@ -87,6 +87,46 @@ def _configure_logging(log_path: Path, console: bool) -> None:
     )
 
 
+def _acquire_instance_lock(exchange_dir: Path) -> None:
+    """Atomically create an exclusive lock file for the exchange directory."""
+    import ctypes
+    import ctypes.wintypes
+
+    exchange_dir.mkdir(parents=True, exist_ok=True)
+    lock_path = exchange_dir / ".host.lock"
+    # Use O_CREAT | O_EXCL for atomic create-or-fail (no check-then-write race).
+    try:
+        fd = os.open(str(lock_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+    except FileExistsError:
+        # File exists — check if the holder is still alive.
+        try:
+            stale_pid = int(lock_path.read_text(encoding="utf-8").strip())
+        except (ValueError, OSError):
+            stale_pid = 0
+        if stale_pid and stale_pid != os.getpid():
+            SYNCHRONIZE = 0x00100000
+            PROCESS_QUERY_LIMITED_INFO = 0x1000
+            handle = ctypes.windll.kernel32.OpenProcess(
+                PROCESS_QUERY_LIMITED_INFO | SYNCHRONIZE,
+                False,
+                stale_pid,
+            )
+            if handle:
+                ctypes.windll.kernel32.CloseHandle(handle)
+                raise RuntimeError(
+                    f"Another host instance (PID {stale_pid}) is already "
+                    f"using this exchange directory: {exchange_dir}"
+                )
+        # Stale lock — remove and retry atomically.
+        try:
+            lock_path.unlink()
+        except FileNotFoundError:
+            pass
+        fd = os.open(str(lock_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+    os.write(fd, str(os.getpid()).encode("utf-8"))
+    os.close(fd)
+
+
 def build_bridge(args: argparse.Namespace) -> GameStateFileBridge:
     repository = RelationalRepository(str(args.database))
     repository.ensure_schema()
@@ -166,6 +206,15 @@ def main() -> int:
         args.input.parent / "sts2-guide.log",
         args.console_log,
     )
+    # Acquire instance lock *before* database/bridge initialization so a
+    # second host never opens the SQLite file or syncs the catalog.
+    if not args.once:
+        try:
+            _acquire_instance_lock(args.checkpoint.parent)
+        except RuntimeError:
+            LOGGER.exception("Cannot start: another host instance is running.")
+            return 1
+
     try:
         bridge = build_bridge(args)
     except Exception:

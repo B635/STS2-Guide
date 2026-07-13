@@ -1,5 +1,7 @@
 import json
 import os
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -376,6 +378,7 @@ class RealtimeEventTests(unittest.TestCase):
             "current_node_id": "0:0",
             "available_next_node_ids": ["1:0"],
             "boss_node_ids": [],
+            "boss_encounter_ids": ["VANTOM_BOSS"],
             "node_count": 2,
             "nodes": [
                 {
@@ -409,6 +412,10 @@ class RealtimeEventTests(unittest.TestCase):
             checkpoint["map_context"]["available_next_node_ids"],
             ["1:0"],
         )
+        self.assertEqual(
+            checkpoint["map_context"]["boss_encounter_ids"],
+            ["VANTOM_BOSS"],
+        )
 
     def test_card_reward_reuses_checkpointed_route_context(self):
         map_payload = _event_payload(1, "map_choice")
@@ -418,6 +425,7 @@ class RealtimeEventTests(unittest.TestCase):
             "current_node_id": "0:0",
             "available_next_node_ids": ["1:0"],
             "boss_node_ids": [],
+            "boss_encounter_ids": ["VANTOM_BOSS"],
             "node_count": 2,
             "nodes": [
                 {
@@ -806,6 +814,97 @@ class RealtimeEventTests(unittest.TestCase):
                 "SELECT COUNT(*) AS count FROM decision_events"
             ).fetchone()["count"]
         self.assertEqual(decisions, 0)
+
+    # -- Single-instance lock & atomic write -----------------------------------
+
+    def test_instance_lock_prevents_duplicate_host(self):
+        from realtime.host import _acquire_instance_lock
+        with tempfile.TemporaryDirectory() as td:
+            exchange = Path(td) / "exchange"
+            # First acquisition succeeds (atomic O_CREAT|O_EXCL).
+            _acquire_instance_lock(exchange)
+            lock_file = exchange / ".host.lock"
+            self.assertTrue(lock_file.exists())
+            # Second call from same process fails because lock exists
+            # and PID matches ours (would be a re-entry guard, but
+            # the atomic create fails first).
+            # To test real blocking: use a subprocess.
+            child = subprocess.Popen(
+                [sys.executable, "-c", "import time; time.sleep(10)"]
+            )
+            try:
+                # Write lock with child's PID (simulates another host).
+                lock_file.unlink()
+                lock_file.write_text(str(child.pid), encoding="utf-8")
+                with self.assertRaises(RuntimeError) as ctx:
+                    _acquire_instance_lock(exchange)
+                self.assertIn("already", str(ctx.exception))
+            finally:
+                child.kill()
+                child.wait()
+
+    def test_instance_lock_clears_after_stale_pid(self):
+        from realtime.host import _acquire_instance_lock
+        with tempfile.TemporaryDirectory() as td:
+            exchange = Path(td) / "exchange"
+            exchange.mkdir(parents=True)
+            (exchange / ".host.lock").write_text("99999999", encoding="utf-8")
+            # Stale PID should not block — the lock is acquired.
+            _acquire_instance_lock(exchange)
+
+    def test_atomic_write_retries_on_permission_error(self):
+        from realtime.file_bridge import _atomic_write_json
+        call_count = 0
+        original_replace = os.replace
+
+        def _flaky_replace(src, dst):
+            nonlocal call_count
+            call_count += 1
+            if call_count < 3:
+                raise PermissionError("transient")
+            original_replace(src, dst)
+
+        with tempfile.TemporaryDirectory() as td:
+            dest = Path(td) / "test.json"
+            with patch("os.replace", side_effect=_flaky_replace):
+                _atomic_write_json(dest, {"key": "value"})
+            self.assertEqual(call_count, 3)
+            self.assertTrue(dest.exists())
+
+    def test_atomic_write_fails_after_all_retries(self):
+        from realtime.file_bridge import _atomic_write_json
+        with tempfile.TemporaryDirectory() as td:
+            dest = Path(td) / "test.json"
+            with patch("os.replace", side_effect=PermissionError("locked")):
+                with self.assertRaises(PermissionError):
+                    _atomic_write_json(dest, {"key": "value"})
+
+    def test_checkpoint_atomic_write_retries_on_permission_error(self):
+        from realtime.checkpoint import _atomic_write_json
+        call_count = 0
+        original_replace = os.replace
+
+        def _flaky(src, dst):
+            nonlocal call_count
+            call_count += 1
+            if call_count < 3:
+                raise PermissionError("transient")
+            original_replace(src, dst)
+
+        with tempfile.TemporaryDirectory() as td:
+            dest = Path(td) / "checkpoint.json"
+            with patch("os.replace", side_effect=_flaky):
+                _atomic_write_json(dest, {"k": "v"})
+            self.assertEqual(call_count, 3)
+            self.assertTrue(dest.exists())
+
+    def test_checkpoint_atomic_write_fails_after_all_retries(self):
+        from realtime.checkpoint import _atomic_write_json
+        with tempfile.TemporaryDirectory() as td:
+            dest = Path(td) / "checkpoint.json"
+            with patch("os.replace", side_effect=PermissionError("locked")):
+                with self.assertRaises(PermissionError):
+                    _atomic_write_json(dest, {"k": "v"})
 
 
 if __name__ == "__main__":

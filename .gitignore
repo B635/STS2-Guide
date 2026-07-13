@@ -13,6 +13,8 @@ CLAUDE.md
 .venv/
 frontend/node_modules/
 frontend/dist/
+build/
+dist/
 .dotnet_cli/
 data/*.db
 data/*.db-shm
@@ -27,5 +29,10 @@ mod/**/pack/.godot/
 tools/**/bin/
 tools/**/obj/
 p0-host*.log
+p0-live-host*.log
+p0-*.log
+p0-host-live-monitor.pid
+logs/
 data/advisor_eval_report.json
 data/guides.json
+.mcp.json

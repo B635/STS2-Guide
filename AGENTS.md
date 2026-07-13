@@ -13,6 +13,8 @@
   已确认的设计变更必须先写入这里。
 - `docs/project-status.md`：代码当前真实完成度、已验证证据、已知问题和下一步；
   只有编译、测试、安装、真机验证达到对应状态后才更新。
+- `docs/api-reference-sources.md`：STS2 API 外部参考源、使用边界和调研报告格式；
+  涉及未知游戏 API 时必须先查这里登记的参考源并再用本机真机/程序集验证。
 - `protocol/*.schema.json`：Mod 与后台之间可执行的协议事实；协议变化必须同时更新
   schema、示例、生产者、消费者和测试。
 - `docs/data-architecture.md`、`docs/realtime-architecture.md`：对已确认架构的详细解释，
@@ -43,6 +45,11 @@ DeepSeek 不得自行改变产品规格，也不得把“代码存在”写成�
 
 STS2 Guide 是《Slay the Spire 2》的本地、只读、状态驱动决策 Agent。
 
+长期产品形态是覆盖局内关键决策的实时策略副驾驶：统一维护当前局世界状态，在选牌、
+路线、商店、篝火等真实决策出现时调用对应本地策略，并通过同一个游戏内
+`Context Drawer` 主动展示建议。它不是自动代打工具，也不是以聊天或 LLM 为核心的
+攻略机器人。
+
 P0 用户体验：
 
 1. 用户正常启动 STS2；
@@ -55,11 +62,19 @@ P0 用户体验：
 P0 标准场景是三张牌加跳过。面板可以对其他候选数量安全降级，但这不代表扩大
 P0 产品范围。
 
+Neow 祝福等开局特殊决策不属于 P0 推荐范围；P0 只要求这些未支持场景不会显示上一屏
+或错误候选。完整祝福建议进入 P1。
+
+P0 真机闭环完成后、增加 P1 决策前，必须先完成 P0.5 决策内核收口：建立统一
+`WorldState`、`DecisionRequest`、策略注册机制和 `Recommendation`，并将 Card Reward
+迁移为第一个策略插件。不得通过复制 `card_reward` 分支的方式堆叠路线、商店或篝火。
+详细范围与验收以 `docs/product-spec.md` 第 11.1 节为准。
+
 ## P0 架构边界
 
 - Mod：C# / .NET 9 / Harmony Postfix / Godot Control。
 - 实时后台：`python -m realtime.host`，最终打包为单一后台 EXE。
-- 协议：JSON Schema v3，本地原子文件交换。
+- 协议：JSON Schema v4，本地原子文件交换；Python 消费端继续兼容 v1-v3 录制夹具。
 - 实时推荐：完全本地，不调用 DeepSeek、LLM 或网络。
 - Vue、FastAPI、RAG：不属于 P0 实时运行依赖。
 - 路线：P0 只读取真实地图图结构，不生成路线推荐。
@@ -95,6 +110,9 @@ P0 产品范围。
 - `affects_gameplay: false`。
 - 不自动点击、不修改选择、不修改存档、不联网、不持有 API Key。
 - 地图只使用已验证的真实 API 和 `MapPoint.Children`；读取失败时不得猜边。
+- 碰到不确定的游戏 API 时，必须先通过程序集、真实对象日志或真机回归确认；
+  实施报告要写明类型、成员、来源和验证方式。不得用字段名列表、界面文本、截图位置
+  或宽泛动态反射猜测生产状态。
 - 修改 Mod 后必须先成功编译，再讨论“已完成”。
 
 ## 环境与命令

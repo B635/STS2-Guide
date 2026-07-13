@@ -11,6 +11,7 @@ import hashlib
 import json
 import os
 import threading
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, Optional
@@ -40,7 +41,19 @@ def _atomic_write_json(path: Path, payload: Dict) -> None:
         json.dumps(payload, ensure_ascii=False, separators=(",", ":")),
         encoding="utf-8",
     )
-    os.replace(temporary, path)
+    deadline = time.monotonic() + 1.0
+    last_exc: Optional[PermissionError] = None
+    for attempt in range(5):
+        try:
+            os.replace(temporary, path)
+            return
+        except PermissionError as exc:
+            last_exc = exc
+            if time.monotonic() >= deadline:
+                break
+            time.sleep(0.05 * (attempt + 1))
+    if last_exc is not None:
+        raise last_exc
 
 
 class ActiveRunCheckpointStore:

@@ -1,7 +1,11 @@
+using System.Reflection;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 using Godot;
 using MegaCrit.Sts2.Core.Logging;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Saves;
 
 namespace STS2Guide.ReadOnlyExporter;
@@ -21,6 +25,8 @@ internal static class StateEventWriter
     private static RunStateSnapshot? _lastState;
     private static PendingDecision? _pendingDecision;
     private static bool _ended;
+    private static string? _previousRunId;
+    private static bool _previousRunEnded;
 
     internal static PendingDecisionView? GetPendingDecision()
     {
@@ -42,7 +48,14 @@ internal static class StateEventWriter
     {
         lock (WriteGate)
         {
-            if (_lastState is not null)
+            var identity = RunIdentityReader.Read();
+
+            // If the previous run was still in progress (never ended),
+            // only emit a synthetic run_ended when the NEW identity differs.
+            // Same identity → save+continue resume, not a real run end.
+            if (_lastState is not null
+                && !_ended
+                && identity.RunId != _runId)
             {
                 Write(
                     "run_ended",
@@ -50,15 +63,41 @@ internal static class StateEventWriter
                     new List<DecisionOption>(),
                     runResult: CreateRunResult("abandon")
                 );
+                _previousRunEnded = true;
             }
-            var identity = RunIdentityReader.Read();
+
+            // Guard: if the new identity matches a previous stable Run ID
+            // and the previous run ended, the game's History.Seed is stale.
+            // Force a new temporary ID to prevent cross-run contamination.
+            if (identity.IsStable
+                && _previousRunEnded
+                && identity.RunId == _previousRunId)
+            {
+                Log.Error(
+                    $"[STS2-Guide] Stale History.Seed produced same Run ID "
+                    + $"{identity.RunId} as previous ended run. "
+                    + "Generating new temporary identity."
+                );
+                identity = new RunIdentity(
+                    $"temporary-{Guid.NewGuid():N}",
+                    DateTimeOffset.UtcNow.ToString("O"),
+                    false
+                );
+            }
+
             _runId = identity.RunId;
             _runStartedAt = identity.StartedAt;
             _runIdentityStable = identity.IsStable;
             _sequence = RecoverSequence(_runId);
+
+            if (!_previousRunEnded)
+            {
+                _previousRunId = _runId;
+            }
             _lastState = null;
             _pendingDecision = null;
             _ended = false;
+            _previousRunEnded = false;
             RunStateReader.Clear();
             Log.Info(
                 $"[STS2-Guide] Run identity {_runId}; "
@@ -91,6 +130,10 @@ internal static class StateEventWriter
                     runResult: CreateRunResult(outcome)
                 );
             }
+            // Record that this run ended so BeginRun() can guard against
+            // stale History.Seed reuse on the next run.
+            _previousRunId = _runId;
+            _previousRunEnded = true;
             _lastState = null;
             _pendingDecision = null;
             RunStateReader.Clear();
@@ -206,6 +249,7 @@ internal static class StateEventWriter
                     AvailableNextNodeIds =
                         snapshot.AvailableNextNodeIds,
                     BossNodeIds = snapshot.BossNodeIds,
+                    BossEncounterIds = snapshot.BossEncounterIds,
                 }
             );
         }
@@ -320,15 +364,6 @@ internal static class StateEventWriter
         {
             return;
         }
-        var identity = RunIdentityReader.Read();
-        if (!identity.IsStable)
-        {
-            if (!state.CaptureWarnings.Contains("run_identity_fallback"))
-            {
-                state.CaptureWarnings.Add("run_identity_fallback");
-            }
-            return;
-        }
         if (_sequence > 0)
         {
             Log.Error(
@@ -337,10 +372,77 @@ internal static class StateEventWriter
             );
             return;
         }
+        // Read identity preferring the current player's RunState seed.
+        // The player's seed is fresh for this run; RunManager.History.Seed
+        // may be stale from a previous ended run.
+        var identity = ReadIdentityFromCurrentRun();
+        if (!identity.IsStable)
+        {
+            if (!state.CaptureWarnings.Contains("run_identity_fallback"))
+            {
+                state.CaptureWarnings.Add("run_identity_fallback");
+            }
+            return;
+        }
+        // Guard: if this stable ID matches a previously ended run, reject it.
+        if (_previousRunEnded && identity.RunId == _previousRunId)
+        {
+            Log.Error(
+                $"[STS2-Guide] Stable identity {identity.RunId} matches "
+                + "previously ended run; keeping temporary ID to prevent "
+                + "cross-run contamination."
+            );
+            if (!state.CaptureWarnings.Contains("run_identity_fallback"))
+            {
+                state.CaptureWarnings.Add("run_identity_fallback");
+            }
+            return;
+        }
         _runId = identity.RunId;
         _runStartedAt = identity.StartedAt;
         _runIdentityStable = true;
         _sequence = RecoverSequence(_runId);
+    }
+
+    /// <summary>
+    /// Read a stable run identity preferring the current player's seed.
+    /// RunManager.History.Seed may be stale after a previous run ended.
+    /// </summary>
+    private static RunIdentity ReadIdentityFromCurrentRun()
+    {
+        // Prefer the player's RunState seed (fresh per-run).
+        var playerSeed = RunStateReader
+            .GetObservedPlayer()?
+            .RunState
+            .Rng
+            .StringSeed;
+        if (!string.IsNullOrWhiteSpace(playerSeed))
+        {
+            var startTime = RunManager.Instance.History?.StartTime ?? 0;
+            if (startTime <= 0)
+            {
+                var field = typeof(RunManager).GetField(
+                    "_startTime",
+                    BindingFlags.NonPublic | BindingFlags.Instance
+                );
+                if (field?.GetValue(RunManager.Instance) is long st)
+                    startTime = st;
+            }
+            if (startTime > 0)
+            {
+                var bytes = SHA256.HashData(
+                    Encoding.UTF8.GetBytes($"{playerSeed}|{startTime}")
+                );
+                var digest = Convert.ToHexString(bytes).ToLowerInvariant();
+                return new RunIdentity(
+                    $"sts2-{digest[..24]}",
+                    DateTimeOffset.FromUnixTimeSeconds(startTime).ToString("O"),
+                    true
+                );
+            }
+        }
+        // Fall back to the standard reader.
+        return RunIdentityReader.Read();
     }
 
     private static RunResult CreateRunResult(string outcome)

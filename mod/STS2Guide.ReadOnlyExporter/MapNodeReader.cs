@@ -9,6 +9,7 @@ internal sealed record MapSnapshot(
     string? CurrentNodeId,
     List<string> AvailableNextNodeIds,
     List<string> BossNodeIds,
+    List<string> BossEncounterIds,
     int? PlayerRow
 );
 
@@ -29,9 +30,20 @@ internal static class MapNodeReader
                 return Empty();
             }
 
+            // ActMap.GetAllMapPoints() only enumerates the regular Grid.  Boss
+            // points are special nodes stored separately on ActMap, so they
+            // must be added before we build the node lookup.  Otherwise the
+            // final-row edges to the boss are silently discarded as well.
+            var specialBossPoints = new MapPoint?[]
+            {
+                map.BossMapPoint,
+                map.SecondBossMapPoint,
+            };
             var points = map
                 .GetAllMapPoints()
-                .Where(point => point is not null)
+                .Cast<MapPoint?>()
+                .Concat(specialBossPoints)
+                .OfType<MapPoint>()
                 .Distinct()
                 .OrderBy(point => point.coord.row)
                 .ThenBy(point => point.coord.col)
@@ -87,22 +99,63 @@ internal static class MapNodeReader
                     .Distinct(StringComparer.Ordinal)
                     .OrderBy(id => id, StringComparer.Ordinal)
                     .ToList();
-            var bossNodeIds = new[] {
-                    map.BossMapPoint,
-                    map.SecondBossMapPoint,
-                }
+            var bossNodeIds = specialBossPoints
                 .OfType<MapPoint>()
                 .Where(pointIds.ContainsKey)
                 .Select(point => pointIds[point])
                 .Distinct(StringComparer.Ordinal)
                 .OrderBy(id => id, StringComparer.Ordinal)
                 .ToList();
+            var bossEncounterIds = new[]
+                {
+                    runState.Act.BossEncounter,
+                    runState.Act.SecondBossEncounter,
+                }
+                .Select(encounter => encounter?.Id.Entry)
+                .OfType<string>()
+                .Where(id => !string.IsNullOrWhiteSpace(id))
+                .Distinct(StringComparer.Ordinal)
+                .OrderBy(id => id, StringComparer.Ordinal)
+                .ToList();
+
+            // Defensive fallback for a future map implementation that exposes
+            // a boss inside its regular Grid instead of through BossMapPoint.
+            if (bossNodeIds.Count == 0)
+            {
+                var bossPoints = points
+                    .Where(p => p.PointType == MapPointType.Boss)
+                    .ToList();
+                if (bossPoints.Count > 0)
+                {
+                    bossNodeIds = bossPoints
+                        .Select(p => pointIds[p])
+                        .Distinct(StringComparer.Ordinal)
+                        .OrderBy(id => id, StringComparer.Ordinal)
+                        .ToList();
+                    Log.Info(
+                        $"[STS2-Guide] No special BossMapPoint was available; found "
+                        + $"{bossPoints.Count} Boss node(s) via "
+                        + "GetAllMapPoints() scan: "
+                        + string.Join(", ", bossNodeIds)
+                    );
+                }
+                else
+                {
+                    Log.Info(
+                        "[STS2-Guide] No special BossMapPoint was available "
+                        + "and the map contained no "
+                        + "MapPointType.Boss nodes. Boss data is unavailable "
+                        + "in this game version; boss_node_ids will be empty."
+                    );
+                }
+            }
 
             return new MapSnapshot(
                 nodes,
                 currentNodeId,
                 availableNextNodeIds,
                 bossNodeIds,
+                bossEncounterIds,
                 currentPoint?.coord.row
             );
         }
@@ -122,6 +175,7 @@ internal static class MapNodeReader
         return new MapSnapshot(
             [],
             null,
+            [],
             [],
             [],
             null

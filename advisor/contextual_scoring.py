@@ -385,6 +385,11 @@ def score_state_factors(
         ),
         ("supports_discard", bool(effects.get("discard")), "弃牌"),
         ("supports_poison", bool(effects.get("poison")), "中毒"),
+        (
+            "supports_vulnerable",
+            bool(damage) and not bool(effects.get("vulnerable")),
+            "易伤窗口",
+        ),
     )
     matched_relics = [
         label

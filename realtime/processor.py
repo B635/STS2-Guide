@@ -4,8 +4,15 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Dict, Optional
 
-from advisor.card_reward import recommend_card_reward
 from advisor.data_sources import LocalCardTierSource
+from advisor.decision_core import (
+    CARD_REWARD,
+    DecisionCandidate,
+    DecisionRequest,
+    PolicyRegistry,
+    WorldState,
+)
+from advisor.policies import CardRewardPolicy
 from realtime.checkpoint import ActiveRunCheckpointStore
 from realtime.protocol import EventType, GameStateEvent
 from realtime.session import TransientSessionStore
@@ -23,11 +30,15 @@ class RealtimeEventProcessor:
         sessions: TransientSessionStore | None = None,
         checkpoint: Optional[ActiveRunCheckpointStore] = None,
         local_tiers: Optional[LocalCardTierSource] = None,
+        policies: Optional[PolicyRegistry] = None,
     ):
         self.repository = repository
         self.sessions = sessions or TransientSessionStore()
         self.checkpoint = checkpoint
         self.local_tiers = local_tiers
+        self.policies = policies or PolicyRegistry(
+            [CardRewardPolicy(repository, local_tiers)]
+        )
 
     def process(self, event: GameStateEvent) -> Dict:
         self._validate(event)
@@ -160,18 +171,42 @@ class RealtimeEventProcessor:
                 and checkpoint.get("map_context") is not None
             ):
                 state["map_context"] = checkpoint["map_context"]
-        options = [option.model_dump() for option in event.options]
-        advice = recommend_card_reward(
-            state,
-            options,
-            self.repository,
-            local_tiers=self.local_tiers,
-            can_skip=(
+        world = WorldState.create(
+            run_id=event.run_id,
+            sequence=event.sequence,
+            state=state,
+            map_context=state.pop("map_context", None),
+        )
+        request = DecisionRequest.create(
+            decision_id=event.event_id,
+            decision_type=CARD_REWARD,
+            world=world,
+            candidates=[
+                DecisionCandidate.create(
+                    f"{index}:{option.card}",
+                    option.model_dump(),
+                )
+                for index, option in enumerate(event.options)
+            ],
+            constraints={
+                "can_skip": (
                 event.decision.can_skip
                 if event.decision is not None
                 else True
-            ),
+                ),
+                "can_reroll": (
+                    event.decision.can_reroll
+                    if event.decision is not None
+                    else False
+                ),
+                "reward_source": (
+                    event.decision.reward_source
+                    if event.decision is not None
+                    else None
+                ),
+            },
         )
+        advice = dict(self.policies.recommend(request).payload)
         return {
             "event_id": event.event_id,
             "event_type": event.event_type.value,

@@ -2,7 +2,7 @@
 
 - 状态：已验收
 - 创建者：Codex
-- 实现者：Codex（分支发布前安全审查）
+- 实现者：Codex（清理）+ DeepSeek（独立复核）
 - 产品依据：`docs/product-spec.md` 的 P0-1、P0-3 与 P0 运行边界
 - 前置任务：TASK-001（已验收）
 
@@ -130,6 +130,61 @@
 
 - `packaging/sts2-guide.spec` 的根目录解析仍需在后续 EXE 任务修复；
 - 弹珠袋易伤窗口仍是固定场景评测的唯一已知缺口。
+
+## DeepSeek 验证报告
+
+### 删除目标确认
+
+| 文件 | 状态 |
+|---|---|
+| `advisor/map_path.py` | 已删除 |
+| `advisor/iteration.py` | 已删除 |
+| `scripts/eval_advisor_iterations.py` | 已删除 |
+| `tests/test_advisor_iteration.py` | 已删除 |
+| `scripts/watch_game_state.py` | 已删除 |
+| `data/advisor_iteration_report.json` | 已删除 |
+| `p0-host.out.log` | 已删除 |
+| `p0-host.err.log` | 已删除 |
+
+### 残留引用检查
+
+`rg` 搜索 `map_path|eval_advisor_iterations|watch_game_state|advisor_iteration_report|test_advisor_iteration` 仅命中任务单文件（TASK-001、TASK-002），生产代码和 README 中无任何残留引用。
+
+### .gitignore 确认
+
+- `p0-host*.log` ✓
+- `data/advisor_eval_report.json` ✓
+- `data/advisor_iteration_report.json` ✓
+- `data/guides.json` ✓
+- 未使用过宽的 `*.json`、`data/*` 或 `*.log` 规则
+
+### README 确认
+
+- P0 安装使用 `requirements-p0.txt`，开篇声明 "不使用 API Key、Vue、FastAPI、RAG、LLM 或网络" ✓
+- P0 启动只保留 `python -m realtime.host` ✓
+- 旧 `scripts/watch_game_state.py` 和历史选择权重迭代命令已移除 ✓
+- 完整 RAG/Web/FastAPI/Vue 均在 "非 P0 旧实验入口" 章节 ✓
+
+### 自动验证
+
+| 检查项 | 结果 |
+|---|---|
+| `python -m realtime.host --help` | 正常返回 |
+| TASK-001 专项测试 | 62/62 OK |
+| 固定场景评测 | 25/26 场景、92/93 断言 |
+| 完整 Python 测试 | 122/122 OK（从 TASK-001 的 125 降至 122，来自按计划删除的 3 个旧迭代测试） |
+| `git diff` | 空（无评分、协议、Mod、SQLite schema 或 RAG 实现修改） |
+| `data/advisor_eval_report.json` | 不存在（默认运行不生成） |
+
+### 禁止事项遵守确认
+
+- 未修改 `advisor/card_reward.py`、`advisor/contextual_scoring.py` 或评分权重 ✓
+- 未修改协议 schema、生产者、消费者或 Mod ✓
+- 未删除或修改 SQLite 表、迁移和 repository 历史方法 ✓
+- 未删除 `rag/`、`api.py`、`app.py`、`main.py`、`frontend/` 或其测试 ✓
+- 未修复 `packaging/sts2-guide.spec` ✓
+- 未处理 TASK-001 的唯一失败场景 ✓
+- 未使用模糊批量删除命令 ✓
 
 ## Codex 审查
 

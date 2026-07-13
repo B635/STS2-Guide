@@ -1,10 +1,11 @@
 # 外部数据源审计
 
-审计日期：2026-07-02。
+审计日期：2026-07-13。
 
 | 来源/接口 | 可用性 | 当前处理 | 目标存储 |
 |---|---|---|---|
 | Spire Codex `/api/cards`、`relics`、`potions`、`monsters`、`characters` | 可用；社区 API 条款允许限流内使用 | 已导入 | SQLite |
+| Spire Codex `/api/events`、`encounters`、`acts`、`powers`、`intents`、机制端点 | 可用；中文导出已在临时目录完成结构抽样，尚未进入生产 schema | 先设计规范化表、引用校验和版本快照，再事务导入 | SQLite；原始 JSON 仅作可重建快照 |
 | Spire Codex `/api/guides` | 可用，但攻略作者权利与再分发许可需要逐篇复核 | 只允许本机生成原文快照；`data/guides.json` Git 忽略，不公开提交或打包 | 本机原文快照 + FAISS |
 | Spire Codex `/api/runs/scores/{cards,relics,potions}` | 可用；混合版本、观察性聚合 | 已过滤 Mod ID、保存来源快照；只作低权重先验 | SQLite |
 | Spire Codex `/api/runs/versions` | 可用 | 已写入社区统计快照，用于暴露混合版本风险 | JSON 快照 |
@@ -18,6 +19,9 @@
 
 Spire Codex API 条款：
 <https://github.com/ptrlrd/spire-codex/blob/main/API_TERMS.md>
+
+Spire Codex 源码许可证（与托管 API 条款分开）：
+<https://github.com/ptrlrd/spire-codex/blob/main/LICENSE.md>
 
 slaythespire-2.com 服务条款：
 <https://slaythespire-2.com/terms-of-service>

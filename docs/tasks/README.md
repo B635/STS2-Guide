@@ -33,6 +33,14 @@
 7. Codex 独立检查 diff、运行必要测试并填写审查结论；
 8. 不通过时设为 `需修复`；通过后设为 `已验收`，并按真实证据更新项目状态。
 
+常用自动审查入口：
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\run_p0_review.ps1
+```
+
+该脚本只运行本地自动检查，不安装 Mod、不启动游戏、不替代真机回归。
+
 ## 实施报告要求
 
 DeepSeek 必须记录：

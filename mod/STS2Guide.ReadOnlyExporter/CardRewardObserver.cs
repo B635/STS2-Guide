@@ -28,10 +28,24 @@ internal static class CardRewardObservationPatch
     {
         try
         {
-            RunStateReader.Observe(__instance.Player);
+            Log.Info("[STS2-Guide] CardReward.Populate triggered.");
+
+            var p = __instance.Player;
+            if (p is not null)
+            {
+                Log.Info("[STS2-Guide] CardReward.Populate: __instance.Player type=" + p.GetType().FullName);
+                RunStateReader.Observe(p);
+            }
+            else
+            {
+                Log.Info("[STS2-Guide] CardReward.Populate: __instance.Player is null, trying TryObserveFromRunManager.");
+                RunStateReader.TryObserveFromRunManager();
+            }
+
             var options = CardOptionReader.Read(__instance);
             if (options.Count == 0)
             {
+                Log.Info("[STS2-Guide] CardReward.Populate: 0 options, returning.");
                 return;
             }
             StateEventWriter.EmitCardReward(

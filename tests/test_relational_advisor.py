@@ -94,6 +94,19 @@ def _knowledge_payload():
                 "keywords_key": [],
                 "embed_text": "卡牌耗竭收益牌。",
             },
+            {
+                "id": "VULNERABLE_ATTACK",
+                "name": "易伤攻击牌",
+                "description": "造成8点伤害。施加1层易伤。",
+                "cost": 1,
+                "type_key": "Attack",
+                "rarity_key": "Common",
+                "color": "test",
+                "damage": 8,
+                "block": None,
+                "keywords_key": [],
+                "embed_text": "卡牌易伤攻击牌：造成8点伤害并施加易伤。",
+            },
         ],
         "relics": [
             {
@@ -103,7 +116,15 @@ def _knowledge_payload():
                 "pool": "test",
                 "rarity_key": "Common",
                 "embed_text": "遗物测试遗物。",
-            }
+            },
+            {
+                "id": "VULNERABLE_RELIC",
+                "name": "易伤遗物",
+                "description": "在每场战斗开始时，给予所有敌人1层易伤。",
+                "pool": "test",
+                "rarity_key": "Common",
+                "embed_text": "遗物易伤遗物：开局给予敌人易伤。",
+            },
         ],
         "potions": [
             {
@@ -186,6 +207,121 @@ class RelationalAdvisorTests(unittest.TestCase):
                 """
             ).fetchone()["count"]
         self.assertGreaterEqual(stored, 3)
+
+    def test_structured_strategy_entities_are_normalized(self):
+        payload = _knowledge_payload()
+        payload.update(
+            {
+                "monsters": [{
+                    "id": "TEST_BOSS",
+                    "name": "测试首领",
+                    "type": "Boss",
+                    "min_hp": 100,
+                    "min_hp_ascension": 120,
+                    "moves": [{
+                        "id": "SLAM",
+                        "name": "猛击",
+                        "intent": "Attack",
+                        "damage": {
+                            "normal": 20,
+                            "ascension": 25,
+                            "hit_count": 1,
+                        },
+                        "block": None,
+                        "heal": None,
+                        "powers": [],
+                    }],
+                    "attack_pattern": {"type": "cycle"},
+                }],
+                "encounters": [{
+                    "id": "TEST_BOSS_ENCOUNTER",
+                    "name": "测试首领遭遇",
+                    "room_type": "Boss",
+                    "act": "Test Act",
+                    "is_weak": False,
+                    "monsters": [{"id": "TEST_BOSS", "name": "测试首领"}],
+                }],
+                "events": [{
+                    "id": "TEST_EVENT",
+                    "name": "测试事件",
+                    "type": "Event",
+                    "act": "Test Act",
+                    "description": "初始页面",
+                    "preconditions": {"min_gold": 20},
+                    "options": [{
+                        "id": "PAY",
+                        "title": "支付",
+                        "description": "失去20金币。",
+                    }],
+                    "pages": [{
+                        "id": "PAID",
+                        "description": "已经支付。",
+                        "options": [{
+                            "id": "LEAVE",
+                            "title": "离开",
+                            "description": "",
+                        }],
+                    }],
+                }],
+                "acts": [{
+                    "id": "TEST_ACT",
+                    "name": "测试章节",
+                    "num_rooms": 15,
+                    "bosses": ["TEST_BOSS_ENCOUNTER"],
+                    "events": ["TEST_EVENT"],
+                    "encounters": ["TEST_BOSS_ENCOUNTER"],
+                    "ancients": [],
+                }],
+                "mechanics": {"combat_modifiers": {"Weak": 0.75}},
+            }
+        )
+        with open(self.knowledge_path, "w", encoding="utf-8") as file:
+            json.dump(payload, file, ensure_ascii=False)
+        self.repository.sync_catalog(self.knowledge_path)
+
+        with self.repository.connect() as connection:
+            move = connection.execute(
+                "SELECT * FROM monster_moves WHERE move_id = 'SLAM'"
+            ).fetchone()
+            encounter_member = connection.execute(
+                "SELECT monster_external_id FROM encounter_monsters"
+            ).fetchone()
+            option_count = connection.execute(
+                "SELECT COUNT(*) AS count FROM event_options"
+            ).fetchone()["count"]
+            boss_membership = connection.execute(
+                """
+                SELECT target_external_id FROM act_entity_memberships
+                WHERE relation_type = 'bosses'
+                """
+            ).fetchone()
+            mechanic = connection.execute(
+                """
+                SELECT value_json FROM mechanic_constants
+                WHERE constant_key = 'combat_modifiers'
+                """
+            ).fetchone()
+
+        self.assertEqual(move["damage_normal"], 20)
+        self.assertEqual(move["damage_ascension"], 25)
+        self.assertEqual(encounter_member["monster_external_id"], "TEST_BOSS")
+        self.assertEqual(option_count, 2)
+        self.assertEqual(
+            boss_membership["target_external_id"],
+            "TEST_BOSS_ENCOUNTER",
+        )
+        self.assertEqual(json.loads(mechanic["value_json"])["Weak"], 0.75)
+        encounter = self.repository.encounter_profile(
+            "TEST_BOSS_ENCOUNTER"
+        )
+        event = self.repository.event_tree("TEST_EVENT")
+        bosses = self.repository.act_members("TEST_ACT", "bosses")
+        self.assertEqual(encounter["_monsters"][0]["id"], "TEST_BOSS")
+        self.assertEqual(
+            event["_pages"][0]["options"][0]["id"],
+            "PAY",
+        )
+        self.assertEqual(bosses["bosses"], ["TEST_BOSS_ENCOUNTER"])
 
     def test_baseline_uses_state_without_claiming_trained_prediction(self):
         result = recommend_card_reward(
@@ -781,6 +917,50 @@ class RelationalAdvisorTests(unittest.TestCase):
     def test_effect_tag_version_is_3(self):
         from storage.effect_tags import EFFECT_TAG_VERSION
         self.assertEqual(EFFECT_TAG_VERSION, "3")
+
+    # ── Vulnerable window relic synergy ──────────────────────────────
+
+    def _codes_for(self, card_id, relics=None, state_overrides=None):
+        """Run recommend_card_reward and return factor codes for a card."""
+        state = self._state()
+        if relics:
+            state["relics"] = relics
+        if state_overrides:
+            state.update(state_overrides)
+        result = recommend_card_reward(
+            state,
+            [{"card": card_id}],
+            self.repository,
+        )
+        return {
+            factor["code"]
+            for factor in result["recommendations"][0]["factors"]
+        }
+
+    def test_vulnerable_relic_pure_damage_gets_synergy(self):
+        """Relic provides vulnerable; pure damage card exploits window."""
+        codes = self._codes_for("HEAVY_ATTACK", relics=["VULNERABLE_RELIC"])
+        self.assertIn("relic_synergy", codes,
+                      "Pure damage card should get relic_synergy from vulnerable relic")
+
+    def test_vulnerable_relic_vulnerable_card_no_synergy(self):
+        """Relic provides vulnerable; card also applies vulnerable → overlap, no synergy."""
+        codes = self._codes_for("VULNERABLE_ATTACK", relics=["VULNERABLE_RELIC"])
+        self.assertNotIn("relic_synergy", codes,
+                         "Card applying vulnerable should not get relic_synergy from same-type relic")
+
+    def test_vulnerable_relic_non_damage_no_synergy(self):
+        """Relic provides vulnerable; non-damage card cannot exploit window."""
+        codes = self._codes_for("CHEAP_BLOCK", relics=["VULNERABLE_RELIC"])
+        self.assertNotIn("relic_synergy", codes,
+                         "Non-damage card should not get relic_synergy from vulnerable relic")
+
+    def test_no_vulnerable_relic_no_synergy_for_damage(self):
+        """Without a vulnerable relic, damage card gets no vulnerable-window synergy."""
+        codes = self._codes_for("HEAVY_ATTACK", relics=["TEST_RELIC"])
+        # TEST_RELIC has supports_skill and supports_block only — no supports_vulnerable
+        self.assertNotIn("relic_synergy", codes,
+                         "Damage card should not get relic_synergy when no vulnerable relic present")
 
 
 if __name__ == "__main__":

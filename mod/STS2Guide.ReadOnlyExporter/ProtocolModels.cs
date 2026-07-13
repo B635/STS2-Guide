@@ -5,7 +5,7 @@ namespace STS2Guide.ReadOnlyExporter;
 internal sealed class StateEvent
 {
     [JsonPropertyName("schema_version")]
-    public int SchemaVersion { get; init; } = 3;
+    public int SchemaVersion { get; init; } = 4;
 
     [JsonPropertyName("event_id")]
     public required string EventId { get; init; }
@@ -249,4 +249,7 @@ internal sealed class MapChoiceContext
 
     [JsonPropertyName("boss_node_ids")]
     public required List<string> BossNodeIds { get; init; }
+
+    [JsonPropertyName("boss_encounter_ids")]
+    public required List<string> BossEncounterIds { get; init; }
 }
