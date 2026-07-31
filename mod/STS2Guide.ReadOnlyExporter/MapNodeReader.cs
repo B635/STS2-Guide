@@ -1,20 +1,25 @@
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Logging;
 using MegaCrit.Sts2.Core.Map;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
 
 namespace STS2Guide.ReadOnlyExporter;
 
 internal sealed record MapSnapshot(
     List<MapNodeState> Nodes,
     string? CurrentNodeId,
+    string? OriginNodeId,
     List<string> AvailableNextNodeIds,
     List<string> BossNodeIds,
     List<string> BossEncounterIds,
-    int? PlayerRow
+    int? PlayerRow,
+    string? MapFingerprint
 );
 
 /// <summary>
-/// Reads only the verified v0.107.1 map API.  Missing data is reported as an
+/// Reads only the currently verified map API. Missing data is reported as an
 /// empty snapshot; no guessed edges are ever produced.
 /// </summary>
 internal static class MapNodeReader
@@ -83,9 +88,34 @@ internal static class MapNodeReader
                 // CurrentMapPoint may be unavailable before the first choice.
             }
 
+            // CurrentMapCoord is a verified public RunState member.  It lets
+            // us resolve the real Act-start origin (for example 0:3) without
+            // treating an arbitrary startMapPoints entry as an origin.
+            if (currentPoint is null)
+            {
+                try
+                {
+                    if (runState.CurrentMapCoord is { } currentCoord)
+                    {
+                        var coordinateId = $"{currentCoord.row}:{currentCoord.col}";
+                        currentPoint = points.FirstOrDefault(point =>
+                            pointIds[point] == coordinateId
+                        );
+                    }
+                }
+                catch
+                {
+                    // A transient saved-run setup has no usable route origin.
+                }
+            }
+
             var currentNodeId = currentPoint is null
                 ? null
                 : pointIds[currentPoint];
+            // A route identity is allowed to use only a real current point.
+            // If the public state is still transient, RouteChoiceObserver
+            // fails closed rather than fabricating a start/sentinel origin.
+            var originNodeId = currentNodeId;
             var availableNextNodeIds = currentPoint is not null
                 ? currentPoint.Children
                     .Where(pointIds.ContainsKey)
@@ -93,12 +123,7 @@ internal static class MapNodeReader
                     .Distinct(StringComparer.Ordinal)
                     .OrderBy(id => id, StringComparer.Ordinal)
                     .ToList()
-                : map.startMapPoints
-                    .Where(pointIds.ContainsKey)
-                    .Select(point => pointIds[point])
-                    .Distinct(StringComparer.Ordinal)
-                    .OrderBy(id => id, StringComparer.Ordinal)
-                    .ToList();
+                : [];
             var bossNodeIds = specialBossPoints
                 .OfType<MapPoint>()
                 .Where(pointIds.ContainsKey)
@@ -153,10 +178,12 @@ internal static class MapNodeReader
             return new MapSnapshot(
                 nodes,
                 currentNodeId,
+                originNodeId,
                 availableNextNodeIds,
                 bossNodeIds,
                 bossEncounterIds,
-                currentPoint?.coord.row
+                currentPoint?.coord.row,
+                CreateMapFingerprint(nodes)
             );
         }
         catch (Exception exception)
@@ -175,11 +202,99 @@ internal static class MapNodeReader
         return new MapSnapshot(
             [],
             null,
+            null,
             [],
             [],
             [],
+            null,
             null
         );
+    }
+
+    /// <summary>
+    /// Stable map identity shared by observation and checkpoint recovery.
+    /// It intentionally uses only the verified logical graph, never Godot
+    /// object IDs or screen coordinates.
+    /// </summary>
+    internal static string? CreateMapFingerprint(
+        IReadOnlyList<MapNodeState> nodes
+    )
+    {
+        if (nodes.Count == 0 || nodes.Select(node => node.NodeId)
+            .Distinct(StringComparer.Ordinal).Count() != nodes.Count)
+        {
+            return null;
+        }
+        var canonical = string.Join(
+            "|",
+            nodes.OrderBy(node => node.Row)
+                .ThenBy(node => node.Col)
+                .ThenBy(node => node.NodeId, StringComparer.Ordinal)
+                // Route scoring consumes node kind and geometry as well as
+                // edges.  Leaving either out would let an initialization
+                // UNKNOWN -> ELITE/CAMPFIRE transition reuse an old decision
+                // identity and old recommendation.
+                .Select(node => string.Join(
+                    ":",
+                    node.NodeId,
+                    node.Kind,
+                    node.Row,
+                    node.Col
+                ) + ">" + string.Join(
+                    ",",
+                    node.Edges.OrderBy(edge => edge, StringComparer.Ordinal)
+                ))
+        );
+        return Convert.ToHexString(
+            SHA256.HashData(Encoding.UTF8.GetBytes(canonical))
+        );
+    }
+
+    internal static string? CreateMapFingerprint(JsonElement context)
+    {
+        if (!context.TryGetProperty("nodes", out var nodes)
+            || nodes.ValueKind != JsonValueKind.Array)
+        {
+            return null;
+        }
+        var values = new List<MapNodeState>();
+        foreach (var node in nodes.EnumerateArray())
+        {
+            if (node.ValueKind != JsonValueKind.Object
+                || !node.TryGetProperty("node_id", out var id)
+                || id.ValueKind != JsonValueKind.String
+                || !node.TryGetProperty("kind", out var kind)
+                || kind.ValueKind != JsonValueKind.String
+                || string.IsNullOrWhiteSpace(kind.GetString())
+                || !node.TryGetProperty("row", out var row)
+                || !row.TryGetInt32(out var rowValue)
+                || !node.TryGetProperty("col", out var col)
+                || !col.TryGetInt32(out var colValue)
+                || !node.TryGetProperty("edges", out var edges)
+                || edges.ValueKind != JsonValueKind.Array)
+            {
+                return null;
+            }
+            var edgeIds = new List<string>();
+            foreach (var edge in edges.EnumerateArray())
+            {
+                if (edge.ValueKind != JsonValueKind.String
+                    || string.IsNullOrWhiteSpace(edge.GetString()))
+                {
+                    return null;
+                }
+                edgeIds.Add(edge.GetString()!);
+            }
+            values.Add(new MapNodeState
+            {
+                NodeId = id.GetString()!,
+                Kind = kind.GetString()!,
+                Row = rowValue,
+                Col = colValue,
+                Edges = edgeIds,
+            });
+        }
+        return CreateMapFingerprint(values);
     }
 
     private static string NodeId(MapPoint point)

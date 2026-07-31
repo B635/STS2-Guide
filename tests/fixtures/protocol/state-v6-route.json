@@ -1,0 +1,70 @@
+{
+  "schema_version": 6,
+  "event_id": "fixture-run-v6:4",
+  "event_type": "route_choice",
+  "emitted_at": "2026-07-14T08:01:00+00:00",
+  "source": "sts2-guide-readonly-mod",
+  "game_version": "0.108.0",
+  "run_id": "fixture-run-v6",
+  "sequence": 4,
+  "decision_id": "fixture-route-v6",
+  "state": {
+    "character": "IRONCLAD",
+    "ascension": 0,
+    "act": 1,
+    "floor": 0,
+    "hp": 80,
+    "max_hp": 80,
+    "gold": 99,
+    "energy": 3,
+    "deck": [],
+    "relics": [],
+    "relic_states": [],
+    "potions": [],
+    "max_potion_slots": 3,
+    "modifiers": [],
+    "capture_warnings": []
+  },
+  "options": [],
+  "decision": {
+    "can_skip": false,
+    "can_reroll": false,
+    "reward_source": "MAP"
+  },
+  "map_context": {
+    "map_name": "Act_1",
+    "player_row": 0,
+    "origin_node_id": "0:3",
+    "current_node_id": null,
+    "available_next_node_ids": ["1:2"],
+    "boss_node_ids": ["16:3"],
+    "boss_encounter_ids": [],
+    "node_count": 3,
+    "nodes": [
+      {
+        "node_id": "0:3",
+        "kind": "MONSTER",
+        "row": 0,
+        "col": 3,
+        "edges": ["1:2"],
+        "label": "Monster"
+      },
+      {
+        "node_id": "1:2",
+        "kind": "CAMPFIRE",
+        "row": 1,
+        "col": 2,
+        "edges": ["16:3"],
+        "label": "RestSite"
+      },
+      {
+        "node_id": "16:3",
+        "kind": "BOSS",
+        "row": 16,
+        "col": 3,
+        "edges": [],
+        "label": "Boss"
+      }
+    ]
+  }
+}

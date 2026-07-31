@@ -1,12 +1,22 @@
 {
-  "schema_version": 4,
+  "schema_version": 9,
   "event_id": "example-run:1",
   "event_type": "card_reward",
   "emitted_at": "2026-07-02T08:00:00.0000000+00:00",
   "source": "sts2-guide-readonly-mod",
-  "game_version": "0.107.1",
+  "game_version": "0.109.1",
+  "snapshot_kind": "complete",
+  "state_revision": 1,
+  "producer_id": "STS2GuideReadOnlyExporter",
+  "producer_version": "0.3.0",
+  "game_assembly_sha256": "016c6df717d997fcbd8f2a55102ca63cb4a89c1fa8e4db8dacfddf803b6b70e1",
+  "release_fingerprint": "56f928dcd6650946d2929910f2efa9c5c0b7f962667177421dd6c2ecf2f15afd",
+  "guide_preferences": {
+    "route_mode": "balanced"
+  },
   "run_id": "example-run",
   "sequence": 1,
+  "decision_id": "example-run:card-reward:1",
   "state": {
     "character": "IRONCLAD",
     "ascension": 0,
@@ -29,12 +39,20 @@
       {
         "card": "DEFEND_IRONCLAD",
         "count": 4,
-        "upgrades": 0
+        "upgrades": 0,
+        "enchantment": null,
+        "enchantment_amount": null,
+        "affliction": null,
+        "affliction_amount": null
       },
       {
         "card": "BASH",
         "count": 1,
-        "upgrades": 0
+        "upgrades": 0,
+        "enchantment": null,
+        "enchantment_amount": null,
+        "affliction": null,
+        "affliction_amount": null
       }
     ],
     "relics": ["BURNING_BLOOD"],
@@ -56,25 +74,78 @@
     "modifiers": [],
     "capture_warnings": []
   },
-  "options": [
+  "options": [],
+  "candidates": [
     {
-      "card": "POMMEL_STRIKE",
-      "upgrades": 0
+      "candidate_id": "0:POMMEL_STRIKE",
+      "kind": "card",
+      "entity_id": "POMMEL_STRIKE",
+      "label": "POMMEL_STRIKE",
+      "eligible": true,
+      "unavailable_reason": null,
+      "costs": [],
+      "payload": {
+        "card": "POMMEL_STRIKE",
+        "upgrades": 0,
+        "enchantment": null,
+        "enchantment_amount": null,
+        "affliction": null,
+        "affliction_amount": null
+      }
     },
     {
-      "card": "UPPERCUT",
-      "upgrades": 0
+      "candidate_id": "1:UPPERCUT",
+      "kind": "card",
+      "entity_id": "UPPERCUT",
+      "label": "UPPERCUT",
+      "eligible": true,
+      "unavailable_reason": null,
+      "costs": [],
+      "payload": {
+        "card": "UPPERCUT",
+        "upgrades": 0,
+        "enchantment": null,
+        "enchantment_amount": null,
+        "affliction": null,
+        "affliction_amount": null
+      }
     },
     {
-      "card": "ANGER",
-      "upgrades": 0
+      "candidate_id": "2:ANGER",
+      "kind": "card",
+      "entity_id": "ANGER",
+      "label": "ANGER",
+      "eligible": true,
+      "unavailable_reason": null,
+      "costs": [],
+      "payload": {
+        "card": "ANGER",
+        "upgrades": 0,
+        "enchantment": null,
+        "enchantment_amount": null,
+        "affliction": null,
+        "affliction_amount": null
+      }
+    },
+    {
+      "candidate_id": "skip",
+      "kind": "skip",
+      "entity_id": null,
+      "label": "跳过",
+      "eligible": true,
+      "unavailable_reason": null,
+      "costs": [],
+      "payload": {}
     }
   ],
   "decision": {
     "can_skip": true,
     "can_reroll": false,
-    "reward_source": "MONSTER"
+    "reward_source": "CARD"
   },
+  "decision_parent": null,
   "parent_event_id": null,
-  "outcome": null
+  "outcome": null,
+  "map_context": null,
+  "run_result": null
 }

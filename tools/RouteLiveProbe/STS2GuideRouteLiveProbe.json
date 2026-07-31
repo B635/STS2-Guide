@@ -1,0 +1,11 @@
+{
+  "id": "STS2GuideRouteLiveProbe",
+  "name": "STS2 Guide Route Live Probe (Development Only)",
+  "author": "STS2-Guide",
+  "description": "Development-only read-only route lifecycle probe. It records local JSONL observations and never selects a map node.",
+  "version": "0.1.0",
+  "has_pck": true,
+  "has_dll": true,
+  "dependencies": [],
+  "affects_gameplay": false
+}

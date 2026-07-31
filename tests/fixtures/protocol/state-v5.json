@@ -1,0 +1,12 @@
+{
+  "schema_version": 5,
+  "event_id": "legacy-run:5",
+  "event_type": "card_reward",
+  "emitted_at": "2026-07-01T00:00:04+00:00",
+  "run_id": "legacy-run",
+  "sequence": 5,
+  "decision_id": "legacy-card-decision",
+  "state": {"character": "TEST_HERO"},
+  "options": [{"candidate_id": "0:LEGACY_CARD", "card": "LEGACY_CARD"}],
+  "decision": {"can_skip": true, "can_reroll": false, "reward_source": "COMBAT"}
+}

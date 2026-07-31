@@ -1,4 +1,5 @@
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Logging;
 using MegaCrit.Sts2.Core.Runs;
 
 namespace STS2Guide.ReadOnlyExporter;
@@ -9,7 +10,18 @@ internal static class RunStartedObservationPatch
     [HarmonyPostfix]
     internal static void AfterLaunch()
     {
-        StateEventWriter.BeginRun();
+        try
+        {
+            EventDecisionObserver.ResetRunLifecycle();
+            StateEventWriter.BeginRun();
+        }
+        catch (Exception exception)
+        {
+            Log.Error(
+                "[STS2-Guide] Run launch observation failed: "
+                + exception.Message
+            );
+        }
     }
 }
 
@@ -19,12 +31,26 @@ internal static class RunEndedObservationPatch
     [HarmonyPostfix]
     internal static void AfterRunEnded(bool isVictory)
     {
-        var outcome = isVictory
-            ? "win"
-            : RunManager.Instance.IsAbandoned
-                ? "abandon"
-                : "loss";
-        StateEventWriter.EmitRunEnded(outcome);
+        try
+        {
+            var outcome = isVictory
+                ? "win"
+                : RunManager.Instance.IsAbandoned
+                    ? "abandon"
+                    : "loss";
+            StateEventWriter.EmitRunEnded(outcome);
+        }
+        catch (Exception exception)
+        {
+            Log.Error(
+                "[STS2-Guide] Run end observation failed: "
+                + exception.Message
+            );
+        }
+        finally
+        {
+            EventDecisionObserver.ResetRunLifecycle();
+        }
     }
 }
 
@@ -34,6 +60,20 @@ internal static class RunAbandonedObservationPatch
     [HarmonyPostfix]
     internal static void AfterAbandon()
     {
-        StateEventWriter.EmitRunEnded("abandon");
+        try
+        {
+            StateEventWriter.EmitRunEnded("abandon");
+        }
+        catch (Exception exception)
+        {
+            Log.Error(
+                "[STS2-Guide] Run abandon observation failed: "
+                + exception.Message
+            );
+        }
+        finally
+        {
+            EventDecisionObserver.ResetRunLifecycle();
+        }
     }
 }

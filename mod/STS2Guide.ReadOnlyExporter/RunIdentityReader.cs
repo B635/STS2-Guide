@@ -26,25 +26,63 @@ internal static class RunIdentityReader
         {
             var manager = RunManager.Instance;
             var history = manager.History;
-            var seed = history?.Seed;
-            if (string.IsNullOrWhiteSpace(seed))
+            var historySeed = history?.Seed;
+            string? currentRunSeed = null;
+            try
             {
-                seed = RunStateReader
-                    .GetObservedPlayer()?
+                currentRunSeed = manager
+                    .DebugOnlyGetState()?
+                    .Players
+                    .FirstOrDefault()?
                     .RunState
                     .Rng
                     .StringSeed;
             }
+            catch (Exception exception)
+            {
+                Log.Info(
+                    "[STS2-Guide] Current RunState seed is not available "
+                    + "yet: " + exception.Message
+                );
+            }
+
+            // History is useful for the run start time, but History.Seed can
+            // still describe the run that just ended.  Never promote an
+            // identity to stable unless the current RunState/player supplies
+            // the seed used by that identity.
+            if (string.IsNullOrWhiteSpace(currentRunSeed))
+            {
+                return Temporary(
+                    "Current RunState seed is not available at this "
+                    + "observation point"
+                );
+            }
+            if (!string.IsNullOrWhiteSpace(historySeed)
+                && !string.Equals(
+                    historySeed,
+                    currentRunSeed,
+                    StringComparison.Ordinal
+                ))
+            {
+                Log.Info(
+                    "[STS2-Guide] History seed does not match the current "
+                    + "RunState seed; identity remains provisional."
+                );
+                return Temporary(
+                    "History and current RunState seeds do not agree"
+                );
+            }
+
             var startTime = history?.StartTime ?? 0;
             if (startTime <= 0
                 && StartTimeField?.GetValue(manager) is long internalStartTime)
             {
                 startTime = internalStartTime;
             }
-            if (!string.IsNullOrWhiteSpace(seed) && startTime > 0)
+            if (startTime > 0)
             {
                 var identityBytes = SHA256.HashData(
-                    Encoding.UTF8.GetBytes($"{seed}|{startTime}")
+                    Encoding.UTF8.GetBytes($"{currentRunSeed}|{startTime}")
                 );
                 var digest = Convert
                     .ToHexString(identityBytes)
@@ -66,10 +104,17 @@ internal static class RunIdentityReader
             );
         }
 
+        return Temporary(
+            "Stable current RunState seed/start_time is not available at "
+            + "this observation point"
+        );
+    }
+
+    private static RunIdentity Temporary(string reason)
+    {
         Log.Info(
-            "[STS2-Guide] Stable seed/start_time is not available at this "
-            + "observation point; using a temporary identity and retrying "
-            + "when the current player state becomes available."
+            $"[STS2-Guide] {reason}; using a temporary identity and "
+            + "retrying before the first event emission."
         );
         return new RunIdentity(
             $"temporary-{Guid.NewGuid():N}",

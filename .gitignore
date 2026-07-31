@@ -28,11 +28,14 @@ mod/**/artifacts/
 mod/**/pack/.godot/
 tools/**/bin/
 tools/**/obj/
+tools/**/artifacts/
+tools/**/pack/.godot/
 p0-host*.log
 p0-live-host*.log
 p0-*.log
 p0-host-live-monitor.pid
 logs/
+*.log
 data/advisor_eval_report.json
 data/guides.json
 .mcp.json

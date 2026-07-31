@@ -4,6 +4,11 @@ from __future__ import annotations
 from collections import Counter
 from typing import Dict, Iterable, List, Optional
 
+from advisor.character_mechanics import (
+    assess_card_mechanics,
+    build_mechanic_context,
+    supports_character,
+)
 from storage.relational import RelationalRepository
 
 
@@ -46,6 +51,7 @@ def build_context(
     repository: RelationalRepository,
 ) -> Dict:
     """Build one reusable context for all candidates in an offer."""
+    resolved_deck = list(resolved_deck)
     effect_counts: Counter = Counter()
     for row in resolved_deck:
         card = row.get("card")
@@ -78,8 +84,19 @@ def build_context(
         if max_hp > 0:
             hp_ratio = _bounded(float(hp) / float(max_hp), 0.0, 1.0)
 
+    character = str(state.get("character") or "").strip().upper()
+    preferences = state.get("guide_preferences")
+    if preferences is None:
+        route_mode = "balanced"
+    elif not isinstance(preferences, dict):
+        raise ValueError("guide_preferences must be an object")
+    else:
+        route_mode = preferences.get("route_mode")
+        if route_mode not in {"balanced", "survival", "growth"}:
+            raise ValueError("invalid guide_preferences.route_mode")
+
     return {
-        "character": str(state.get("character") or "").strip().upper(),
+        "character": character,
         "act": max(1, int(state.get("act") or 1)),
         "floor": max(0, int(state.get("floor") or 0)),
         "hp_ratio": hp_ratio,
@@ -87,6 +104,11 @@ def build_context(
         "relic_effects": relic_effects,
         "resolved_relics": resolved_relics,
         "route": _threat_profile(state.get("map_context")),
+        "route_mode": route_mode,
+        "mechanics": build_mechanic_context(
+            character,
+            resolved_deck,
+        ),
     }
 
 
@@ -199,6 +221,8 @@ def score_state_factors(
     option: Dict,
     profile: Dict,
     context: Dict,
+    *,
+    mechanic_assessment: Optional[Dict] = None,
 ) -> List[Dict]:
     """Score intrinsic effects plus deck, relic, HP, and route context."""
     factors: List[Dict] = []
@@ -487,6 +511,62 @@ def score_state_factors(
                 "按可选路径比例评估：" + "、".join(route_reasons) + "。",
             )
 
+        route_mode = context.get("route_mode", "balanced")
+        if route_mode == "survival":
+            mode_delta = 0.0
+            mode_reasons: List[str] = []
+            pressure = (
+                route["danger"] >= 1.0
+                or elite_ratio > 0
+                or boss_ratio > 0
+            )
+            if pressure and (block or effects.get("healing")):
+                mode_delta += 2.0
+                mode_reasons.append("提高防御和恢复")
+            if pressure and effects.get("self_harm"):
+                mode_delta -= 2.0
+                mode_reasons.append("压低生命代价")
+            if pressure and cost is not None and cost >= 3:
+                mode_delta -= 0.75
+                mode_reasons.append("降低高费启动风险")
+            if mode_reasons:
+                add(
+                    "route_mode_survival",
+                    mode_delta,
+                    "稳健生存模式在真实路线压力下"
+                    + "、".join(mode_reasons)
+                    + "。",
+                )
+        elif route_mode == "growth":
+            hp_ratio = context.get("hp_ratio")
+            if hp_ratio is None or hp_ratio <= 0.35:
+                factors.append(_factor(
+                    "route_mode_growth_safety_floor",
+                    0.0,
+                    "当前生命信息不足或已触及生存底线，"
+                    "激进成长模式不追加正向权重。",
+                ))
+            else:
+                mode_delta = 0.0
+                mode_reasons = []
+                if effects.get("scaling") or card_type == "power":
+                    mode_delta += 1.75
+                    mode_reasons.append("持续成长")
+                if effects.get("draw") or effects.get("energy_gain"):
+                    mode_delta += 0.75
+                    mode_reasons.append("资源循环")
+                if elite_ratio > 0 and damage:
+                    mode_delta += 0.5
+                    mode_reasons.append("精英前即时战力")
+                if mode_reasons:
+                    add(
+                        "route_mode_growth",
+                        min(2.5, mode_delta),
+                        "激进成长模式在生存底线以上提高"
+                        + "、".join(mode_reasons)
+                        + "价值。",
+                    )
+
     if context["act"] == 1 and context["floor"] <= 5 and damage:
         add(
             "early_act_frontload",
@@ -552,14 +632,18 @@ def score_state_factors(
 
     # ── Provider/payoff pairs; mentions alone are not synergy ────────
     engine_matches = []
-    if (
-        effects.get("self_exhaust")
-        and effect_counts.get("exhaust_interaction", 0)
-    ) or (
-        effects.get("exhaust_interaction")
-        and effect_counts.get("self_exhaust", 0)
-    ):
-        engine_matches.append("耗竭")
+    # Vanilla characters use the unified MechanicSignal scorer below.  Keep
+    # the legacy generic pair only for synthetic/offline compatibility so the
+    # same exhaust evidence cannot stack twice in production.
+    if not supports_character(context.get("character", "")):
+        if (
+            effects.get("self_exhaust")
+            and effect_counts.get("exhaust_interaction", 0)
+        ) or (
+            effects.get("exhaust_interaction")
+            and effect_counts.get("self_exhaust", 0)
+        ):
+            engine_matches.append("耗竭")
     if (
         effects.get("ethereal")
         and effect_counts.get("ethereal_interaction", 0)
@@ -576,6 +660,14 @@ def score_state_factors(
             + "、".join(engine_matches)
             + "提供者/收益方形成明确协同。",
         )
+
+    if mechanic_assessment is None:
+        mechanic_assessment = assess_card_mechanics(
+            context.get("character", ""),
+            card,
+            context.get("mechanics") or {},
+        )
+    factors.extend(mechanic_assessment["factors"])
 
     if int(option.get("upgrades", 0)) > 0:
         add(

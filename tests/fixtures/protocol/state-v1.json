@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "event_id": "legacy-run:1",
+  "event_type": "card_reward",
+  "emitted_at": "2026-07-01T00:00:00+00:00",
+  "run_id": "legacy-run",
+  "sequence": 1,
+  "state": {"character": "TEST_HERO"},
+  "options": [{"card": "LEGACY_CARD"}]
+}

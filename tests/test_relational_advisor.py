@@ -335,7 +335,11 @@ class RelationalAdvisorTests(unittest.TestCase):
         self.assertEqual(result["method"], BASELINE_METHOD)
         self.assertEqual(result["recommended_option"], "轻防测试牌")
         self.assertIn("baseline", result["disclaimer"])
-        self.assertEqual(result["confidence"], "medium")
+        self.assertEqual(result["confidence"], "low")
+        self.assertIn(
+            "character_mechanics:unsupported:TEST_HERO",
+            result["data_gaps"],
+        )
         self.assertEqual(result["decision_status"], "recommend")
         self.assertEqual(result["skip_candidate"]["choice"], "skip")
         self.assertNotEqual(result["skip_score"], 50.0)
@@ -876,11 +880,11 @@ class RelationalAdvisorTests(unittest.TestCase):
         self.assertIn("ethereal", ethereal)
         self.assertNotIn("self_exhaust", ethereal)
 
-    def test_effect_tag_v2_database_migrates_to_v3(self):
+    def test_effect_tag_v3_database_migrates_to_v4(self):
         with self.repository.connect() as connection:
             connection.execute(
                 """
-                UPDATE schema_metadata SET value = '2'
+                UPDATE schema_metadata SET value = '3'
                 WHERE key = 'effect_tag_version'
                 """
             )
@@ -911,12 +915,12 @@ class RelationalAdvisorTests(unittest.TestCase):
                 WHERE entity_key = 'potions:TEST_DAMAGE_POTION'
                 """
             ).fetchone()["count"]
-        self.assertEqual(version, "3")
+        self.assertEqual(version, "4")
         self.assertEqual(stale, 0)
 
-    def test_effect_tag_version_is_3(self):
+    def test_effect_tag_version_is_4(self):
         from storage.effect_tags import EFFECT_TAG_VERSION
-        self.assertEqual(EFFECT_TAG_VERSION, "3")
+        self.assertEqual(EFFECT_TAG_VERSION, "4")
 
     # ── Vulnerable window relic synergy ──────────────────────────────
 

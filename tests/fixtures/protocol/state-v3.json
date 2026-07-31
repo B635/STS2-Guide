@@ -1,0 +1,10 @@
+{
+  "schema_version": 3,
+  "event_id": "legacy-run:3",
+  "event_type": "run_ended",
+  "emitted_at": "2026-07-01T00:00:02+00:00",
+  "run_id": "legacy-run",
+  "sequence": 3,
+  "state": {"character": "TEST_HERO"},
+  "run_result": {"outcome": "abandon", "ended_at": "2026-07-01T00:00:02+00:00"}
+}

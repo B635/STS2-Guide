@@ -1,0 +1,10 @@
+"""Version identities emitted by the shipped deterministic policy code."""
+
+POLICY_BUNDLE_VERSION = "extended-decision-policy-v1"
+CARD_REWARD_POLICY_VERSION = "card_reward:contextual_mechanics_v1"
+ROUTE_POLICY_VERSION = "route:mode_aware_risk_v1"
+MERCHANT_POLICY_VERSION = "merchant_structured_v1"
+CAMPFIRE_POLICY_VERSION = "campfire_structured_v1"
+NEOW_POLICY_VERSION = "neow_structured_v1"
+EVENT_POLICY_VERSION = "event_structured_allowlist_v1"
+DECK_EDIT_POLICY_VERSION = "deck_edit:structured_targets_v1"

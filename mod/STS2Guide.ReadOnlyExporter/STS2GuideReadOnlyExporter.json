@@ -3,7 +3,7 @@
   "name": "STS2 Guide Read-Only Exporter",
   "author": "STS2-Guide",
   "description": "Exports versioned local game-state observations for the STS2 Guide companion. Never changes game state.",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "has_pck": true,
   "has_dll": true,
   "dependencies": [],

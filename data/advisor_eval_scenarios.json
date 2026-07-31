@@ -421,8 +421,8 @@
       "id": "exhaust_engine_synergy_013",
       "category": "deck_synergy",
       "category_label": "牌组协同",
-      "description": "牌组有耗竭收益方时，耗竭提供者应获得 effect_engine_synergy",
-      "rationale": "牌组有 Feel No Pain（exhaust_interaction），Impervious（self_exhaust）与之形成配对，应触发 effect_engine_synergy。",
+      "description": "牌组有耗竭收益方时，耗竭提供者应获得共享机制协同",
+      "rationale": "牌组有 Feel No Pain（payoff），Impervious（provider）与之形成配对，应由统一 MechanicSignal 评分且不能与旧规则叠加。",
       "state": {
         "character": "IRONCLAD",
         "ascension": 0,
@@ -446,8 +446,8 @@
       ],
       "can_skip": true,
       "assertions": {
-        "assert_card_factors_include": {"IMPERVIOUS": ["effect_engine_synergy"]},
-        "assert_card_factors_exclude": {"STRIKE_IRONCLAD": ["effect_engine_synergy"]},
+        "assert_card_factors_include": {"IMPERVIOUS": ["mechanic_synergy_provider:exhaust"]},
+        "assert_card_factors_exclude": {"STRIKE_IRONCLAD": ["mechanic_synergy_provider:exhaust"]},
         "card_order": ["IMPERVIOUS", "STRIKE_IRONCLAD"],
         "skip_recommended": false
       }

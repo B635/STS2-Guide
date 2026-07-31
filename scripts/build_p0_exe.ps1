@@ -41,6 +41,34 @@ try {
     if ($LASTEXITCODE -ne 0) {
         throw "PyInstaller build failed with exit code $LASTEXITCODE"
     }
+
+    $exe = Join-Path $ProjectRoot "dist\STS2 Guide.exe"
+    if (-not (Test-Path -LiteralPath $exe)) {
+        throw "Packaged executable not found: $exe"
+    }
+    $smokeRoot = Join-Path $ProjectRoot "build\p0-exe-smoke"
+    New-Item -ItemType Directory -Force -Path $smokeRoot | Out-Null
+    $smokeEvents = Join-Path $smokeRoot "events"
+    New-Item -ItemType Directory -Force -Path $smokeEvents | Out-Null
+    $smoke = Start-Process `
+        -FilePath $exe `
+        -ArgumentList @(
+            "--startup-check",
+            "--input", (Join-Path $smokeRoot "state-event.json"),
+            "--output", (Join-Path $smokeRoot "advice-event.json"),
+            "--events-dir", $smokeEvents,
+            "--checkpoint", (Join-Path $smokeRoot "active-run.json"),
+            "--database", (Join-Path $smokeRoot "sts2-guide.db")
+        ) `
+        -Wait `
+        -PassThru `
+        -WindowStyle Hidden
+    if ($smoke.ExitCode -ne 0) {
+        throw "Packaged executable startup check failed with exit code $($smoke.ExitCode)"
+    }
+    if (Test-Path -LiteralPath (Join-Path $smokeRoot ".host.lock")) {
+        throw "Packaged executable left a stale instance lock after startup check."
+    }
     Write-Host "Build complete. Output in dist\"
 }
 finally {

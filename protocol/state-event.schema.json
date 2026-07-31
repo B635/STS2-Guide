@@ -15,20 +15,25 @@
   ],
   "properties": {
     "schema_version": {
-      "enum": [1, 2, 3, 4]
+      "enum": [1, 2, 3, 4, 5, 6, 7, 8, 9]
     },
     "event_id": {
       "type": "string",
       "minLength": 3,
-      "maxLength": 200
+      "maxLength": 200,
+      "pattern": ".*\\S.*"
     },
     "event_type": {
       "enum": [
         "card_reward",
         "decision_closed",
         "map_choice",
+        "route_choice",
         "merchant",
         "rest_site",
+        "neow_choice",
+        "event_choice",
+        "deck_edit",
         "run_ended"
       ]
     },
@@ -38,19 +43,62 @@
     },
     "source": {
       "type": "string",
+      "minLength": 1,
       "default": "sts2-guide-readonly-mod"
     },
     "game_version": {
-      "type": ["string", "null"]
+      "type": ["string", "null"],
+      "maxLength": 100
+    },
+    "snapshot_kind": {
+      "type": ["string", "null"],
+      "maxLength": 40
+    },
+    "state_revision": {
+      "type": ["integer", "null"],
+      "minimum": 1
+    },
+    "producer_id": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 200,
+      "pattern": ".*\\S.*"
+    },
+    "producer_version": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 100,
+      "pattern": ".*\\S.*"
+    },
+    "game_assembly_sha256": {
+      "type": ["string", "null"],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "release_fingerprint": {
+      "type": ["string", "null"],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "guide_preferences": {
+      "oneOf": [
+        { "$ref": "#/$defs/guidePreferences" },
+        { "type": "null" }
+      ]
     },
     "run_id": {
       "type": "string",
       "minLength": 3,
-      "maxLength": 200
+      "maxLength": 200,
+      "pattern": ".*\\S.*"
     },
     "sequence": {
       "type": "integer",
       "minimum": 1
+    },
+    "decision_id": {
+      "type": ["string", "null"],
+      "minLength": 3,
+      "maxLength": 240,
+      "pattern": ".*\\S.*"
     },
     "state": {
       "$ref": "#/$defs/runState"
@@ -58,8 +106,18 @@
     "options": {
       "type": "array",
       "maxItems": 10,
+      "uniqueItems": true,
       "items": {
         "$ref": "#/$defs/decisionOption"
+      },
+      "default": []
+    },
+    "candidates": {
+      "type": "array",
+      "maxItems": 200,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/decisionCandidateEnvelope"
       },
       "default": []
     },
@@ -73,10 +131,21 @@
         }
       ]
     },
+    "decision_parent": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/decisionParentContext"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
     "parent_event_id": {
       "type": ["string", "null"],
       "minLength": 3,
-      "maxLength": 200
+      "maxLength": 200,
+      "pattern": ".*\\S.*"
     },
     "outcome": {
       "oneOf": [
@@ -109,7 +178,681 @@
       ]
     }
   },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "schema_version": { "enum": [6, 7, 8, 9] }
+        },
+        "required": ["schema_version"]
+      },
+      "then": {
+        "properties": {
+          "state": {
+            "allOf": [
+              { "$ref": "#/$defs/runState" },
+              {
+                "required": [
+                  "character",
+                  "ascension",
+                  "act",
+                  "floor",
+                  "hp",
+                  "max_hp",
+                  "gold",
+                  "energy",
+                  "deck",
+                  "relics",
+                  "relic_states",
+                  "potions",
+                  "max_potion_slots",
+                  "modifiers",
+                  "capture_warnings"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "schema_version": { "enum": [6, 7, 8, 9] },
+          "decision": { "type": "object" }
+        },
+        "required": ["schema_version", "decision"]
+      },
+      "then": {
+        "properties": {
+          "decision": {
+            "allOf": [
+              { "$ref": "#/$defs/decisionContext" },
+              {
+                "required": ["can_skip", "can_reroll", "reward_source"]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "schema_version": { "enum": [7, 8, 9] }
+        },
+        "required": ["schema_version"]
+      },
+      "then": {
+        "required": [
+          "source",
+          "game_version",
+          "snapshot_kind",
+          "state_revision",
+          "producer_id",
+          "producer_version",
+          "game_assembly_sha256",
+          "release_fingerprint",
+          "decision_id",
+          "options",
+          "decision",
+          "parent_event_id",
+          "outcome",
+          "map_context",
+          "run_result"
+        ],
+        "properties": {
+          "source": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": ".*\\S.*"
+          },
+          "game_version": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": ".*\\S.*"
+          },
+          "snapshot_kind": { "const": "complete" },
+          "state_revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "producer_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "pattern": ".*\\S.*"
+          },
+          "producer_version": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": ".*\\S.*"
+          },
+          "game_assembly_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "release_fingerprint": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "state": { "$ref": "#/$defs/completeRunState" },
+          "options": {
+            "type": "array",
+            "maxItems": 10,
+            "uniqueItems": true,
+            "items": { "$ref": "#/$defs/completeDecisionOption" }
+          },
+          "decision": {
+            "oneOf": [
+              { "$ref": "#/$defs/completeDecisionContext" },
+              { "type": "null" }
+            ]
+          },
+          "outcome": {
+            "oneOf": [
+              { "$ref": "#/$defs/completeDecisionOutcome" },
+              { "type": "null" }
+            ]
+          },
+          "map_context": {
+            "oneOf": [
+              { "$ref": "#/$defs/completeMapChoiceContext" },
+              { "type": "null" }
+            ]
+          },
+          "run_result": {
+            "oneOf": [
+              { "$ref": "#/$defs/completeRunResult" },
+              { "type": "null" }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "schema_version": { "enum": [8, 9] }
+        },
+        "required": ["schema_version"]
+      },
+      "then": {
+        "required": ["guide_preferences"],
+        "properties": {
+          "guide_preferences": {
+            "$ref": "#/$defs/guidePreferences"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "schema_version": { "maximum": 8 },
+          "event_type": { "const": "card_reward" }
+        },
+        "required": ["schema_version", "event_type"]
+      },
+      "then": {
+        "required": ["options"],
+        "properties": {
+          "options": { "minItems": 1 }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "schema_version": { "minimum": 2 },
+          "event_type": { "const": "card_reward" }
+        },
+        "required": ["schema_version", "event_type"]
+      },
+      "then": {
+        "required": ["decision"],
+        "properties": {
+          "decision": { "$ref": "#/$defs/decisionContext" }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "schema_version": { "minimum": 2 },
+          "event_type": { "const": "decision_closed" }
+        },
+        "required": ["schema_version", "event_type"]
+      },
+      "then": {
+        "required": ["parent_event_id", "outcome"],
+        "properties": {
+          "parent_event_id": { "type": "string", "minLength": 3 },
+          "outcome": { "$ref": "#/$defs/decisionOutcome" }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "schema_version": { "minimum": 3 },
+          "event_type": { "const": "run_ended" }
+        },
+        "required": ["schema_version", "event_type"]
+      },
+      "then": {
+        "required": ["run_result"],
+        "properties": {
+          "run_result": { "$ref": "#/$defs/runResult" }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": { "const": "route_choice" }
+        },
+        "required": ["event_type"]
+      },
+      "then": {
+        "required": ["schema_version", "decision_id", "map_context", "options", "decision"],
+        "properties": {
+          "schema_version": { "enum": [6, 7, 8, 9] },
+          "decision_id": { "type": "string", "minLength": 3 },
+          "map_context": { "$ref": "#/$defs/routeChoiceContext" },
+          "options": { "type": "array", "maxItems": 0 },
+          "decision": {
+            "allOf": [
+              { "$ref": "#/$defs/decisionContext" },
+              {
+                "required": ["can_skip", "can_reroll", "reward_source"],
+                "properties": {
+                  "can_skip": { "const": false },
+                  "can_reroll": { "const": false },
+                  "reward_source": { "const": "MAP" }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "schema_version": { "minimum": 5 },
+          "event_type": { "enum": ["card_reward", "decision_closed"] }
+        },
+        "required": ["schema_version", "event_type"]
+      },
+      "then": {
+        "required": ["decision_id"],
+        "properties": {
+          "decision_id": { "type": "string", "minLength": 3 }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "schema_version": { "minimum": 5 },
+          "event_type": { "const": "card_reward" }
+        },
+        "required": ["schema_version", "event_type"]
+      },
+      "then": {
+        "properties": {
+          "options": {
+            "items": {
+              "allOf": [
+                { "$ref": "#/$defs/decisionOption" },
+                {
+                  "required": ["candidate_id"],
+                  "properties": {
+                    "candidate_id": { "type": "string", "minLength": 1 }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "schema_version": { "minimum": 5 },
+          "event_type": { "const": "decision_closed" },
+          "outcome": {
+            "type": "object",
+            "properties": { "kind": { "const": "selected" } },
+            "required": ["kind"]
+          }
+        },
+        "required": ["schema_version", "event_type", "outcome"]
+      },
+      "then": {
+        "properties": {
+          "outcome": {
+            "required": ["selected_candidate_id"],
+            "properties": {
+              "selected_candidate_id": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "schema_version": { "const": 9 }
+        },
+        "required": ["schema_version"]
+      },
+      "then": {
+        "required": [
+          "guide_preferences",
+          "candidates",
+          "decision_parent"
+        ],
+        "properties": {
+          "options": { "type": "array", "maxItems": 0 },
+          "candidates": {
+            "type": "array",
+            "maxItems": 200,
+            "uniqueItems": true,
+            "items": { "$ref": "#/$defs/decisionCandidateEnvelope" }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "schema_version": { "const": 9 },
+          "event_type": {
+            "enum": [
+              "card_reward",
+              "route_choice",
+              "merchant",
+              "rest_site",
+              "neow_choice",
+              "event_choice",
+              "deck_edit"
+            ]
+          }
+        },
+        "required": ["schema_version", "event_type"]
+      },
+      "then": {
+        "required": ["decision_id", "decision", "candidates"],
+        "properties": {
+          "decision_id": { "type": "string", "minLength": 3 },
+          "decision": { "$ref": "#/$defs/completeDecisionContext" },
+          "candidates": {
+            "minItems": 1,
+            "contains": {
+              "properties": { "eligible": { "const": true } },
+              "required": ["eligible"]
+            },
+            "minContains": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "schema_version": { "const": 9 },
+          "event_type": {
+            "enum": [
+              "decision_closed",
+              "map_choice",
+              "run_ended"
+            ]
+          }
+        },
+        "required": ["schema_version", "event_type"]
+      },
+      "then": {
+        "properties": {
+          "candidates": { "maxItems": 0 }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "schema_version": { "const": 9 },
+          "event_type": { "const": "card_reward" }
+        },
+        "required": ["schema_version", "event_type"]
+      },
+      "then": {
+        "properties": {
+          "decision_parent": {
+            "oneOf": [
+              { "type": "null" },
+              {
+                "allOf": [
+                  { "$ref": "#/$defs/decisionParentContext" },
+                  {
+                    "properties": {
+                      "source_type": {
+                        "enum": ["neow_choice", "event_choice"]
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "candidates": {
+            "contains": {
+              "properties": { "kind": { "const": "card" } },
+              "required": ["kind"]
+            },
+            "minContains": 1,
+            "items": {
+              "allOf": [
+                { "$ref": "#/$defs/decisionCandidateEnvelope" },
+                {
+                  "properties": {
+                    "kind": { "enum": ["card", "skip"] }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "decision_parent": { "type": "null" }
+              },
+              "required": ["decision_parent"]
+            },
+            "then": {
+              "properties": {
+                "decision": {
+                  "properties": {
+                    "reward_source": { "const": "CARD" }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "decision_parent": {
+                  "type": "object",
+                  "properties": {
+                    "source_type": { "const": "neow_choice" }
+                  },
+                  "required": ["source_type"]
+                }
+              },
+              "required": ["decision_parent"]
+            },
+            "then": {
+              "properties": {
+                "decision": {
+                  "properties": {
+                    "reward_source": { "const": "NEOW" }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "decision_parent": {
+                  "type": "object",
+                  "properties": {
+                    "source_type": { "const": "event_choice" }
+                  },
+                  "required": ["source_type"]
+                }
+              },
+              "required": ["decision_parent"]
+            },
+            "then": {
+              "properties": {
+                "decision": {
+                  "properties": {
+                    "reward_source": { "const": "EVENT" }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "schema_version": { "const": 9 },
+          "event_type": { "const": "route_choice" }
+        },
+        "required": ["schema_version", "event_type"]
+      },
+      "then": {
+        "properties": {
+          "candidates": {
+            "items": {
+              "allOf": [
+                { "$ref": "#/$defs/decisionCandidateEnvelope" },
+                { "properties": { "kind": { "const": "route_node" } } }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "schema_version": { "const": 9 },
+          "event_type": { "const": "merchant" }
+        },
+        "required": ["schema_version", "event_type"]
+      },
+      "then": {
+        "properties": {
+          "candidates": {
+            "items": {
+              "allOf": [
+                { "$ref": "#/$defs/decisionCandidateEnvelope" },
+                {
+                  "properties": {
+                    "kind": { "enum": ["merchant_offer", "leave"] }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "schema_version": { "const": 9 },
+          "event_type": { "const": "rest_site" }
+        },
+        "required": ["schema_version", "event_type"]
+      },
+      "then": {
+        "properties": {
+          "candidates": {
+            "items": {
+              "allOf": [
+                { "$ref": "#/$defs/decisionCandidateEnvelope" },
+                {
+                  "properties": {
+                    "kind": { "enum": ["rest_action", "leave"] }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "schema_version": { "const": 9 },
+          "event_type": { "const": "neow_choice" }
+        },
+        "required": ["schema_version", "event_type"]
+      },
+      "then": {
+        "properties": {
+          "candidates": {
+            "items": {
+              "allOf": [
+                { "$ref": "#/$defs/decisionCandidateEnvelope" },
+                {
+                  "properties": {
+                    "kind": { "const": "neow_blessing" }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "schema_version": { "const": 9 },
+          "event_type": { "const": "event_choice" }
+        },
+        "required": ["schema_version", "event_type"]
+      },
+      "then": {
+        "properties": {
+          "candidates": {
+            "items": {
+              "allOf": [
+                { "$ref": "#/$defs/decisionCandidateEnvelope" },
+                {
+                  "properties": {
+                    "kind": { "enum": ["event_option", "leave"] }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "schema_version": { "const": 9 },
+          "event_type": { "const": "deck_edit" }
+        },
+        "required": ["schema_version", "event_type"]
+      },
+      "then": {
+        "properties": {
+          "decision_parent": { "$ref": "#/$defs/decisionParentContext" },
+          "candidates": {
+            "items": {
+              "allOf": [
+                { "$ref": "#/$defs/decisionCandidateEnvelope" },
+                {
+                  "properties": {
+                    "kind": { "enum": ["deck_edit", "leave"] }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  ],
   "$defs": {
+    "guidePreferences": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["route_mode"],
+      "properties": {
+        "route_mode": {
+          "enum": ["balanced", "survival", "growth"]
+        }
+      }
+    },
     "deckCard": {
       "type": "object",
       "additionalProperties": false,
@@ -117,7 +860,8 @@
       "properties": {
         "card": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": ".*\\S.*"
         },
         "count": {
           "type": "integer",
@@ -147,14 +891,37 @@
         }
       }
     },
+    "completeDeckCard": {
+      "allOf": [
+        { "$ref": "#/$defs/deckCard" },
+        {
+          "required": [
+            "card",
+            "count",
+            "upgrades",
+            "enchantment",
+            "enchantment_amount",
+            "affliction",
+            "affliction_amount"
+          ]
+        }
+      ]
+    },
     "decisionOption": {
       "type": "object",
       "additionalProperties": false,
       "required": ["card"],
       "properties": {
+        "candidate_id": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 240,
+          "pattern": ".*\\S.*"
+        },
         "card": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": ".*\\S.*"
         },
         "upgrades": {
           "type": "integer",
@@ -178,6 +945,779 @@
         }
       }
     },
+    "completeDecisionOption": {
+      "allOf": [
+        { "$ref": "#/$defs/decisionOption" },
+        {
+          "required": [
+            "candidate_id",
+            "card",
+            "upgrades",
+            "enchantment",
+            "enchantment_amount",
+            "affliction",
+            "affliction_amount"
+          ]
+        }
+      ]
+    },
+    "decisionCost": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "amount", "resource_id"],
+      "properties": {
+        "kind": {
+          "enum": ["gold", "hp", "max_hp", "energy", "resource"]
+        },
+        "amount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "resource_id": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": ".*\\S.*"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "kind": { "const": "resource" } },
+            "required": ["kind"]
+          },
+          "then": {
+            "properties": {
+              "resource_id": { "type": "string", "minLength": 1 }
+            }
+          },
+          "else": {
+            "properties": {
+              "resource_id": { "const": null }
+            }
+          }
+        }
+      ]
+    },
+    "choiceEffect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "amount",
+        "min_amount",
+        "max_amount",
+        "entity_type",
+        "entity_id",
+        "target_mode",
+        "certainty",
+        "source_code",
+        "child_decision_type"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "hp_delta",
+            "max_hp_delta",
+            "gold_delta",
+            "add_card",
+            "remove_card",
+            "upgrade_card",
+            "transform_card",
+            "add_relic",
+            "remove_relic",
+            "add_potion",
+            "remove_potion",
+            "start_combat",
+            "followup_choice",
+            "no_op"
+          ]
+        },
+        "amount": { "type": ["integer", "null"] },
+        "min_amount": { "type": ["integer", "null"] },
+        "max_amount": { "type": ["integer", "null"] },
+        "entity_type": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "entity_id": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "target_mode": {
+          "enum": ["none", "specific", "choose", "random"]
+        },
+        "certainty": {
+          "enum": ["exact", "bounded", "unknown"]
+        },
+        "source_code": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": ".*\\S.*"
+        },
+        "child_decision_type": {
+          "enum": ["card_reward", null]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "child_decision_type": { "const": "card_reward" }
+            },
+            "required": ["child_decision_type"]
+          },
+          "then": {
+            "properties": {
+              "kind": { "const": "followup_choice" },
+              "certainty": { "const": "exact" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "kind": { "const": "followup_choice" } },
+            "required": ["kind"]
+          },
+          "else": {
+            "properties": {
+              "child_decision_type": { "const": null }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "enum": ["hp_delta", "max_hp_delta", "gold_delta"]
+              },
+              "certainty": { "const": "exact" }
+            },
+            "required": ["kind", "certainty"]
+          },
+          "then": {
+            "properties": {
+              "amount": { "type": "integer" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "enum": ["hp_delta", "max_hp_delta", "gold_delta"]
+              },
+              "certainty": { "const": "bounded" }
+            },
+            "required": ["kind", "certainty"]
+          },
+          "then": {
+            "properties": {
+              "min_amount": { "type": "integer" },
+              "max_amount": { "type": "integer" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "enum": [
+                  "add_card",
+                  "remove_card",
+                  "upgrade_card",
+                  "transform_card"
+                ]
+              }
+            },
+            "required": ["kind"]
+          },
+          "then": {
+            "properties": {
+              "entity_type": { "const": "cards" },
+              "target_mode": {
+                "enum": ["specific", "choose", "random"]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "enum": ["add_relic", "remove_relic"]
+              }
+            },
+            "required": ["kind"]
+          },
+          "then": {
+            "properties": {
+              "entity_type": { "const": "relics" },
+              "target_mode": {
+                "enum": ["specific", "choose", "random"]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "enum": ["add_potion", "remove_potion"]
+              }
+            },
+            "required": ["kind"]
+          },
+          "then": {
+            "properties": {
+              "entity_type": { "const": "potions" },
+              "target_mode": {
+                "enum": ["specific", "choose", "random"]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "target_mode": { "const": "specific" },
+              "kind": {
+                "enum": [
+                  "add_card",
+                  "remove_card",
+                  "upgrade_card",
+                  "transform_card",
+                  "add_relic",
+                  "remove_relic",
+                  "add_potion",
+                  "remove_potion"
+                ]
+              }
+            },
+            "required": ["target_mode", "kind"]
+          },
+          "then": {
+            "properties": {
+              "entity_id": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      ]
+    },
+    "candidatePayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "card": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "upgrades": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "maximum": 9
+        },
+        "enchantment": {
+          "type": ["string", "null"],
+          "maxLength": 200
+        },
+        "enchantment_amount": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "affliction": {
+          "type": ["string", "null"],
+          "maxLength": 200
+        },
+        "affliction_amount": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "node_id": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "slot_id": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "offer_kind": {
+          "type": ["string", "null"],
+          "enum": ["card", "relic", "potion", "card_removal", null]
+        },
+        "is_stocked": { "type": ["boolean", "null"] },
+        "replacement_supported": { "type": ["boolean", "null"] },
+        "action_id": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "operation": {
+          "type": ["string", "null"],
+          "enum": ["upgrade", "remove", "transform", null]
+        },
+        "blessing_id": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "stage_id": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "event_id": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "page_id": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "option_id": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "target_candidate_ids": {
+          "type": "array",
+          "maxItems": 200,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240,
+            "pattern": ".*\\S.*"
+          }
+        },
+        "effects": {
+          "type": "array",
+          "maxItems": 50,
+          "items": { "$ref": "#/$defs/choiceEffect" }
+        }
+      }
+    },
+    "decisionCandidateEnvelope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidate_id",
+        "kind",
+        "entity_id",
+        "label",
+        "eligible",
+        "unavailable_reason",
+        "costs",
+        "payload"
+      ],
+      "properties": {
+        "candidate_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240,
+          "pattern": ".*\\S.*"
+        },
+        "kind": {
+          "enum": [
+            "card",
+            "skip",
+            "route_node",
+            "merchant_offer",
+            "leave",
+            "rest_action",
+            "deck_edit",
+            "neow_blessing",
+            "event_option"
+          ]
+        },
+        "entity_id": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": ".*\\S.*"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300,
+          "pattern": ".*\\S.*"
+        },
+        "eligible": { "type": "boolean" },
+        "unavailable_reason": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 300,
+          "pattern": ".*\\S.*"
+        },
+        "costs": {
+          "type": "array",
+          "maxItems": 8,
+          "items": { "$ref": "#/$defs/decisionCost" }
+        },
+        "payload": { "$ref": "#/$defs/candidatePayload" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "eligible": { "const": false } },
+            "required": ["eligible"]
+          },
+          "then": {
+            "properties": {
+              "unavailable_reason": { "type": "string", "minLength": 1 }
+            }
+          },
+          "else": {
+            "properties": {
+              "unavailable_reason": { "const": null }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "kind": { "const": "card" } },
+            "required": ["kind"]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "required": ["card", "upgrades"],
+                "properties": {
+                  "card": { "type": "string", "minLength": 1 },
+                  "upgrades": { "type": "integer" },
+                  "node_id": { "const": null },
+                  "slot_id": { "const": null },
+                  "offer_kind": { "const": null },
+                  "is_stocked": { "const": null },
+                  "replacement_supported": { "const": null },
+                  "action_id": { "const": null },
+                  "operation": { "const": null },
+                  "blessing_id": { "const": null },
+                  "stage_id": { "const": null },
+                  "event_id": { "const": null },
+                  "page_id": { "const": null },
+                  "option_id": { "const": null },
+                  "target_candidate_ids": { "maxItems": 0 },
+                  "effects": { "maxItems": 0 }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": { "enum": ["skip", "leave"] }
+            },
+            "required": ["kind"]
+          },
+          "then": {
+            "properties": {
+              "entity_id": { "const": null },
+              "costs": { "maxItems": 0 },
+              "payload": {
+                "properties": {
+                  "card": { "const": null },
+                  "upgrades": { "const": null },
+                  "enchantment": { "const": null },
+                  "enchantment_amount": { "const": null },
+                  "affliction": { "const": null },
+                  "affliction_amount": { "const": null },
+                  "node_id": { "const": null },
+                  "slot_id": { "const": null },
+                  "offer_kind": { "const": null },
+                  "is_stocked": { "const": null },
+                  "replacement_supported": { "const": null },
+                  "action_id": { "const": null },
+                  "operation": { "const": null },
+                  "blessing_id": { "const": null },
+                  "stage_id": { "const": null },
+                  "event_id": { "const": null },
+                  "page_id": { "const": null },
+                  "option_id": { "const": null },
+                  "target_candidate_ids": { "maxItems": 0 },
+                  "effects": { "maxItems": 0 }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "kind": { "const": "route_node" } },
+            "required": ["kind"]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "required": ["node_id"],
+                "properties": {
+                  "node_id": { "type": "string", "minLength": 1 }
+                  ,
+                  "card": { "const": null },
+                  "slot_id": { "const": null },
+                  "action_id": { "const": null },
+                  "operation": { "const": null },
+                  "blessing_id": { "const": null },
+                  "event_id": { "const": null },
+                  "target_candidate_ids": { "maxItems": 0 },
+                  "effects": { "maxItems": 0 }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "kind": { "const": "merchant_offer" } },
+            "required": ["kind"]
+          },
+          "then": {
+            "properties": {
+              "costs": {
+                "contains": {
+                  "properties": { "kind": { "const": "gold" } },
+                  "required": ["kind"]
+                },
+                "minContains": 1,
+                "maxContains": 1
+              },
+              "payload": {
+                "required": ["slot_id", "offer_kind", "is_stocked"],
+                "properties": {
+                  "slot_id": { "type": "string", "minLength": 1 },
+                  "offer_kind": {
+                    "enum": ["card", "relic", "potion", "card_removal"]
+                  },
+                  "is_stocked": { "type": "boolean" }
+                  ,
+                  "card": { "const": null },
+                  "node_id": { "const": null },
+                  "action_id": { "const": null },
+                  "operation": { "const": null },
+                  "blessing_id": { "const": null },
+                  "event_id": { "const": null },
+                  "target_candidate_ids": { "maxItems": 0 }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": { "const": "merchant_offer" },
+              "payload": {
+                "properties": {
+                  "is_stocked": { "const": false }
+                },
+                "required": ["is_stocked"]
+              }
+            },
+            "required": ["kind", "payload"]
+          },
+          "then": {
+            "properties": {
+              "eligible": { "const": false }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": { "const": "merchant_offer" },
+              "payload": {
+                "properties": {
+                  "offer_kind": { "const": "card_removal" }
+                },
+                "required": ["offer_kind"]
+              }
+            },
+            "required": ["kind", "payload"]
+          },
+          "then": {
+            "properties": {
+              "entity_id": { "const": null }
+            }
+          },
+          "else": {
+            "if": {
+              "properties": {
+                "kind": { "const": "merchant_offer" }
+              },
+              "required": ["kind"]
+            },
+            "then": {
+              "properties": {
+                "entity_id": { "type": "string", "minLength": 1 }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "kind": { "const": "rest_action" } },
+            "required": ["kind"]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "required": ["action_id"],
+                "properties": {
+                  "action_id": { "type": "string", "minLength": 1 }
+                  ,
+                  "card": { "const": null },
+                  "node_id": { "const": null },
+                  "slot_id": { "const": null },
+                  "offer_kind": { "const": null },
+                  "is_stocked": { "const": null },
+                  "operation": { "const": null },
+                  "blessing_id": { "const": null },
+                  "event_id": { "const": null },
+                  "target_candidate_ids": { "maxItems": 0 }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "kind": { "const": "deck_edit" } },
+            "required": ["kind"]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "required": ["operation"],
+                "properties": {
+                  "operation": {
+                    "enum": ["upgrade", "remove", "transform"]
+                  },
+                  "card": { "const": null },
+                  "node_id": { "const": null },
+                  "slot_id": { "const": null },
+                  "offer_kind": { "const": null },
+                  "is_stocked": { "const": null },
+                  "replacement_supported": { "const": null },
+                  "action_id": { "const": null },
+                  "blessing_id": { "const": null },
+                  "stage_id": { "const": null },
+                  "event_id": { "const": null },
+                  "page_id": { "const": null },
+                  "option_id": { "const": null },
+                  "effects": { "maxItems": 0 }
+                }
+              },
+              "entity_id": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "kind": { "const": "neow_blessing" } },
+            "required": ["kind"]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "required": [
+                  "blessing_id",
+                  "stage_id",
+                  "option_id",
+                  "effects"
+                ],
+                "properties": {
+                  "blessing_id": { "type": "string", "minLength": 1 },
+                  "stage_id": { "type": "string", "minLength": 1 },
+                  "option_id": { "type": "string", "minLength": 1 },
+                  "card": { "const": null },
+                  "node_id": { "const": null },
+                  "slot_id": { "const": null },
+                  "offer_kind": { "const": null },
+                  "is_stocked": { "const": null },
+                  "action_id": { "const": null },
+                  "operation": { "const": null },
+                  "event_id": { "const": null },
+                  "page_id": { "const": null },
+                  "target_candidate_ids": { "maxItems": 0 },
+                  "effects": { "minItems": 1 }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "kind": { "const": "event_option" } },
+            "required": ["kind"]
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "required": ["event_id", "page_id", "option_id", "effects"],
+                "properties": {
+                  "event_id": { "type": "string", "minLength": 1 },
+                  "page_id": { "type": "string", "minLength": 1 },
+                  "option_id": { "type": "string", "minLength": 1 },
+                  "card": { "const": null },
+                  "node_id": { "const": null },
+                  "slot_id": { "const": null },
+                  "offer_kind": { "const": null },
+                  "is_stocked": { "const": null },
+                  "action_id": { "const": null },
+                  "operation": { "const": null },
+                  "blessing_id": { "const": null },
+                  "stage_id": { "const": null },
+                  "target_candidate_ids": { "maxItems": 0 },
+                  "effects": { "minItems": 1 }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "decisionParentContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decision_id",
+        "candidate_id",
+        "source_type",
+        "source_id"
+      ],
+      "properties": {
+        "decision_id": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 240,
+          "pattern": ".*\\S.*"
+        },
+        "candidate_id": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 240,
+          "pattern": ".*\\S.*"
+        },
+        "source_type": {
+          "enum": ["neow_choice", "event_choice", "rest_site", "merchant"]
+        },
+        "source_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": ".*\\S.*"
+        }
+      }
+    },
     "potionState": {
       "type": "object",
       "additionalProperties": false,
@@ -185,7 +1725,8 @@
       "properties": {
         "potion": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": ".*\\S.*"
         },
         "slot": {
           "type": "integer",
@@ -201,7 +1742,8 @@
       "properties": {
         "relic": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": ".*\\S.*"
         },
         "display_amount": {
           "type": ["integer", "null"]
@@ -215,6 +1757,19 @@
           "type": ["string", "null"]
         }
       }
+    },
+    "completeRelicState": {
+      "allOf": [
+        { "$ref": "#/$defs/relicState" },
+        {
+          "required": [
+            "relic",
+            "display_amount",
+            "stack_count",
+            "status"
+          ]
+        }
+      ]
     },
     "decisionContext": {
       "type": "object",
@@ -233,6 +1788,14 @@
         }
       }
     },
+    "completeDecisionContext": {
+      "allOf": [
+        { "$ref": "#/$defs/decisionContext" },
+        {
+          "required": ["can_skip", "can_reroll", "reward_source"]
+        }
+      ]
+    },
     "decisionOutcome": {
       "type": "object",
       "additionalProperties": false,
@@ -244,12 +1807,31 @@
         "selected_card": {
           "type": ["string", "null"]
         },
+        "selected_candidate_id": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 240,
+          "pattern": ".*\\S.*"
+        },
         "selected_option_index": {
           "type": ["integer", "null"],
           "minimum": 0,
           "maximum": 9
         }
       }
+    },
+    "completeDecisionOutcome": {
+      "allOf": [
+        { "$ref": "#/$defs/decisionOutcome" },
+        {
+          "required": [
+            "kind",
+            "selected_card",
+            "selected_candidate_id",
+            "selected_option_index"
+          ]
+        }
+      ]
     },
     "runResult": {
       "type": "object",
@@ -273,6 +1855,19 @@
         }
       }
     },
+    "completeRunResult": {
+      "allOf": [
+        { "$ref": "#/$defs/runResult" },
+        {
+          "required": [
+            "outcome",
+            "final_score",
+            "started_at",
+            "ended_at"
+          ]
+        }
+      ]
+    },
     "mapNode": {
       "type": "object",
       "additionalProperties": false,
@@ -280,7 +1875,8 @@
       "properties": {
         "node_id": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": ".*\\S.*"
         },
         "kind": {
           "enum": ["MONSTER", "ELITE", "CAMPFIRE", "SHOP", "EVENT", "BOSS", "TREASURE", "UNKNOWN"]
@@ -295,8 +1891,11 @@
         },
         "edges": {
           "type": "array",
+          "uniqueItems": true,
           "items": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1,
+            "pattern": ".*\\S.*"
           },
           "default": []
         },
@@ -304,6 +1903,14 @@
           "type": ["string", "null"]
         }
       }
+    },
+    "completeMapNode": {
+      "allOf": [
+        { "$ref": "#/$defs/mapNode" },
+        {
+          "required": ["node_id", "kind", "row", "col", "edges", "label"]
+        }
+      ]
     },
     "mapChoiceContext": {
       "type": "object",
@@ -318,6 +1925,7 @@
         },
         "nodes": {
           "type": "array",
+          "uniqueItems": true,
           "items": {
             "$ref": "#/$defs/mapNode"
           },
@@ -329,33 +1937,107 @@
         },
         "current_node_id": {
           "type": ["string", "null"],
-          "minLength": 1
+          "minLength": 1,
+          "pattern": ".*\\S.*"
+        },
+        "origin_node_id": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "pattern": ".*\\S.*"
         },
         "available_next_node_ids": {
           "type": "array",
+          "uniqueItems": true,
           "items": {
             "type": "string",
-            "minLength": 1
+            "minLength": 1,
+            "pattern": ".*\\S.*"
           },
           "default": []
         },
         "boss_node_ids": {
           "type": "array",
+          "uniqueItems": true,
           "items": {
             "type": "string",
-            "minLength": 1
+            "minLength": 1,
+            "pattern": ".*\\S.*"
           },
           "default": []
         },
         "boss_encounter_ids": {
           "type": "array",
+          "uniqueItems": true,
           "items": {
             "type": "string",
-            "minLength": 1
+            "minLength": 1,
+            "pattern": ".*\\S.*"
           },
           "default": []
         }
       }
+    },
+    "completeMapChoiceContext": {
+      "allOf": [
+        { "$ref": "#/$defs/mapChoiceContext" },
+        {
+          "required": [
+            "map_name",
+            "player_row",
+            "nodes",
+            "node_count",
+            "current_node_id",
+            "origin_node_id",
+            "available_next_node_ids",
+            "boss_node_ids",
+            "boss_encounter_ids"
+          ],
+          "properties": {
+            "nodes": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": { "$ref": "#/$defs/completeMapNode" }
+            }
+          }
+        }
+      ]
+    },
+    "routeChoiceContext": {
+      "allOf": [
+        { "$ref": "#/$defs/mapChoiceContext" },
+        {
+          "required": [
+            "nodes",
+            "node_count",
+            "origin_node_id",
+            "available_next_node_ids",
+            "boss_node_ids",
+            "boss_encounter_ids"
+          ],
+          "properties": {
+            "nodes": { "type": "array", "minItems": 1 },
+            "node_count": { "type": "integer", "minimum": 1 },
+            "origin_node_id": { "type": "string", "minLength": 1 },
+            "available_next_node_ids": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": { "type": "string", "minLength": 1, "pattern": ".*\\S.*" }
+            },
+            "boss_node_ids": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": { "type": "string", "minLength": 1, "pattern": ".*\\S.*" }
+            },
+            "boss_encounter_ids": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": { "type": "string", "minLength": 1, "pattern": ".*\\S.*" }
+            }
+          }
+        }
+      ]
     },
     "runState": {
       "type": "object",
@@ -364,7 +2046,8 @@
       "properties": {
         "character": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": ".*\\S.*"
         },
         "ascension": {
           "type": "integer",
@@ -410,7 +2093,9 @@
           "type": "array",
           "maxItems": 99,
           "items": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1,
+            "pattern": ".*\\S.*"
           },
           "default": []
         },
@@ -451,6 +2136,46 @@
           "default": []
         }
       }
+    },
+    "completeRunState": {
+      "allOf": [
+        { "$ref": "#/$defs/runState" },
+        {
+          "required": [
+            "character",
+            "ascension",
+            "act",
+            "floor",
+            "hp",
+            "max_hp",
+            "gold",
+            "energy",
+            "deck",
+            "relics",
+            "relic_states",
+            "potions",
+            "max_potion_slots",
+            "modifiers",
+            "capture_warnings"
+          ],
+          "properties": {
+            "deck": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/completeDeckCard" }
+            },
+            "relic_states": {
+              "type": "array",
+              "maxItems": 99,
+              "items": { "$ref": "#/$defs/completeRelicState" }
+            },
+            "potions": {
+              "type": "array",
+              "maxItems": 99,
+              "items": { "$ref": "#/$defs/potionState" }
+            }
+          }
+        }
+      ]
     }
   }
 }

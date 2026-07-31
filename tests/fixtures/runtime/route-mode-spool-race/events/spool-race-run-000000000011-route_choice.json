@@ -1,0 +1,11 @@
+{
+  "schema_version": 8,
+  "event_id": "spool-race-run:11",
+  "event_type": "route_choice",
+  "run_id": "spool-race-run",
+  "sequence": 11,
+  "release_fingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "guide_preferences": {
+    "route_mode": "growth"
+  }
+}

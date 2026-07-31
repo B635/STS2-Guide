@@ -27,18 +27,19 @@
 
 ## 多会话协作
 
-本项目采用“Codex 负责产品与架构、DeepSeek 负责实现、用户负责产品决策”的分工：
+本项目采用“Codex 负责产品与架构、任务单指定实现/审查角色、用户负责产品决策”的分工：
 
 - Codex：澄清需求、维护产品规格、拆分任务、给出验收标准、审查实际 diff 与验证证据；
-- DeepSeek：只按 [`docs/tasks/current.md`](docs/tasks/current.md) 指向的任务单修改代码和
-  测试，并填写实施报告；
+- 实现 Agent：只按 [`docs/tasks/current.md`](docs/tasks/current.md) 指向的任务单修改代码和
+  测试，并填写实施报告；具体模型/会话由任务单指定，不能冒充无法由工具确认的模型身份；
+- 审查 Agent：与实现角色分离，独立检查实际 diff、协议和验证证据；
 - 用户：决定产品体验和范围取舍，并在需要实现或审查时启动对应会话。
 
 任务流程和状态定义见 [`docs/tasks/README.md`](docs/tasks/README.md)。任何实现 Agent
 开始前必须依次阅读本文件、产品规格、项目状态和当前任务单。若当前任务状态不是
 `待实现` 或 `需修复`，不得自行寻找 TODO、扩大范围或修改代码。
 
-DeepSeek 不得自行改变产品规格，也不得把“代码存在”写成“真机完成”。Codex 在审查时
+实现 Agent 不得自行改变产品规格，也不得把“代码存在”写成“真机完成”。Codex 在审查时
 必须独立检查代码差异和测试结果；只有达到本文件的完成定义后，才能更新项目状态。
 
 ## 当前产品
@@ -70,20 +71,38 @@ P0 真机闭环完成后、增加 P1 决策前，必须先完成 P0.5 决策内�
 迁移为第一个策略插件。不得通过复制 `card_reward` 分支的方式堆叠路线、商店或篝火。
 详细范围与验收以 `docs/product-spec.md` 第 11.1 节为准。
 
+2026-07-31 用户决定把后续决策的自动层连续实现后再做组合真机。允许 Neow、商店、篝火
+和事件在同一扩展任务中推进，但必须共用一次通用候选协议迁移、同一个决策生命周期、
+策略注册表和 Context Drawer；每个切片仍需独立 capability gate，未完成真机不得启用或
+标记完成。
+
+首个公开交付目标是 Windows Public Beta：安装包兼容清单中列出的精确 STS2 版本、
+单人原版内容、五个角色、选牌建议和路线建议。Neow、商店、篝火等新决策可以提前进行
+自动实现，但必须等基线可靠且自身 capability 真机通过后才能进入公开包。当前本机游戏为
+`0.109.1`；旧 `0.108.0` API/真机证据不能直接继承，重新验收前必须失败关闭。
+
 ## P0 架构边界
 
 - Mod：C# / .NET 9 / Harmony Postfix / Godot Control。
 - 实时后台：`python -m realtime.host`，最终打包为单一后台 EXE。
-- 协议：JSON Schema v4，本地原子文件交换；Python 消费端继续兼容 v1-v3 录制夹具。
+- 协议：目标生产 JSON Schema v9，本地原子文件交换；Python 只为离线录制回放兼容
+  v1-v8。v7 引入完整快照、成功提交 revision、生产者/游戏程序集身份和跨组件
+  `release_fingerprint`；v8 增加显式 `guide_preferences.route_mode`；v9 增加严格通用
+  候选、类型化成本/效果和父子决策身份。
 - 实时推荐：完全本地，不调用 DeepSeek、LLM 或网络。
 - Vue、FastAPI、RAG：不属于 P0 实时运行依赖。
 - 路线：P0 只读取真实地图图结构，不生成路线推荐。
+- 公开 Beta 路线：策略侧栏提供“智能均衡 / 稳健生存 / 激进成长”软偏好，地图只画一条
+  当前完整路线；玩家偏离后按实际节点重新规划，不修改原生地图绘制。
+- 公开 Beta 进程：单实例托盘控制器拥有 Worker 生命周期；游戏关闭后 Worker 停止、托盘
+  待机，只有用户完全退出才结束全部后台任务。
 - 敌人：已知 Boss 可参与战前威胁建模；普通怪物和精英只能按真实遭遇池及已击败
   精英排除规则估计，不能伪造确定敌人；P0/P1 不做战斗内逐回合出牌建议。
 
 ## 数据边界
 
 - 当前局：只保存一个可原子替换的 `active-run.json` 检查点。
+- 完整快照是当前局事实，事件只负责通知；不得把不同 revision 的 state 与地图静默拼接。
 - 临时事件：处理后删除，不归档为历史。
 - 一局结束：清理中间状态，只向 SQLite `run_summaries` 保存最终摘要。
 - 禁止实时管线向 `run_states`、`decision_events`、
@@ -103,6 +122,10 @@ P0 真机闭环完成后、增加 P1 决策前，必须先完成 P0.5 决策内�
 - 不复制 BoberInSpire 的代码、权重、流派表或数据文件。
 - 数据不足时显示 `--`，不能伪造精度。
 - 建议必须校验 `run_id + event_id + 候选稳定 ID`，不得显示旧建议。
+- 公开兼容清单是 Guide/Game/Mod/protocol/SQLite/policy 版本的唯一事实；任一不匹配必须
+  清除 advice 并停止推荐。
+- 五角色共用评分内核，只允许薄机制适配层；每个角色必须通过通用规则、角色机制和真机
+  第一幕三层门禁后才能宣称支持。
 
 ## Mod 约束
 
@@ -139,6 +162,12 @@ $env:NUGET_PACKAGES = (Join-Path (Get-Location) ".dotnet_cli\packages")
 dotnet build mod/STS2Guide.ReadOnlyExporter/STS2Guide.ReadOnlyExporter.csproj --no-restore
 ```
 
+游戏关闭后，用本机 `local.props` 中的路径生成、安装并逐项校验 Mod 三件套：
+
+```powershell
+& .\scripts\install_p0_mod.ps1
+```
+
 P0 后台开发入口：
 
 ```powershell
@@ -159,11 +188,14 @@ P0 后台开发入口：
 
 ## 当前优先顺序
 
-1. 选牌读取 → 本地推荐 → 游戏内显示 → 关闭清理的真实闭环；
-2. 保存退出后恢复同一 Run ID 和递增 sequence；
-3. 真机核对地图节点、真实边、下一节点和 Boss；
-4. 后台 EXE；
-5. 固定选牌场景评测和推荐规则完善；
-6. P1 再增加路线、商店、篝火等决策。
+1. 用隔离只读探针重新完成 `0.109.1` 路线时序、视觉映射、滚动/窗口和保存继续复核；
+2. 探针通过后卸载它，启用对应精确兼容清单，安装最新正式三件套并完成选牌/路线真机验收；
+3. 单路线与三种软偏好，路线威胁进入选牌上下文；
+4. 五角色共享内核、薄机制适配和跨角色三层验收；
+5. 托盘、单 Worker、安装卸载、兼容清单、可选更新和脱敏诊断；
+6. Public Beta 达标后再增加 Neow、商店、篝火等决策。
 
-不要为了 Agent 标签继续堆叠 Hybrid Search、Reranker、HyDE 或 LLM 功能。
+可选 Strategy Agent 只服务用户主动展开的异步解释：只能读取冻结的 WorldState、
+Recommendation、SQLite 和有来源的攻略切片，不能操作游戏或进入实时评分主链。没有模型
+或网络失败时必须退化为确定性因子解释。不要为了 Agent 标签默认堆叠 Hybrid Search、
+Reranker、HyDE 或 LLM 功能。

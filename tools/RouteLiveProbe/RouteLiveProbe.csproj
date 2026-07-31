@@ -1,0 +1,56 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import
+    Project="..\..\mod\STS2Guide.ReadOnlyExporter\local.props"
+    Condition="Exists('..\..\mod\STS2Guide.ReadOnlyExporter\local.props')" />
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <PlatformTarget>x64</PlatformTarget>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>STS2GuideRouteLiveProbe</AssemblyName>
+    <RootNamespace>STS2Guide.RouteLiveProbe</RootNamespace>
+    <Version>0.1.0</Version>
+
+    <STS2GamePath Condition="'$(STS2GamePath)' == ''">C:\Program Files (x86)\Steam\steamapps\common\Slay the Spire 2</STS2GamePath>
+    <GodotExePath Condition="'$(GodotExePath)' == ''"></GodotExePath>
+    <GameDataDir>$(STS2GamePath)\data_sts2_windows_x86_64</GameDataDir>
+    <ArtifactsDir>$(MSBuildProjectDirectory)\artifacts\probe</ArtifactsDir>
+    <PackProject>$(MSBuildProjectDirectory)\pack</PackProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>$(GameDataDir)\0Harmony.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="GodotSharp">
+      <HintPath>$(GameDataDir)\GodotSharp.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="sts2">
+      <HintPath>$(GameDataDir)\sts2.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <Target Name="VerifyGameAssemblies" BeforeTargets="ResolveReferences">
+    <Error
+      Condition="!Exists('$(GameDataDir)\sts2.dll')"
+      Text="STS2 assemblies were not found. Configure STS2GamePath in the production Mod local.props or pass it explicitly." />
+  </Target>
+
+  <Target Name="PrepareProbeArtifacts" AfterTargets="Build">
+    <MakeDir Directories="$(ArtifactsDir)" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ArtifactsDir)" />
+    <Copy
+      SourceFiles="$(MSBuildProjectDirectory)\STS2GuideRouteLiveProbe.json"
+      DestinationFolder="$(ArtifactsDir)" />
+    <Exec
+      Condition="'$(GodotExePath)' != '' and Exists('$(GodotExePath)')"
+      Command="&quot;$(GodotExePath)&quot; --headless --path &quot;$(PackProject)&quot; --export-pack &quot;Windows Desktop&quot; &quot;$(ArtifactsDir)\STS2GuideRouteLiveProbe.pck&quot;" />
+    <Warning
+      Condition="'$(GodotExePath)' == '' or !Exists('$(GodotExePath)')"
+      Text="Godot .NET executable not configured; the development probe DLL/JSON were built, but its PCK was not packaged." />
+  </Target>
+</Project>

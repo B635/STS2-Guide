@@ -7,20 +7,11 @@ using MegaCrit.Sts2.Core.Nodes.Screens.CardSelection;
 
 namespace STS2Guide.ReadOnlyExporter;
 
+/// <summary>
+/// Card Reward adapter for the canonical recommendation envelope.
+/// </summary>
 internal static class CardRewardAdvicePanel
 {
-    private const float MinSidebarWidth = 160F;
-    private const float MaxSidebarWidth = 280F;
-    private const float SidebarViewportRatio = 0.18F;
-    private const float MaxViewportCoverage = 0.3F;
-    private const float RowHeight = 32F;
-    private const float HeaderHeight = 42F;
-    private const float VerticalPadding = 24F;
-    private const float VerticalEdgeMargin = 10F;
-    private const float ToggleWidth = 30F;
-    private const float ToggleHeight = 48F;
-    private const float ToggleOverlap = 2F;
-    private const double SlideDuration = 0.22;
     private static readonly object Gate = new();
     private static readonly FieldInfo? CardRowField =
         typeof(NCardRewardSelectionScreen).GetField(
@@ -29,306 +20,206 @@ internal static class CardRewardAdvicePanel
         );
 
     private static NCardRewardSelectionScreen? _screen;
-    private static Control? _cardRow;
-    private static PanelContainer? _panel;
-    private static Button? _toggleButton;
-    private static Tween? _slideTween;
     private static Godot.Timer? _timer;
-    private static List<Label> _scoreLabels = [];
-    private static List<string> _cardNames = [];
     private static PendingDecisionView? _pending;
+    private static ContextDrawerHandle _drawerHandle;
     private static long _lastWriteTicks;
-    private static int _recommendedIndex = -1;
-    private static bool _isCollapsed;
-    private static bool _isSliding;
+    private static SpecialRewardExpectation? _specialExpectation;
 
-    internal static void Show(NCardRewardSelectionScreen screen)
+    internal static void PrepareSpecialReward(
+        string capability,
+        string sourceType)
     {
         lock (Gate)
         {
-            HideInternal();
-            _pending = StateEventWriter.GetPendingDecision();
-            var cardCount = _pending?.CardIds.Count ?? 0;
-            if (_pending is null || cardCount == 0)
-            {
-                Log.Info(
-                    "[STS2-Guide] Advice panel skipped: no pending card options."
-                );
-                return;
-            }
-
-            // Safety guard: the pending decision must be an exact match
-            // (count, order, and stable IDs) with the visible card models
-            // on this screen.  Neow blessings and other unsupported reward
-            // types may present mismatched candidates.
-            if (!PendingMatchesScreen(screen, _pending))
-            {
-                Log.Info(
-                    "[STS2-Guide] Advice panel skipped: pending decision "
-                    + "does not match visible screen candidates."
-                );
-                _pending = null;
-                return;
-            }
-
-            _screen = screen;
-            _cardRow = CardRowField?.GetValue(screen) as Control;
-            _cardNames = Enumerable
-                .Range(1, cardCount)
-                .Select(index => $"卡牌 {index}")
-                .ToList();
-            _panel = BuildPanel();
-            screen.AddChild(_panel);
-            _toggleButton = BuildToggleButton();
-            screen.AddChild(_toggleButton);
-            _isCollapsed = false;
-            PlacePanel();
-
-            _timer = new Godot.Timer
-            {
-                WaitTime = 0.1,
-                OneShot = false,
-                Autostart = true,
-            };
-            _timer.Timeout += PollAdvice;
-            _panel.AddChild(_timer);
-            _lastWriteTicks = 0;
-            _recommendedIndex = -1;
-            var placeholder = new double?[cardCount + 1];
-            Render(placeholder);
+            _specialExpectation = new SpecialRewardExpectation(
+                capability,
+                sourceType
+            );
         }
     }
 
-    internal static void Hide()
+    internal static void ClearSpecialRewardExpectation()
+    {
+        lock (Gate)
+        {
+            _specialExpectation = null;
+        }
+    }
+
+    internal static void Show(NCardRewardSelectionScreen screen)
+        => ShowCore(screen, allowDeferredSpecialRetry: true);
+
+    private static void ShowCore(
+        NCardRewardSelectionScreen screen,
+        bool allowDeferredSpecialRetry)
     {
         lock (Gate)
         {
             HideInternal();
+            if (!GodotObject.IsInstanceValid(screen)
+                || !ReleaseCapabilityGate.IsEnabled("card_reward"))
+            {
+                return;
+            }
+            var special = _specialExpectation;
+            if (special is not null
+                && (string.IsNullOrWhiteSpace(special.Capability)
+                    || string.IsNullOrWhiteSpace(special.SourceType)
+                    || !ReleaseCapabilityGate.IsEnabled(
+                        special.Capability
+                    )
+                    || !StateEventWriter.HasPendingCardRewardParent(
+                        special.SourceType
+                    )))
+            {
+                if (allowDeferredSpecialRetry
+                    && ReleaseCapabilityGate.IsEnabled(
+                        special.Capability
+                    ))
+                {
+                    Callable.From(() => ObserverSafety.Run(
+                        "card_reward.deferred_panel",
+                        () => ShowCore(
+                            screen,
+                            allowDeferredSpecialRetry: false
+                        )
+                    )).CallDeferred();
+                }
+                else
+                {
+                    _specialExpectation = null;
+                }
+                return;
+            }
+            _specialExpectation = null;
+            try
+            {
+                _pending = StateEventWriter.GetPendingDecision();
+                if (_pending is null || _pending.Options.Count == 0)
+                {
+                    Log.Info(
+                        "[STS2-Guide] Advice panel skipped: no pending card options."
+                    );
+                    return;
+                }
+                if (!PendingMatchesScreen(screen, _pending))
+                {
+                    Log.Info(
+                        "[STS2-Guide] Advice panel skipped: pending decision "
+                        + "does not match visible screen candidates."
+                    );
+                    _pending = null;
+                    return;
+                }
+                if (!StateEventWriter.BindCardRewardScreen(
+                    screen,
+                    _pending.DecisionId
+                ))
+                {
+                    Log.Info(
+                        "[STS2-Guide] Advice panel skipped: pending "
+                        + "decision changed before screen binding."
+                    );
+                    _pending = null;
+                    return;
+                }
+
+                _screen = screen;
+                var captions = _pending.Options
+                    .Select(option => option.CardId)
+                    .ToList();
+                if (_pending.CanSkip)
+                {
+                    captions.Add("跳过");
+                }
+                _drawerHandle = ContextDrawer.Show(
+                    screen,
+                    CardRowField?.GetValue(screen) as Control,
+                    "选牌建议",
+                    captions
+                );
+                if (!_drawerHandle.IsValid)
+                {
+                    HideInternal();
+                    return;
+                }
+                _timer = new Godot.Timer
+                {
+                    WaitTime = 0.1,
+                    OneShot = false,
+                    Autostart = true,
+                };
+                _timer.Timeout += PollAdvice;
+                screen.AddChild(_timer);
+                _lastWriteTicks = 0;
+                Invalidate();
+            }
+            catch (Exception exception)
+            {
+                Log.Error(
+                    "[STS2-Guide] Advice panel show failed: "
+                    + exception.Message
+                );
+                HideInternal();
+            }
+        }
+    }
+
+    internal static void Hide(NCardRewardSelectionScreen? owner = null)
+    {
+        lock (Gate)
+        {
+            if (owner is not null && !ReferenceEquals(owner, _screen))
+            {
+                return;
+            }
+            HideInternal();
+            _specialExpectation = null;
         }
     }
 
     private static void HideInternal()
     {
-        StopSlideTween();
-        if (_timer is not null)
+        if (_timer is not null && GodotObject.IsInstanceValid(_timer))
         {
             _timer.Stop();
             _timer.Timeout -= PollAdvice;
+            _timer.QueueFree();
         }
-        if (_toggleButton is not null)
-        {
-            if (GodotObject.IsInstanceValid(_toggleButton))
-            {
-                _toggleButton.Pressed -= ToggleSidebar;
-                _toggleButton.QueueFree();
-            }
-        }
-        if (_panel is not null && GodotObject.IsInstanceValid(_panel))
-        {
-            _panel.QueueFree();
-        }
+        ContextDrawer.Hide(_drawerHandle);
         _screen = null;
-        _cardRow = null;
-        _panel = null;
-        _toggleButton = null;
-        _slideTween = null;
         _timer = null;
-        _scoreLabels = [];
-        _cardNames = [];
         _pending = null;
+        _drawerHandle = default;
         _lastWriteTicks = 0;
-        _recommendedIndex = -1;
-        _isCollapsed = false;
-        _isSliding = false;
     }
 
-    private static PanelContainer BuildPanel()
-    {
-        var cardCount = _pending?.CardIds.Count ?? 0;
-        var rowCount = cardCount + 1;
-        var panelHeight = HeaderHeight
-            + rowCount * RowHeight
-            + VerticalPadding;
-        var panel = new PanelContainer
-        {
-            Name = "STS2GuideCardRewardAdvice",
-            MouseFilter = Control.MouseFilterEnum.Ignore,
-            CustomMinimumSize = new Vector2(
-                MinSidebarWidth,
-                panelHeight
-            ),
-            Size = new Vector2(MinSidebarWidth, panelHeight),
-            ZIndex = 100,
-        };
-        var style = new StyleBoxFlat
-        {
-            BgColor = new Color(0.025F, 0.035F, 0.055F, 0.84F),
-            BorderColor = new Color(0.35F, 0.48F, 0.62F, 0.88F),
-            CornerRadiusTopLeft = 12,
-            CornerRadiusTopRight = 12,
-            CornerRadiusBottomLeft = 12,
-            CornerRadiusBottomRight = 12,
-            BorderWidthLeft = 0,
-            BorderWidthTop = 2,
-            BorderWidthRight = 2,
-            BorderWidthBottom = 2,
-            ContentMarginLeft = 12,
-            ContentMarginTop = 10,
-            ContentMarginRight = 12,
-            ContentMarginBottom = 10,
-        };
-        panel.AddThemeStyleboxOverride("panel", style);
-
-        var column = new VBoxContainer
-        {
-            MouseFilter = Control.MouseFilterEnum.Ignore,
-        };
-        column.AddThemeConstantOverride("separation", 5);
-        panel.AddChild(column);
-
-        var title = new Label
-        {
-            Text = "选牌建议",
-            HorizontalAlignment = HorizontalAlignment.Center,
-            MouseFilter = Control.MouseFilterEnum.Ignore,
-            CustomMinimumSize = new Vector2(0F, HeaderHeight - 10F),
-        };
-        title.AddThemeFontSizeOverride("font_size", 20);
-        title.AddThemeColorOverride(
-            "font_color",
-            new Color(0.78F, 0.88F, 1F)
-        );
-        column.AddChild(title);
-
-        _scoreLabels = [];
-        for (var idx = 0; idx < cardCount; idx++)
-        {
-            var caption = CardCaption(idx);
-            var label = new Label
-            {
-                Text = $"{caption}   --",
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center,
-                MouseFilter = Control.MouseFilterEnum.Ignore,
-                CustomMinimumSize = new Vector2(0F, RowHeight),
-            };
-            label.AddThemeFontSizeOverride("font_size", 18);
-            column.AddChild(label);
-            _scoreLabels.Add(label);
-        }
-        // Skip row (always last)
-        {
-            var label = new Label
-            {
-                Text = "跳过   --",
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center,
-                MouseFilter = Control.MouseFilterEnum.Ignore,
-                CustomMinimumSize = new Vector2(0F, RowHeight),
-            };
-            label.AddThemeFontSizeOverride("font_size", 18);
-            column.AddChild(label);
-            _scoreLabels.Add(label);
-        }
-        return panel;
-    }
-
-    private static Button BuildToggleButton()
-    {
-        var button = new Button
-        {
-            Name = "STS2GuideAdviceToggle",
-            Text = "‹",
-            TooltipText = "收起选牌建议",
-            MouseFilter = Control.MouseFilterEnum.Stop,
-            FocusMode = Control.FocusModeEnum.None,
-            CustomMinimumSize = new Vector2(ToggleWidth, ToggleHeight),
-            Size = new Vector2(ToggleWidth, ToggleHeight),
-            ZIndex = 101,
-        };
-        button.AddThemeFontSizeOverride("font_size", 26);
-        button.AddThemeColorOverride(
-            "font_color",
-            new Color(0.82F, 0.9F, 1F)
-        );
-        button.AddThemeColorOverride(
-            "font_hover_color",
-            new Color(1F, 0.82F, 0.36F)
-        );
-        button.AddThemeStyleboxOverride(
-            "normal",
-            BuildToggleStyle(new Color(0.025F, 0.035F, 0.055F, 0.84F))
-        );
-        button.AddThemeStyleboxOverride(
-            "hover",
-            BuildToggleStyle(new Color(0.08F, 0.12F, 0.18F, 0.94F))
-        );
-        button.AddThemeStyleboxOverride(
-            "pressed",
-            BuildToggleStyle(new Color(0.12F, 0.16F, 0.23F, 0.98F))
-        );
-        button.Pressed += ToggleSidebar;
-        return button;
-    }
-
-    private static StyleBoxFlat BuildToggleStyle(Color background)
-    {
-        return new StyleBoxFlat
-        {
-            BgColor = background,
-            BorderColor = new Color(0.35F, 0.48F, 0.62F, 0.88F),
-            BorderWidthLeft = 0,
-            BorderWidthTop = 2,
-            BorderWidthRight = 2,
-            BorderWidthBottom = 2,
-            CornerRadiusTopRight = 10,
-            CornerRadiusBottomRight = 10,
-        };
-    }
-
-    private static void ToggleSidebar()
-    {
-        lock (Gate)
-        {
-            if (_screen is null
-                || _panel is null
-                || _toggleButton is null
-                || !GodotObject.IsInstanceValid(_screen)
-                || !GodotObject.IsInstanceValid(_panel)
-                || !GodotObject.IsInstanceValid(_toggleButton))
-            {
-                return;
-            }
-
-            _isCollapsed = !_isCollapsed;
-            _toggleButton.Text = _isCollapsed ? "›" : "‹";
-            _toggleButton.TooltipText = _isCollapsed
-                ? "展开选牌建议"
-                : "收起选牌建议";
-            PlacePanel(animate: true);
-        }
-    }
+    private sealed record SpecialRewardExpectation(
+        string Capability,
+        string SourceType
+    );
 
     private static void PollAdvice()
     {
         lock (Gate)
         {
             if (_screen is null
-                || _panel is null
                 || _pending is null
                 || !GodotObject.IsInstanceValid(_screen)
-                || !GodotObject.IsInstanceValid(_panel))
+                || !ContextDrawer.IsVisible(_drawerHandle))
             {
                 HideInternal();
                 return;
             }
-            PlacePanel();
-
+            ContextDrawer.Reposition(_drawerHandle);
             var advicePath = ProjectSettings.GlobalizePath(
                 "user://STS2Guide/advice-event.json"
             );
             if (!File.Exists(advicePath))
             {
+                _lastWriteTicks = 0;
+                Invalidate();
                 return;
             }
             long writeTicks;
@@ -338,175 +229,237 @@ internal static class CardRewardAdvicePanel
             }
             catch
             {
+                _lastWriteTicks = 0;
+                Invalidate();
                 return;
             }
             if (writeTicks == _lastWriteTicks)
             {
                 return;
             }
-            _lastWriteTicks = writeTicks;
-
             try
             {
-                var scores = ReadMatchingScores(
-                    advicePath,
-                    _pending
-                );
-                if (scores is not null)
+                var rows = ReadMatchingRows(advicePath, _pending);
+                if (rows is null)
                 {
-                    Render(scores);
+                    _lastWriteTicks = writeTicks;
+                    Invalidate();
+                    return;
                 }
+                ContextDrawer.Render(_drawerHandle, rows);
+                _lastWriteTicks = writeTicks;
             }
             catch (Exception exception)
             {
+                _lastWriteTicks = 0;
                 Log.Error(
                     "[STS2-Guide] Advice panel read failed: "
                     + exception.Message
                 );
-                var empty = new double?[_scoreLabels.Count];
-                Render(empty);
+                Invalidate();
             }
         }
     }
 
-    private static double?[]? ReadMatchingScores(
+    private static IReadOnlyList<ContextDrawerRow>? ReadMatchingRows(
         string path,
-        PendingDecisionView pending
-    )
+        PendingDecisionView pending)
     {
         using var document = JsonDocument.Parse(File.ReadAllText(path));
         var root = document.RootElement;
-        if (!TryReadString(root, "run_id", out var runId)
+        if (!AdviceCompatibilityReader.MatchesCurrentRuntime(root)
+            || !GuidePreferencesMatch(root, pending.RouteMode)
+            || !TryReadString(root, "run_id", out var runId)
             || !TryReadString(root, "event_id", out var eventId)
+            || !TryReadString(root, "decision_id", out var rootDecisionId)
             || runId != pending.RunId
             || eventId != pending.EventId
+            || rootDecisionId != pending.DecisionId
+            || !root.TryGetProperty("sequence", out var sequenceElement)
+            || !sequenceElement.TryGetInt64(out var sequence)
+            || sequence != pending.Sequence
             || !TryReadString(root, "event_type", out var eventType)
             || eventType != "card_reward"
             || !TryReadString(root, "status", out var status)
             || status != "processed"
-            || !root.TryGetProperty("advice", out var advice)
-            || advice.ValueKind != JsonValueKind.Object
-            || !advice.TryGetProperty(
-                "recommendations",
-                out var recommendations
+            || !root.TryGetProperty(
+                "advice_disposition",
+                out var disposition
             )
-            || recommendations.ValueKind != JsonValueKind.Array)
+            || disposition.ValueKind != JsonValueKind.Object
+            || !TryReadString(disposition, "action", out var action)
+            || action != "publish"
+            || !TryReadString(
+                disposition,
+                "run_id",
+                out var dispositionRunId
+            )
+            || dispositionRunId != pending.RunId
+            || !TryReadString(
+                disposition,
+                "decision_id",
+                out var dispositionDecisionId
+            )
+            || dispositionDecisionId != pending.DecisionId
+            || !root.TryGetProperty("recommendation", out var recommendation)
+            || recommendation.ValueKind != JsonValueKind.Object
+            || !AdviceContractReader.HasRecommendationMetadata(
+                recommendation
+            )
+            || !recommendation.TryGetProperty(
+                "contract_version",
+                out var contractVersion
+            )
+            || !contractVersion.TryGetInt32(out var version)
+            || (version != 1 && version != 2)
+            || !TryReadString(
+                recommendation,
+                "decision_id",
+                out var recommendationDecisionId
+            )
+            || recommendationDecisionId != pending.DecisionId
+            || !TryReadString(
+                recommendation,
+                "decision_type",
+                out var decisionType
+            )
+            || decisionType != "card_reward"
+            || !recommendation.TryGetProperty(
+                "world_sequence",
+                out var worldSequenceElement
+            )
+            || !worldSequenceElement.TryGetInt64(out var worldSequence)
+            || worldSequence != pending.Sequence
+            || !recommendation.TryGetProperty("candidates", out var candidates)
+            || candidates.ValueKind != JsonValueKind.Array)
         {
             return null;
         }
 
-        var cardCount = pending.CardIds.Count;
-        var scores = new double?[cardCount + 1];
-        var cardNames = new string[cardCount];
-        var matched = new bool[cardCount];
-        var knownCount = 0;
-        var bestCardIndex = -1;
-        var bestCardRank = int.MaxValue;
-        foreach (var recommendation in recommendations.EnumerateArray())
+        var expected = pending.Options
+            .Select(option => option.CandidateId)
+            .ToList();
+        if (pending.CanSkip)
         {
-            if (!recommendation.TryGetProperty(
-                    "option_index",
+            expected.Add("skip");
+        }
+        if (candidates.GetArrayLength() != expected.Count)
+        {
+            return null;
+        }
+        if (!TryReadNullableString(
+            recommendation,
+            "recommended_candidate_id",
+            out var recommendedId
+        ) || !AdviceContractReader.StatusMatchesRecommendation(
+            recommendation,
+            recommendedId
+        ) || (recommendedId is not null
+            && !expected.Contains(recommendedId)))
+        {
+            return null;
+        }
+        var rows = new ContextDrawerRow[expected.Count];
+        var matched = new bool[expected.Count];
+        var recommendedMatched = recommendedId is null;
+        foreach (var candidate in candidates.EnumerateArray())
+        {
+            if (!TryReadString(candidate, "candidate_id", out var candidateId)
+                || !TryReadString(candidate, "label", out var label)
+                || !candidate.TryGetProperty(
+                    "display_index",
                     out var indexElement
                 )
-                || !indexElement.TryGetInt32(out var optionIndex)
-                || optionIndex < 0
-                || optionIndex >= cardCount
-                || !TryReadString(
-                    recommendation,
-                    "card_id",
-                    out var cardId
-                )
-                || !string.Equals(
-                    cardId,
-                    pending.CardIds[optionIndex],
-                    StringComparison.OrdinalIgnoreCase
-                ))
+                || !indexElement.TryGetInt32(out var displayIndex)
+                || displayIndex < 0
+                || displayIndex >= expected.Count
+                || expected[displayIndex] != candidateId
+                || matched[displayIndex]
+                || !AdviceContractReader.HasCandidateMetadata(candidate)
+                || !candidate.TryGetProperty("eligible", out var eligibleElement)
+                || eligibleElement.ValueKind != JsonValueKind.True)
             {
                 return null;
             }
-            matched[optionIndex] = true;
-            if (recommendation.TryGetProperty(
-                    "rank",
-                    out var rankElement
-                )
-                && rankElement.TryGetInt32(out var rank)
-                && rank < bestCardRank)
+            double? score = null;
+            if (!candidate.TryGetProperty("score", out var scoreElement))
             {
-                bestCardRank = rank;
-                bestCardIndex = optionIndex;
+                return null;
             }
-            cardNames[optionIndex] = TryReadString(
-                recommendation,
-                "card",
-                out var cardName
-            )
-                ? cardName
-                : pending.CardIds[optionIndex];
-            var known = recommendation.TryGetProperty(
-                "known",
-                out var knownElement
-            ) && knownElement.ValueKind == JsonValueKind.True;
-            if (known
-                && recommendation.TryGetProperty(
-                    "score",
-                    out var scoreElement
-                )
-                && scoreElement.TryGetDouble(out var score))
+            if (scoreElement.ValueKind == JsonValueKind.Number)
             {
-                scores[optionIndex] = score;
-                knownCount++;
+                if (!scoreElement.TryGetDouble(out var numericScore)
+                    || !double.IsFinite(numericScore)
+                    || numericScore < 0
+                    || numericScore > 100)
+                {
+                    return null;
+                }
+                score = numericScore;
             }
+            else if (scoreElement.ValueKind != JsonValueKind.Null)
+            {
+                return null;
+            }
+            var isRecommended = candidateId == recommendedId;
+            if (isRecommended)
+            {
+                if (!score.HasValue)
+                {
+                    return null;
+                }
+                recommendedMatched = true;
+            }
+            rows[displayIndex] = new ContextDrawerRow(
+                label,
+                score,
+                isRecommended
+            );
+            matched[displayIndex] = true;
         }
-        if (matched.Any(value => !value))
-        {
-            return null;
-        }
-        _cardNames = cardNames.ToList();
+        return matched.All(value => value) && recommendedMatched ? rows : null;
+    }
 
-        if (advice.TryGetProperty(
-                "recommended_option_index",
-                out var recommendedIndexElement
+    private static bool GuidePreferencesMatch(
+        JsonElement root,
+        string expectedMode)
+        => root.TryGetProperty(
+                "guide_preferences",
+                out var preferences
             )
-            && recommendedIndexElement.TryGetInt32(
-                out var recommendedIndex
+            && preferences.ValueKind == JsonValueKind.Object
+            && preferences.EnumerateObject().Count() == 1
+            && TryReadString(
+                preferences,
+                "route_mode",
+                out var routeMode
             )
-            && recommendedIndex >= 0
-            && recommendedIndex <= cardCount)
-        {
-            _recommendedIndex = recommendedIndex;
-        }
-        else
-        {
-            var skipRecommended = advice.TryGetProperty(
-                "skip_recommended",
-                out var skipRecommendedElement
-            ) && skipRecommendedElement.ValueKind == JsonValueKind.True;
-            _recommendedIndex = skipRecommended
-                ? cardCount
-                : bestCardIndex;
-        }
+            && routeMode == expectedMode;
 
-        if (knownCount > 0
-            && advice.TryGetProperty(
-                "skip_candidate",
-                out var skipCandidate
-            )
-            && skipCandidate.TryGetProperty(
-                "score",
-                out var skipScore
-            )
-            && skipScore.TryGetDouble(out var skip))
+    private static void Invalidate()
+    {
+        if (_pending is null || !_drawerHandle.IsValid)
         {
-            scores[cardCount] = skip;
+            return;
         }
-        return scores;
+        var rows = _pending.Options
+            .Select(option => new ContextDrawerRow(
+                option.CardId,
+                null,
+                false
+            ))
+            .ToList();
+        if (_pending.CanSkip)
+        {
+            rows.Add(new ContextDrawerRow("跳过", null, false));
+        }
+        ContextDrawer.Render(_drawerHandle, rows);
     }
 
     private static bool TryReadString(
         JsonElement element,
         string property,
-        out string value
-    )
+        out string value)
     {
         value = "";
         if (!element.TryGetProperty(property, out var child)
@@ -518,286 +471,75 @@ internal static class CardRewardAdvicePanel
         return value.Length > 0;
     }
 
-    private static void Render(IReadOnlyList<double?> scores)
+    private static bool TryReadNullableString(
+        JsonElement element,
+        string property,
+        out string? value)
     {
-        var rowCount = scores.Count;
-        if (_scoreLabels.Count != rowCount || rowCount < 2)
+        value = null;
+        if (!element.TryGetProperty(property, out var child))
         {
-            return;
+            return false;
         }
-
-        var cardCount = rowCount - 1; // last is always skip
-        var bestIndex = _recommendedIndex >= 0
-            && _recommendedIndex < scores.Count
-            && scores[_recommendedIndex].HasValue
-                ? _recommendedIndex
-                : -1;
-
-        for (var index = 0; index < rowCount; index++)
+        if (child.ValueKind == JsonValueKind.Null)
         {
-            var isSkip = index == cardCount;
-            string caption;
-            if (isSkip)
-            {
-                caption = "跳过";
-            }
-            else
-            {
-                caption = CardCaption(index);
-            }
-
-            var score = scores[index];
-            _scoreLabels[index].Text = score.HasValue
-                ? $"{caption}   {Math.Clamp(score.Value, 0, 100):0}"
-                : $"{caption}   --";
-            _scoreLabels[index].AddThemeColorOverride(
-                "font_color",
-                index == bestIndex
-                    ? new Color(1F, 0.78F, 0.24F)
-                    : new Color(0.92F, 0.94F, 0.98F)
-            );
+            return true;
         }
+        if (child.ValueKind != JsonValueKind.String)
+        {
+            return false;
+        }
+        value = child.GetString();
+        return !string.IsNullOrWhiteSpace(value);
     }
 
-    private static void PlacePanel(bool animate = false)
-    {
-        if (_screen is null
-            || _panel is null
-            || _toggleButton is null
-            || !GodotObject.IsInstanceValid(_screen)
-            || !GodotObject.IsInstanceValid(_panel)
-            || !GodotObject.IsInstanceValid(_toggleButton))
-        {
-            return;
-        }
-        if (_isSliding && !animate)
-        {
-            return;
-        }
-
-        var viewportRect = _screen.GetViewport().GetVisibleRect();
-        var maximumWidth = Math.Max(
-            MinSidebarWidth,
-            Math.Min(
-                MaxSidebarWidth,
-                viewportRect.Size.X * MaxViewportCoverage
-            )
-        );
-        var contentWidth = _panel.GetCombinedMinimumSize().X;
-        var panelWidth = Math.Clamp(
-            Math.Max(
-                viewportRect.Size.X * SidebarViewportRatio,
-                contentWidth
-            ),
-            MinSidebarWidth,
-            maximumWidth
-        );
-        var panelHeight = Math.Max(
-            _panel.Size.Y,
-            _panel.CustomMinimumSize.Y
-        );
-        _panel.Size = new Vector2(panelWidth, panelHeight);
-        var y = viewportRect.Position.Y
-            + (viewportRect.Size.Y - panelHeight) / 2F;
-        if (_cardRow is not null && GodotObject.IsInstanceValid(_cardRow))
-        {
-            var cardRect = _cardRow.GetGlobalRect();
-            y = cardRect.GetCenter().Y - panelHeight / 2F;
-        }
-        var panelY = Math.Clamp(
-            y,
-            viewportRect.Position.Y + VerticalEdgeMargin,
-            Math.Max(
-                viewportRect.Position.Y + VerticalEdgeMargin,
-                viewportRect.End.Y
-                    - panelHeight
-                    - VerticalEdgeMargin
-            )
-        );
-        var expandedX = viewportRect.Position.X;
-        var panelX = _isCollapsed
-            ? expandedX - panelWidth
-            : expandedX;
-        var panelTarget = new Vector2(panelX, panelY);
-        var buttonTarget = new Vector2(
-            panelX + panelWidth - ToggleOverlap,
-            panelY + (panelHeight - ToggleHeight) / 2F
-        );
-
-        if (!animate)
-        {
-            _panel.GlobalPosition = panelTarget;
-            _toggleButton.GlobalPosition = buttonTarget;
-            return;
-        }
-
-        StopSlideTween();
-        _isSliding = true;
-        _slideTween = _screen.CreateTween();
-        _slideTween.SetParallel();
-        _slideTween.SetTrans(Tween.TransitionType.Cubic);
-        _slideTween.SetEase(Tween.EaseType.Out);
-        _slideTween.TweenProperty(
-            _panel,
-            "global_position",
-            panelTarget,
-            SlideDuration
-        );
-        _slideTween.TweenProperty(
-            _toggleButton,
-            "global_position",
-            buttonTarget,
-            SlideDuration
-        );
-        _slideTween.Finished += FinishSlide;
-    }
-
-    private static void StopSlideTween()
-    {
-        if (_slideTween is not null
-            && GodotObject.IsInstanceValid(_slideTween))
-        {
-            _slideTween.Finished -= FinishSlide;
-            _slideTween.Kill();
-        }
-        _slideTween = null;
-        _isSliding = false;
-    }
-
-    private static void FinishSlide()
-    {
-        lock (Gate)
-        {
-            if (_slideTween is not null
-                && GodotObject.IsInstanceValid(_slideTween))
-            {
-                _slideTween.Finished -= FinishSlide;
-            }
-            _slideTween = null;
-            _isSliding = false;
-            PlacePanel();
-        }
-    }
-
-    private static string CardCaption(int index)
-    {
-        return index >= 0 && index < _cardNames.Count
-            ? _cardNames[index]
-            : $"卡牌 {index + 1}";
-    }
-
-    /// <summary>
-    /// Verify the pending decision card IDs match the visible card models
-    /// on the selection screen.
-    ///
-    /// API shape verified from the current STS2 assembly/source.  The complete
-    /// exact-match behavior still requires the P0 real-machine regression:
-    ///   NCardRewardSelectionScreen._cardRow  : Control (GetNode("UI/CardRow"))
-    ///   _cardRow children                   : GetChildren() yields NGridCardHolder
-    ///   NGridCardHolder.CardModel           : CardModel (direct public property)
-    ///
-    /// References:
-    ///   hongyipan152/STS2SourceCode —
-    ///     src/Core/Nodes/Screens/CardSelection/NCardRewardSelectionScreen.cs
-    ///   Gennadiyev/STS2MCP — McpMod.StateBuilder.cs
-    /// </summary>
     private static bool PendingMatchesScreen(
         NCardRewardSelectionScreen screen,
         PendingDecisionView pending)
     {
-        var visibleIds = new System.Collections.Generic.List<string>();
-        string? failStage = "start";
+        var visible = new List<DecisionOption>();
         try
         {
-            // 1. Read _cardRow field.
-            failStage = "_cardRow field";
             var cardRow = CardRowField?.GetValue(screen) as Control;
             if (cardRow is null)
             {
-                failStage += "=null";
                 return false;
             }
-
-            // 2. Enumerate children through Godot's strongly-typed API.
-            //
-            // Do not use MethodInfo.Invoke(cardRow, null) here.  Godot's
-            // GetChildren(bool includeInternal = false) has an optional
-            // parameter at the C# call site, but reflection still requires
-            // the argument and throws TargetParameterCountException when
-            // invoked with a null argument array.
-            failStage = "GetChildren";
-            var children = cardRow.GetChildren();
-
-            // 3. Read CardModel from each NGridCardHolder child.
-            //    Non-holder children are UI decorations and are not candidates.
-            //    There is deliberately no property-name reflection fallback:
-            //    an unknown holder type is an unsupported API shape and must
-            //    fail closed rather than being guessed into a recommendation.
-            failStage = "holder.CardModel";
-            foreach (var child in children)
+            foreach (var child in cardRow.GetChildren())
             {
-                if (child is null) continue;
-
-                var childType = child.GetType();
-                var childTypeName = childType.FullName ?? "(unknown)";
-
-                if (child is not NGridCardHolder holder)
+                if (child is NGridCardHolder { CardModel: { } model })
                 {
-                    Log.Info(
-                        $"[STS2-Guide] PendingMatchesScreen child: type={childTypeName}"
-                        + "  isNGridCardHolder=false; skipped"
-                    );
-                    continue;
+                    visible.Add(RunStateReader.ReadDecisionOption(model));
                 }
-
-                var model = holder.CardModel;
-                Log.Info(
-                    $"[STS2-Guide] PendingMatchesScreen child: type={childTypeName}"
-                    + "  isNGridCardHolder=true"
-                    + $"  CardModel={model?.GetType().FullName ?? "null"}"
-                );
-                if (model is null) continue;
-                var id = StableIds.FromType(model.GetType(), "Model", "Card");
-                if (string.IsNullOrWhiteSpace(id)) continue;
-                visibleIds.Add(id);
-                Log.Info(
-                    $"[STS2-Guide] PendingMatchesScreen card: stableId={id}"
-                );
             }
-
-            // 4. Exact match: same count, same order, same stable IDs.
-            failStage = "count";
-            if (visibleIds.Count != pending.CardIds.Count) return false;
-            failStage = "id_match";
-            for (int i = 0; i < visibleIds.Count; i++)
+            if (visible.Count != pending.Options.Count)
             {
-                if (!string.Equals(
-                    visibleIds[i], pending.CardIds[i],
-                    StringComparison.OrdinalIgnoreCase))
+                return false;
+            }
+            for (var index = 0; index < visible.Count; index++)
+            {
+                var actual = visible[index];
+                var expected = pending.Options[index];
+                if (expected.CandidateId != $"{index}:{actual.Card}"
+                    || actual.Card != expected.CardId
+                    || actual.Upgrades != expected.Upgrades
+                    || actual.Enchantment != expected.Enchantment
+                    || actual.EnchantmentAmount != expected.EnchantmentAmount
+                    || actual.Affliction != expected.Affliction
+                    || actual.AfflictionAmount != expected.AfflictionAmount)
                 {
-                    failStage = $"id_mismatch[{i}]: visible={visibleIds[i]} pending={pending.CardIds[i]}";
                     return false;
                 }
             }
             return true;
         }
-        catch (Exception ex)
+        catch (Exception exception)
         {
-            failStage = $"exception:{ex.GetType().Name}:{ex.Message}";
+            Log.Info(
+                "[STS2-Guide] PendingMatchesScreen failed: "
+                + exception.Message
+            );
             return false;
-        }
-        finally
-        {
-            if (!(visibleIds.Count == pending.CardIds.Count
-                  && visibleIds.SequenceEqual(
-                      pending.CardIds, StringComparer.OrdinalIgnoreCase)))
-            {
-                Log.Info(
-                    $"[STS2-Guide] PendingMatchesScreen FAILED at {failStage}."
-                    + $"  pending=[{string.Join(",", pending.CardIds)}]"
-                    + $"  visible=[{string.Join(",", visibleIds)}]"
-                );
-            }
         }
     }
 }

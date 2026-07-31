@@ -1094,6 +1094,27 @@ class RelationalRepository:
     def find_relic(self, identifier: str) -> Optional[Dict]:
         return self.find_entity("relics", identifier)
 
+    def mechanic_constant(self, identifier: str) -> Optional[object]:
+        """Read one imported structured mechanic/risk profile.
+
+        Runtime route scoring may use this small relational profile, while the
+        active run graph itself remains in the replaceable checkpoint.
+        """
+        key = str(identifier or "").strip()
+        if not key:
+            return None
+        with self.connect() as connection:
+            row = connection.execute(
+                "SELECT value_json FROM mechanic_constants WHERE constant_key = ?",
+                (key,),
+            ).fetchone()
+        if row is None:
+            return None
+        try:
+            return json.loads(row["value_json"])
+        except (TypeError, json.JSONDecodeError):
+            return None
+
     def encounter_profile(self, identifier: str) -> Optional[Dict]:
         encounter = self.find_entity("encounters", identifier)
         if encounter is None:
@@ -1115,6 +1136,40 @@ class RelationalRepository:
                 """,
                 (encounter["_entity_key"],),
             ).fetchall()
+            move_rows = connection.execute(
+                """
+                SELECT em.monster_external_id,
+                       mm.ordinal,
+                       mm.move_id,
+                       mm.intent,
+                       mm.damage_normal,
+                       mm.damage_ascension,
+                       mm.hit_count
+                FROM encounter_monsters AS em
+                JOIN catalog_entities AS ce
+                  ON ce.entity_type = 'monsters'
+                 AND ce.external_id = em.monster_external_id
+                JOIN monsters AS m ON m.entity_key = ce.entity_key
+                JOIN monster_moves AS mm ON mm.monster_key = m.entity_key
+                WHERE em.encounter_key = ?
+                ORDER BY em.monster_external_id, mm.ordinal, mm.move_id
+                """,
+                (encounter["_entity_key"],),
+            ).fetchall()
+        moves_by_monster: Dict[str, List[Dict[str, object]]] = {}
+        for move in move_rows:
+            monster_id = str(move["monster_external_id"] or "")
+            if not monster_id:
+                continue
+            moves_by_monster.setdefault(monster_id, []).append(
+                {
+                    "id": move["move_id"],
+                    "intent": move["intent"],
+                    "damage_normal": move["damage_normal"],
+                    "damage_ascension": move["damage_ascension"],
+                    "hit_count": move["hit_count"],
+                }
+            )
         encounter["_monsters"] = [
             {
                 "id": row["monster_external_id"],
@@ -1127,10 +1182,165 @@ class RelationalRepository:
                 "attack_pattern": json.loads(
                     row["attack_pattern_json"] or "{}"
                 ),
+                # Attack-pattern JSON is a state-machine description, not a
+                # numeric combat estimate.  Keep it for callers that need
+                # the raw fact, but expose normalized static moves for route
+                # pressure calculations.
+                "moves": moves_by_monster.get(
+                    str(row["monster_external_id"] or ""),
+                    [],
+                ),
             }
             for row in rows
         ]
         return encounter
+
+    def encounter_pool_expectations(
+        self,
+        boss_identifiers: Iterable[str],
+        *,
+        ascension: int = 0,
+    ) -> Dict[str, Dict[str, float]]:
+        """Return static act encounter expectations keyed by room class.
+
+        The active run never tells us which normal monster or elite will be
+        faced.  This query follows the catalog's Act -> encounter membership
+        instead, aggregates static monster HP/attack records, and returns only
+        an expected pressure profile.  It does not read or write any run
+        history table.
+        """
+        identifiers = tuple(
+            dict.fromkeys(
+                str(identifier).strip()
+                for identifier in boss_identifiers
+                if str(identifier).strip()
+            )
+        )
+        if not identifiers:
+            return {}
+        placeholders = ", ".join("?" for _ in identifiers)
+        # The catalog imports both normal and ascension values.  Select the
+        # appropriate column explicitly rather than always preferring the
+        # ascension field, so an A0 route does not silently inherit harder
+        # combat expectations just because that optional field exists.
+        # The imported static rules name Tough Enemies at A8 and Deadly
+        # Enemies at A9.  HP and damage therefore have separate gates; A1
+        # must never silently use either advanced value.
+        use_ascension_hp = int(ascension) >= 8
+        use_ascension_damage = int(ascension) >= 9
+        if use_ascension_hp:
+            hp_expression = """
+                COALESCE(
+                    monsters.max_hp_ascension,
+                    monsters.max_hp,
+                    monsters.min_hp_ascension,
+                    monsters.min_hp,
+                    0
+                )
+            """
+        else:
+            hp_expression = """
+                COALESCE(
+                    monsters.max_hp,
+                    monsters.min_hp,
+                    monsters.max_hp_ascension,
+                    monsters.min_hp_ascension,
+                    0
+                )
+            """
+        if use_ascension_damage:
+            damage_expression = """
+                COALESCE(
+                    monster_moves.damage_ascension,
+                    monster_moves.damage_normal,
+                    0
+                )
+            """
+        else:
+            damage_expression = """
+                COALESCE(
+                    monster_moves.damage_normal,
+                    monster_moves.damage_ascension,
+                    0
+                )
+            """
+        with self.connect() as connection:
+            rows = connection.execute(
+                f"""
+                SELECT encounter_entity.external_id AS encounter_id,
+                       encounters.room_type AS room_type,
+                       encounter_monsters.monster_external_id AS monster_id,
+                       {hp_expression} AS max_hp,
+                       MAX({damage_expression} * COALESCE(
+                           monster_moves.hit_count,
+                           1
+                       )) AS peak_attack
+                FROM act_entity_memberships AS boss_membership
+                JOIN act_entity_memberships AS encounter_membership
+                  ON encounter_membership.act_key = boss_membership.act_key
+                 AND encounter_membership.relation_type = 'encounters'
+                JOIN catalog_entities AS encounter_entity
+                  ON encounter_entity.entity_type = 'encounters'
+                 AND encounter_entity.external_id = encounter_membership.target_external_id
+                JOIN encounters ON encounters.entity_key = encounter_entity.entity_key
+                LEFT JOIN encounter_monsters
+                  ON encounter_monsters.encounter_key = encounter_entity.entity_key
+                LEFT JOIN catalog_entities AS monster_entity
+                  ON monster_entity.entity_type = 'monsters'
+                 AND monster_entity.external_id = encounter_monsters.monster_external_id
+                LEFT JOIN monsters ON monsters.entity_key = monster_entity.entity_key
+                LEFT JOIN monster_moves ON monster_moves.monster_key = monsters.entity_key
+                WHERE boss_membership.relation_type = 'bosses'
+                  AND boss_membership.target_external_id IN ({placeholders})
+                GROUP BY encounter_entity.external_id,
+                         encounters.room_type,
+                         encounter_monsters.monster_external_id
+                """,
+                identifiers,
+            ).fetchall()
+        encounters: Dict[str, Dict[str, object]] = {}
+        identifier_set = set(identifiers)
+        for row in rows:
+            encounter_id = str(row["encounter_id"] or "")
+            if not encounter_id:
+                continue
+            room_type = str(row["room_type"] or "").upper()
+            if encounter_id in identifier_set or "BOSS" in room_type:
+                kind = "BOSS"
+            elif "ELITE" in room_type or "ELITE" in encounter_id.upper():
+                kind = "ELITE"
+            else:
+                kind = "MONSTER"
+            bucket = encounters.setdefault(encounter_id, {
+                "kind": kind,
+                "hp": 0.0,
+                "attack": 0.0,
+                "monsters": set(),
+            })
+            monster_id = str(row["monster_id"] or "")
+            if monster_id and monster_id not in bucket["monsters"]:
+                bucket["monsters"].add(monster_id)
+                bucket["hp"] += float(row["max_hp"] or 0)
+                bucket["attack"] += float(row["peak_attack"] or 0)
+
+        grouped: Dict[str, List[Dict[str, object]]] = {}
+        for value in encounters.values():
+            grouped.setdefault(str(value["kind"]), []).append(value)
+        result: Dict[str, Dict[str, float]] = {}
+        for kind, values in grouped.items():
+            count = len(values)
+            if count == 0:
+                continue
+            result[kind] = {
+                "sample_count": float(count),
+                "average_hp": round(sum(float(value["hp"]) for value in values) / count, 4),
+                "average_attack": round(sum(float(value["attack"]) for value in values) / count, 4),
+                "average_enemy_count": round(
+                    sum(len(value["monsters"]) for value in values) / count,
+                    4,
+                ),
+            }
+        return result
 
     def event_tree(self, identifier: str) -> Optional[Dict]:
         event = self.find_entity("events", identifier)

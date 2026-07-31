@@ -1,0 +1,11 @@
+{
+  "schema_version": 4,
+  "event_id": "legacy-run:4",
+  "event_type": "decision_closed",
+  "emitted_at": "2026-07-01T00:00:03+00:00",
+  "run_id": "legacy-run",
+  "sequence": 4,
+  "state": {"character": "TEST_HERO"},
+  "parent_event_id": "legacy-run:2",
+  "outcome": {"kind": "skipped"}
+}

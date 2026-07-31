@@ -6,6 +6,7 @@ an LLM client.  It is suitable for a no-console PyInstaller executable.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import logging
 import os
 import sys
@@ -13,7 +14,22 @@ from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
 from advisor.data_sources import load_local_card_tiers
+from advisor.versions import (
+    CAMPFIRE_POLICY_VERSION,
+    CARD_REWARD_POLICY_VERSION,
+    DECK_EDIT_POLICY_VERSION,
+    EVENT_POLICY_VERSION,
+    MERCHANT_POLICY_VERSION,
+    NEOW_POLICY_VERSION,
+    POLICY_BUNDLE_VERSION,
+    ROUTE_POLICY_VERSION,
+)
 from realtime.checkpoint import ActiveRunCheckpointStore
+from realtime.compatibility import (
+    RuntimeComponents,
+    default_manifest_path,
+    load_compatibility_manifest,
+)
 from realtime.file_bridge import (
     GameStateFileBridge,
     default_checkpoint_path,
@@ -22,10 +38,26 @@ from realtime.file_bridge import (
     default_output_path,
 )
 from realtime.processor import RealtimeEventProcessor
+from realtime.protocol import CURRENT_SCHEMA_VERSION
+from realtime.version import GUIDE_VERSION
 from storage.relational import RelationalRepository
 
 
 LOGGER = logging.getLogger("sts2-guide")
+
+
+def _ensure_windowed_stdio() -> None:
+    """Give argparse safe sinks inside a no-console PyInstaller process.
+
+    PyInstaller sets stdout/stderr to None for a windowed executable.
+    argparse writes its help and error text to those streams; without sinks,
+    ``--help`` raises before it can exit and the hidden error dialog makes the
+    process appear hung.
+    """
+    if sys.stdout is None:
+        sys.stdout = open(os.devnull, "w", encoding="utf-8")
+    if sys.stderr is None:
+        sys.stderr = open(os.devnull, "w", encoding="utf-8")
 
 
 def _project_or_bundle_root() -> Path:
@@ -65,6 +97,76 @@ def _default_runtime_database_path() -> Path:
     if configured:
         return Path(configured).expanduser()
     return default_input_path().parent / "sts2-guide.db"
+
+
+def _sha256_path(path: Path) -> str | None:
+    try:
+        digest = hashlib.sha256()
+        with path.open("rb") as stream:
+            for block in iter(lambda: stream.read(1024 * 1024), b""):
+                digest.update(block)
+        return digest.hexdigest()
+    except OSError:
+        return None
+
+
+def _observe_local_components(
+    repository: RelationalRepository,
+    *,
+    catalog_path: Path,
+    community_path: Path,
+) -> RuntimeComponents:
+    """Read independent Host/data/policy identities for manifest comparison."""
+
+    metadata: dict[str, str] = {}
+    try:
+        with repository.connect() as connection:
+            metadata = {
+                str(row["key"]): str(row["value"])
+                for row in connection.execute(
+                    """
+                    SELECT key, value FROM schema_metadata
+                    WHERE key IN ('schema_version', 'catalog_sha256')
+                    """
+                ).fetchall()
+            }
+    except Exception:
+        # Missing observations are deliberately represented as None and will
+        # fail closed in the compatibility assessment.
+        metadata = {}
+
+    stored_catalog_hash = metadata.get("catalog_sha256")
+    try:
+        sqlite_schema_version = int(metadata["schema_version"])
+    except (KeyError, TypeError, ValueError):
+        sqlite_schema_version = None
+    return RuntimeComponents(
+        guide_version=GUIDE_VERSION,
+        protocol_schema_version=CURRENT_SCHEMA_VERSION,
+        sqlite_schema_version=sqlite_schema_version,
+        sqlite_snapshot_id=(
+            f"knowledge-{stored_catalog_hash[:16]}"
+            if stored_catalog_hash
+            else None
+        ),
+        knowledge_sha256=_sha256_path(catalog_path),
+        community_scores_sha256=_sha256_path(community_path),
+        policy_bundle_version=POLICY_BUNDLE_VERSION,
+        card_reward_policy_version=CARD_REWARD_POLICY_VERSION,
+        route_policy_version=ROUTE_POLICY_VERSION,
+        merchant_policy_version=MERCHANT_POLICY_VERSION,
+        campfire_policy_version=CAMPFIRE_POLICY_VERSION,
+        neow_policy_version=NEOW_POLICY_VERSION,
+        event_policy_version=EVENT_POLICY_VERSION,
+        deck_edit_policy_version=DECK_EDIT_POLICY_VERSION,
+    )
+
+
+def _clear_visible_advice(path: Path) -> None:
+    """Fail closed before polling when Host compatibility is unavailable."""
+
+    path.unlink(missing_ok=True)
+    path.with_name(f"{path.name}.tmp").unlink(missing_ok=True)
 
 
 def _configure_logging(log_path: Path, console: bool) -> None:
@@ -127,7 +229,21 @@ def _acquire_instance_lock(exchange_dir: Path) -> None:
     os.close(fd)
 
 
+def _release_instance_lock(exchange_dir: Path) -> None:
+    """Release only the lock owned by this process."""
+    lock_path = exchange_dir / ".host.lock"
+    try:
+        owner = int(lock_path.read_text(encoding="utf-8").strip())
+    except (FileNotFoundError, ValueError, OSError):
+        return
+    if owner == os.getpid():
+        lock_path.unlink(missing_ok=True)
+
+
 def build_bridge(args: argparse.Namespace) -> GameStateFileBridge:
+    compatibility_manifest = load_compatibility_manifest(
+        args.compatibility_manifest
+    )
     repository = RelationalRepository(str(args.database))
     repository.ensure_schema()
     if not args.catalog.exists():
@@ -149,7 +265,22 @@ def build_bridge(args: argparse.Namespace) -> GameStateFileBridge:
         repository,
         checkpoint=ActiveRunCheckpointStore(args.checkpoint),
         local_tiers=local_tiers,
+        compatibility_manifest=compatibility_manifest,
+        runtime_components=_observe_local_components(
+            repository,
+            catalog_path=args.catalog,
+            community_path=args.community_scores,
+        ),
     )
+    if (
+        processor.local_compatibility is not None
+        and not processor.local_compatibility.compatible
+    ):
+        _clear_visible_advice(args.output)
+        LOGGER.error(
+            "Local compatibility gate is closed: %s",
+            ",".join(processor.local_compatibility.reason_codes),
+        )
     return GameStateFileBridge(
         processor,
         input_path=args.input,
@@ -194,13 +325,24 @@ def _parser() -> argparse.ArgumentParser:
         type=Path,
         default=_default_local_tier_path(),
     )
+    parser.add_argument(
+        "--compatibility-manifest",
+        type=Path,
+        default=default_manifest_path(),
+    )
     parser.add_argument("--poll-interval", type=float, default=0.1)
     parser.add_argument("--once", action="store_true")
+    parser.add_argument(
+        "--startup-check",
+        action="store_true",
+        help="Initialize the packaged host and exit without polling.",
+    )
     parser.add_argument("--console-log", action="store_true")
     return parser
 
 
 def main() -> int:
+    _ensure_windowed_stdio()
     args = _parser().parse_args()
     _configure_logging(
         args.input.parent / "sts2-guide.log",
@@ -208,40 +350,50 @@ def main() -> int:
     )
     # Acquire instance lock *before* database/bridge initialization so a
     # second host never opens the SQLite file or syncs the catalog.
+    lock_acquired = False
     if not args.once:
         try:
             _acquire_instance_lock(args.checkpoint.parent)
+            lock_acquired = True
         except RuntimeError:
             LOGGER.exception("Cannot start: another host instance is running.")
             return 1
 
     try:
-        bridge = build_bridge(args)
-    except Exception:
-        LOGGER.exception("STS2 Guide background host failed to initialize.")
-        return 1
+        try:
+            bridge = build_bridge(args)
+        except Exception:
+            _clear_visible_advice(args.output)
+            LOGGER.exception("STS2 Guide background host failed to initialize.")
+            return 1
 
-    LOGGER.info(
-        "P0 host started queue=%s output=%s checkpoint=%s",
-        args.events_dir,
-        args.output,
-        args.checkpoint,
-    )
-    if args.once:
-        result = bridge.run_once()
         LOGGER.info(
-            "One-shot result=%s",
-            None if result is None else result.get("status"),
+            "P0 host started queue=%s output=%s checkpoint=%s",
+            args.events_dir,
+            args.output,
+            args.checkpoint,
         )
-        return 0
-    try:
-        bridge.run_forever(args.poll_interval)
-    except KeyboardInterrupt:
-        LOGGER.info("P0 host stopped.")
-        return 0
-    except Exception:
-        LOGGER.exception("P0 host stopped unexpectedly.")
-        return 1
+        if args.startup_check:
+            LOGGER.info("Packaged host startup check passed.")
+            return 0
+        if args.once:
+            result = bridge.run_once()
+            LOGGER.info(
+                "One-shot result=%s",
+                None if result is None else result.get("status"),
+            )
+            return 0
+        try:
+            bridge.run_forever(args.poll_interval)
+        except KeyboardInterrupt:
+            LOGGER.info("P0 host stopped.")
+            return 0
+        except Exception:
+            LOGGER.exception("P0 host stopped unexpectedly.")
+            return 1
+    finally:
+        if lock_acquired:
+            _release_instance_lock(args.checkpoint.parent)
 
 
 if __name__ == "__main__":

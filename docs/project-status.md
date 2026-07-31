@@ -1,6 +1,6 @@
 # STS2 Guide 当前实现状态
 
-> 更新时间：2026-07-13
+> 更新时间：2026-08-01
 >
 > 产品依据：[`product-spec.md`](product-spec.md)
 >
@@ -8,13 +8,57 @@
 
 ## 当前结论
 
-P0 的开发态真实闭环已经通过：只读 Mod 能捕获普通选牌，本地 Python Host 离线计算，
-游戏内左侧抽屉显示卡牌与跳过推荐，决策关闭后清理建议；保存继续保持同一局身份，放弃
-后只保存最终摘要并删除临时状态。
+P0/P0.5 在游戏 `0.108.0` 上曾完成开发态真机闭环；这些是历史证据，不自动构成当前版本
+兼容承诺。本机游戏已更新为 `0.109.1`（commit `c8c577f6`），`sts2.dll` SHA-256 为
+`016C6DF717D997FCBD8F2A55102CA63CB4A89C1FA8E4DB8DACFDDF803B6B70E1`。
 
-这允许项目进入 P0.5 架构收口。当前 P0.5 只有决策内核基础和 Card Reward 适配，尚未达到
-完成定义；P1 的商店、路线、篝火等建议均未实现。当前发布 EXE 早于协议 v4 和本轮改动，
-完成 P0.5 后必须重新构建和回归，不能把旧 `dist/` 产物视为当前发布版本。
+2026-07-31 的工作区实现已升级到 Guide `0.3.0-alpha.0`、Mod `0.3.0`、生产协议 v9，
+release fingerprint 为
+`56f928dcd6650946d2929910f2efa9c5c0b7f962667177421dd6c2ecf2f15afd`。v9 将 Card、
+Route、Merchant、Rest Site、Neow、Event 和 Deck Edit 统一为严格候选 envelope，并加入
+父子决策身份；Python 仍只为离线回放兼容 v1-v8。
+
+TASK-008 的全五角色选牌和三种路线软偏好继续保留。TASK-009 的**自动实现层**现已加入
+Merchant、Rest Site/Smith、Neow、Event、Deck Edit 策略与只读 Observer、一个通用
+Drawer、跨决策 `ResourceBudget`，以及与实时 Host 隔离的确定性解释 Agent 边界。最新
+完整 Python 为 `377/377 OK`；新增五类决策 250 次内核基准为 P50 `2.654 ms`、
+P95 `21.615 ms`、最大 `26.155 ms`；Mod/PCK 针对当前 `0.109.1` 编译为
+`0 warning / 0 error`；EXE 重新打包并通过完整 `--startup-check`，无残留实例锁。
+
+这些仍只是源码、程序集静态签名和自动证据。新 v9 正式三件套与 EXE 只生成在工作区，
+未安装、未启动 Host、未启动游戏；所有 capability 与清单总状态均保持
+`pending_validation`，因此生产建议会按设计失败关闭。Card/Route 需要在 v9 下重做组合
+真机，Merchant/Rest/Neow/Event/Deck Edit 还必须逐项核对真实 predicate、候选、父子时序、
+Drawer 关闭、保存继续和换局。事件/Neow 运行 API 未暴露确定效果时只输出 `--`，不会从
+界面描述或 LLM 猜收益。
+
+2026-08-01 TASK-009 已按三路独立审查反例完成多轮返修：advice/schema/domain parity、
+真实父决策 lineage、active-child checkpoint、Mod capability/no-throw、Rest 成功回调、
+Deck Edit 主线程以及 Event/Neow 特殊 Card Reward 的 exact session parent 均已收口。协议与
+Mod 最终独立复审均为 P0/P1 0；完整 Python `377/377 OK`，Mod/PCK `0 warning / 0 error`，
+EXE 重建并通过 startup check。当前状态是**自动审查通过、待真机验收**，不是 P1 已交付；
+所有 capability 仍为 `pending_validation`。复杂 C# 时序尚缺独立可执行状态机测试，登记为
+P2 测试工程项，不替代真机门禁。
+
+## 2026-07-14 P1.0 路线 API 门禁证据
+
+- 当前游戏为 `0.108.0`；`sts2.dll` SHA-256 为
+  `51A671BFEB937271AF3E643D017396B13432098ED2B9DEBCEB110C74939BBBA1`；
+- 独立只读探针会话记录 61 条连续事件：3 次真实选路、1 次顶栏预览、2 次真实选点、1 次
+  保存继续、52 份完整地图视觉快照、3,328 个节点坐标样本；validator 通过；
+- 真机确认正式选路需要 `isOpenedFromTopBar=false`、地图打开、允许旅行、未旅行、非 debug、
+  单人、非空候选且模型/视觉候选稳定一致；顶栏预览即使显示候选也不创建路线 decision；
+- public `OnMapPointSelectedLocally(NMapPoint)` 的 Postfix 两次精确返回 `1:3`、`2:3`；点击
+  瞬间 `CurrentMapPoint` 尚未推进，生产关闭必须使用回调参数和点击前候选；
+- 保存继续会重建 RunState 与 screen owner；恢复早期状态不完整，`SetMap` 和真实 Open 后才
+  恢复 origin/候选/地图指纹。逻辑节点集合保持 64 个，但所有 Godot instance ID 均重建；
+- screen/net 坐标往返最大误差约 0.001 px；地图滚动与多种窗口/viewport 尺寸下节点全局
+  中心正确移动。当前版本没有用户地图 Zoom API，因此 Zoom 为 N/A，不再要求伪造测试；
+- decision ID 使用 Mod GUID，并按 Run、Act、真实 origin、规范化候选与地图指纹从唯一当前
+  检查点恢复。初始可操作 origin 为真实 `0:3`；空 origin 时 fail closed，不使用 sentinel、
+  运行时对象 ID 或直接字符串拼接；
+- 上述结论只表示生产 API 门禁通过，不表示路线产品功能完成；首轮生产代码独立审查未
+  通过，必须先返修，不能进入安装/真机验收。
 
 ## 2026-07-13 真机验收证据
 
@@ -29,7 +73,7 @@ P0 的开发态真实闭环已经通过：只读 Mod 能捕获普通选牌，本
 - 第一场普通战斗后的候选为 `SOLAR_STRIKE / CRESCENT_SPEAR / GUIDING_STAR`，后台推荐
   `GUIDING_STAR`，游戏内面板显示名称、三张分数和跳过分，用户确认与真实界面一致；
 - 领取卡牌后产生 `decision_closed`，左侧面板消失，检查点牌组包含 `GUIDING_STAR`；
-- 进入商店时没有错误显示选牌面板。商店库存尚未捕获，符合“P1 未实现”的安全降级；
+- 当时进入商店没有错误显示选牌面板；该历史版本尚未捕获商店库存，安全降级正确；
 - 从商店保存返回并继续游戏时，游戏恢复到同一商店场景，没有旧选牌建议；
 - 放弃产生 `run_ended(outcome=abandon)`：SQLite `run_summaries` 只新增一条摘要，最终
   角色、楼层、分数、牌组、遗物和药水均有记录；
@@ -45,16 +89,23 @@ Neow 中“祝福直接打开特殊选牌”的随机分支不属于 P0 推荐�
 
 ## 协议与实时生命周期
 
-- Mod 当前只生产 JSON Schema v4；v4 增加真实 `boss_encounter_ids`；
-- Python 消费端兼容 schema v1-v4，以便旧夹具继续回放；
-- 事件使用 `run_id + event_id + sequence`，候选使用带位置的稳定实例 ID；
-- 面板只有在 Run、事件和可见候选全部匹配时显示，不能回放上一组分数；
+- Mod 源码当前生产 JSON Schema v9；v5 分离不可变 `event_id` 与稳定 `decision_id`，v6
+  新增 `route_choice`/真实 `origin_node_id`，v7 增加完整快照、成功提交 revision、
+  生产者/游戏程序集身份和跨组件 `release_fingerprint`，v8 增加显式路线偏好，v9
+  增加通用候选、类型化成本/效果和 `decision_parent`；Python 仅为离线回放兼容 v1-v8；
+- 决策打开、更新和关闭校验 `run_id + decision_id + sequence`；跨局关闭和冲突重复关闭
+  失败关闭，完全相同的重复关闭保持幂等；
+- 面板同时校验 Run、事件、决策、sequence、完整候选指纹与可见候选，不能回放上一组分数；
 - `active-run.json` 是唯一可原子替换的当前局检查点；
 - `events/` 是处理后删除的临时队列，不是历史数据库；
 - 胜利、失败或放弃后只向 SQLite `run_summaries` 写一条最终摘要；
 - 实时路径不向 `run_states`、`decision_events`、`decision_outcomes` 或
   `game_state_events` 追加历史；
 - Host 使用交换目录单实例锁，原子替换包含有界重试。
+- `advice-event.json` 只保存当前可执行 `Recommendation`；决策关闭、非法输入或新的无效
+  选牌会清理它，无关地图/商店观察不会覆盖或误删仍打开的决策建议。
+- 路线偏好只从同一 Run、同一 release 的唯一 `active-run.json` 恢复；事件镜像和待处理
+  spool 不是偏好权威源，checkpoint 损坏时 Host/Mod 均回到安全默认状态。
 
 ## P0 推荐与界面
 
@@ -66,6 +117,9 @@ Neow 中“祝福直接打开特殊选牌”的随机分支不属于 P0 推荐�
 - SQLite 静态效果标签与有限权重社区先验；
 - 输出、防御、抽牌、费用、范围、成长、牌组负担和协同信号；
 - 动态跳过候选；推荐分是局面适配度，不是胜率。
+- 五角色共用通用攻防、HP、遗物、路线、跳过和数值边界规则；角色机制由薄 adapter 映射
+  为统一 provider/payoff/spender/capacity/multiplier 信号，缺少真实动态状态时报告
+  data gap。
 
 游戏内界面是贴住左侧的半透明抽屉，支持候选数量安全降级、内容自适应宽度、展开/收起、
 实际中文名、推荐高亮和关闭销毁。P0 标准验收场景仍是三张牌加跳过。
@@ -75,26 +129,78 @@ Neow 中“祝福直接打开特殊选牌”的随机分支不属于 P0 推荐�
 
 ## P0.5 当前状态
 
-已经存在并有自动测试覆盖：
+代码与自动验证已经完成：
 
-- `advisor/decision_core.py`：`WorldState`、`DecisionCandidate`、`DecisionRequest`、
-  `CandidateAssessment`、`Recommendation` 和 `PolicyRegistry`；
+- `WorldState` 已改为明确的角色、资源、牌组、遗物、药水和地图不可变领域对象，不再把
+  协议原始 mapping 直接交给策略；`scoring_state()` 只作为已验证 P0 评分器的兼容适配；
+- `DecisionRequest` 使用稳定决策 ID、类型、候选实例 ID、约束和状态 sequence；
+- `DecisionLifecycleManager` 明确处理 opened/updated/closed 和 Run 清理，Host 重启后允许
+  由唯一当前局检查点恢复关闭事件，但不保存决策历史；
+- `Recommendation` 统一策略版本、状态版本、候选评价、推荐身份、置信度、多维贡献和
+  数据缺口；Card Reward 使用 contract v1，Route 使用 contract v2；
+- `PolicyRegistry` 对未注册策略、错误决策身份、错误状态版本、重复/未知候选和无评价推荐
+  失败关闭；
 - `advisor/policies.py`：`CardRewardPolicy`，将现有 Card Reward 推荐器适配为第一个策略；
 - `realtime/processor.py`：Card Reward 已通过统一请求和策略注册表调用，同时保留 P0
-  advice payload 兼容；
+  `advice` payload 兼容，并额外输出 canonical `recommendation`；
 - 重复实体候选使用“位置 + 实体 ID”区分，不因两张同名卡冲突；
-- 未注册策略失败关闭，策略返回未知候选或错误决策身份会被拒绝。
+- `ContextDrawer.cs` 统一拥有左侧布局、视口自适应、候选行、推荐高亮和展开/收起动画；
+  `CardRewardAdvicePanel` 只负责真实候选校验和 Card Reward advice 解析；
+- `advice-event.schema.json` 已加入 canonical Recommendation contract；
+- 迁移等价测试确认同一输入的新策略适配结果与原 P0 `recommend_card_reward` 完全一致；
+- advice 由当前决策拥有：关闭或错配时清理/失效，无关观察保留当前决策的 advice；抽屉
+  handle 与具体选牌界面绑定，旧界面退出回调不能关闭新抽屉。
+- advice publish/clear 失败时不会提前确认临时队列；checkpoint replay 会重试幂等副作用，
+  且旧 close 不会误清后来属于另一决策的建议；
+- 最近关闭 tombstone 会在 Host 重启后恢复，同一个稳定 decision ID 不能被更高 sequence
+  重新打开，不同新 ID 仍可正常开始；
+- Mod 的 Run 身份守卫不会把 Launch 时的临时未知身份当成新局，已结束的稳定 Run ID 也
+  不能被新局重新接受；恢复选牌 decision ID 还会严格核对局面指纹和更晚失效事件；
+- `run_ended` 只有在事件写入成功后才提交内存清理，瞬时写盘失败可由后续生命周期回调重试。
 
-尚未完成：
+仍未完成：
 
-1. `WorldState` 仍包裹较多协议原始 mapping，需要形成明确的资源、牌组、地图和场景字段；
-2. 决策打开、更新、关闭与 Run 生命周期还没有统一状态机；
-3. `Recommendation` 的多维评价、版本和数据缺口还没有完整可执行契约；
-4. 左侧 `CardRewardAdvicePanel` 尚未抽象为通用 `Context Drawer`；
-5. 需要补充迁移前后固定夹具等价测试、异常降级测试和一次 P0 真机回归；
-6. 完成后重新构建后台 EXE，并执行隔离 `--help`、`--once` 和真机启动验证。
+1. 在用户确认后安装通过自动审查的最新 Mod artifacts，并进行 TASK-007 的路线真机闭环；
+2. 对 Neow、商店、篝火、事件与 Deck Edit 的自动实现做独立代码审查和逐项组合真机；
+3. Event/Neow 的结构化效果目录与正式“为什么”入口。
 
-在这些验收完成前不得开始复制商店、路线或篝火分支。
+## P1.0 路线生产纵向切片（待 `0.109.1` 真机复核）
+
+首轮实现于 2026-07-15 因协议可执行性、identity、搜索边界、多维评分、失败关闭和测试覆盖
+不足退回。本轮返修已完成以下自动层面的收口：
+
+- schema/Pydantic 共同约束当时的生产 schema v8 与 v1-v7 离线回放，路线 v2 presentation 统一为
+  `primary_path_node_ids` / `backup_path_node_ids` / 类型化 `paths`，Card v1/v2 可安全消费；
+- Observer 使用真实 origin、模型/视觉 `Travelable` 候选一致性和两次稳定检查；完整 State 与
+  地图指纹参与 UPDATED/恢复 identity。写入、绑定、predicate 或选择关闭失败均隐藏 route UI，
+  不清除 Writer 恢复状态；
+- RoutePolicy 使用有界记忆化搜索，任何候选不可达或输入缺口错误都会失败关闭；静态遭遇池、
+  Boss 行动、升级/多段伤害、AOE、成长/资源、遗物、一次性药水、HP 与金币都以可解释因子参与；
+- Drawer/Overlay 只消费 fingerprint、owner、完整元数据和候选全量匹配的 advice；地图只
+  绘制一条推荐主路线，并逐帧重锚，对非法 topology、重复视觉节点和陈旧 owner 清线；
+- 旧 checkpoint/result 的 release fingerprint 不一致时不恢复 lifecycle、不重放旧建议，
+  当前策略会重新计算并原子替换；C# 的选牌和路线恢复同样要求精确 fingerprint；
+- 自动回归为 Python `293/293 OK`，包含 64 节点图、end-to-end 100 次 P95、跨 release
+  checkpoint 重算及严格 advice 正反例；本机 Godot 4.5.1 生成 DLL/JSON/PCK，
+  `0 warning / 0 error`。
+
+2026-07-30 复核发现的保存继续版本错配、首次写盘失败、旧地图 revision、严格类型、
+版本矩阵和旧 recommendation 重标兼容现已进入自动反例并通过。2026-07-31 又加入三个
+路线软偏好、同局恢复、偏离后的动态重算与单主路线硬约束。新 PCK 尚未安装，兼容清单
+仍为 `pending_validation`；详细实施和剩余真机门禁见 TASK-007 与 TASK-008。
+
+## Public Beta 策略核心（待组合真机）
+
+- `advisor/character_mechanics.py` 定义统一 `MechanicSignal`，五个角色 adapter 只负责把
+  结构化卡牌事实转换为机制 family/role，不自行持有最终分数；
+- effect tag 已升级至 v4，并修复 Rupture、Blade Dance、Tactician、Zap/Dualcast/
+  Defragment、Comet、Venerate、Bodyguard/Unleash 与 Shroud 等已知反例；
+- 路线模式进入 `WorldState`、Card/Route 策略、协议、checkpoint、advice 和 Drawer；
+  同一真实路线决策切换模式复用 decision ID、生成新 event ID 并以 UPDATED 重算；
+- Overlay 和正式 Route advice 拒绝非空 backup，只允许一条 `primary_path_node_ids`；
+- `growth` 仍受低 HP 生存底线约束；缺少真实地图时 Card Reward 不伪造 route-fit；
+- 机制 signals、data gaps 和资源维度已经进入正式 canonical Recommendation，而非只停留
+  在兼容 payload。
 
 ## 结构化数据
 
@@ -113,45 +219,75 @@ Neow 中“祝福直接打开特殊选牌”的随机分支不属于 P0 推荐�
 | `event_options` | 363 |
 | `acts` | 4 |
 | `act_entity_memberships` | 140 |
-| `mechanic_constants` | 8 |
+| `mechanic_constants` | 9 |
 
 所有遭遇怪物引用和 Act Boss 引用均通过完整性检查。结构化实体和机制进入 SQLite；攻略
 正文不进入关系库。本机 Mobalytics tier、真实数据库、攻略快照和运行日志继续 Git 忽略。
 
-## P1 调研证据与未实现范围
+## P1 扩展决策套件（自动审查通过，待真机）
 
-当前游戏程序集已确认商店存在公开 API：
+当前 `0.109.1` 程序集已经静态确认并由 Mod 编译引用：
 
-- `NMerchantInventory.Inventory`；
-- `MerchantInventory.CharacterCardEntries / ColorlessCardEntries`；
-- `RelicEntries / PotionEntries / CardRemovalEntry`；
-- 商品公开 `Cost / IsStocked / EnoughGold`，卡牌另有 `IsOnSale` 和实际
-  `CardCreationResult`。
+- Merchant：`NMerchantInventory.Inventory/IsOpen/Open/OnCardRemovalUsed/_ExitTree`，
+  `MerchantInventory.AllEntries/Player`，各商品公开实际模型及
+  `Cost/IsStocked/EnoughGold`；
+- Rest Site：`NRestSiteRoom.Options/Create/EnableOptions/AfterSelectingOption/
+  BeforeExitingRoom/_ExitTree`，`RestSiteOption.OptionId/IsEnabled/Title/OnSelect`，
+  `HealRestSiteOption.GetHealAmount(Player)`；
+- Event/Neow：`NEventRoom.Create/OptionButtonClicked/_ExitTree`，
+  `EventModel.CurrentOptions/CanonicalInstance/Owner/IsFinished` 及精确
+  `SetEventState/SetEventFinished`，`EventOption.TextKey/IsLocked/IsProceed/Chosen`；
+- Deck Edit：升级/变化屏幕 `ShowScreen`、基础选择屏 `Create`、公开
+  `CardSelectorPrefs` 约束、`CardsSelected()` 与 `_ExitTree`。
 
-这些证据只说明 P1 可实现。当前没有商店 Observer、协议事件、策略、建议文件或真机库存
-记录，不能宣称商店建议完成。
+生产代码只注册 Harmony Postfix，不调用购买、选择或卡牌点击动作。Merchant 使用真实异构
+库存、实际价格、售罄/买不起状态和离开候选；同一库存对象变化保持同一 decision 并发出
+UPDATED。Rest/Smith 与商店移除通过结构化 `upgrade_card/remove_card` 效果和真实子屏建立
+父子决策；多选组合尚未建模时直接隐藏。Event/Neow 使用真实 option identity；效果未知时
+显式 data gap。通用 Drawer 严格核对 Run/Event/Decision/sequence/capability/候选，并把
+最多三个关键原因作为候选悬浮提示。
 
-路线方面，P0 已有真实节点、坐标、`Children`、下一节点和 Boss。P1 计划在真实地图上
-绘制独立只读 Overlay 表达主路线和备选路线，不写入游戏原生绘图数据。当前尚无路线策略
-或地图推荐叠加层。
+`explain/` 提供 latest-only、内存态、过期拒绝的确定性解释契约，只复述冻结
+Recommendation 的 factors/dimensions/data gaps；它不进入实时 EXE、不调用网络/LLM/
+向量库、不重新评分，也尚未接入正式游戏内“为什么”按钮。攻略 RAG 和远程模型仍是后续
+可选解释能力，不是当前交付。
 
 ## 自动验证与构建基线
 
-本次 Git 基线提交前已重新执行：
+当前工作区自动证据：
 
-- 完整 Python 单元测试：137/137 通过；
+- 2026-08-01 最新完整 Python 单元测试：377/377 通过；包含 64 节点 DAG、
+  event→checkpoint→advice、v9 严格通用候选、v1-v8 回放、跨组件兼容、损坏 checkpoint
+  降级、五角色机制、五类扩展决策和解释边界。自动绿灯仍不能替代真机；
+- 固定选牌场景：26/26、93/93 断言通过，迁移没有改变推荐基线；
+- 新五类决策内核：250 样本，P50 2.654 ms、P95 21.615 ms、最大 26.155 ms；既有
+  文件桥与路线端到端性能门禁也继续满足 P95 ≤ 300 ms；
 - `git diff --check`：通过；
-- Mod `--no-restore` 编译：0 error、1 warning；warning 仅说明审查环境没有配置 Godot
-  可执行文件，因此跳过 PCK 打包，DLL 和 JSON 编译成功；
-- 最近一次带 Godot 的安装构建：0 warning、0 error，DLL/JSON/PCK 与游戏目录哈希一致；
+- 当前 Mod `--no-restore`：针对本机 `0.109.1` 程序集由 Godot 4.5.1 生成
+  DLL/JSON/PCK，0 warning / 0 error；最新 v9/fingerprint 三件套尚未安装；
+- 当前后台 EXE 为 27,626,831 bytes，SHA-256
+  `C635EA4E65DF88F8A0A0B68EBEFFC6E3A393D5272A7D11DB87B7E14E694E12E2`；打包后完整
+  `--startup-check` 通过且没有残留单实例锁。清单启用后仍需重新构建，避免安装前后
+  manifest 状态不一致；
+- Mod 工作区 artifacts：DLL 208,384 bytes，SHA-256
+  `6B1E2DC138F99E1E00412CE556765D10FA3E2E5D9783595B933C49AB9A720DBF`；PCK 692 bytes，
+  SHA-256 `D51ADC0B1D499D7D9F492E2725CE5047940358E99E266A5998AAAB8B6B23C839`；
+  JSON 344 bytes，SHA-256
+  `56FA0D63B7EE2E9C897E422474477082C3FBA0DAC83B027B98A3259C624C8EB4`；
 - Git 上传边界审计：`.env`、`.mcp.json`、本机 SQLite、私有 tier、Host 日志、EXE、
   Mod `bin/obj/artifacts` 和游戏安装目录文件均不在待提交集合；
 - 变更差异未发现大小写敏感的常见 API Key 或私钥特征。
 
 ## 下一步
 
-1. 完成 P0.5 决策内核契约和生命周期状态机；
-2. 将左侧面板收口为统一 `Context Drawer`，保持 P0 视觉和交互兼容；
-3. 完成等价回放、失败降级、完整测试、Mod 编译、EXE 重建和 P0 真机回归；
-4. P0.5 验收后进入 P1，优先实现商店库存捕获与购买建议，再实现地图路线策略及 Overlay；
-5. Neow 特殊选牌、篝火、Boss 遗物和事件按独立策略逐项增加，不共享猜测式分支。
+1. 由与实现角色分离的审查会话复核 TASK-009 实际 diff、v9 parity、Observer 生命周期和
+   只读边界；发现阻断则先返修；
+2. 游戏关闭时安装最新正式 Mod 三件套；临时将每项 capability 单独启用，启动唯一 Host，
+   按 Card/Route → Merchant → Rest/Smith → Neow → Event → Deck Edit 顺序真机，不得全局
+   一次放开；
+3. 每项记录真实候选、成本/资格、OPENED/UPDATED/CLOSED、Drawer/Overlay、父子决策、
+   保存继续、换局和清理；任一项失败即恢复 `pending_validation`；
+4. Event/Neow 真机采集真实 `TextKey` 与页面变化后，再决定哪些选项可由版本化静态
+   结构化效果表安全评分；在此之前保持 `--`，不解析描述；
+5. 组合真机通过后更新兼容清单、重新打包 EXE、形成干净 Git 基线；再推进托盘/安装器和
+   用户主动“为什么”入口。

@@ -31,7 +31,9 @@ STS2
 
 - 只注册 Harmony Postfix，不改写游戏返回值；
 - 读取真实游戏 API 中的角色、牌组、HP、遗物、药水、候选牌和地图；
-- 使用稳定 ID 生成 schema v4 事件；Python 消费端保留对 v1-v3 回放夹具的兼容；
+- 使用稳定 ID 生成生产 schema v9 事件；Python 消费端只为离线回放保留 v1-v8 兼容；
+  Card、Route、Merchant、Rest、Neow、Event 与 Deck Edit 共用严格候选 envelope 和
+  Recommendation contract；路线另使用 contract v2 presentation；
 - 不打分、不联网、不自动点击、不修改游戏或存档；
 - 建议的 `run_id + event_id + 候选稳定 ID` 全部匹配后才显示面板。
 
@@ -85,8 +87,8 @@ HP、章节、楼层和近期路线压力。分数不是胜率，每个内部因
 
 ## 地图与敌人边界
 
-P0 读取真实节点、坐标、类型、`MapPoint.Children` 连边、可选下一节点和 Boss，
-但不输出路线推荐。读取失败时不猜测连边。
+P0 先完成了真实节点、坐标、类型、`MapPoint.Children` 连边、可选下一节点和 Boss 的
+读取；P1.0 在这组事实之上生成一条只读主路线。读取失败时不猜测连边，也不发布路线。
 
 当前 Act 的 Boss 是已知事实；普通怪物和精英在进战前只能按真实遭遇池、游戏规则和
 已击败精英集合估计，不能预测为某个确定敌人。P0/P1 的敌人机制用于战前选牌与路线
@@ -106,10 +108,11 @@ P0 读取真实节点、坐标、类型、`MapPoint.Children` 连边、可选下
 - 本地事件发现到建议写回的 P95 目标不超过 300 ms；
 - 异常退出不得影响游戏进程和存档。
 
-## 后续扩展
+## 决策扩展架构
 
-P1 在 P0 验收后增加路线、商店、篝火、Boss 遗物等决策类型。增加这些能力前先完成
-P0.5 决策内核收口，避免把当前 `card_reward` 分支复制成多套相互独立的实时管线。
+P0.5 决策内核、P1.0 路线和 TASK-009 扩展决策自动实现已经进入源码。所有新增能力仍按
+capability 独立门禁，不能复制 `card_reward` 分支形成多套实时管线，也不能把自动实现
+写成真机交付。
 
 目标结构：
 
@@ -122,9 +125,10 @@ P0.5 决策内核收口，避免把当前 `card_reward` 分支复制成多套相
   → Policy Registry
        ├─ Card Reward Policy
        ├─ Route Policy
-       ├─ Shop Policy
-       ├─ Campfire Policy
-       └─ Boss Relic / Event Policy
+       ├─ Merchant Policy
+       ├─ Rest Site / Deck Edit Policy
+       ├─ Neow Policy
+       └─ Event Policy
   → Recommendation
   → Context Drawer
 ```
@@ -137,5 +141,74 @@ P0.5 决策内核收口，避免把当前 `card_reward` 分支复制成多套相
 - `Recommendation`：统一携带候选身份、排序、分数、多维因子、缺失数据和策略版本；
 - `Context Drawer`：只渲染已经通过 Run、决策和候选一致性校验的当前建议。
 
+当前实现中，`advice-event.json` 只承载一个 canonical `Recommendation` 和必要兼容
+payload。当前决策关闭、非法输入或新的无效决策会清理 advice；无关观察不会误删仍打开
+决策的建议。`ContextDrawer.cs` 只负责通用布局和交互，场景 Controller 负责真实 owner、
+身份与候选校验；后续策略不得把游戏状态解析重新塞回通用抽屉。
+
 每个策略模块必须具备真实状态捕获、确定性基线、失败降级、单元测试、回放测试和真机
 验收。RAG 只在用户展开解释时提供攻略证据，不接管实时决策。
+
+### P1.0 路线纵向切片
+
+路线必须区分两种事实：
+
+- `map_choice`：地图观察，手动预览也可能触发，只更新 `WorldState.map`；
+- `route_choice`：经真实 API 证明此刻可以选择下一节点的决策，才进入策略注册表。
+
+目标数据流为：
+
+```text
+Verified Route Decision API
+  → Route Event Adapter
+  → WorldState(map) + DecisionRequest(route_choice)
+  → Decision Kernel + RoutePolicy
+  → Recommendation v2(route_paths)
+  → RouteAdviceController
+       ├─ Context Drawer
+       └─ RouteMapOverlay
+```
+
+Route Event Adapter 只能从 `map_context.available_next_node_ids` 构建候选，候选 ID 直接使用
+真实节点 ID。地图图更新与 `OPENED/UPDATED/CLOSED` 生命周期更新是两个独立状态变换，但
+必须在同一次原子 checkpoint 替换中提交；同一事件同时携带地图和路线决策时，既不能通过
+`if/elif` 漏掉其中一项，也不能拆成两次写盘暴露中间状态。
+
+RoutePolicy 只消费领域 `WorldState` 和 `DecisionRequest`，不读取 Godot 节点、文件路径或
+UI 坐标。它输出每个真实下一节点的适配度和经过边校验的内部候选路径，但只发布并显示
+排序第一的一条当前主路线。UI 侧再次核验
+`run_id + event_id + decision_id + sequence + candidate IDs`，并在 Overlay 绘制前检查每条
+边都来自当前地图快照。
+
+`RouteAdviceController` 同时拥有 Drawer handle 和 Overlay handle，并绑定真实
+`NMapScreen` owner。Overlay 只根据当前游戏视觉节点换算坐标，忽略鼠标输入，不调用游戏
+选择方法，也不写入原生地图绘制状态。视觉节点暂时无法解析时可以继续显示 Drawer 文本，
+但必须隐藏线条并记录诊断。
+
+2026-07-14 的程序集与独立真机探针已确认生产门禁：真实选路需同时满足非顶栏预览、地图
+打开、允许旅行、未旅行、非 debug、单人、候选非空且模型/视觉候选稳定一致；真实选择由
+`OnMapPointSelectedLocally(NMapPoint)` Postfix 参数与点击前候选关闭。Overlay 每次从当前
+owner 的 `NMapPoint.GetGlobalRect().GetCenter()` 重新锚定；当前 0.108.0 没有用户地图 Zoom，
+历史证据不能代替当前 `0.109.1`；当前版本必须重新覆盖地图滚动、Zoom（若生产 UI
+可操作）、窗口/viewport/content scaling 的真实 transform 变化。
+
+完整 API 证据、生产协议 v9、Recommendation v2 和真机验收项以
+[`product-spec.md`](product-spec.md) 第 11.3 节及
+[`TASK-007`](tasks/TASK-007-p1-route-vertical-slice.md) 为准。门禁已通过只代表可以开始生产；
+2026-07-31 的 v9、发布指纹、路线三模式、五角色机制层和扩展决策自动实现已通过完整
+自动回归，当前兼容
+清单仍为 `pending_validation`，等待 `0.109.1` 隔离探针和正式安装后的组合真机验收，
+尚未交付完成。
+
+### P1 扩展决策通用链
+
+v9 对每个候选统一携带稳定 ID、kind、entity、label、eligible、不可用原因、类型化 cost
+和按 kind 校验的 payload。Merchant、Rest、Neow、Event 与 Deck Edit 只在 Adapter 中读取
+真实对象，之后走同一个 Processor、Lifecycle、Checkpoint、Policy Registry、Advice 和
+Drawer。父决策选择可能打开 Card Reward 或 Deck Edit 时，`decision_parent` 绑定父
+decision/candidate/source；父子身份无法唯一证明就不显示子建议。
+
+`ResourceBudget` 从同一 `WorldState` 派生 HP 安全底线、路线压力、金币保留目标、药水槽、
+牌组负担和升级候选。未知或随机效果成为 data gap，不能由标题、描述或 LLM 变成确定分。
+`explain/` 是隔离的 latest-only 内存边界，只解释冻结 Recommendation；它不由实时 Host
+导入，不在 EXE 中打包，也不写当前局或执行游戏动作。

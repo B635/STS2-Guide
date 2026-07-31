@@ -11,6 +11,7 @@ import math
 from collections import Counter
 from typing import Dict, Iterable, List, Optional
 
+from advisor.character_mechanics import assess_card_mechanics
 from advisor.contextual_scoring import (
     build_context,
     score_dynamic_skip,
@@ -24,8 +25,8 @@ from config import (
 )
 
 
-BASELINE_METHOD = "contextual_state_v3"
-COMMUNITY_PRIOR_METHOD = "contextual_state_plus_community_v3"
+BASELINE_METHOD = "contextual_state_v4"
+COMMUNITY_PRIOR_METHOD = "contextual_state_plus_community_v4"
 BASE_CARD_SCORE = 50.0
 # Independent, bounded ordinal prior for a manually curated local tier file.
 # These are intentionally not copied from the reference project.  The local
@@ -147,20 +148,31 @@ def _score_candidate(
             "state_score": score,
             "factors": factors,
             "known": False,
+            "mechanic_signals": [],
+            "data_gaps": [
+                *list(
+                    (context.get("mechanics") or {}).get("data_gaps") or ()
+                ),
+            ],
         }
 
     card_id = str(card.get("id") or "").lower()
     existing = int(profile["names"].get(card_id, 0))
+    mechanic_assessment = assess_card_mechanics(
+        character_id,
+        card,
+        context.get("mechanics") or {},
+    )
     state_factors = score_state_factors(
         card,
         option,
         profile,
         context,
+        mechanic_assessment=mechanic_assessment,
     )
     for factor in state_factors:
         score += float(factor["delta"])
     factors.extend(state_factors)
-
     state_score = score
     statistics_used = False
     prior_source = None
@@ -255,6 +267,11 @@ def _score_candidate(
         "effect_tags": sorted((card.get("_effect_tags") or {}).keys()),
         "statistics_used": statistics_used,
         "prior_source": prior_source,
+        "mechanic_signals": [
+            signal.as_dict()
+            for signal in mechanic_assessment["signals"]
+        ],
+        "data_gaps": list(mechanic_assessment["data_gaps"]),
     }
 
 
@@ -359,6 +376,14 @@ def recommend_card_reward(
         and margin >= 8.0
         else "low"
     )
+    mechanic_data_gaps = sorted({
+        str(gap)
+        for row in recommendations
+        for gap in row.get("data_gaps") or []
+        if str(gap).strip()
+    })
+    if mechanic_data_gaps:
+        confidence = "low"
     skip_candidate = {
         "choice": "skip",
         "option_index": len(recommendations),
@@ -405,6 +430,7 @@ def recommend_card_reward(
         "skip_score": skip_score,
         "skip_candidate": skip_candidate,
         "confidence": confidence,
+        "data_gaps": mechanic_data_gaps,
         "recommendations": recommendations,
         "profile": {
             "deck_size": profile["size"],
@@ -423,6 +449,8 @@ def recommend_card_reward(
             ),
             "resolved_relics": context["resolved_relics"],
             "route": context["route"],
+            "route_mode": context["route_mode"],
+            "mechanics": context["mechanics"],
             "effect_tag_counts": dict(
                 context["deck_effect_counts"].most_common()
             ),

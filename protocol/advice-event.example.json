@@ -1,0 +1,63 @@
+{
+  "event_id": "example-run:1",
+  "event_type": "card_reward",
+  "status": "processed",
+  "run_id": "example-run",
+  "sequence": 1,
+  "processed_at": "2026-07-14T00:00:00+00:00",
+  "decision_id": "example-run:card-reward:1",
+  "guide_preferences": {
+    "route_mode": "balanced"
+  },
+  "compatibility": {
+    "status": "compatible",
+    "manifest_version": 2,
+    "release_fingerprint": "56f928dcd6650946d2929910f2efa9c5c0b7f962667177421dd6c2ecf2f15afd",
+    "guide_version": "0.3.0-alpha.0",
+    "state_event_schema_version": 9,
+    "producer_id": "STS2GuideReadOnlyExporter",
+    "producer_version": "0.3.0",
+    "game_version": "0.109.1",
+    "game_assembly_sha256": "016c6df717d997fcbd8f2a55102ca63cb4a89c1fa8e4db8dacfddf803b6b70e1",
+    "capability": "card_reward",
+    "capability_status": "enabled"
+  },
+  "advice_disposition": {
+    "action": "publish",
+    "run_id": "example-run",
+    "decision_id": "example-run:card-reward:1"
+  },
+  "recommendation": {
+    "contract_version": 1,
+    "decision_id": "example-run:card-reward:1",
+    "decision_type": "card_reward",
+    "world_sequence": 1,
+    "policy_version": "card_reward:contextual_mechanics_v1",
+    "status": "recommend",
+    "confidence": "medium",
+    "recommended_candidate_id": "2:ANGER",
+    "candidates": [
+      {
+        "candidate_id": "0:POMMEL_STRIKE", "label": "剑柄打击", "display_index": 0,
+        "eligible": true, "score": 51, "rank": 3, "factors": [],
+        "dimensions": { "data_completeness": 1 }, "data_gaps": []
+      },
+      {
+        "candidate_id": "1:UPPERCUT", "label": "上勾拳", "display_index": 1,
+        "eligible": true, "score": 54, "rank": 2, "factors": [],
+        "dimensions": { "data_completeness": 1 }, "data_gaps": []
+      },
+      {
+        "candidate_id": "2:ANGER", "label": "愤怒", "display_index": 2,
+        "eligible": true, "score": 58, "rank": 1, "factors": [],
+        "dimensions": { "data_completeness": 1 }, "data_gaps": []
+      },
+      {
+        "candidate_id": "skip", "label": "跳过", "display_index": 3,
+        "eligible": true, "score": 25, "rank": 4, "factors": [],
+        "dimensions": { "data_completeness": 1 }, "data_gaps": []
+      }
+    ],
+    "data_gaps": []
+  }
+}

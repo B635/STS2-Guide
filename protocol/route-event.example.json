@@ -1,0 +1,81 @@
+{
+  "schema_version": 9,
+  "event_id": "example-run:route:4",
+  "event_type": "route_choice",
+  "emitted_at": "2026-07-14T08:01:00+00:00",
+  "source": "sts2-guide-readonly-mod",
+  "game_version": "0.109.1",
+  "snapshot_kind": "complete",
+  "state_revision": 4,
+  "producer_id": "STS2GuideReadOnlyExporter",
+  "producer_version": "0.3.0",
+  "game_assembly_sha256": "016c6df717d997fcbd8f2a55102ca63cb4a89c1fa8e4db8dacfddf803b6b70e1",
+  "release_fingerprint": "56f928dcd6650946d2929910f2efa9c5c0b7f962667177421dd6c2ecf2f15afd",
+  "guide_preferences": {
+    "route_mode": "balanced"
+  },
+  "run_id": "example-run",
+  "sequence": 4,
+  "decision_id": "8fba3d4d-route-opportunity",
+  "state": {
+    "character": "IRONCLAD",
+    "ascension": 0,
+    "act": 1,
+    "floor": 3,
+    "hp": 72,
+    "max_hp": 80,
+    "gold": 116,
+    "energy": 3,
+    "deck": [],
+    "relics": ["BURNING_BLOOD"],
+    "relic_states": [],
+    "potions": [],
+    "max_potion_slots": 3,
+    "modifiers": [],
+    "capture_warnings": []
+  },
+  "options": [],
+  "candidates": [
+    {
+      "candidate_id": "1:2",
+      "kind": "route_node",
+      "entity_id": "1:2",
+      "label": "1:2",
+      "eligible": true,
+      "unavailable_reason": null,
+      "costs": [],
+      "payload": {"node_id": "1:2"}
+    },
+    {
+      "candidate_id": "1:4",
+      "kind": "route_node",
+      "entity_id": "1:4",
+      "label": "1:4",
+      "eligible": true,
+      "unavailable_reason": null,
+      "costs": [],
+      "payload": {"node_id": "1:4"}
+    }
+  ],
+  "decision": {"can_skip": false, "can_reroll": false, "reward_source": "MAP"},
+  "decision_parent": null,
+  "parent_event_id": null,
+  "outcome": null,
+  "map_context": {
+    "map_name": "Act_1",
+    "player_row": 0,
+    "origin_node_id": "0:3",
+    "current_node_id": null,
+    "available_next_node_ids": ["1:2", "1:4"],
+    "boss_node_ids": ["16:3"],
+    "boss_encounter_ids": ["VANTOM_BOSS"],
+    "node_count": 4,
+    "nodes": [
+      {"node_id": "0:3", "kind": "MONSTER", "row": 0, "col": 3, "edges": ["1:2", "1:4"], "label": "Monster"},
+      {"node_id": "1:2", "kind": "MONSTER", "row": 1, "col": 2, "edges": ["16:3"], "label": "Monster"},
+      {"node_id": "1:4", "kind": "CAMPFIRE", "row": 1, "col": 4, "edges": ["16:3"], "label": "RestSite"},
+      {"node_id": "16:3", "kind": "BOSS", "row": 16, "col": 3, "edges": [], "label": "Boss"}
+    ]
+  },
+  "run_result": null
+}

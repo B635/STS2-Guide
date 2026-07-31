@@ -1,17 +1,16 @@
 # 当前实现任务
 
-- 状态：P0 真机闭环已验收，准备进入 P0.5
-- 已完成任务：[`TASK-004-live-p0-blockers.md`](TASK-004-live-p0-blockers.md)
-- 最后更新：2026-07-13
+- 状态：待真机验收
+- 当前任务：[`TASK-009-extended-decision-suite.md`](TASK-009-extended-decision-suite.md)
+- 最后更新：2026-08-01
 
-## 当前事实
+TASK-008 自动层已经通过独立终审，但按用户 2026-07-31 的新决定暂不进入组合真机。
+TASK-009 连续实现 Neow、商店、篝火、事件与只读解释 Agent，并继续完善选牌/路线的跨决策
+资源权重。所有新增能力共用一次 v9 通用候选迁移和统一决策内核，不能复制处理链。
 
-TASK-004 的普通选牌显示、稳定 Run ID、保存继续、Boss/真实地图、后台单实例、放弃摘要和
-临时状态清理均已通过自动验证与真机回归。具体证据见
-[`../project-status.md`](../project-status.md)。
-
-P0.5 基础代码已经存在，但尚未完成产品规格第 11.1 节的全部验收。下一次实现必须只做
-统一 `WorldState`、决策生命周期、`DecisionRequest`、策略注册、`Recommendation`、
-Card Reward 插件迁移和通用 `Context Drawer`，不得同时加入商店、路线或篝火建议。
-
-在新的 P0.5 任务单建立前，DeepSeek 不得自行修改代码或寻找其他 TODO。
+2026-08-01 已完成协议、Processor、Mod 时序与安全边界的多轮独立返修。最终完整 Python
+`377/377 OK`，Mod/PCK `0 warning / 0 error`，EXE 已重建并通过 `--startup-check`；协议
+来源矩阵与 Mod 特殊 Card Reward 生命周期分别由未参与实现的 Agent 复审，P0/P1 均为 0。
+普通奖励同步观察，Event/Neow 子奖励按 reward object 冻结来源并要求完整父身份，地图真实
+选点与 run 生命周期语义作废旧 parent，不再依赖固定帧数。尚未安装 Mod、启动 Host 或游戏，
+因此任务只进入“待真机验收”，所有 capability 继续失败关闭。

@@ -1,0 +1,9 @@
+{
+  "checkpoint_version": 3,
+  "run_id": "spool-race-run",
+  "release_fingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "last_sequence": 10,
+  "guide_preferences": {
+    "route_mode": "balanced"
+  }
+}

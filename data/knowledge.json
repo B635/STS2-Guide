@@ -50407,6 +50407,37 @@
     }
   ],
   "mechanics": {
+    "route_risk_profile_v1": {
+      "version": "route-risk-v1",
+      "kind_weights": {
+        "MONSTER": 0.0,
+        "ELITE": 6.0,
+        "CAMPFIRE": -2.0,
+        "SHOP": -1.0,
+        "EVENT": 1.0,
+        "TREASURE": -3.0,
+        "BOSS": 8.0,
+        "UNKNOWN": 3.0
+      },
+      "hp_low_threshold": 0.45,
+        "hp_critical_threshold": 0.25,
+        "elite_hp_penalty": 3.0,
+        "boss_path_bonus": 2.0,
+        "rest_low_hp_bonus": 5.0,
+        "shop_gold_threshold": 150,
+        "encounter_expected_risk": {
+          "MONSTER": 2.4,
+          "ELITE": 6.8,
+          "BOSS": 10.0
+        },
+        "capability_weights": {
+          "immediate_power": 0.08,
+          "survival": 0.07,
+          "aoe": 0.7,
+          "growth": 0.5,
+          "resource": 0.4
+        }
+    },
     "ascension_helper": {
       "PovertyAscensionGoldMultiplier": 0.75
     },

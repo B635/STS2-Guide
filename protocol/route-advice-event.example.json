@@ -1,0 +1,75 @@
+{
+  "event_id": "example-run:route:4",
+  "event_type": "route_choice",
+  "status": "processed",
+  "run_id": "example-run",
+  "sequence": 4,
+  "processed_at": "2026-07-16T08:01:01+00:00",
+  "decision_id": "8fba3d4d-route-opportunity",
+  "guide_preferences": {
+    "route_mode": "balanced"
+  },
+  "compatibility": {
+    "status": "compatible",
+    "manifest_version": 2,
+    "release_fingerprint": "56f928dcd6650946d2929910f2efa9c5c0b7f962667177421dd6c2ecf2f15afd",
+    "guide_version": "0.3.0-alpha.0",
+    "state_event_schema_version": 9,
+    "producer_id": "STS2GuideReadOnlyExporter",
+    "producer_version": "0.3.0",
+    "game_version": "0.109.1",
+    "game_assembly_sha256": "016c6df717d997fcbd8f2a55102ca63cb4a89c1fa8e4db8dacfddf803b6b70e1",
+    "capability": "route_choice",
+    "capability_status": "enabled"
+  },
+  "advice_disposition": {
+    "action": "publish",
+    "run_id": "example-run",
+    "decision_id": "8fba3d4d-route-opportunity"
+  },
+  "recommendation": {
+    "contract_version": 2,
+    "decision_id": "8fba3d4d-route-opportunity",
+    "decision_type": "route_choice",
+    "world_sequence": 4,
+    "policy_version": "route:mode_aware_risk_v1",
+    "status": "recommend",
+    "confidence": "medium",
+    "recommended_candidate_id": "1:4",
+    "candidates": [
+      {
+        "candidate_id": "1:2",
+        "label": "Monster",
+        "display_index": 0,
+        "eligible": true,
+        "score": 58.0,
+        "rank": 2,
+        "factors": [],
+        "dimensions": { "route_fit": -2.0, "data_completeness": 1.0 },
+        "data_gaps": []
+      },
+      {
+        "candidate_id": "1:4",
+        "label": "RestSite",
+        "display_index": 1,
+        "eligible": true,
+        "score": 64.0,
+        "rank": 1,
+        "factors": [],
+        "dimensions": { "route_fit": 2.0, "data_completeness": 1.0 },
+        "data_gaps": []
+      }
+    ],
+    "data_gaps": [],
+    "presentation": {
+      "kind": "route_paths",
+      "origin_node_id": "0:3",
+      "primary_path_node_ids": ["1:4", "16:3"],
+      "backup_path_node_ids": [],
+      "paths": [
+        { "candidate_id": "1:2", "node_ids": ["1:2", "16:3"], "score": 58.0 },
+        { "candidate_id": "1:4", "node_ids": ["1:4", "16:3"], "score": 64.0 }
+      ]
+    }
+  }
+}
