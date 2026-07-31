@@ -334,9 +334,12 @@ internal static class ProbeRecorder
         {
             currentPoint = null;
         }
-        var map = runState.Map;
+        var map = SafeRead<ActMap?>(() => runState.Map, null);
         var modelNext = currentPoint is not null
-            ? currentPoint.Children.Select(SafeNodeId)
+            ? SafeRead<IEnumerable<MapPoint>>(
+                    () => currentPoint.Children,
+                    Enumerable.Empty<MapPoint>()
+                ).Select(SafeNodeId)
             : map?.startMapPoints.Select(SafeNodeId) ?? [];
         var modelNextIds = modelNext
             .Distinct(StringComparer.Ordinal)
@@ -354,22 +357,36 @@ internal static class ProbeRecorder
         var currentNodeId = currentPoint is null
             ? null
             : SafeNodeId(currentPoint);
-        var currentCoord = runState.CurrentMapCoord is { } coord
+        var currentCoord = SafeRead<MapCoord?>(
+                () => runState.CurrentMapCoord,
+                null
+            ) is { } coord
             ? NodeId(coord)
             : null;
-        var visited = runState.VisitedMapCoords
+        var visited = SafeRead<IReadOnlyList<MapCoord>>(
+                () => runState.VisitedMapCoords,
+                []
+            )
             .Select(NodeId)
             .ToList();
 
+        var isInProgress = manager is not null
+            && SafeRead(() => manager.IsInProgress, false);
+        var isSingleplayer = manager is not null
+            && SafeRead(
+                () => manager.IsSingleplayerOrFakeMultiplayer,
+                false
+            );
+
         return new ProbeRunSnapshot(
             RuntimeObjectId(runState),
-            manager?.IsInProgress ?? false,
-            manager?.IsSingleplayerOrFakeMultiplayer ?? false,
-            runState.CurrentActIndex,
-            runState.ActFloor,
-            runState.TotalFloor,
-            runState.MapLocation.ToString(),
-            runState.RunLocation.ToString(),
+            isInProgress,
+            isSingleplayer,
+            SafeRead(() => runState.CurrentActIndex, -1),
+            SafeRead(() => runState.ActFloor, -1),
+            SafeRead(() => runState.TotalFloor, -1),
+            SafeRead(() => runState.MapLocation.ToString(), "__unavailable__"),
+            SafeRead(() => runState.RunLocation.ToString(), "__unavailable__"),
             currentNodeId ?? ActStartOrigin,
             currentNodeId,
             currentCoord,
@@ -437,6 +454,18 @@ internal static class ProbeRecorder
         catch
         {
             return null;
+        }
+    }
+
+    private static T SafeRead<T>(Func<T> read, T fallback)
+    {
+        try
+        {
+            return read();
+        }
+        catch
+        {
+            return fallback;
         }
     }
 

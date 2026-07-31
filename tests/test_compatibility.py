@@ -46,18 +46,18 @@ class CompatibilityManifestTests(unittest.TestCase):
     def setUp(self):
         self.manifest = load_compatibility_manifest(MANIFEST_PATH)
 
-    def test_checked_in_manifest_targets_01091_but_is_not_enabled(self):
-        self.assertEqual(self.manifest.game.version, "0.109.1")
+    def test_checked_in_manifest_enables_validated_01101_baseline(self):
+        self.assertEqual(self.manifest.game.version, "0.110.1")
         self.assertEqual(
             self.manifest.release_fingerprint,
             compute_release_fingerprint(self.manifest),
         )
         self.assertEqual(
             self.manifest.game.sts2_dll_sha256,
-            "016c6df717d997fcbd8f2a55102ca63cb4a89c1fa8e4db8dacfddf803b6b70e1",
+            "7c446efabf80614c429b5088e87101423aa5bb4c04fc3e73393261f6e6d404fd",
         )
-        self.assertEqual(self.manifest.status, "pending_validation")
-        self.assertFalse(self.manifest.is_enabled)
+        self.assertEqual(self.manifest.status, "enabled")
+        self.assertTrue(self.manifest.is_enabled)
 
     def test_default_manifest_path_points_to_packaged_source(self):
         self.assertEqual(default_manifest_path(), MANIFEST_PATH)
@@ -170,8 +170,14 @@ class CompatibilityManifestTests(unittest.TestCase):
                 "deck_edit",
             },
         )
+        self.assertEqual(self.manifest.capabilities["card_reward"], "enabled")
+        self.assertEqual(self.manifest.capabilities["route_choice"], "enabled")
         self.assertEqual(
-            set(self.manifest.capabilities.values()),
+            {
+                value
+                for name, value in self.manifest.capabilities.items()
+                if name not in {"card_reward", "route_choice"}
+            },
             {"pending_validation"},
         )
         for name, expected in (
@@ -476,8 +482,8 @@ class EventHandshakeTests(unittest.TestCase):
         self.assertFalse(assessment.compatible)
         self.assertEqual(assessment.reason_codes, ("component_mismatch",))
 
-    def test_01091_game_version_matches_enabled_manifest(self):
-        assessment = self.assess_game_version("0.109.1")
+    def test_01101_game_version_matches_enabled_manifest(self):
+        assessment = self.assess_game_version("0.110.1")
         self.assertTrue(assessment.compatible)
 
     def test_unknown_game_version_fails_closed(self):
@@ -489,7 +495,7 @@ class EventHandshakeTests(unittest.TestCase):
         assessment = assess_event_handshake(
             self.manifest,
             EventHandshake(
-                game_version="0.109.1",
+                game_version="0.110.1",
                 schema_version=6,
                 source="unknown-mod",
                 producer_id="other-mod",
@@ -516,7 +522,7 @@ class EventHandshakeTests(unittest.TestCase):
         assessment = assess_event_handshake(
             pending,
             EventHandshake(
-                game_version="0.109.1",
+                game_version="0.110.1",
                 schema_version=CURRENT_SCHEMA_VERSION,
                 source="sts2-guide-readonly-mod",
                 producer_id="STS2GuideReadOnlyExporter",
@@ -541,7 +547,7 @@ class LiveCompatibilityGateTests(unittest.TestCase):
     def tearDown(self):
         self.tempdir.cleanup()
 
-    def _event(self, *, game_version: str | None = "0.109.1") -> dict:
+    def _event(self, *, game_version: str | None = "0.110.1") -> dict:
         event = json.loads(
             (ROOT / "protocol" / "state-event.example.json").read_text(
                 encoding="utf-8"
@@ -610,8 +616,11 @@ class LiveCompatibilityGateTests(unittest.TestCase):
             deck_edit_policy_version=manifest.policy.deck_edit_version,
         )
 
-    def test_checked_in_pending_manifest_clears_visible_advice(self):
-        manifest = load_compatibility_manifest(MANIFEST_PATH)
+    def test_explicit_pending_manifest_clears_visible_advice(self):
+        manifest = replace(
+            load_compatibility_manifest(MANIFEST_PATH),
+            status="pending_validation",
+        )
         bridge, output_path = self._bridge(manifest, self._event())
 
         result = bridge.run_once()
@@ -809,13 +818,22 @@ class LiveCompatibilityGateTests(unittest.TestCase):
 
 
 class HostStartupCompatibilityTests(unittest.TestCase):
-    def test_pending_local_gate_clears_advice_before_polling(self):
+    def test_explicit_pending_local_gate_clears_advice_before_polling(self):
         with tempfile.TemporaryDirectory() as tempdir:
             root = Path(tempdir)
             output = root / "advice-event.json"
             output.write_text('{"status":"stale"}', encoding="utf-8")
+            pending_manifest = json.loads(
+                MANIFEST_PATH.read_text(encoding="utf-8")
+            )
+            pending_manifest["status"] = "pending_validation"
+            pending_path = root / "compatibility.json"
+            pending_path.write_text(
+                json.dumps(pending_manifest),
+                encoding="utf-8",
+            )
             args = SimpleNamespace(
-                compatibility_manifest=MANIFEST_PATH,
+                compatibility_manifest=pending_path,
                 database=root / "runtime.db",
                 catalog=ROOT / "data" / "knowledge.json",
                 community_scores=ROOT / "data" / "community_scores.json",

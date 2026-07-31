@@ -59,6 +59,9 @@ def summarize(paths: Iterable[Path]) -> dict[str, Any]:
     coordinate_samples = 0
     selected_node_ids: list[str] = []
     model_visual_candidate_mismatches = 0
+    actionable_candidate_mismatches = 0
+    viewport_sizes: set[tuple[float, float]] = set()
+    point_centers: dict[str, set[tuple[float, float]]] = defaultdict(set)
 
     for path, line_number, record in iter_records(paths):
         session_id = record["session_id"]
@@ -95,18 +98,48 @@ def summarize(paths: Iterable[Path]) -> dict[str, Any]:
                 and point.get("net_position_from_center") is not None
                 and point.get("screen_position_round_trip") is not None
             )
+            for point in points:
+                if not isinstance(point, dict):
+                    continue
+                node_id = point.get("node_id")
+                center = point.get("global_rect_center")
+                if (
+                    isinstance(node_id, str)
+                    and isinstance(center, dict)
+                    and isinstance(center.get("x"), (int, float))
+                    and isinstance(center.get("y"), (int, float))
+                ):
+                    point_centers[node_id].add(
+                        (round(float(center["x"]), 3), round(float(center["y"]), 3))
+                    )
         if isinstance(screen, dict):
             key = "/".join(
                 str(screen.get(name))
                 for name in ("is_open", "is_travel_enabled", "is_traveling")
             )
             travel_state_counts[key] += 1
+            viewport = screen.get("viewport_size")
+            if (
+                isinstance(viewport, dict)
+                and isinstance(viewport.get("x"), (int, float))
+                and isinstance(viewport.get("y"), (int, float))
+            ):
+                viewport_sizes.add(
+                    (float(viewport["x"]), float(viewport["y"]))
+                )
         if isinstance(run, dict):
             model = run.get("model_next_node_ids")
             visual = run.get("visual_travelable_node_ids")
             if isinstance(model, list) and isinstance(visual, list):
                 if set(model) != set(visual):
                     model_visual_candidate_mismatches += 1
+                    if (
+                        isinstance(screen, dict)
+                        and screen.get("is_open") is True
+                        and screen.get("is_travel_enabled") is True
+                        and screen.get("is_traveling") is False
+                    ):
+                        actionable_candidate_mismatches += 1
 
     for session_id, values in sequences.items():
         expected = list(range(1, len(values) + 1))
@@ -115,6 +148,19 @@ def summarize(paths: Iterable[Path]) -> dict[str, Any]:
                 f"session {session_id}: sequences are not contiguous: {values}"
             )
 
+    gate_evidence = {
+        "opened": event_counts["map_open_postfix"] > 0,
+        "closed": event_counts["map_close_postfix"] > 0,
+        "selected": event_counts["map_point_selected_postfix"] > 0,
+        "saved_setup": event_counts["saved_singleplayer_setup_postfix"] > 0,
+        "coordinates": coordinate_samples > 0,
+        "top_bar_preview": top_bar_open_counts["True"] > 0,
+        "viewport_changed": len(viewport_sizes) >= 2,
+        "map_transform_changed": any(
+            len(centers) >= 2 for centers in point_centers.values()
+        ),
+        "exit_tree": event_counts["map_exit_tree_postfix"] > 0,
+    }
     return {
         "sessions": len(sequences),
         "records": sum(event_counts.values()),
@@ -126,13 +172,9 @@ def summarize(paths: Iterable[Path]) -> dict[str, Any]:
         "visual_point_count_max": max(visual_point_counts, default=0),
         "coordinate_samples": coordinate_samples,
         "model_visual_candidate_mismatch_records": model_visual_candidate_mismatches,
-        "gate_evidence": {
-            "opened": event_counts["map_open_postfix"] > 0,
-            "closed": event_counts["map_close_postfix"] > 0,
-            "selected": event_counts["map_point_selected_postfix"] > 0,
-            "saved_setup": event_counts["saved_singleplayer_setup_postfix"] > 0,
-            "coordinates": coordinate_samples > 0,
-        },
+        "actionable_candidate_mismatch_records": actionable_candidate_mismatches,
+        "viewport_sizes": [list(size) for size in sorted(viewport_sizes)],
+        "gate_evidence": gate_evidence,
     }
 
 
@@ -150,6 +192,11 @@ def expand_log_arguments(values: Iterable[str]) -> list[Path]:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("logs", nargs="+")
+    parser.add_argument(
+        "--require-gates",
+        action="store_true",
+        help="fail unless the complete live route gate is present and clean",
+    )
     args = parser.parse_args(argv)
     try:
         result = summarize(expand_log_arguments(args.logs))
@@ -157,6 +204,20 @@ def main(argv: list[str] | None = None) -> int:
         print(f"route probe validation failed: {exc}", file=sys.stderr)
         return 2
     print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
+    if args.require_gates:
+        missing = [
+            name for name, passed in result["gate_evidence"].items() if not passed
+        ]
+        if result["event_counts"].get("probe_capture_failed", 0):
+            missing.append("no_probe_capture_failed")
+        if result["actionable_candidate_mismatch_records"]:
+            missing.append("no_actionable_candidate_mismatch")
+        if missing:
+            print(
+                "route probe gate incomplete: " + ", ".join(missing),
+                file=sys.stderr,
+            )
+            return 3
     return 0
 
 

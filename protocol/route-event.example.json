@@ -4,13 +4,13 @@
   "event_type": "route_choice",
   "emitted_at": "2026-07-14T08:01:00+00:00",
   "source": "sts2-guide-readonly-mod",
-  "game_version": "0.109.1",
+  "game_version": "0.110.1",
   "snapshot_kind": "complete",
   "state_revision": 4,
   "producer_id": "STS2GuideReadOnlyExporter",
   "producer_version": "0.3.0",
-  "game_assembly_sha256": "016c6df717d997fcbd8f2a55102ca63cb4a89c1fa8e4db8dacfddf803b6b70e1",
-  "release_fingerprint": "56f928dcd6650946d2929910f2efa9c5c0b7f962667177421dd6c2ecf2f15afd",
+  "game_assembly_sha256": "7c446efabf80614c429b5088e87101423aa5bb4c04fc3e73393261f6e6d404fd",
+  "release_fingerprint": "3ec6911d1288fe9c57b92a37c4f935fc8464d4eafabd6ccddddc896edb657e2f",
   "guide_preferences": {
     "route_mode": "balanced"
   },

@@ -1,4 +1,5 @@
 using HarmonyLib;
+using Godot;
 using MegaCrit.Sts2.Core.Nodes.Screens.Map;
 using MegaCrit.Sts2.Core.Runs;
 
@@ -118,13 +119,16 @@ internal static class MapScreenCleanedUpProbePatch
     }
 }
 
-[HarmonyPatch(typeof(NMapScreen), nameof(NMapScreen._ExitTree))]
+[HarmonyPatch(typeof(NMapScreen), nameof(NMapScreen._Notification))]
 internal static class MapScreenExitedTreeProbePatch
 {
     [HarmonyPostfix]
-    internal static void AfterExitTree(NMapScreen __instance)
+    internal static void AfterNotification(NMapScreen __instance, int what)
     {
-        ProbeRecorder.Capture("map_exit_tree_postfix", __instance);
+        if (what == Node.NotificationExitTree)
+        {
+            ProbeRecorder.Capture("map_exit_tree_postfix", __instance);
+        }
     }
 }
 

@@ -189,7 +189,7 @@ UI 坐标。它输出每个真实下一节点的适配度和经过边校验的�
 打开、允许旅行、未旅行、非 debug、单人、候选非空且模型/视觉候选稳定一致；真实选择由
 `OnMapPointSelectedLocally(NMapPoint)` Postfix 参数与点击前候选关闭。Overlay 每次从当前
 owner 的 `NMapPoint.GetGlobalRect().GetCenter()` 重新锚定；当前 0.108.0 没有用户地图 Zoom，
-历史证据不能代替当前 `0.109.1`；当前版本必须重新覆盖地图滚动、Zoom（若生产 UI
+历史证据不能代替当前 `0.110.1`；当前版本必须重新覆盖地图滚动、Zoom（若生产 UI
 可操作）、窗口/viewport/content scaling 的真实 transform 变化。
 
 完整 API 证据、生产协议 v9、Recommendation v2 和真机验收项以
@@ -197,7 +197,7 @@ owner 的 `NMapPoint.GetGlobalRect().GetCenter()` 重新锚定；当前 0.108.0 
 [`TASK-007`](tasks/TASK-007-p1-route-vertical-slice.md) 为准。门禁已通过只代表可以开始生产；
 2026-07-31 的 v9、发布指纹、路线三模式、五角色机制层和扩展决策自动实现已通过完整
 自动回归，当前兼容
-清单仍为 `pending_validation`，等待 `0.109.1` 隔离探针和正式安装后的组合真机验收，
+清单仍为 `pending_validation`，等待 `0.110.1` 隔离探针和正式安装后的组合真机验收，
 尚未交付完成。
 
 ### P1 扩展决策通用链

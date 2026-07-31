@@ -28,7 +28,11 @@ internal static class StateEventWriter
     private static DecisionParentContext? _pendingDecisionParent;
     private static bool _ended;
     private static string? _lastEndedStableRunId;
-    private static bool _resumeDecisionRecoveryAvailable;
+    // Card reward and route recovery are independent because STS2 can replay
+    // a reward screen before restoring the same pending map choice.  A card
+    // callback must not consume the one-shot route identity recovery gate.
+    private static bool _resumeCardDecisionRecoveryAvailable;
+    private static bool _resumeRouteDecisionRecoveryAvailable;
     private static bool _runIdentityLockedByEmission;
     private static bool _runTransitionPending;
     private static string _routeMode = GuideRouteModes.Balanced;
@@ -242,7 +246,8 @@ internal static class StateEventWriter
             _pendingDecision = null;
             _pendingDecisionParent = null;
             _pendingChildParent = null;
-            _resumeDecisionRecoveryAvailable = false;
+            _resumeCardDecisionRecoveryAvailable = false;
+            _resumeRouteDecisionRecoveryAvailable = false;
             _routeMode = GuideRouteModes.Balanced;
             RunStateReader.Clear();
         }
@@ -339,7 +344,7 @@ internal static class StateEventWriter
                     ConsumePendingChildParent(decisionParent);
                 }
                 _pendingDecisionParent = decisionParent;
-                _resumeDecisionRecoveryAvailable = false;
+                _resumeCardDecisionRecoveryAvailable = false;
                 var screenOwner = sameDecision
                     ? _pendingDecision?.ScreenOwner
                     : null;
@@ -598,7 +603,7 @@ internal static class StateEventWriter
             {
                 _pendingDecisionParent = null;
                 _pendingChildParent = null;
-                _resumeDecisionRecoveryAvailable = false;
+                _resumeRouteDecisionRecoveryAvailable = false;
                 var screenOwner = sameOpportunity
                     ? pending!.ScreenOwner
                     : null;
@@ -737,7 +742,6 @@ internal static class StateEventWriter
             {
                 return null;
             }
-            _resumeDecisionRecoveryAvailable = false;
             _pendingDecisionParent = decisionParent;
             if (decisionParent is null)
             {
@@ -1005,7 +1009,7 @@ internal static class StateEventWriter
             }
 
             _routeMode = requestedMode;
-            _resumeDecisionRecoveryAvailable = false;
+            _resumeRouteDecisionRecoveryAvailable = false;
             _pendingDecision = new PendingDecision(
                 eventId,
                 pending.DecisionId,
@@ -1832,7 +1836,8 @@ internal static class StateEventWriter
         _pendingDecision = null;
         _pendingDecisionParent = null;
         _pendingChildParent = null;
-        _resumeDecisionRecoveryAvailable = true;
+        _resumeCardDecisionRecoveryAvailable = true;
+        _resumeRouteDecisionRecoveryAvailable = true;
         _runIdentityLockedByEmission = false;
         _runTransitionPending = false;
         _ended = false;
@@ -1997,7 +2002,7 @@ internal static class StateEventWriter
         DecisionContext decision,
         RunStateSnapshot state)
     {
-        if (!_resumeDecisionRecoveryAvailable)
+        if (!_resumeCardDecisionRecoveryAvailable)
         {
             return null;
         }
@@ -2007,7 +2012,7 @@ internal static class StateEventWriter
             // Recovery is intentionally a one-shot resume path. A later card
             // reward in the same process must never reuse a stale checkpoint
             // merely because it happens to have similar candidates.
-            _resumeDecisionRecoveryAvailable = false;
+            _resumeCardDecisionRecoveryAvailable = false;
         }
         return recovered;
     }
@@ -2016,7 +2021,7 @@ internal static class StateEventWriter
         MapChoiceContext context,
         RunStateSnapshot state)
     {
-        if (!_resumeDecisionRecoveryAvailable)
+        if (!_resumeRouteDecisionRecoveryAvailable)
         {
             return null;
         }
@@ -2061,7 +2066,8 @@ internal static class StateEventWriter
             if (HasLaterInvalidatingEvent(
                 directory,
                 candidate.DecisionId,
-                candidate.Sequence
+                candidate.Sequence,
+                "route_choice"
             ))
             {
                 continue;
@@ -2401,7 +2407,8 @@ internal static class StateEventWriter
                 || HasLaterInvalidatingEvent(
                     directory,
                     decisionId,
-                    openSequence
+                    openSequence,
+                    "card_reward"
                 ))
             {
                 return null;
@@ -2791,7 +2798,8 @@ internal static class StateEventWriter
     private static bool HasLaterInvalidatingEvent(
         string directory,
         string decisionId,
-        long openSequence)
+        long openSequence,
+        string recoveringEventType)
     {
         var paths = new List<string>
         {
@@ -2829,16 +2837,52 @@ internal static class StateEventWriter
                 {
                     continue;
                 }
-                if (eventType is "run_ended"
-                        or "decision_closed"
-                        or "merchant"
-                        or "rest_site"
-                    || ((eventType == "card_reward" || eventType == "route_choice")
-                        && !StringPropertyEquals(
+                if (eventType == "run_ended")
+                {
+                    return true;
+                }
+                if (eventType == "decision_closed")
+                {
+                    // A resume can legitimately replay one decision type
+                    // while another pending decision is recovered.  Only a
+                    // closure for this exact decision invalidates it.  A
+                    // malformed closure remains fail-closed.
+                    if (!TryReadRequiredString(
                             root,
                             "decision_id",
-                            decisionId
-                        )))
+                            out var closedDecisionId)
+                        || closedDecisionId == decisionId)
+                    {
+                        return true;
+                    }
+                    continue;
+                }
+                if (recoveringEventType == "route_choice")
+                {
+                    if ((eventType == "route_choice"
+                            && !StringPropertyEquals(
+                                root,
+                                "decision_id",
+                                decisionId
+                            ))
+                        || eventType is "merchant" or "rest_site")
+                    {
+                        return true;
+                    }
+                    // Reward replay and its child decisions do not close the
+                    // still-pending map choice for the same origin.
+                    continue;
+                }
+                if (recoveringEventType == "card_reward"
+                    && ((eventType == "card_reward"
+                            && !StringPropertyEquals(
+                                root,
+                                "decision_id",
+                                decisionId
+                            ))
+                        || eventType is "route_choice"
+                            or "merchant"
+                            or "rest_site"))
                 {
                     return true;
                 }

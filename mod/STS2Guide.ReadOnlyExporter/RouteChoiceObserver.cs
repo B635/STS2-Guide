@@ -409,10 +409,15 @@ internal static class RouteMapCleanupPatch
         => RouteChoiceObserver.OnOwnerGone(__instance);
 }
 
-[HarmonyPatch(typeof(NMapScreen), nameof(NMapScreen._ExitTree))]
+[HarmonyPatch(typeof(NMapScreen), nameof(NMapScreen._Notification))]
 internal static class RouteMapExitPatch
 {
     [HarmonyPostfix]
-    internal static void AfterExitTree(NMapScreen __instance)
-        => RouteChoiceObserver.OnOwnerGone(__instance);
+    internal static void AfterNotification(NMapScreen __instance, int what)
+    {
+        if (what == Node.NotificationExitTree)
+        {
+            RouteChoiceObserver.OnOwnerGone(__instance);
+        }
+    }
 }

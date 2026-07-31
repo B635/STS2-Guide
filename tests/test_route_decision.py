@@ -1157,10 +1157,41 @@ class RouteDecisionTests(unittest.TestCase):
         self.assertNotIn("TravelToMapCoord", all_route)
         self.assertNotIn("EnterMapCoord", all_route)
         self.assertNotIn("startMapPoints\n                    .Where", reader)
+        self.assertNotIn("_resumeDecisionRecoveryAvailable", writer)
+        self.assertIn("_resumeCardDecisionRecoveryAvailable", writer)
+        self.assertIn("_resumeRouteDecisionRecoveryAvailable", writer)
+        card_emit = _csharp_method(
+            writer,
+            "internal static void EmitCardReward(",
+        )
+        self.assertIn("_resumeCardDecisionRecoveryAvailable = false;", card_emit)
+        self.assertNotIn("_resumeRouteDecisionRecoveryAvailable = false;", card_emit)
+        route_recovery = _csharp_method(
+            writer,
+            "private static string? TryRecoverRouteDecisionId(",
+        )
+        self.assertIn("if (!_resumeRouteDecisionRecoveryAvailable)", route_recovery)
+        invalidation = _csharp_method(
+            writer,
+            "private static bool HasLaterInvalidatingEvent(",
+        )
+        self.assertIn('recoveringEventType == "route_choice"', invalidation)
+        self.assertIn('recoveringEventType == "card_reward"', invalidation)
+        self.assertIn("closedDecisionId == decisionId", invalidation)
+        route_branch = invalidation.split(
+            'recoveringEventType == "route_choice"', 1
+        )[1].split(
+            'recoveringEventType == "card_reward"', 1
+        )[0]
+        self.assertNotIn('eventType == "card_reward"', route_branch)
         self.assertIn("if (_pendingDecision is not null && !sameOpportunity)", writer)
         self.assertIn("RouteMapOverlay.Hide(_screen, _pending.DecisionId)", controller)
         self.assertNotIn("BackupPathNodeIds", overlay)
-        self.assertEqual(overlay.count("DrawPolyline("), 1)
+        self.assertEqual(overlay.count("new Line2D"), 1)
+        self.assertIn("_line.Points =", overlay)
+        self.assertIn("_line.ClearPoints();", overlay)
+        self.assertIn('GetNodeOrNull<Control>(\n                    "TheMap/Paths"', overlay)
+        self.assertIn("nativePaths.AddChild(_control);", overlay)
         self.assertIn(
             "nodes[context.OriginNodeId].Edges.Contains(",
             overlay,
@@ -1286,7 +1317,7 @@ class RouteDecisionTests(unittest.TestCase):
         invalidate = _csharp_method(controller, "private static void Invalidate()")
         self.assertIn("RouteMapOverlay.Hide(_screen, _pending.DecisionId)", invalidate)
         process = _csharp_method(overlay, "public override void _Process(double delta)")
-        self.assertIn("QueueRedraw();", process)
+        self.assertIn("RefreshLine();", process)
         self.assertNotIn("Godot.Timer", overlay)
 
 

@@ -9,7 +9,7 @@ internal sealed class StateEvent
     internal const string ProducerVersion = "0.3.0";
     internal const string ProducerSource = "sts2-guide-readonly-mod";
     internal const string ReleaseFingerprint =
-        "56f928dcd6650946d2929910f2efa9c5c0b7f962667177421dd6c2ecf2f15afd";
+        "3ec6911d1288fe9c57b92a37c4f935fc8464d4eafabd6ccddddc896edb657e2f";
 
     [JsonPropertyName("schema_version")]
     public int SchemaVersion { get; init; } = CurrentSchemaVersion;

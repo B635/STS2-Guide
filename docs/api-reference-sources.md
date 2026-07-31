@@ -153,6 +153,29 @@ CurrentMapCoord/Map`、`NMapScreen.Open(bool)`、`IsOpen/IsTravelEnabled/IsTrave
 卸载探针。生产兼容清单在真机门禁完成前必须把 `0.109.1` 标为 pending/disabled，Host
 不得输出正式建议。
 
+#### `0.110.1` 兼容性重新门禁（2026-08-01，进行中）
+
+启动隔离路线测试时 Steam 自动升级了本机游戏：
+
+- `release_info.json`：version `v0.110.1`、commit `db5d3552`、发布日期
+  `2026-07-31T01:18:29-07:00`；
+- `sts2.dll` SHA-256：
+  `7C446EFABF80614C429B5088E87101423AA5BB4C04FC3E73393261F6E6D404FD`；
+- Loader 真机日志确认旧 RouteLiveProbe 无法解析 Harmony target
+  `NMapScreen._ExitTree`；测试用 STS2MCP 无法加载已经移除的
+  `MegaCrit.Sts2.Core.Entities.Multiplayer.LobbyPlayer`。
+
+本机程序集元数据进一步确认 `NMapScreen` 当前不再声明 `_ExitTree()`，但仍声明公开
+`_Notification(int)`、`Close(bool)`、`CleanUp()`、`Open(bool)`、`SetTravelEnabled(bool)`、
+`OnMapPointSelectedLocally(NMapPoint)` 和 `_Process(double)`。其他当前使用的 Card Reward、
+Merchant、Rest、Event 与 Card Grid owner 仍各自声明 `_ExitTree()`；因此只允许修复被精确
+证据确认失效的 Map owner target，不得批量猜测生命周期变化。
+
+`STS2SourceCode` 仅辅助理解旧实现语义；其当前仓库仍含旧 `LobbyPlayer` 和
+`NMapScreen._ExitTree()`，不能当作 `0.110.1` 二进制事实。下一步必须先让隔离探针针对当前
+程序集成功加载，再完成真实路线时序与视觉验证。旧探针和 STS2MCP 测试文件均已卸载，
+正式 Guide 未安装，Host 未启动；兼容清单继续失败关闭。
+
 #### Phase A 独立真机探针（2026-07-14，已完成并卸载）
 
 `tools/RouteLiveProbe` 已提供与正式 Mod/PCK 完全隔离的开发期只读 Mod：

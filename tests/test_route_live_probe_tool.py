@@ -43,6 +43,9 @@ class RouteLiveProbeIsolationTests(unittest.TestCase):
         self.assertNotIn(".OnMapPointSelectedLocally(", source)
         self.assertNotIn(".OnSelected(", source)
         self.assertIn("nameof(NMapScreen.OnMapPointSelectedLocally)", source)
+        self.assertIn("nameof(NMapScreen._Notification)", source)
+        self.assertIn("Node.NotificationExitTree", source)
+        self.assertNotIn("nameof(NMapScreen._ExitTree)", source)
         self.assertIn("DebugOnlyGetState()", source)
         self.assertIn("_logPath = null;", source)
 
@@ -75,6 +78,35 @@ class RouteLiveProbeIsolationTests(unittest.TestCase):
         summary = json.loads(completed.stdout)
         self.assertEqual(summary["sessions"], 1)
         self.assertEqual(summary["records"], 1)
+
+    def test_validator_strict_gate_rejects_incomplete_log(self):
+        record = {
+            "schema_version": 1,
+            "session_id": "incomplete-session",
+            "sequence": 1,
+            "observed_at_utc": "2026-08-01T00:00:00+00:00",
+            "event_name": "probe_session_started",
+            "assembly_version": "0.1.0.0",
+            "assembly_mvid": "00000000-0000-0000-0000-000000000000",
+            "snapshot": None,
+            "details": {},
+        }
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "probe.jsonl"
+            path.write_text(json.dumps(record) + "\n", encoding="utf-8")
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(PROBE / "validate_probe_log.py"),
+                    "--require-gates",
+                    str(path),
+                ],
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+        self.assertEqual(completed.returncode, 3)
+        self.assertIn("route probe gate incomplete", completed.stderr)
 
 
 if __name__ == "__main__":

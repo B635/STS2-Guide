@@ -38,8 +38,8 @@ class CharacterMechanicSignalTests(unittest.TestCase):
                 confidence="structured",
             )
 
-    def test_effect_tag_version_is_4(self):
-        self.assertEqual(EFFECT_TAG_VERSION, "4")
+    def test_effect_tag_version_is_5(self):
+        self.assertEqual(EFFECT_TAG_VERSION, "5")
 
     def test_known_false_positive_tags_are_removed(self):
         rupture = derive_effect_tags(

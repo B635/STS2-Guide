@@ -9,36 +9,37 @@
 ## 当前结论
 
 P0/P0.5 在游戏 `0.108.0` 上曾完成开发态真机闭环；这些是历史证据，不自动构成当前版本
-兼容承诺。本机游戏已更新为 `0.109.1`（commit `c8c577f6`），`sts2.dll` SHA-256 为
-`016C6DF717D997FCBD8F2A55102CA63CB4A89C1FA8E4DB8DACFDDF803B6B70E1`。
+兼容承诺。本机 Steam 游戏已于 2026-08-01 自动更新为 `0.110.1`（commit `db5d3552`），
+`sts2.dll` SHA-256 为
+`7C446EFABF80614C429B5088E87101423AA5BB4C04FC3E73393261F6E6D404FD`。
 
 2026-07-31 的工作区实现已升级到 Guide `0.3.0-alpha.0`、Mod `0.3.0`、生产协议 v9，
-release fingerprint 为
-`56f928dcd6650946d2929910f2efa9c5c0b7f962667177421dd6c2ecf2f15afd`。v9 将 Card、
+当前 Card + Route 基线 release fingerprint 为
+`3ec6911d1288fe9c57b92a37c4f935fc8464d4eafabd6ccddddc896edb657e2f`。v9 将 Card、
 Route、Merchant、Rest Site、Neow、Event 和 Deck Edit 统一为严格候选 envelope，并加入
 父子决策身份；Python 仍只为离线回放兼容 v1-v8。
 
-TASK-008 的全五角色选牌和三种路线软偏好继续保留。TASK-009 的**自动实现层**现已加入
-Merchant、Rest Site/Smith、Neow、Event、Deck Edit 策略与只读 Observer、一个通用
-Drawer、跨决策 `ResourceBudget`，以及与实时 Host 隔离的确定性解释 Agent 边界。最新
-完整 Python 为 `377/377 OK`；新增五类决策 250 次内核基准为 P50 `2.654 ms`、
-P95 `21.615 ms`、最大 `26.155 ms`；Mod/PCK 针对当前 `0.109.1` 编译为
-`0 warning / 0 error`；EXE 重新打包并通过完整 `--startup-check`，无残留实例锁。
+TASK-010 已在当前 `0.110.1` 上完成隔离探针和 Card + Route 正式组合基线。清单总状态为
+enabled，但只启用 `card_reward` 与 `route_choice`；Merchant、Rest、Neow、Event 和
+Deck Edit 继续 `pending_validation` 并失败关闭。正式三件套已经安装，测试用 RouteLiveProbe
+和 STS2MCP 已卸载；最终 Steam 启动日志只有 Guide，`Loaded 1 mods (1 total)`。
 
-这些仍只是源码、程序集静态签名和自动证据。新 v9 正式三件套与 EXE 只生成在工作区，
-未安装、未启动 Host、未启动游戏；所有 capability 与清单总状态均保持
-`pending_validation`，因此生产建议会按设计失败关闭。Card/Route 需要在 v9 下重做组合
-真机，Merchant/Rest/Neow/Event/Deck Edit 还必须逐项核对真实 predicate、候选、父子时序、
-Drawer 关闭、保存继续和换局。事件/Neow 运行 API 未暴露确定效果时只输出 `--`，不会从
-界面描述或 LLM 猜收益。
+Card 真机候选为 `DRAIN_POWER / DEFY / POKE / skip`，state/advice 与中文 Drawer 一致；
+Route 真机从真实 origin `5:2` 对 `6:2 / 6:3` 生成一条完整路线。保存继续复用原 route
+decision ID，三种路线偏好复用同一 decision 并原子重算。地图滚动和窗口从
+1950x1275 调整到 1600x1000 后，单一 `Line2D` 仍锚定原生节点且不穿过顶部 UI。
+
+最新独立自动证据为 Python `382/382 OK`、Mod/PCK `0 warning / 0 error`、窗口化 EXE
+`--startup-check` 通过且无残留锁。效果标签版本升为 v5，运行数据库已经迁移；
+`DRAIN_POWER` 不再被误标为抽牌、弃牌或升级手牌。当前用户保存局没有为测试而放弃，
+因此 `run_ended` 真机清理保留到 Public Beta 五角色组合回归，不据此宣称公开版完成。
 
 2026-08-01 TASK-009 已按三路独立审查反例完成多轮返修：advice/schema/domain parity、
 真实父决策 lineage、active-child checkpoint、Mod capability/no-throw、Rest 成功回调、
 Deck Edit 主线程以及 Event/Neow 特殊 Card Reward 的 exact session parent 均已收口。协议与
 Mod 最终独立复审均为 P0/P1 0；完整 Python `377/377 OK`，Mod/PCK `0 warning / 0 error`，
-EXE 重建并通过 startup check。当前状态是**自动审查通过、待真机验收**，不是 P1 已交付；
-所有 capability 仍为 `pending_validation`。复杂 C# 时序尚缺独立可执行状态机测试，登记为
-P2 测试工程项，不替代真机门禁。
+EXE 重建并通过 startup check。TASK-010 此后只开放 Card/Route；扩展 capability 仍待各自
+真机验收。复杂 C# 时序尚缺独立可执行状态机测试，登记为 P2 测试工程项，不替代真机门禁。
 
 ## 2026-07-14 P1.0 路线 API 门禁证据
 
@@ -164,7 +165,7 @@ Neow 中“祝福直接打开特殊选牌”的随机分支不属于 P0 推荐�
 2. 对 Neow、商店、篝火、事件与 Deck Edit 的自动实现做独立代码审查和逐项组合真机；
 3. Event/Neow 的结构化效果目录与正式“为什么”入口。
 
-## P1.0 路线生产纵向切片（待 `0.109.1` 真机复核）
+## P1.0 路线生产纵向切片（待 `0.110.1` 真机复核）
 
 首轮实现于 2026-07-15 因协议可执行性、identity、搜索边界、多维评分、失败关闭和测试覆盖
 不足退回。本轮返修已完成以下自动层面的收口：
@@ -226,7 +227,8 @@ Neow 中“祝福直接打开特殊选牌”的随机分支不属于 P0 推荐�
 
 ## P1 扩展决策套件（自动审查通过，待真机）
 
-当前 `0.109.1` 程序集已经静态确认并由 Mod 编译引用：
+旧 `0.109.1` 程序集已经静态确认并由 Mod 编译引用；以下成员必须在当前 `0.110.1`
+重新核对后才可启用：
 
 - Merchant：`NMerchantInventory.Inventory/IsOpen/Open/OnCardRemovalUsed/_ExitTree`，
   `MerchantInventory.AllEntries/Player`，各商品公开实际模型及
@@ -256,21 +258,19 @@ Recommendation 的 factors/dimensions/data gaps；它不进入实时 EXE、不�
 
 当前工作区自动证据：
 
-- 2026-08-01 最新完整 Python 单元测试：377/377 通过；包含 64 节点 DAG、
-  event→checkpoint→advice、v9 严格通用候选、v1-v8 回放、跨组件兼容、损坏 checkpoint
-  降级、五角色机制、五类扩展决策和解释边界。自动绿灯仍不能替代真机；
+- 2026-08-01 最新完整 Python 单元测试：382/382 通过；包含 64 节点 DAG、
+  event→checkpoint→advice、v9 严格通用候选、v1-v8 回放、跨组件兼容、独立 Card/Route
+  恢复机会、五角色机制、五类扩展决策、解释边界和效果标签 v5 回归；
 - 固定选牌场景：26/26、93/93 断言通过，迁移没有改变推荐基线；
 - 新五类决策内核：250 样本，P50 2.654 ms、P95 21.615 ms、最大 26.155 ms；既有
   文件桥与路线端到端性能门禁也继续满足 P95 ≤ 300 ms；
 - `git diff --check`：通过；
-- 当前 Mod `--no-restore`：针对本机 `0.109.1` 程序集由 Godot 4.5.1 生成
-  DLL/JSON/PCK，0 warning / 0 error；最新 v9/fingerprint 三件套尚未安装；
-- 当前后台 EXE 为 27,626,831 bytes，SHA-256
-  `C635EA4E65DF88F8A0A0B68EBEFFC6E3A393D5272A7D11DB87B7E14E694E12E2`；打包后完整
-  `--startup-check` 通过且没有残留单实例锁。清单启用后仍需重新构建，避免安装前后
-  manifest 状态不一致；
-- Mod 工作区 artifacts：DLL 208,384 bytes，SHA-256
-  `6B1E2DC138F99E1E00412CE556765D10FA3E2E5D9783595B933C49AB9A720DBF`；PCK 692 bytes，
+- 当前 `0.110.1` Mod `--no-restore` 由 Godot 4.5.1 生成 DLL/JSON/PCK，
+  0 warning / 0 error，并已用安装脚本逐文件校验；
+- 当前窗口化后台 EXE 已在启用后的 compatibility manifest 下重新打包；完整
+  `--startup-check` 通过且没有残留单实例锁；
+- 安装 artifacts：DLL 230,400 bytes，SHA-256
+  `2F304B4AE2694D3ED00A9C840A5E1440EAE1C628D7460CD550FCDC2BC1D8A954`；PCK 692 bytes，
   SHA-256 `D51ADC0B1D499D7D9F492E2725CE5047940358E99E266A5998AAAB8B6B23C839`；
   JSON 344 bytes，SHA-256
   `56FA0D63B7EE2E9C897E422474477082C3FBA0DAC83B027B98A3259C624C8EB4`；
@@ -280,14 +280,11 @@ Recommendation 的 factors/dimensions/data gaps；它不进入实时 EXE、不�
 
 ## 下一步
 
-1. 由与实现角色分离的审查会话复核 TASK-009 实际 diff、v9 parity、Observer 生命周期和
-   只读边界；发现阻断则先返修；
-2. 游戏关闭时安装最新正式 Mod 三件套；临时将每项 capability 单独启用，启动唯一 Host，
-   按 Card/Route → Merchant → Rest/Smith → Neow → Event → Deck Edit 顺序真机，不得全局
-   一次放开；
-3. 每项记录真实候选、成本/资格、OPENED/UPDATED/CLOSED、Drawer/Overlay、父子决策、
-   保存继续、换局和清理；任一项失败即恢复 `pending_validation`；
-4. Event/Neow 真机采集真实 `TextKey` 与页面变化后，再决定哪些选项可由版本化静态
-   结构化效果表安全评分；在此之前保持 `--`，不解析描述；
-5. 组合真机通过后更新兼容清单、重新打包 EXE、形成干净 Git 基线；再推进托盘/安装器和
-   用户主动“为什么”入口。
+1. TASK-011 完成 Windows 托盘单实例、游戏进程感知、受控 Worker 生命周期、安装卸载与
+   脱敏诊断；冻结 EXE 默认托盘，开发命令仍可直接运行 Worker；
+2. 对托盘先开/游戏先开、重复启动、游戏退出、Worker 初始化失败和完全退出进行自动与
+   真机生命周期验收；
+3. 完成五角色第一幕三层固定场景与真机组合门禁，并补一次真实 `run_ended` 清理；
+4. 只有 Public Beta 基线稳定后，再按 Merchant → Rest/Smith → Neow → Event → Deck Edit
+   逐项启用；任一项失败即维持 `pending_validation`；
+5. Event/Neow 只有采集到当前版本真实 ID/页面/结构化效果后才评分；未知效果保持 `--`。

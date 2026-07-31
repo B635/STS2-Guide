@@ -11,8 +11,67 @@ import re
 from typing import Dict, Iterable, Tuple
 
 
-EFFECT_TAG_VERSION = "4"
+EFFECT_TAG_VERSION = "5"
 EffectTags = Dict[str, Tuple[float, str]]
+
+
+_DRAW_ACTION_PATTERN = (
+    r"(?<![每少])抽\s*(?:\d+|[一二两三四五六七八九十]+)\s*张(?:牌)?"
+    r"|抽牌(?:直至|直到)"
+    r"|抽相同数量(?:的)?牌"
+    r"|\bdraw\s+(?:\d+|a|an|one|two|three|four|five|six|x)\s+cards?\b"
+    r"|\bdraw\s+(?:cards?\s+)?until\b"
+)
+_DRAW_ACTION_RE = re.compile(_DRAW_ACTION_PATTERN, flags=re.IGNORECASE)
+_DISCARD_ACTION_PATTERN = (
+    r"(?:丢弃|弃掉|舍弃)"
+    r"|\bdiscard(?:s|ed|ing)?\b(?!\s+pile\b)"
+)
+_DISCARD_ACTION_RE = re.compile(
+    _DISCARD_ACTION_PATTERN,
+    flags=re.IGNORECASE,
+)
+_UPGRADE_HAND_RE = re.compile(
+    r"(?<!已)升级(?!过)[^。！？\n]{0,12}手牌"
+    r"|手牌[^。！？\n]{0,12}(?<!已)升级(?!过)"
+    r"|\bupgrade(?:s|ing)?\b[^.!?\n]{0,24}\bhand\b"
+    r"|\bhand\b[^.!?\n]{0,24}\bupgrade(?:s|ing)?\b",
+    flags=re.IGNORECASE,
+)
+
+
+def _is_trigger_clause(text: str, action_start: int) -> bool:
+    """Return whether an action word is the condition, not the effect.
+
+    Punctuation starts a new effect clause, so ``每当 X，抽1张牌`` still
+    describes a draw effect while ``每当你抽1张牌`` does not.
+    """
+    prefix = text[:action_start]
+    clause_prefix = re.split(r"[。！？；，,.!?;\n]", prefix)[-1]
+    return bool(
+        re.search(r"(?:每当|每次|每)\S{0,16}$", clause_prefix)
+        or re.search(
+            r"\b(?:whenever|when|each\s+time)\b[^,.;!?]{0,48}$",
+            clause_prefix,
+            flags=re.IGNORECASE,
+        )
+    )
+
+
+def _has_explicit_draw_action(text: str) -> bool:
+    """Recognize card draw actions without matching draw-pile nouns."""
+    return any(
+        not _is_trigger_clause(text, match.start())
+        for match in _DRAW_ACTION_RE.finditer(text)
+    )
+
+
+def _has_explicit_discard_action(text: str) -> bool:
+    """Recognize discard actions without matching discard-pile nouns."""
+    return any(
+        not _is_trigger_clause(text, match.start())
+        for match in _DISCARD_ACTION_RE.finditer(text)
+    )
 
 
 def _number(value) -> float | None:
@@ -362,6 +421,12 @@ def derive_effect_tags(entity_type: str, item: Dict) -> EffectTags:
             tags[tag] = (magnitude, source)
 
     description = str(item.get("description") or "")
+    effect_text = " ".join(
+        (
+            description,
+            str(item.get("upgrade_description") or ""),
+        )
+    )
     identity = " ".join(
         [
             str(item.get("id") or ""),
@@ -378,11 +443,11 @@ def derive_effect_tags(entity_type: str, item: Dict) -> EffectTags:
     shared_vulnerable = r"易伤|vulnerab"
     shared_weak = r"虚弱|weak"
     shared_poison = r"中毒|poison"
-    shared_draw = r"抽\d*张|draw"
+    shared_draw = _DRAW_ACTION_PATTERN
     shared_block = r"格挡|block"
     shared_energy = r"能量|energy"
     shared_exhaust = r"耗竭|exhaust"
-    shared_discard = r"弃牌|discard"
+    shared_discard = _DISCARD_ACTION_PATTERN
     shared_healing = r"恢复.{0,8}生命|回复.{0,8}生命|heal"
 
     # ── Cards ────────────────────────────────────────────────────────
@@ -410,14 +475,9 @@ def derive_effect_tags(entity_type: str, item: Dict) -> EffectTags:
             add("self_harm", hp_loss, "hp_loss")
 
         cards_draw = _number(item.get("cards_draw"))
-        if cards_draw is not None and cards_draw > 0:
-            generated_only = bool(item.get("spawns_cards")) and not re.search(
-                r"抽\d*张|抽牌|draw",
-                description,
-                flags=re.IGNORECASE,
-            )
-            if not generated_only:
-                add("draw", cards_draw, "cards_draw")
+        has_draw_action = _has_explicit_draw_action(effect_text)
+        if cards_draw is not None and cards_draw > 0 and has_draw_action:
+            add("draw", cards_draw, "cards_draw")
 
         hit_count = _number(item.get("hit_count"))
         if hit_count is not None and hit_count > 1:
@@ -446,9 +506,7 @@ def derive_effect_tags(entity_type: str, item: Dict) -> EffectTags:
             "weak": shared_weak,
             "poison": shared_poison,
             "exhaust": shared_exhaust,
-            "discard": shared_discard,
             "retain": r"保留|retain",
-            "upgrade_hand": r"升级.{0,8}(手牌|牌)|upgrade.{0,12}hand",
             "cost_reduction": (
                 r"(耗能|费用|cost).{0,12}(减少|降低|less|reduc)"
             ),
@@ -459,7 +517,11 @@ def derive_effect_tags(entity_type: str, item: Dict) -> EffectTags:
             if re.search(pattern, identity, flags=re.IGNORECASE):
                 add(tag, source="description_rule")
 
-        if "draw" not in tags and re.search(shared_draw, identity):
+        if _has_explicit_discard_action(effect_text):
+            add("discard", source="description_rule")
+        if _UPGRADE_HAND_RE.search(effect_text):
+            add("upgrade_hand", source="description_rule")
+        if "draw" not in tags and has_draw_action:
             add("draw", source="description_rule")
         if (
             "energy_gain" not in tags

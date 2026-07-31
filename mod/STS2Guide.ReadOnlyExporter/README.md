@@ -29,7 +29,7 @@
 路线只在真实可选择态创建决策，候选来自 `MapPoint.Children`，公开 Overlay 只绘制一条
 当前主路线。Context Drawer 提供智能均衡、稳健生存、激进成长三个互斥软偏好；模式只
 从同一 Run、同一发布的 `active-run.json` 恢复，损坏或错配时重置为智能均衡。当前
-`0.109.1` 的自动回归与编译已通过，但兼容清单仍为
+`0.109.1` 的自动回归与编译是历史证据；当前 `0.110.1` 兼容清单仍为
 `pending_validation`，正式三件套尚未安装，路线及 Merchant、Rest/Smith、Neow、Event、
 Deck Edit 均不得宣称真机完成。
 
@@ -51,7 +51,7 @@ dotnet build .\STS2Guide.ReadOnlyExporter.csproj -c Debug
 `InstallModOnBuild` 改为 `true`，或手动复制 DLL、JSON、PCK 到游戏
 `mods` 目录。
 
-当前源码已针对 STS2 `v0.109.1` 编译，0 warning / 0 error。
+当前源码必须针对 STS2 `v0.110.1` 重新完成 API 门禁与编译后才能安装。
 更新 artifacts 不代表已覆盖游戏目录；安装或升级 Mod 仍是单独操作。
 
 本目录的接口选择参考了 STS2 社区 Mod 模板和 BoberInSpire 的公开实现，

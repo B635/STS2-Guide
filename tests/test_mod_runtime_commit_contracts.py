@@ -276,6 +276,18 @@ class ModRuntimeCommitContractTests(unittest.TestCase):
         self.assertIn("decisionId: pending.DecisionId", update)
         self.assertIn("routeMode: requestedMode", update)
 
+    def test_current_map_owner_exit_uses_declared_notification_target(self):
+        self.assertIn(
+            "[HarmonyPatch(typeof(NMapScreen), "
+            "nameof(NMapScreen._Notification))]",
+            self.route_observer,
+        )
+        self.assertIn("Node.NotificationExitTree", self.route_observer)
+        self.assertNotIn(
+            "nameof(NMapScreen._ExitTree)",
+            self.route_observer,
+        )
+
     def test_route_mode_recovery_uses_only_valid_active_run_checkpoint(self):
         recover = _csharp_method(
             self.writer,

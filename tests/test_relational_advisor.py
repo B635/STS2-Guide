@@ -44,7 +44,7 @@ def _knowledge_payload():
             {
                 "id": "CHEAP_BLOCK",
                 "name": "轻防测试牌",
-                "description": "获得格挡。",
+                "description": "获得8点格挡。抽1张牌。",
                 "cost": 1,
                 "type_key": "Skill",
                 "rarity_key": "Common",
@@ -53,7 +53,27 @@ def _knowledge_payload():
                 "block": 8,
                 "cards_draw": 1,
                 "keywords_key": [],
-                "embed_text": "卡牌轻防测试牌：获得8点格挡。",
+                "embed_text": "卡牌轻防测试牌：获得8点格挡。抽1张牌。",
+            },
+            {
+                "id": "DRAIN_POWER",
+                "name": "能量汲取",
+                "description": "造成10点伤害。随机升级你弃牌堆中的2张牌。",
+                "upgrade_description": (
+                    "造成12点伤害。随机升级你弃牌堆中的3张牌。"
+                ),
+                "cost": 1,
+                "type_key": "Attack",
+                "rarity_key": "Common",
+                "color": "necrobinder",
+                "damage": 10,
+                "block": None,
+                "cards_draw": 2,
+                "keywords_key": [],
+                "embed_text": (
+                    "卡牌能量汲取：造成10点伤害。"
+                    "随机升级你弃牌堆中的2张牌。"
+                ),
             },
             {
                 "id": "NEUTRAL_SKILL",
@@ -880,11 +900,100 @@ class RelationalAdvisorTests(unittest.TestCase):
         self.assertIn("ethereal", ethereal)
         self.assertNotIn("self_exhaust", ethereal)
 
-    def test_effect_tag_v3_database_migrates_to_v4(self):
+    def test_pile_nouns_do_not_become_draw_discard_or_hand_upgrade(self):
+        drain_power = derive_effect_tags(
+            "cards",
+            {
+                "id": "DRAIN_POWER",
+                "type_key": "Attack",
+                "damage": 10,
+                # The current catalog projects generic vars.Cards here.
+                "cards_draw": 2,
+                "description": (
+                    "造成10点伤害。随机升级你弃牌堆中的2张牌。"
+                ),
+                "upgrade_description": (
+                    "造成12点伤害。随机升级你弃牌堆中的3张牌。"
+                ),
+            },
+        )
+        chinese_draw_pile = derive_effect_tags(
+            "cards",
+            {
+                "cards_draw": 2,
+                "description": "选择抽牌堆中的2张牌。",
+            },
+        )
+        english_piles = derive_effect_tags(
+            "cards",
+            {
+                "cards_draw": 2,
+                "description": (
+                    "Upgrade 2 cards in your discard pile, then inspect "
+                    "the draw pile."
+                ),
+            },
+        )
+        upgraded_card_added_to_hand = derive_effect_tags(
+            "cards",
+            {
+                "description": (
+                    "将一张随机升级过的无色牌加入你的手牌。"
+                    "将一张随机已升级的牌加入你的手牌。"
+                ),
+            },
+        )
+
+        self.assertEqual(drain_power["damage"], (10.0, "damage"))
+        for tags in (drain_power, chinese_draw_pile, english_piles):
+            self.assertNotIn("draw", tags)
+        for tags in (drain_power, english_piles):
+            self.assertNotIn("discard", tags)
+            self.assertNotIn("upgrade_hand", tags)
+        self.assertNotIn("upgrade_hand", upgraded_card_added_to_hand)
+
+    def test_explicit_draw_discard_and_hand_upgrade_actions_still_tag(self):
+        draw = derive_effect_tags(
+            "cards",
+            {"cards_draw": 2, "description": "抽2张牌。"},
+        )
+        discard = derive_effect_tags(
+            "cards",
+            {"description": "丢弃1张牌。"},
+        )
+        upgrade_hand = derive_effect_tags(
+            "cards",
+            {"description": "升级你手牌中的一张牌。"},
+        )
+        draw_trigger = derive_effect_tags(
+            "cards",
+            {"description": "每当你抽1张牌，获得1点格挡。"},
+        )
+
+        self.assertEqual(draw["draw"], (2.0, "cards_draw"))
+        self.assertIn("discard", discard)
+        self.assertIn("upgrade_hand", upgrade_hand)
+        self.assertNotIn("draw", draw_trigger)
+
+    def test_drain_power_does_not_receive_draw_or_hand_upgrade_scores(self):
+        result = recommend_card_reward(
+            self._state(),
+            [{"card": "DRAIN_POWER", "upgrades": 0}],
+            self.repository,
+        )
+        codes = {
+            factor["code"]
+            for factor in result["recommendations"][0]["factors"]
+        }
+        self.assertNotIn("draw_value", codes)
+        self.assertNotIn("draw_coverage", codes)
+        self.assertNotIn("upgrade_value", codes)
+
+    def test_effect_tag_v4_database_migrates_to_v5(self):
         with self.repository.connect() as connection:
             connection.execute(
                 """
-                UPDATE schema_metadata SET value = '3'
+                UPDATE schema_metadata SET value = '4'
                 WHERE key = 'effect_tag_version'
                 """
             )
@@ -915,12 +1024,12 @@ class RelationalAdvisorTests(unittest.TestCase):
                 WHERE entity_key = 'potions:TEST_DAMAGE_POTION'
                 """
             ).fetchone()["count"]
-        self.assertEqual(version, "4")
+        self.assertEqual(version, "5")
         self.assertEqual(stale, 0)
 
-    def test_effect_tag_version_is_4(self):
+    def test_effect_tag_version_is_5(self):
         from storage.effect_tags import EFFECT_TAG_VERSION
-        self.assertEqual(EFFECT_TAG_VERSION, "4")
+        self.assertEqual(EFFECT_TAG_VERSION, "5")
 
     # ── Vulnerable window relic synergy ──────────────────────────────
 

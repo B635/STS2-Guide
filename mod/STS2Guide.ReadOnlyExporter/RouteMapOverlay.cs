@@ -36,6 +36,13 @@ internal static class RouteMapOverlay
             if (!ReferenceEquals(_owner, owner) || _decisionId != decisionId)
             {
                 HideInternal();
+                var nativePaths = owner.GetNodeOrNull<Control>(
+                    "TheMap/Paths"
+                );
+                if (nativePaths is null)
+                {
+                    return;
+                }
                 _owner = owner;
                 _decisionId = decisionId;
                 _control = new RouteOverlayControl(
@@ -43,7 +50,11 @@ internal static class RouteMapOverlay
                     presentation,
                     context.OriginNodeId!
                 );
-                owner.AddChild(_control);
+                // Share the native map transform and remain below the Points
+                // sibling and global top bar.  The line is still an
+                // independent read-only child and never touches native path
+                // textures or player drawings.
+                nativePaths.AddChild(_control);
             }
             if (_control is not null && GodotObject.IsInstanceValid(_control))
             {
@@ -51,7 +62,7 @@ internal static class RouteMapOverlay
                     presentation,
                     context.OriginNodeId!
                 );
-                _control.QueueRedraw();
+                _control.RefreshLine();
             }
         }
     }
@@ -143,6 +154,7 @@ internal static class RouteMapOverlay
     private sealed class RouteOverlayControl : Control
     {
         private readonly NMapScreen _owner;
+        private readonly Line2D _line;
         private RoutePresentation _presentation;
         private string _originNodeId;
 
@@ -156,8 +168,16 @@ internal static class RouteMapOverlay
             _originNodeId = originNodeId;
             Name = "STS2GuideRouteMapOverlay";
             MouseFilter = MouseFilterEnum.Ignore;
-            ZIndex = 90;
+            ZIndex = 0;
             SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+            _line = new Line2D
+            {
+                Name = "STS2GuidePrimaryRouteLine",
+                Width = 6F,
+                DefaultColor = new Color(1F, 0.78F, 0.22F, 0.95F),
+                Antialiased = true
+            };
+            AddChild(_line);
             SetProcess(true);
         }
 
@@ -174,15 +194,16 @@ internal static class RouteMapOverlay
             // Map scroll, viewport/content scaling and window changes can all
             // move GetGlobalRect() without a new advice file.  Rebuild every
             // frame from the current owner; never cache screen coordinates.
-            QueueRedraw();
+            RefreshLine();
         }
 
-        public override void _Draw()
+        internal void RefreshLine()
         {
             try
             {
                 if (!GodotObject.IsInstanceValid(_owner))
                 {
+                    _line.ClearPoints();
                     return;
                 }
                 var visuals = ResolveVisuals();
@@ -196,18 +217,17 @@ internal static class RouteMapOverlay
                         out var primary
                     ))
                 {
+                    _line.ClearPoints();
                     return;
                 }
-                if (primary.Count >= 2)
-                {
-                    DrawPolyline(primary.ToArray(), new Color(1F, 0.78F, 0.22F, 0.95F), 6F, antialiased: true);
-                }
+                _line.Points = primary.Count >= 2 ? primary.ToArray() : [];
             }
             catch
             {
                 // Rendering is strictly best-effort.  A current-frame visual
                 // failure hides all lines by drawing nothing, not by throwing
                 // from Godot's draw loop.
+                _line.ClearPoints();
             }
         }
 
@@ -244,8 +264,7 @@ internal static class RouteMapOverlay
                 {
                     return false;
                 }
-                points.Add(GetGlobalTransform().AffineInverse()
-                    * visual.GetGlobalRect().GetCenter());
+                points.Add(_line.ToLocal(visual.GetGlobalRect().GetCenter()));
             }
             return true;
         }
