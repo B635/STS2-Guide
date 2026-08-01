@@ -1,5 +1,6 @@
-# Build from the repository root:
-# D:\miniconda3\envs\sts2\python.exe -m PyInstaller packaging\sts2-guide.spec
+# Build from the repository root with scripts/build_public_beta.ps1 (or
+# scripts/build_p0_exe.ps1).  Those entry points generate the immutable SQLite
+# template and deterministic icon before invoking PyInstaller.
 import os
 import sys
 from pathlib import Path
@@ -27,15 +28,25 @@ analysis = Analysis(
     # the windowed executable can reach instance-lock and initialization code.
     binaries=[(str(path), ".") for path in conda_runtime_dlls],
     datas=[
-        (str(root / "data" / "knowledge.json"), "data"),
-        (str(root / "data" / "community_scores.json"), "data"),
+        (
+            str(root / "build" / "release" / "sts2-guide-template.db"),
+            "data",
+        ),
         (str(root / "protocol" / "state-event.schema.json"), "protocol"),
         (str(root / "protocol" / "state-event.example.json"), "protocol"),
         (str(root / "protocol" / "advice-event.schema.json"), "protocol"),
         (str(root / "protocol" / "advice-event.example.json"), "protocol"),
         (str(root / "packaging" / "compatibility.json"), "packaging"),
+        (str(root / "packaging" / "DATA_SOURCES.txt"), "packaging"),
+        (str(root / "build" / "release" / "sts2-guide.png"), "packaging"),
+        (str(root / "LICENSE"), "."),
     ],
-    hiddenimports=[],
+    hiddenimports=[
+        "pystray",
+        "pystray._win32",
+        "PIL.Image",
+        "PIL.ImageDraw",
+    ],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
@@ -62,7 +73,9 @@ exe = EXE(
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
-    upx=True,
+    upx=False,
     console=False,
     disable_windowed_traceback=False,
+    version=str(root / "packaging" / "version_info.txt"),
+    icon=str(root / "build" / "release" / "sts2-guide.ico"),
 )

@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import os
+import threading
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -326,7 +327,12 @@ class GameStateFileBridge:
             f"{self.output_path.name}.tmp"
         ).unlink(missing_ok=True)
 
-    def run_forever(self, poll_interval: float = 0.25) -> None:
-        while True:
+    def run_forever(
+        self,
+        poll_interval: float = 0.25,
+        stop_event: threading.Event | None = None,
+    ) -> None:
+        stop = stop_event or threading.Event()
+        while not stop.is_set():
             self.run_once()
-            time.sleep(max(0.05, poll_interval))
+            stop.wait(max(0.05, poll_interval))

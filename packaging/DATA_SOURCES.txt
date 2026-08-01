@@ -1,0 +1,20 @@
+STS2 Guide - data and attribution notice
+
+STS2 Guide is an independent, unofficial companion and is not affiliated
+with or endorsed by Mega Crit.
+
+Slay the Spire 2 names, gameplay data and related intellectual property
+belong to their respective owners.  This build contains only the minimal
+structured facts and derived tags required for local deterministic
+recommendations; it is not an offline copy of the game or Spire Codex.
+Aggregate community scores are an optional weak prior and are attributable
+to the Spire Codex API.
+
+Source: https://spire-codex.com/developers
+API terms: https://github.com/ptrlrd/spire-codex/blob/main/API_TERMS.md
+Mega Crit content policy: https://megacrit.com/content-policy/
+Snapshot identity and content hashes are stored in the bundled SQLite
+metadata and the release compatibility manifest.
+
+No third-party card art, screenshots, save files, private Mobalytics tier
+file, gameplay telemetry, or API keys are included in the release payload.

@@ -29,10 +29,11 @@ Route 真机从真实 origin `5:2` 对 `6:2 / 6:3` 生成一条完整路线。�
 decision ID，三种路线偏好复用同一 decision 并原子重算。地图滚动和窗口从
 1950x1275 调整到 1600x1000 后，单一 `Line2D` 仍锚定原生节点且不穿过顶部 UI。
 
-最新独立自动证据为 Python `382/382 OK`、Mod/PCK `0 warning / 0 error`、窗口化 EXE
-`--startup-check` 通过且无残留锁。效果标签版本升为 v5，运行数据库已经迁移；
-`DRAIN_POWER` 不再被误标为抽牌、弃牌或升级手牌。当前用户保存局没有为测试而放弃，
-因此 `run_ended` 真机清理保留到 Public Beta 五角色组合回归，不据此宣称公开版完成。
+TASK-011 Windows 交付壳已通过二次独立审查并验收：最新自动证据为 Python
+`438/438 OK`、Mod/PCK `0 warning / 0 error`、完整 Public Beta 构建和 payload 审计通过。
+最终安装器已完成真实升级、卸载边界、重装、重复启动、游戏 RUNNING → IDLE 和完全退出
+验证；运行数据库保留既有 7 条最终摘要，Worker 停止后 advice 和锁均已清理。五角色第一幕
+三层与真实 `run_ended` 仍属于 TASK-012，因此当前不能宣称 Windows Public Beta 已完成。
 
 2026-08-01 TASK-009 已按三路独立审查反例完成多轮返修：advice/schema/domain parity、
 真实父决策 lineage、active-child checkpoint、Mod capability/no-throw、Rest 成功回调、
@@ -161,11 +162,13 @@ Neow 中“祝福直接打开特殊选牌”的随机分支不属于 P0 推荐�
 
 仍未完成：
 
-1. 在用户确认后安装通过自动审查的最新 Mod artifacts，并进行 TASK-007 的路线真机闭环；
-2. 对 Neow、商店、篝火、事件与 Deck Edit 的自动实现做独立代码审查和逐项组合真机；
-3. Event/Neow 的结构化效果目录与正式“为什么”入口。
+1. 按 TASK-012 完成五角色第一幕三层 Card + Route 组合真机；
+2. 补一次真实 `run_ended` 清理与新局身份隔离；
+3. Public Beta 基线通过后，再对 Neow、商店、篝火、事件与 Deck Edit 逐项做 capability
+   真机门禁；
+4. Event/Neow 的结构化效果目录与正式“为什么”入口。
 
-## P1.0 路线生产纵向切片（待 `0.110.1` 真机复核）
+## P1.0 路线生产纵向切片（`0.110.1` 基线已完成）
 
 首轮实现于 2026-07-15 因协议可执行性、identity、搜索边界、多维评分、失败关闭和测试覆盖
 不足退回。本轮返修已完成以下自动层面的收口：
@@ -187,14 +190,14 @@ Neow 中“祝福直接打开特殊选牌”的随机分支不属于 P0 推荐�
 
 2026-07-30 复核发现的保存继续版本错配、首次写盘失败、旧地图 revision、严格类型、
 版本矩阵和旧 recommendation 重标兼容现已进入自动反例并通过。2026-07-31 又加入三个
-路线软偏好、同局恢复、偏离后的动态重算与单主路线硬约束。新 PCK 尚未安装，兼容清单
-仍为 `pending_validation`；详细实施和剩余真机门禁见 TASK-007 与 TASK-008。
+路线软偏好、同局恢复、偏离后的动态重算与单主路线硬约束。当前 `route_choice` 已随
+TASK-010 在 `0.110.1` 启用并完成组合真机基线；五角色覆盖仍见 TASK-012。
 
 ## Public Beta 策略核心（待组合真机）
 
 - `advisor/character_mechanics.py` 定义统一 `MechanicSignal`，五个角色 adapter 只负责把
   结构化卡牌事实转换为机制 family/role，不自行持有最终分数；
-- effect tag 已升级至 v4，并修复 Rupture、Blade Dance、Tactician、Zap/Dualcast/
+- effect tag 已升级至 v5，并修复 Rupture、Blade Dance、Tactician、Zap/Dualcast/
   Defragment、Comet、Venerate、Bodyguard/Unleash 与 Shroud 等已知反例；
 - 路线模式进入 `WorldState`、Card/Route 策略、协议、checkpoint、advice 和 Drawer；
   同一真实路线决策切换模式复用 decision ID、生成新 event ID 并以 UPDATED 重算；
@@ -258,7 +261,7 @@ Recommendation 的 factors/dimensions/data gaps；它不进入实时 EXE、不�
 
 当前工作区自动证据：
 
-- 2026-08-01 最新完整 Python 单元测试：382/382 通过；包含 64 节点 DAG、
+- 2026-08-01 最新完整 Python 单元测试：438/438 通过；包含 64 节点 DAG、
   event→checkpoint→advice、v9 严格通用候选、v1-v8 回放、跨组件兼容、独立 Card/Route
   恢复机会、五角色机制、五类扩展决策、解释边界和效果标签 v5 回归；
 - 固定选牌场景：26/26、93/93 断言通过，迁移没有改变推荐基线；
@@ -267,10 +270,13 @@ Recommendation 的 factors/dimensions/data gaps；它不进入实时 EXE、不�
 - `git diff --check`：通过；
 - 当前 `0.110.1` Mod `--no-restore` 由 Godot 4.5.1 生成 DLL/JSON/PCK，
   0 warning / 0 error，并已用安装脚本逐文件校验；
-- 当前窗口化后台 EXE 已在启用后的 compatibility manifest 下重新打包；完整
-  `--startup-check` 通过且没有残留单实例锁；
-- 安装 artifacts：DLL 230,400 bytes，SHA-256
-  `2F304B4AE2694D3ED00A9C840A5E1440EAE1C628D7460CD550FCDC2BC1D8A954`；PCK 692 bytes，
+- 当前窗口化后台 EXE 与每用户安装器已在启用后的 compatibility manifest 下重新打包；
+  完整测试、startup check、源码新鲜度和 payload 拒绝清单均进入同一构建门禁；
+- 安装 artifacts：Guide EXE 34,836,097 bytes，SHA-256
+  `E5E612168A977C6E5361253730F9500B8A4DCF4CA480729A5C9A5F2201591959`；安装器
+  36,556,706 bytes，SHA-256
+  `53D4512C6FE431E1DC992D0B09A1F7534C0B4D01D690652E8A194416C4414277`；DLL 230,400 bytes，
+  SHA-256 `0591842CE51997005F31F3C2524EEFD8034F39EF422FA9E23CBA3AC3BD5F57C4`；PCK 692 bytes，
   SHA-256 `D51ADC0B1D499D7D9F492E2725CE5047940358E99E266A5998AAAB8B6B23C839`；
   JSON 344 bytes，SHA-256
   `56FA0D63B7EE2E9C897E422474477082C3FBA0DAC83B027B98A3259C624C8EB4`；
@@ -280,11 +286,8 @@ Recommendation 的 factors/dimensions/data gaps；它不进入实时 EXE、不�
 
 ## 下一步
 
-1. TASK-011 完成 Windows 托盘单实例、游戏进程感知、受控 Worker 生命周期、安装卸载与
-   脱敏诊断；冻结 EXE 默认托盘，开发命令仍可直接运行 Worker；
-2. 对托盘先开/游戏先开、重复启动、游戏退出、Worker 初始化失败和完全退出进行自动与
-   真机生命周期验收；
-3. 完成五角色第一幕三层固定场景与真机组合门禁，并补一次真实 `run_ended` 清理；
-4. 只有 Public Beta 基线稳定后，再按 Merchant → Rest/Smith → Neow → Event → Deck Edit
+1. 执行 TASK-012 五角色第一幕三层真机组合门禁，并补一次真实 `run_ended` 清理；
+2. 只有 Public Beta 基线稳定后，再按 Merchant → Rest/Smith → Neow → Event → Deck Edit
    逐项启用；任一项失败即维持 `pending_validation`；
-5. Event/Neow 只有采集到当前版本真实 ID/页面/结构化效果后才评分；未知效果保持 `--`。
+3. Event/Neow 只有采集到当前版本真实 ID/页面/结构化效果后才评分；未知效果保持 `--`；
+4. 代码签名/SmartScreen 信誉仍是发布限制，不能在没有证书时伪装为已解决。

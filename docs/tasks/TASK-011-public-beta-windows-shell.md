@@ -1,6 +1,6 @@
 # TASK-011 — Windows Public Beta 交付壳
 
-- 状态：实施中
+- 状态：已验收
 - 负责人：Codex
 - 审查：独立 Agent + 自动验收
 - 前置：TASK-010 Card + Route `0.110.1` 组合真机基线
@@ -45,4 +45,54 @@
 
 ## 实施记录
 
-待填写。
+2026-08-01 已完成以下实现与验证：
+
+- 新增 Windows 命名互斥体、激活/关闭事件、精确游戏进程路径检测和单一托盘控制器；
+  PyInstaller onefile 在任务管理器中是引导父进程 + 应用子进程，但只有一个逻辑控制器和
+  一个受控 Worker；第二次启动只令 `activation_count` 增加；
+- 游戏启动后 Worker 进入 RUNNING，游戏关闭后先清 advice、停止 Worker 并回到 IDLE；
+  完全退出后控制器、状态文件、advice 和 `.host.lock` 均不存在；
+- 发布数据库模板只保留 Card + Route 当前启用策略需要的最小结构化事实、物化效果标签和
+  社区聚合先验，不含攻略正文、事件对话、向量文本或局内历史；运行数据库只在与不可变
+  模板逐字节一致时复用，否则从模板重建并只迁移精确 `run_summaries`；
+- 冻结 EXE、精确 Mod 三件套、每用户 Inno Setup 安装器、安装 receipt、开始菜单/可选桌面
+  入口、卸载边界和严格 payload 审计已完成；安装器要求游戏程序集和
+  `release_info.json` 精确哈希，游戏或 Guide 运行时失败关闭；
+- 诊断 ZIP 只允许 `diagnostic.json` 和 `guide.log`；日志不复制任何原文，只把识别出的
+  生命周期消息规范化为固定 event token，候选、楼层、HP、金币、路径、ID 和密钥反例均
+  不会进入归档；
+- 发布脚本现将完整 Python 测试置于不可分割构建门禁，并拒绝比源码旧的 EXE、安装器、
+  DLL/PCK 或与自有源不一致的 Mod JSON。
+
+首次独立审查判定 NOT PASS，并给出旧 advice、可篡改 runtime metadata、诊断 denylist、
+无游戏目录静默退出、宽松 release_info 校验和陈旧成品六类反例。返修后这些反例均已加入
+测试；最新完整 Python 为 `438/438 OK`，`compileall` 与 `git diff --check` 通过，Mod/PCK
+为 0 warning / 0 error。
+
+最终候选：
+
+- Guide EXE：34,836,097 bytes，SHA-256
+  `E5E612168A977C6E5361253730F9500B8A4DCF4CA480729A5C9A5F2201591959`；
+- 安装器：36,556,706 bytes，SHA-256
+  `53D4512C6FE431E1DC992D0B09A1F7534C0B4D01D690652E8A194416C4414277`；
+- Mod DLL / JSON / PCK：
+  `0591842CE51997005F31F3C2524EEFD8034F39EF422FA9E23CBA3AC3BD5F57C4` /
+  `56FA0D63B7EE2E9C897E422474477082C3FBA0DAC83B027B98A3259C624C8EB4` /
+  `D51ADC0B1D499D7D9F492E2725CE5047940358E99E266A5998AAAB8B6B23C839`；
+- 最小发布 DB：1,175,552 bytes，SHA-256
+  `592336D146CA65D7572BBB7C3ADDF2BC9B0D111DA4A165C5F6583607D4C384B2`。
+
+真实安装验证覆盖升级、非默认 Steam 游戏目录、receipt/hash、卸载和重装。卸载后 Guide
+三件套为 0，未拥有的哨兵 Mod 文件仍存在，运行 DB 和既有 7 条摘要均保留；随后已删除
+哨兵并重装最终候选，游戏 `mods/` 只剩 Guide 三件套。最终安装态复核为：IDLE 重复启动
+只激活已有实例；启动真实游戏后 RUNNING/Worker/lock 均为真；关闭游戏后 IDLE、Worker
+为假、lock/advice 均不存在且 7 条摘要保留；`--shutdown-existing` 后 Guide 进程、状态和
+锁均为 0。
+
+当前发行物未做 Authenticode 代码签名，Windows SmartScreen 信誉属于明确的发行限制；
+这不伪装成已解决。五角色第一幕三层与真实 `run_ended` 清理属于 TASK-012，不在本任务中
+冒充完成。
+
+二次独立审查结论为 PASS：专项 `56/56`、全量 `438/438`、Mod 0/0，上一轮五个 P0
+反例与陈旧产物反例均不可复现；最终进程、状态、锁、advice、运行摘要和禁止历史表终态
+与上述记录一致。TASK-011 至此验收结束。

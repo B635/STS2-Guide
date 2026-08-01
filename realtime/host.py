@@ -33,6 +33,7 @@ from realtime.compatibility import (
 from realtime.file_bridge import (
     GameStateFileBridge,
     default_checkpoint_path,
+    default_exchange_dir,
     default_events_dir,
     default_input_path,
     default_output_path,
@@ -41,6 +42,7 @@ from realtime.processor import RealtimeEventProcessor
 from realtime.protocol import CURRENT_SCHEMA_VERSION
 from realtime.version import GUIDE_VERSION
 from storage.relational import RelationalRepository
+from storage.release_database import ensure_runtime_database
 
 
 LOGGER = logging.getLogger("sts2-guide")
@@ -99,6 +101,10 @@ def _default_runtime_database_path() -> Path:
     return default_input_path().parent / "sts2-guide.db"
 
 
+def _bundled_release_database_path() -> Path:
+    return _project_or_bundle_root() / "data" / "sts2-guide-template.db"
+
+
 def _sha256_path(path: Path) -> str | None:
     try:
         digest = hashlib.sha256()
@@ -126,7 +132,11 @@ def _observe_local_components(
                 for row in connection.execute(
                     """
                     SELECT key, value FROM schema_metadata
-                    WHERE key IN ('schema_version', 'catalog_sha256')
+                    WHERE key IN (
+                        'schema_version',
+                        'catalog_sha256',
+                        'community_scores_sha256'
+                    )
                     """
                 ).fetchall()
             }
@@ -149,8 +159,13 @@ def _observe_local_components(
             if stored_catalog_hash
             else None
         ),
-        knowledge_sha256=_sha256_path(catalog_path),
-        community_scores_sha256=_sha256_path(community_path),
+        knowledge_sha256=(
+            stored_catalog_hash or _sha256_path(catalog_path)
+        ),
+        community_scores_sha256=(
+            metadata.get("community_scores_sha256")
+            or _sha256_path(community_path)
+        ),
         policy_bundle_version=POLICY_BUNDLE_VERSION,
         card_reward_policy_version=CARD_REWARD_POLICY_VERSION,
         route_policy_version=ROUTE_POLICY_VERSION,
@@ -245,14 +260,20 @@ def build_bridge(args: argparse.Namespace) -> GameStateFileBridge:
         args.compatibility_manifest
     )
     repository = RelationalRepository(str(args.database))
-    repository.ensure_schema()
-    if not args.catalog.exists():
-        raise FileNotFoundError(
-            f"Structured catalog not found: {args.catalog}"
-        )
-    repository.sync_catalog(str(args.catalog))
-    if args.community_scores.exists():
-        repository.sync_entity_statistics(str(args.community_scores))
+    release_database = getattr(args, "release_database", None)
+    if release_database is None and getattr(sys, "frozen", False):
+        release_database = _bundled_release_database_path()
+    if release_database is not None:
+        ensure_runtime_database(release_database, args.database)
+    else:
+        repository.ensure_schema()
+        if not args.catalog.exists():
+            raise FileNotFoundError(
+                f"Structured catalog not found: {args.catalog}"
+            )
+        repository.sync_catalog(str(args.catalog))
+        if args.community_scores.exists():
+            repository.sync_entity_statistics(str(args.community_scores))
 
     local_tiers = load_local_card_tiers(args.local_card_tiers)
     LOGGER.info(
@@ -311,6 +332,15 @@ def _parser() -> argparse.ArgumentParser:
         default=_default_runtime_database_path(),
     )
     parser.add_argument(
+        "--release-database",
+        type=Path,
+        default=None,
+        help=(
+            "Use an immutable release SQLite template; frozen builds always "
+            "use their bundled template."
+        ),
+    )
+    parser.add_argument(
         "--catalog",
         type=Path,
         default=_default_catalog_path(),
@@ -331,6 +361,9 @@ def _parser() -> argparse.ArgumentParser:
         default=default_manifest_path(),
     )
     parser.add_argument("--poll-interval", type=float, default=0.1)
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--tray", action="store_true")
+    mode.add_argument("--worker", action="store_true")
     parser.add_argument("--once", action="store_true")
     parser.add_argument(
         "--startup-check",
@@ -338,16 +371,84 @@ def _parser() -> argparse.ArgumentParser:
         help="Initialize the packaged host and exit without polling.",
     )
     parser.add_argument("--console-log", action="store_true")
+    parser.add_argument("--log-file", type=Path, default=None)
+    parser.add_argument(
+        "--worker-log-file",
+        type=Path,
+        default=default_exchange_dir() / "sts2-guide-worker.log",
+    )
+    parser.add_argument(
+        "--runtime-status",
+        type=Path,
+        default=default_exchange_dir() / "runtime-status.json",
+    )
+    parser.add_argument("--game-dir", type=Path, default=None)
+    from realtime.installation import default_install_receipt_path
+
+    parser.add_argument(
+        "--install-receipt",
+        type=Path,
+        default=default_install_receipt_path(),
+    )
+    parser.add_argument(
+        "--controller-poll-interval",
+        type=float,
+        default=0.25,
+    )
+    parser.add_argument("--drain-seconds", type=float, default=2.0)
+    parser.add_argument("--worker-stop-timeout", type=float, default=1.0)
+    parser.add_argument(
+        "--shutdown-existing",
+        action="store_true",
+        help="Request graceful shutdown of the existing tray controller.",
+    )
     return parser
+
+
+def _runtime_mode(args: argparse.Namespace) -> str:
+    if args.tray:
+        return "tray"
+    if args.worker or args.once or args.startup_check:
+        return "worker"
+    return "tray" if getattr(sys, "frozen", False) else "worker"
 
 
 def main() -> int:
     _ensure_windowed_stdio()
     args = _parser().parse_args()
+    if args.shutdown_existing:
+        try:
+            from realtime.windows_runtime import (
+                CtypesKernelApi,
+                NamedInstanceCoordinator,
+            )
+
+            NamedInstanceCoordinator(
+                CtypesKernelApi()
+            ).request_existing_shutdown()
+            return 0
+        except Exception:
+            return 2
+    mode = _runtime_mode(args)
+    if args.log_file is None:
+        args.log_file = default_exchange_dir() / (
+            "sts2-guide-controller.log"
+            if mode == "tray"
+            else "sts2-guide-worker.log"
+        )
     _configure_logging(
-        args.input.parent / "sts2-guide.log",
+        args.log_file,
         args.console_log,
     )
+    if mode == "tray":
+        try:
+            from realtime.public_beta import run_public_beta_controller
+
+            return run_public_beta_controller(args)
+        except Exception:
+            _clear_visible_advice(args.output)
+            LOGGER.exception("STS2 Guide controller failed to initialize.")
+            return 2
     # Acquire instance lock *before* database/bridge initialization so a
     # second host never opens the SQLite file or syncs the catalog.
     lock_acquired = False

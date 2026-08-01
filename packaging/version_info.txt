@@ -1,0 +1,31 @@
+# UTF-8
+VSVersionInfo(
+  ffi=FixedFileInfo(
+    filevers=(0, 3, 0, 0),
+    prodvers=(0, 3, 0, 0),
+    mask=0x3f,
+    flags=0x0,
+    OS=0x40004,
+    fileType=0x1,
+    subtype=0x0,
+    date=(0, 0),
+  ),
+  kids=[
+    StringFileInfo([
+      StringTable(
+        u'080404b0',
+        [
+          StringStruct(u'CompanyName', u'STS2 Guide contributors'),
+          StringStruct(u'FileDescription', u'STS2 Guide local strategy companion'),
+          StringStruct(u'FileVersion', u'0.3.0.0'),
+          StringStruct(u'InternalName', u'STS2 Guide'),
+          StringStruct(u'LegalCopyright', u'Copyright (c) 2026 STS2 Guide contributors'),
+          StringStruct(u'OriginalFilename', u'STS2 Guide.exe'),
+          StringStruct(u'ProductName', u'STS2 Guide'),
+          StringStruct(u'ProductVersion', u'0.3.0-alpha.0'),
+        ],
+      )
+    ]),
+    VarFileInfo([VarStruct(u'Translation', [2052, 1200])]),
+  ],
+)

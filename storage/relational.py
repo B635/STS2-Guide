@@ -935,7 +935,9 @@ class RelationalRepository:
     def sync_entity_statistics(self, snapshot_path: str) -> Dict[str, int]:
         """Import filtered, attributable community aggregates."""
         path = Path(snapshot_path)
-        payload = json.loads(path.read_text(encoding="utf-8"))
+        raw_bytes = path.read_bytes()
+        snapshot_hash = hashlib.sha256(raw_bytes).hexdigest()
+        payload = json.loads(raw_bytes.decode("utf-8"))
         source = payload.get("source") or {}
         source_id = str(source.get("id") or "").strip()
         if source_id != "spire_codex_api":
@@ -1030,6 +1032,14 @@ class RelationalRepository:
                     )
                     count += 1
                 imported[entity_type] = count
+            connection.execute(
+                """
+                INSERT INTO schema_metadata(key, value)
+                VALUES('community_scores_sha256', ?)
+                ON CONFLICT(key) DO UPDATE SET value = excluded.value
+                """,
+                (snapshot_hash,),
+            )
         return imported
 
     def catalog_counts(self) -> Dict[str, int]:
@@ -1067,7 +1077,7 @@ class RelationalRepository:
             effect_rows = (
                 connection.execute(
                     """
-                    SELECT tag, magnitude
+                    SELECT tag, magnitude, source_field
                     FROM entity_effect_tags
                     WHERE entity_key = ?
                     ORDER BY tag
@@ -1084,6 +1094,10 @@ class RelationalRepository:
         item["_entity_key"] = row["entity_key"]
         item["_effect_tags"] = {
             effect["tag"]: float(effect["magnitude"])
+            for effect in effect_rows
+        }
+        item["_effect_tag_sources"] = {
+            effect["tag"]: str(effect["source_field"])
             for effect in effect_rows
         }
         return item

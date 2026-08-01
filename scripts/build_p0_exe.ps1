@@ -24,18 +24,25 @@ if (-not (Test-Path -LiteralPath $python)) {
     throw "Python not found at $python."
 }
 
-# Verify PyInstaller is available; install if missing (only to the resolved sts2 env).
-& $python -c "import PyInstaller" 2>$null
+# Verify the pinned release dependencies are already present.  Build scripts
+# never mutate the selected environment behind the user's back.
+& $python -c "import importlib.metadata as m; required={'pydantic':'2.13.0','python-dotenv':'1.2.1','pyinstaller':'6.21.0','pystray':'0.19.5','pillow':'11.3.0'}; bad={k:(m.version(k),v) for k,v in required.items() if m.version(k)!=v}; assert not bad, bad" 2>$null
 if ($LASTEXITCODE -ne 0) {
-    Write-Host "PyInstaller not found. Installing to $python ..."
-    & $python -m pip install pyinstaller
-    if ($LASTEXITCODE -ne 0) {
-        throw "Failed to install PyInstaller."
-    }
+    throw "Pinned release dependencies are missing or mismatched. Run: $python -m pip install -r requirements-p0.txt"
 }
 
 Push-Location $ProjectRoot
 try {
+    Write-Host "Building immutable release database template..."
+    & $python scripts\build_icon.py
+    if ($LASTEXITCODE -ne 0) {
+        throw "Release icon build failed with exit code $LASTEXITCODE"
+    }
+    & $python scripts\build_release_database.py
+    if ($LASTEXITCODE -ne 0) {
+        throw "Release database build failed with exit code $LASTEXITCODE"
+    }
+
     Write-Host "Building EXE from $ProjectRoot ..."
     & $python -m PyInstaller --noconfirm --clean packaging\sts2-guide.spec
     if ($LASTEXITCODE -ne 0) {

@@ -86,9 +86,24 @@ class _TagBackedAdapter:
         card: Mapping,
     ) -> tuple[MechanicSignal, ...]:
         signals = []
-        for tag, (magnitude, source) in derive_mechanic_effect_tags(
-            dict(card)
-        ).items():
+        materialized = card.get("_effect_tags")
+        sources = card.get("_effect_tag_sources")
+        if isinstance(materialized, Mapping):
+            tagged = {
+                str(tag): (
+                    float(magnitude),
+                    str(
+                        sources.get(tag, "materialized_effect_tag")
+                        if isinstance(sources, Mapping)
+                        else "materialized_effect_tag"
+                    ),
+                )
+                for tag, magnitude in materialized.items()
+                if str(tag).startswith("mechanic:")
+            }
+        else:
+            tagged = derive_mechanic_effect_tags(dict(card))
+        for tag, (magnitude, source) in tagged.items():
             match = re.fullmatch(
                 r"mechanic:(.+):(provider|payoff|spender|capacity|multiplier)",
                 tag,
@@ -167,15 +182,19 @@ class NecrobinderMechanicsAdapter(_TagBackedAdapter):
                 str(card.get("upgrade_description") or ""),
             )
         )
+        requires_osty_hp = bool(card.get("requires_osty_current_hp"))
         has_osty_payoff = any(
             signal.family == "osty" and signal.role == "payoff"
             for signal in signals
         )
-        if has_osty_payoff and re.search(
-            r"奥斯提.{0,18}当前生命值|"
-            r"osty.{0,18}current.{0,8}(hp|health)",
-            description,
-            flags=re.IGNORECASE,
+        if has_osty_payoff and (
+            requires_osty_hp
+            or re.search(
+                r"奥斯提.{0,18}当前生命值|"
+                r"osty.{0,18}current.{0,8}(hp|health)",
+                description,
+                flags=re.IGNORECASE,
+            )
         ):
             return ("character_state:osty_current_hp",)
         return ()
