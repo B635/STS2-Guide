@@ -1,8 +1,7 @@
 # 当前实现任务
 
 - 状态：待真机验收
-- 当前任务：[`TASK-012-public-beta-five-character-live-gate.md`](TASK-012-public-beta-five-character-live-gate.md)
-- 最后更新：2026-08-01
-
-TASK-011 Windows 交付壳已通过二次独立审查并完成安装态生命周期验收。TASK-012 只执行
-最终安装候选的五角色 Card + Route 组合真机与真实 `run_ended` 清理；扩展决策继续失败关闭。
+- 当前任务：[`TASK-024-live-mechanic-gaps.md`](TASK-024-live-mechanic-gaps.md)
+- 最后更新：2026-09-27
+- 执行说明：0.3.11已安装，回执与发行指纹、Mod三件套VerifyOnly通过；安装日志在build/task024-live/install-0.3.11.log。当前尚无新版运行/真机证据，公开商店等仍关闭。
+- 额度授权（2026-09-25）：用户最新允许本次额度实际降到 0 后使用一张重置卡；覆盖此前禁止使用的指令。不提前使用、不连续兑换多张；截至本次记录尚未使用。

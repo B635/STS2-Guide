@@ -1,6 +1,6 @@
 # STS2 API 参考源与使用边界
 
-> 更新时间：2026-07-31
+> 更新时间：2026-09-25
 >
 > 目的：为 Mod 侧 API 调研提供固定入口，减少对 STS2 内部类型、字段和生命周期的猜测。
 
@@ -9,6 +9,73 @@
 定义的只读产品边界。
 
 ## 使用原则
+
+2026-09-25 STS2MCP 当前后台控制适用性、四处编译不兼容、GET 隐式动作及本机隔离适配
+证据见 [`dev/sts2mcp-background-compatibility.md`](dev/sts2mcp-background-compatibility.md)。
+该工具仅作用户授权的开发期测试驱动，不进入只读产品；旧 `/api/v1/state` 示例不能作为
+当前上游 API 事实。隔离编译通过不等于失焦真机通过。
+
+### 2026-09-25 TASK-024：主动耗竭、下一攻击免费与条件遗物
+
+验证目标为本机0.111.0 / 41cef1ea、程序集SHA256 `0861bfa1df347538d932f22d580e75420f08082792eb914e53b4882764acdbe9`。
+沿用只读元数据/IL探针，不实例化模型、不执行游戏方法；真机奖励屏只负责复现遗漏，
+不能用界面文字替代以下程序事实。所有变化发生在本地静态标签与估值，不增加Mod读取点。
+
+- `TrueGrit.get_CanonicalVars` 060046A1：Block=7；`OnUpgrade` 060046A4：Block+2。
+  `<OnPlay>d__7.MoveNext` 0600AD68：先GainBlock，未升级从Hand随机选一张，非空时
+  `CardCmd.Exhaust`；升级后`CardSelectCmd.FromHand`选择一张并Exhaust。它继承空
+  CanonicalKeywords，ExtraHoverTips的Exhaust不表示自身耗竭。
+- `DarkEmbracePower.<AfterCardExhausted>d__8.MoveNext` 06009EC2：同Owner、非Ethereal
+  耗竭按Power.Amount抽牌。拥有该牌是潜在协同，不是能力已激活或固定每回合抽牌。
+- `Unrelenting.get_CanonicalVars` 060046D8：Damage=14；`OnUpgrade` 060046DA：+6。
+  `<OnPlay>d__3.MoveNext` 0600AD81：攻击后Apply FreeAttackPower(1)；后者
+  `TryModifyEnergyCostInCombatLate` 060025D0仅匹配自己Attack、Hand/Play牌堆，费用0；
+  `<BeforeCardPlayed>d__5.MoveNext` 06009EFF按同样条件消耗一层。不能给高费技能/能力
+  套通用降费收益；本轮只披露未建模。
+- `ToughBandages.get_CanonicalVars` 060022EB：Block=3；
+  `<AfterCardDiscarded>.MoveNext` 06009DDA校验弃牌Owner等于遗物Owner、其Side等于
+  CombatState.CurrentSide才GainBlock。本轮只依赖已识别主动弃牌来源评估有限配合，
+  不用3乘假设的弃牌频率，也不声称低生命本身能触发遗物。
+- 失败降级：精确实体不符不套规则；来源/牌组不完整明确缺口；未估计的目标价值、
+  触发频率和下一张攻击免费通过已有零贡献说明披露。新候选须独立审查和真机复测。
+
+### 2026-09-25 TASK-023：完美打击静态机制核对
+
+本机0.111.0 / 41cef1ea的程序集SHA256仍与发行清单一致。只读
+`System.Reflection.Metadata`解码成员IL，没有实例化游戏模型或执行游戏方法：
+
+- `PerfectedStrike.CanonicalVars`：CalculationBase=6、ExtraDamage=2；`OnUpgrade`
+  只将ExtraDamage增加1。真实计算计数谓词为`CardModel.Tags.Contains(CardTag.Strike)`。
+- 计数源`Owner.PlayerCombatState.AllCards`来自Hand/Draw/Discard/Exhaust/Play五堆，
+  耗竭牌仍计入，自身也带Strike；不使用卡名、语言、费用或卡牌类型猜分类。
+- 全程序集`CanonicalTags`与静态目录的22个Strike ID逐一一致，包含五角色基础打击和
+  同时带Minion标签的卡。目录已提供tags、vars及upgrade.extradamage，但旧发行精简库
+  未保留前两字段，需要同步发行数据，而不是修改实时协议。
+- `CalculatedVar.Calculate`非战斗时乘数为0，所以奖励屏CalculatedDamage可能只显示
+  基础6；不能据此推断该机制没有额外伤害。TASK-023使用永久牌组加新候选一张作战前
+  基准估计，不把它冒充临时生成/移除、力量、敌人状态后的当回合伤害。
+- 失败边界：未知卡牌分类、读取警告、缺少/异常参数、额外实例修改或重复升级保持
+  明确缺口。实际新评分尚须完整构建、安装与正常窗口回归，IL证据不替代真机。
+
+### 2026-09-25 TASK-023：血液药水的商店恢复机会
+
+- `BloodPotion.CanonicalVars`（token06002AC7）创建普通DynamicVar HealPercent=20；
+  `Usage`（06002AC5）为AnyTime；`OnUse`的MoveNext（0600A102）仅将目标MaxHp乘
+  HealPercent.BaseValue除以100传给`CreatureCmd.Heal`，没有自身附加效果。
+- `PotionModel.DynamicVars`由CanonicalVars初始化，普通DynamicVar.SetOwner只保存owner。
+  使用wrapper调用一次OnUse。当前程序集枚举的BeforePotionUsed覆写仅SurroundedPower
+  战斗转向；AfterPotionProcured/AfterPotionUsed的BeltBuckle、ReptileTrinket效果限战斗。
+- `CreatureCmd.Heal`（0600B307）没有治疗禁止/倍率Hook；`HealInternal`（060051D9）进入
+  SetCurrentHpInternal，先与MaxHp取最小值再将decimal显式转int；正值截断。
+  AfterCurrentHpChanged仅CombatState非null时执行。商店非战斗可恢复量因此是
+  `min(max_hp-hp, floor(max_hp*20/100))`。
+- 实施只对BLOOD_POTION写入带程序集来源的静态效果标签，并通过现有SQLite效果表保留。
+  商店估值只表示现在使用可获得的恢复机会；购买不会自动饮用，不估计保留到未来的价值、
+  战斗用药联动或所有药水。缺资料/非法数值、槽位未知仍降级；公开商店能力仍未开启。
+- 本轮诊断脚本在本机忽略目录`build/task023-api/ReadOnlyMetadataIl.ps1`；仅解码元数据，
+  不调用游戏方法、不成为产品或发行依赖。
+
+### 长期调研纪律
 
 1. 优先从当前本机游戏程序集、真机日志和真实对象验证 API。
 2. 外部仓库只用于辅助确认：
@@ -24,9 +91,74 @@
    - 触发方法；
    - 来源文件或日志；
    - 真机验证方式；
-   - 失败时的安全降级。
+    - 失败时的安全降级。
+
+## 2026-09-25：商店/篝火目标资格（TASK-020）
+
+- 当前本机：`0.111.0 / 41cef1ea`，程序集 SHA256 与发行清单一致。新读取函数为
+  `DeckEditTargetReader.Read`；本轮未启动游戏，也未宣称扩展能力真机通过。
+- `Player.Deck.Cards` 提供实际牌组实例；`CardModel.IsRemovable`、`IsUpgradable` 为公开
+  bool getter，`CurrentUpgradeLevel` 为实例升级次数。升级资格不得用“升级次数等于零”猜测。
+- 调研 Agent 对当前 IL 的读取结论：商店 `OneOffSynchronizer.DoMerchantCardRemoval`
+  使用 null filter 调用 `CardSelectCmd.FromDeckForRemoval`，后者使用 `IsRemovable` 加可选
+  filter；`FromDeckForUpgrade` 使用 `IsUpgradable`。这些是本轮父目标集合的依据，不调用
+  任何购买、选择、升级或移除方法。
+- `SmithRestSiteOption.SmithCount` 为公开 int；只对一次选择一张牌导出完整目标集，其他
+  数量保持 null（未知/未建模），不能把多选升级按单牌估值。IL 调研确认 Smith 使用该数量、
+  可取消及手动确认偏好；取消返回 false，成功升级后返回 true。实际 UI 时序仍需真机。
+- 当前 Merchant 类型命名空间为 `MegaCrit.Sts2.Core.Nodes.Screens.Shops`。已核对
+  `NMerchantInventory.Open/Close/OnCardRemovalUsed/_ExitTree` 和
+  `MerchantEntry.InvokePurchaseCompleted(MerchantEntry entry)`，无需改动既有 Postfix 目标。
+  Rest 对应私有回调为 `OnAfterPlayerSelectedRestSiteOption(RestSiteOption, bool, ulong)`。
+- 证据：`build/task020-api-members.log` 为本机探针输出；`tools/GuideBehaviorTests` 对当前
+  程序集执行成员签名检查，并直接链接生产目标投影函数测试过滤、重复卡牌实例、空集合与
+  非法/超限数据。托管测试与 IL 阅读不证明游戏内回调一定被触发。
+- 失败降级：目标读取任何一项异常、非法或超过协议上限都返回 null，不导出部分集合。
+  无合法目标导出空列表，两者不得混淆；目标身份只对本次快照有效。
+
+## 2026-09-11：静态数据分支核查（TASK-013，历史记录）
+
+- 本机目标为 `0.111.0`。现有 `data/knowledge.json` 未记录游戏版本或 API 分支，
+  与当前效果有差异；不能仅升级兼容清单而沿用旧数据。
+- [开发者页面](https://spire-codex.com/developers) 明确实体端点可使用
+  `channel=beta`；[版本端点](https://spire-codex.com/api/beta/version) 本轮实际返回
+  `beta_version=v0.111.0`。`/api/versions` 实际为空，不据此猜历史版本参数。
+- 已为 `scripts/fetch_knowledge.py` 增加显式分支、预期版本和隔离输出路径。Beta 下载
+  前后分别查询版本，若不符合预期或途中变化则不写出目录数据；这只是抓取一致性检查，
+  不是当前游戏所有字段已验证的声明。
+- 配置端点 `mechanics/constants`、`merchant/config` 没有承诺 Beta 分支版本，来源记录
+  明确列为 `unversioned_endpoints`。公开 Card/Route SQLite 不收录这些配置；扩展仍暂停。
+- 已下载到 Git 忽略的 `build/catalog-review/knowledge-0.111.0.json`，尚未覆盖正式
+  `data/knowledge.json`。新增卡牌 ID 对应的 19 个类型均通过本机程序集元数据查找到；
+  这只证明类型存在，不替代逐项数值/机制验证。
+- 抽查 Beta 的暴走、跃跃欲试、引导之星、超能光束与君王矿石，已能看到新效果；正式
+  采纳前还需核对升级表示、效果标签和评分。网站抽取数据不作为无误保证。
+- 使用边界仍按 [API 条款](https://github.com/ptrlrd/spire-codex/blob/main/API_TERMS.md)：
+  不引入第三方实现或资源图像，不抓取受限社区 tier，不将网站查询加入实时主链。
 
 ## 参考源
+
+### 2026-09-24：保存回菜单与选牌本地化（TASK-018）
+
+- 当前本机 `0.111.0 / 41cef1ea` 程序集验证：`CardModel.Title` 为公开 `string` 属性，
+  从已与 pending 稳定身份逐项匹配的 `NGridCardHolder.CardModel` 读取，不解析界面文本。
+  只供占位行显示；空标题显示“卡牌 N”，不改变候选 ID。失败沿用停止显示，不猜名称。
+- `RunManager.CleanUp(bool graceful)` 为同步公开 `void`，`NMainMenu._Ready()` 为公开
+  `void`。通过本地 Sts2ApiProbe 检查成员；新增 Harmony Postfix 在 cleanup 关闭当前
+  观察决策，主菜单 Ready 幂等重试。读取缓存的最后完整状态，不在已清理的游戏对象上猜字段。
+- 不根据 `graceful` 推断胜负/放弃；沿用 `decision_closed/closed_unknown`，不新增协议，
+  不结束整局。写入失败保留 pending，UI 清理独立执行。安装后的实际回调验证见 TASK-018。
+
+### 2026-09-23：生产稳定实体 ID（TASK-014）
+
+- 本机 `0.111.0 / 41cef1ea` 的 `MegaCrit.Sts2.Core.Models.ModelDb.GetEntry(Type)` 为公开静态
+  方法；托管验证程序直接链接生产 `StableIds` 并调用当前游戏程序集，未启动游戏或 Godot。
+- 真实返回：SpeedPotion → SPEED_POTION、FairyInABottle → FAIRY_IN_A_BOTTLE、
+  ExpectAFight → EXPECT_A_FIGHT、IAmInvincible → I_AM_INVINCIBLE。原剥后缀正则已复现
+  SPEED 错误后修复。范围对照覆盖发行目录的卡牌、药水、遗物、五角色，排除嵌套生成类型。
+- 触发点仍为既有状态快照与候选读取；失败沿用观察器的异常隔离/停止发布，不猜测备用 ID。
+  此方法也被既有关闭的观察器共用，但不因此启用商店等能力。
+- 验证只证明托管 API 和目录映射；实际快照/面板以及旧当前局缓存恢复仍待 TASK-018 真机。
 
 ### Gennadiyev/STS2MCP（开发期真机探针）
 
@@ -377,3 +509,37 @@ Mod 针对同一程序集完成 `0 warning / 0 error` 编译。它能够排除�
 ```
 
 没有 API 证据时，不得用字段名猜测、UI 文本、截图位置或宽泛反射来扩大生产逻辑。
+
+## 2026-09-25 TASK-022：商店升级与精确事件效果
+
+验证对象为本机 STS2 `0.111.0 / 41cef1ea`；`sts2.dll` SHA256：
+`0861bfa1df347538d932f22d580e75420f08082792eb914e53b4882764acdbe9`。
+证据采用现有 Sts2ApiProbe、只读 `System.Reflection.Metadata` IL 解码和生产编译/托管签名
+测试，不调用获得奖励或选择方法。下述效果不是从描述文本推断，尚无本轮真机时序证据。
+
+- 商店真实卡牌：`MerchantCardEntry.CreationResult.Card`（现有读取链）→
+  `CardModel.CurrentUpgradeLevel : int`；只为卡牌商品投影升级次数。读取失败/缺失不可
+  当作 0，消费者保留未知；非卡牌商品不可携带此字段。
+- `EventModel.InitialOptionKey → OptionKey` 构造完整
+  `EVENT.pages.PAGE.options.OPTION`；`ByrdonisNest.GenerateInitialOptions` 的 IL 明确包含
+  `BYRDONIS_NEST.pages.INITIAL.options.EAT/TAKE`。目录存短 option ID，消费侧只能在
+  当前 event 的明确 page 内解析查找，原始候选身份不变，不采用任意后缀匹配。
+- `EventOption.Relic : RelicModel`、`EventModel.DynamicVars`、`RelicModel.DynamicVars`
+  均为公开 getter；`DynamicVarSet.Gold/Heal`、`DynamicVar.BaseValue : decimal` 与
+  `IntValue : int` 由托管签名测试核对。
+- Neow 的 `NEOW.pages.INITIAL.options.GOLDEN_PEARL`：
+  `Neow.PositiveOptions → AncientEventModel.RelicOption<GoldenPearl> → RelicCmd.Obtain`；
+  `GoldenPearl.AfterObtained` 读取实际 `DynamicVars.Gold.BaseValue` 并调用 GainGold。
+  生产读取精确 Neow/GoldenPearl 类型与完整键，输出实际金币数，不写死当前基础值 150。
+- `AbyssalBaths` 的 `ABYSSAL_BATHS.pages.INITIAL.options.ABSTAIN`：
+  `Abstain` 状态机读取 `DynamicVars.Heal.IntValue → CreatureCmd.Heal → SetEventFinished`；
+  仅此明确组合输出治疗。`ABYSSAL_BATHS.pages.ALL.options.EXIT_BATHS` 仅结束事件，输出
+  `no_op`；不把所有 IsProceed/离开文字都猜成无成本。
+- 不支持项继续输出 unknown：营养牡蛎/异鸟巢吃蛋的 GainMaxHp 还会 Heal，不能省略耦合
+  效果；SapphireSeed EAT 含治疗加升级子选择；浴场 IMMERSE 含增血、受伤、递增与下一页。
+  不能把任意非空 Relic 泛化成单个 add_relic。
+
+生产入口是现有 EventDecisionObserver 的选项快照，由 `VerifiedEventEffectReader` 只读
+投影；类型/键/Relic 不一致、数值异常或 getter 抛出时整项回 unknown，不发布部分收益。
+`VerifiedEventEffectTests` 覆盖纯投影及 API 签名，Python 测试覆盖真实完整键、当前金额变化、
+检查点后读失败撤分与新局隔离。只读边界未改变，没有新增游戏调用或网络行为。

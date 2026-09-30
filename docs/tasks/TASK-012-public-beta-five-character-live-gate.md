@@ -1,6 +1,6 @@
 # TASK-012 — Public Beta 五角色组合真机门禁
 
-- 状态：待真机验收
+- 状态：已完成
 - 负责人：Codex + 用户真机操作
 - 审查：独立证据复核
 - 前置：TASK-011 Windows 交付壳已验收
@@ -71,4 +71,27 @@
 
 ## 验收记录
 
-待真机填写。
+2026-08-09 使用 Guide `0.3.0-alpha.0`、游戏 `0.110.1` 完成组合真机。测试驱动用的
+STS2MCP 只在隔离验证阶段临时安装；最终安装态已经移除该 Mod，并用 Steam 启动游戏复核，
+游戏 `mods/` 最终只保留 Guide 正式三件套。
+
+- Ironclad、Silent、Defect、Necrobinder、Regent 均完成真实选路、三张卡加动态跳过以及
+  至少三个实际节点；五角色共用同一评分内核，候选稳定 ID、state、advice 与 Drawer 对齐；
+- Regent 局 `sts2-b425a093a5f36c83a53e448e` 在选牌未决时保存退出：恢复前后候选和
+  decision ID 完全相同。战斗内能量从 `1` 恢复为非战斗态 `0`，不再错误关闭仍然相同的
+  Card Reward；当前建议重新发布且领取后正常关闭；
+- 同类路线候选不再显示三个相同文案：协议仍保留规范节点标签，Drawer 对重复标签追加
+  真实地图列号；`Unknown` 节点显示为“问号房”；
+- 地图滚动、窗口尺寸变化、路线偏好重算、玩家偏离、Card/Route 交替、保存继续和无旧
+  Drawer 残留均完成真机复核；地图始终只绘制一条沿真实 Children 边的路线；
+- 修复主菜单放弃已保存局遗漏 `run_ended`：新局
+  `sts2-f8e1808d428f3abc9cca75a8` 放弃后 `run_summaries` 精确增加一条，四张禁止历史表
+  仍为 `0`，当前局、事件、advice 和锁全部清理；
+- 最终正式安装态从 Steam 启动：游戏运行时托盘为 RUNNING 且只有一个 Worker；关闭游戏
+  后为 IDLE、Worker/锁/advice 为 `0`；完全退出后 Guide、游戏和 Worker 进程均为 `0`；
+- 自动验证：Python `440/440 OK`，Mod/PCK `0 warning / 0 error`，完整 Public Beta 构建、
+  安装器生成和 payload 审计通过。精确 artifact 事实只以 `dist/release-manifest.json` 为准。
+
+独立审查结论：PASS，P0/P1 阻断为 0。保存继续、重复路线标签、主菜单放弃和正式无 MCP
+生命周期均通过代码与真机证据交叉复核。仅登记一个非阻断 P2：后续为重复路线名称的列号
+显示补直接 C# 行为/渲染测试，替代当前源码结构测试。
