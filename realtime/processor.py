@@ -2,10 +2,13 @@
 from __future__ import annotations
 
 import hashlib
+from collections import Counter
+from dataclasses import replace
 from datetime import datetime, timezone
 from typing import Dict, Optional
 
 from advisor.data_sources import LocalCardTierSource
+from advisor.scoring_preferences import DEFAULT_SCORING_PREFERENCES, ScoringPreferences
 from advisor.decision_core import (
     CARD_REWARD,
     ROUTE_CHOICE,
@@ -35,7 +38,7 @@ from realtime.compatibility import (
     assess_event_handshake,
     assess_local_runtime_compatibility,
 )
-from realtime.protocol import EventType, GameStateEvent
+from realtime.protocol import DeckEditTargets, EventType, GameStateEvent
 from realtime.session import TransientSessionStore
 from storage.relational import RelationalRepository
 
@@ -66,11 +69,13 @@ class RealtimeEventProcessor:
         lifecycle: Optional[DecisionLifecycleManager] = None,
         compatibility_manifest: CompatibilityManifest | None = None,
         runtime_components: RuntimeComponents | None = None,
+        preferences: ScoringPreferences = DEFAULT_SCORING_PREFERENCES,
     ):
         self.repository = repository
         self.sessions = sessions or TransientSessionStore()
         self.checkpoint = checkpoint
         self.local_tiers = local_tiers
+        self.preferences = preferences
         self.compatibility_manifest = compatibility_manifest
         self.runtime_components = runtime_components
         self.local_compatibility = (
@@ -83,13 +88,13 @@ class RealtimeEventProcessor:
         )
         self.policies = policies or PolicyRegistry(
             [
-                CardRewardPolicy(repository, local_tiers),
+                CardRewardPolicy(repository, local_tiers, preferences),
                 RoutePolicy(repository),
-                MerchantPolicy(repository),
-                CampfirePolicy(repository),
-                NeowPolicy(repository),
-                EventPolicy(repository),
-                DeckEditPolicy(repository),
+                MerchantPolicy(repository, preferences=preferences),
+                CampfirePolicy(repository, preferences=preferences),
+                NeowPolicy(repository, preferences=preferences),
+                EventPolicy(repository, preferences=preferences),
+                DeckEditPolicy(repository, preferences=preferences),
             ]
         )
         self.lifecycle = lifecycle or DecisionLifecycleManager()
@@ -261,6 +266,11 @@ class RealtimeEventProcessor:
                 ),
             )
             if replay is not None:
+                if (
+                    replay.get("recommendation") is not None
+                    and replay.get("scoring_preferences") != self.preferences.as_dict()
+                ):
+                    replay = self._refresh_cached_scores(event, replay, checkpoint_before)
                 return self._mark_compatible(
                     event,
                     self._ensure_advice_disposition(event, replay),
@@ -365,6 +375,7 @@ class RealtimeEventProcessor:
                     "processed_at": datetime.now(
                         timezone.utc
                     ).isoformat(),
+                    "scoring_preferences": self.preferences.as_dict(),
                     "guide_preferences": {
                         "route_mode": (
                             event.guide_preferences.route_mode.value
@@ -851,18 +862,85 @@ class RealtimeEventProcessor:
             constraints=constraints,
         )
 
+    def _evaluate_request(self, request: DecisionRequest):
+        """One policy and parent-fact check for both observations and rescores."""
+        verified_parent = self._validate_decision_parent(request)
+        recommendation = self.policies.recommend(request)
+        if not self._parent_deck_targets_match(request, verified_parent):
+            gap = "deck_edit:parent_targets_mismatch"
+            recommendation = replace(
+                recommendation,
+                status="uncertain", confidence="low", recommended_candidate_id=None,
+                data_gaps=tuple(dict.fromkeys((*recommendation.data_gaps, gap))),
+                candidates=tuple(replace(
+                    row, score=None, rank=None, factors=(), dimensions={},
+                    data_gaps=tuple(dict.fromkeys((*row.data_gaps, gap))),
+                ) for row in recommendation.candidates),
+            )
+        return recommendation, verified_parent
+
+    def _refresh_cached_scores(self, event: GameStateEvent, replay: Dict, checkpoint: Dict) -> Dict:
+        """Re-evaluate only the current complete snapshot, without a game event.
+
+        Preferences are Host input, not producer revisions.  Preserve the
+        recovered lifecycle/parent binding instead of pretending the game's
+        sequence advanced or reopening an already closed decision.
+        """
+        current = checkpoint.get("current_decision") or {}
+        active = self.lifecycle.active(event.run_id)
+        if not (
+            active is not None
+            and active.decision_id == event.decision_id
+            and active.sequence == event.sequence
+            and active.observation_event_id == event.event_id
+            and current.get("event_id") == event.event_id
+            and checkpoint.get("last_sequence") == event.sequence
+        ):
+            return {
+                **replay, "recommendation": None, "advice": None,
+                "advice_disposition": self._advice_disposition("preserve"),
+            }
+        world = self._build_world(event)
+        if event.event_type == EventType.CARD_REWARD:
+            request = self._build_card_reward_request(event, world)
+        elif event.event_type == EventType.ROUTE_CHOICE:
+            request = self._build_route_choice_request(event, world)
+        else:
+            decision_type = {
+                EventType.MERCHANT: MERCHANT_CHOICE,
+                EventType.REST_SITE: CAMPFIRE_ACTION,
+                EventType.NEOW_CHOICE: NEOW_BLESSING,
+                EventType.EVENT_CHOICE: EVENT_OPTION,
+                EventType.DECK_EDIT: DECK_EDIT,
+            }.get(event.event_type)
+            if decision_type is None:
+                raise RealtimeEventValidationError("cached recommendation is not a decision")
+            request = self._build_generic_decision_request(event, world, decision_type)
+        recommendation, _ = self._evaluate_request(request)
+        refreshed = {
+            **replay, "recommendation": recommendation.as_dict(),
+            "scoring_preferences": self.preferences.as_dict(),
+            "processed_at": datetime.now(timezone.utc).isoformat(),
+            # Replace cached evaluation, retaining a child's parent_close
+            # provenance; this is not a new open/producer sequence.
+            "decision_phase": "updated",
+        }
+        if request.decision_type == CARD_REWARD:
+            refreshed["advice"] = recommendation.payload_dict()
+        self.checkpoint.update(event.model_dump(mode="json"), refreshed)
+        return refreshed
+
     def _process_decision(
         self,
         event: GameStateEvent,
         request: DecisionRequest,
     ) -> Dict:
-        verified_parent = self._validate_decision_parent(request)
         closed = self.lifecycle.closed(request.world.run_id)
         if closed is not None and closed.decision_id == request.decision_id:
             raise RealtimeEventValidationError(
                 "closed decision cannot be reopened"
             )
-        recommendation = self.policies.recommend(request)
+        recommendation, verified_parent = self._evaluate_request(request)
         transition = self.lifecycle.open(
             request,
             observation_event_id=event.event_id,
@@ -870,18 +948,7 @@ class RealtimeEventProcessor:
         active_child_binding = None
         if verified_parent is not None:
             active_child_binding = {
-                **{
-                    key: verified_parent[key]
-                    for key in (
-                        "parent_decision_id",
-                        "parent_candidate_id",
-                        "source_type",
-                        "source_id",
-                        "parent_close_sequence",
-                        "child_decision_type",
-                        "operation",
-                    )
-                },
+                **verified_parent,
                 "child_decision_id": request.decision_id,
             }
             self._active_child_bindings[
@@ -1160,7 +1227,7 @@ class RealtimeEventProcessor:
     def _read_child_expectation(value: object) -> dict | None:
         if value is None:
             return None
-        if not isinstance(value, dict) or set(value) != {
+        if not isinstance(value, dict) or set(value) - {"deck_edit_targets"} != {
             "parent_decision_id",
             "parent_candidate_id",
             "source_type",
@@ -1216,11 +1283,18 @@ class RealtimeEventProcessor:
                 return None
         else:
             return None
+        if "deck_edit_targets" in value:
+            try:
+                targets = DeckEditTargets.model_validate(value["deck_edit_targets"])
+            except ValueError:
+                return None
+            if child_type != DECK_EDIT or targets.operation != operation:
+                return None
         return dict(value)
 
     @classmethod
     def _read_active_child_binding(cls, value: object) -> dict | None:
-        if not isinstance(value, dict) or set(value) != {
+        if not isinstance(value, dict) or set(value) - {"deck_edit_targets"} != {
             "parent_decision_id",
             "parent_candidate_id",
             "source_type",
@@ -1232,16 +1306,7 @@ class RealtimeEventProcessor:
         }:
             return None
         expectation = cls._read_child_expectation({
-            key: value[key]
-            for key in (
-                "parent_decision_id",
-                "parent_candidate_id",
-                "source_type",
-                "source_id",
-                "parent_close_sequence",
-                "child_decision_type",
-                "operation",
-            )
+            key: item for key, item in value.items() if key != "child_decision_id"
         })
         child_decision_id = value.get("child_decision_id")
         if (
@@ -1326,7 +1391,12 @@ class RealtimeEventProcessor:
             ),
             parent_close_sequence=close_sequence,
         )
-        return derived if derived == stored else None
+        # Older checkpoints stored only lineage. Re-derive target facts from the
+        # retained parent observation rather than treating missing cache fields
+        # as unknown eligibility. A present cached value must still match.
+        return derived if derived is not None and stored == {
+            key: derived.get(key) for key in stored
+        } else None
 
     @classmethod
     def _restore_active_child_binding(
@@ -1360,7 +1430,7 @@ class RealtimeEventProcessor:
         except (TypeError, ValueError):
             return None
         if (
-            stored != expected_binding
+            stored != {key: expected_binding.get(key) for key in stored}
             or current_payload.get("event_type") != expected_event_type
             or current_payload.get("decision_id")
             != stored["child_decision_id"]
@@ -1404,7 +1474,7 @@ class RealtimeEventProcessor:
             }
             if operations != {expected["operation"]}:
                 return None
-        return stored
+        return expected_binding
 
     @staticmethod
     def _expected_child_reward_source(expectation: dict) -> str | None:
@@ -1482,7 +1552,7 @@ class RealtimeEventProcessor:
             "event_choice",
         }:
             return None
-        return {
+        expectation = {
             "parent_decision_id": parent_decision_id,
             "parent_candidate_id": selected_candidate_id,
             "source_type": source_type,
@@ -1493,6 +1563,33 @@ class RealtimeEventProcessor:
             "child_decision_type": child_type,
             "operation": operation,
         }
+        targets = payload.get("deck_edit_targets")
+        if child_type == DECK_EDIT and targets is not None:
+            try:
+                verified_targets = DeckEditTargets.model_validate(targets)
+            except ValueError:
+                return None
+            if verified_targets.operation != operation:
+                return None
+            expectation["deck_edit_targets"] = verified_targets.model_dump(mode="json")
+        return expectation
+
+    @staticmethod
+    def _parent_deck_targets_match(request: DecisionRequest, parent: dict | None) -> bool:
+        if request.decision_type != DECK_EDIT or parent is None:
+            return True
+        facts = parent.get("deck_edit_targets")
+        if facts is None:
+            # A legacy/unknown parent set does not invalidate the actual child
+            # screen. Empty observed targets, however, are authoritative facts.
+            return True
+        expected = Counter((row["card"], row["upgrades"]) for row in facts["targets"])
+        actual = Counter(
+            (candidate.payload.get("entity_id"), candidate.payload.get("upgrades"))
+            for candidate in request.candidates
+            if candidate.eligible and candidate.payload.get("candidate_kind") == "deck_edit"
+        )
+        return actual == expected
 
     def _validate_decision_parent(
         self,

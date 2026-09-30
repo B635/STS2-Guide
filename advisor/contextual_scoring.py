@@ -1,6 +1,8 @@
 """Transparent state factors for real-time card-reward scoring."""
 from __future__ import annotations
 
+import math
+import re
 from collections import Counter
 from typing import Dict, Iterable, List, Optional
 
@@ -10,6 +12,7 @@ from advisor.character_mechanics import (
     supports_character,
 )
 from storage.relational import RelationalRepository
+from advisor.boss_context import build_boss_preparation
 
 
 def _factor(code: str, delta: float, message: str) -> Dict:
@@ -24,16 +27,63 @@ def _bounded(value: float, lower: float, upper: float) -> float:
     return max(lower, min(upper, value))
 
 
-def _cost(card: Dict) -> Optional[int]:
-    value = card.get("cost")
-    if isinstance(value, bool):
-        return int(value)
-    if isinstance(value, (int, float)):
-        return int(value)
+def _integer(value) -> Optional[int]:
+    if isinstance(value, bool) or value is None:
+        return None
     try:
-        return int(value)
+        numeric = float(value)
     except (TypeError, ValueError):
         return None
+    if not math.isfinite(numeric) or not numeric.is_integer():
+        return None
+    return int(numeric)
+
+
+def card_energy_cost(card: Optional[Dict], upgrades: int = 0) -> Optional[int]:
+    """Read fixed energy cost, applying only an explicit catalog cost upgrade."""
+    if not card or card.get("is_x_cost"):
+        return None
+    cost = _integer(card.get("cost"))
+    if cost is None or cost < 0:
+        return None
+    upgrade = card.get("upgrade")
+    if upgrades > 0 and isinstance(upgrade, dict) and "cost" in upgrade:
+        raw = upgrade["cost"]
+        upgraded_cost = _integer(raw)
+        if upgraded_cost is None:
+            return None
+        if isinstance(raw, str) and raw.strip().startswith(("+", "-")):
+            cost += upgraded_cost * upgrades
+        else:
+            cost = upgraded_cost
+    return cost if cost >= 0 else None
+
+
+def _fixed_hit_count(card: Dict) -> Optional[int]:
+    """Use explicit counts, never activating conditional or variable repeats."""
+    if card.get("is_x_cost") or card.get("is_x_star_cost"):
+        return None
+    description = str(card.get("description") or "")
+    if re.search(
+        r"随机次数|随机数量|"
+        r"\brandom\s+(?:number|amount)\s+of\s+(?:hits|times)\b|"
+        r"X\s*次|\bX\s*times\b",
+        description,
+        flags=re.IGNORECASE,
+    ):
+        return None
+    count = _integer(card.get("hit_count"))
+    if count is None or count <= 1:
+        return 1
+    # The catalog also uses hit_count for SPITE's conditional second hit.
+    # These guards only withhold a multiplier; no count is inferred from text.
+    if re.search(
+        r"如果|若|每当|每次|\b(?:if|when|whenever|for each)\b",
+        description,
+        flags=re.IGNORECASE,
+    ):
+        return 1
+    return count
 
 
 def _effects(entity: Optional[Dict]) -> Dict[str, float]:
@@ -45,6 +95,67 @@ def _effects(entity: Optional[Dict]) -> Dict[str, float]:
     }
 
 
+def _deck_strike_count(state: Dict, resolved_deck: List[Dict]) -> Optional[int]:
+    """Count the verified static tag, never a translated card name.
+
+    The 0.111.0 catalog's explicit null tags mean no canonical tags. Missing
+    tags or unresolved/modified instances are not evidence of a zero count.
+    This is a permanent-deck baseline, not PlayerCombatState.AllCards.
+    """
+    if not state.get("deck") or state.get("capture_warnings"):
+        return None
+    for entry in state["deck"]:
+        count = entry.get("count", 1)
+        if type(count) is not int or count < 1:
+            return None
+    count = 0
+    for row in resolved_deck:
+        card, instance = row["card"], row["input"]
+        if (
+            not card or "tags" not in card
+            or instance.get("enchantment") or instance.get("affliction")
+            or type(instance.get("upgrades", 0)) is not int
+            or instance.get("upgrades", 0) not in (0, 1)
+        ):
+            return None
+        tags = card["tags"]
+        if tags is not None and (
+            not isinstance(tags, list) or any(not isinstance(tag, str) for tag in tags)
+        ):
+            return None
+        count += "Strike" in (tags or [])
+    return count
+
+
+def perfected_strike_baseline(card: Dict, option: Dict, context: Dict) -> Optional[Dict]:
+    """Estimate an acquired Perfected Strike using verified 0.111.0 facts."""
+    if str(card.get("id") or "").upper() != "PERFECTED_STRIKE":
+        return None
+    tags = card.get("tags")
+    variables = card.get("vars")
+    upgrades = option.get("upgrades", 0)
+    count = context.get("strike_count")
+    if (
+        not isinstance(tags, list) or "Strike" not in tags
+        or any(not isinstance(tag, str) for tag in tags)
+        or not isinstance(variables, dict) or count is None
+        or option.get("enchantment") or option.get("affliction")
+        or type(upgrades) is not int or upgrades not in (0, 1)
+    ):
+        return None
+    base, extra = variables.get("CalculationBase"), variables.get("ExtraDamage")
+    # Fail closed if a different catalog introduces unverified parameters.
+    if type(base) not in (int, float) or base != 6 or type(extra) not in (int, float) or extra != 2:
+        return None
+    if upgrades:
+        upgrade = card.get("upgrade")
+        if not isinstance(upgrade, dict) or upgrade.get("extradamage") != "+1":
+            return None
+        extra += 1
+    count += 1  # The offered card is not yet in the permanent deck.
+    return {"damage": base + extra * count, "strike_count": count}
+
+
 def build_context(
     state: Dict,
     resolved_deck: Iterable[Dict],
@@ -53,10 +164,13 @@ def build_context(
     """Build one reusable context for all candidates in an offer."""
     resolved_deck = list(resolved_deck)
     effect_counts: Counter = Counter()
+    growth_card_count = 0
     for row in resolved_deck:
         card = row.get("card")
         if not card:
             continue
+        if _effects(card).get("scaling") or str(card.get("type_key") or "").lower() == "power":
+            growth_card_count += 1
         for tag in _effects(card):
             effect_counts[tag] += 1
 
@@ -95,15 +209,26 @@ def build_context(
         if route_mode not in {"balanced", "survival", "growth"}:
             raise ValueError("invalid guide_preferences.route_mode")
 
+    route = _threat_profile(state.get("map_context"))
+    boss = build_boss_preparation(
+        repository,
+        (state.get("map_context") or {}).get("boss_encounter_ids") or (),
+        ascension=int(state.get("ascension") or 0),
+    ) if route["boss_path_ratio"] > 0 else None
+
     return {
         "character": character,
         "act": max(1, int(state.get("act") or 1)),
         "floor": max(0, int(state.get("floor") or 0)),
         "hp_ratio": hp_ratio,
         "deck_effect_counts": effect_counts,
+        "growth_card_count": growth_card_count,
         "relic_effects": relic_effects,
         "resolved_relics": resolved_relics,
-        "route": _threat_profile(state.get("map_context")),
+        "route": route,
+        "boss_preparation": boss,
+        "data_gaps": boss.data_gaps if boss else (),
+        "strike_count": _deck_strike_count(state, resolved_deck),
         "route_mode": route_mode,
         "mechanics": build_mechanic_context(
             character,
@@ -223,11 +348,12 @@ def score_state_factors(
     context: Dict,
     *,
     mechanic_assessment: Optional[Dict] = None,
+    damage_baseline: Optional[Dict] = None,
 ) -> List[Dict]:
     """Score intrinsic effects plus deck, relic, HP, and route context."""
     factors: List[Dict] = []
     effects = _effects(card)
-    cost = _cost(card)
+    cost = card_energy_cost(card, int(option.get("upgrades", 0)))
     card_type = str(card.get("type_key") or "").strip().lower()
     deck_size = max(1, int(profile["size"]))
     effect_counts = context["deck_effect_counts"]
@@ -267,15 +393,25 @@ def score_state_factors(
 
     effective_cost = max(1, cost or 1)
     damage = effects.get("damage")
-    if damage:
-        efficiency = damage / effective_cost
+    hit_count = _fixed_hit_count(card)
+    if damage_baseline is not None:
+        damage = damage_baseline["damage"]
+        hit_count = 1
+    if damage and cost is not None and hit_count is not None:
+        efficiency = damage * hit_count / effective_cost
         add(
             "damage_efficiency",
             _bounded((efficiency - 6.0) * 0.55, -3.0, 4.0),
-            "根据基础伤害与费用估算即时输出效率。",
+            (
+                "根据拿取后战前基准伤害与费用估算输出效率。"
+                if damage_baseline is not None
+                else "根据明确的固定攻击次数合计基础伤害与费用估算即时输出效率。"
+                if hit_count > 1
+                else "根据基础伤害与费用估算即时输出效率。"
+            ),
         )
     block = effects.get("block")
-    if block:
+    if block and cost is not None:
         efficiency = block / effective_cost
         add(
             "block_efficiency",
@@ -337,7 +473,7 @@ def score_state_factors(
         add(
             "draw_coverage",
             4.0,
-            "当前牌组缺少抽牌来源，该牌能改善循环稳定性。",
+            "当前牌组中带抽牌效果的卡牌占比偏低，该牌可补充抽牌覆盖。",
         )
     if effects.get("aoe") and effect_counts.get("aoe", 0) == 0:
         add(
@@ -467,15 +603,34 @@ def score_state_factors(
         elite_ratio = float(route["elite_path_ratio"])
         if boss_ratio > 0:
             route_code = "route_boss_fit"
-            if effects.get("scaling") or card_type == "power":
-                route_delta += 3.0 + 2.0 * boss_ratio
-                route_reasons.append("持续成长")
-            if damage:
-                route_delta += 1.0 + boss_ratio
-                route_reasons.append("即时输出")
-            if block:
-                route_delta += 1.0 + 0.5 * boss_ratio
-                route_reasons.append("直接防御")
+            boss = context.get("boss_preparation")
+            if boss is not None and boss.complete:
+                # This replaces, rather than stacks with, generic Boss proximity.
+                # Use the most demanding known encounter for preparation, without
+                # claiming its peak attack is the next action or a damage forecast.
+                peak = max(row.peak_attack_pressure for row in boss.encounters)
+                health = max(row.total_hp for row in boss.encounters)
+                if block and block_ratio < 0.3:
+                    add("boss_prepare_defense", min(3.5, peak / 12.0) * boss_ratio,
+                        "临近已知 Boss，目录攻击压力与牌组防御覆盖缺口提高了补防价值；并非预测下一招。")
+                if damage and damage_ratio < 0.35:
+                    add("boss_prepare_damage", min(2.5, 1.0 + health / 400.0) * boss_ratio,
+                        "临近已知 Boss，生命规模与牌组输出覆盖缺口提高了即时输出价值。")
+                if (effects.get("scaling") or card_type == "power") and (
+                    context.get("growth_card_count", 0) / deck_size < 0.2
+                ):
+                    add("boss_prepare_scaling", min(6.0, 2.0 + health / 160.0) * boss_ratio,
+                        "临近已知 Boss，生命规模与当前成长覆盖使持续成长更有价值。")
+            else:
+                if effects.get("scaling") or card_type == "power":
+                    route_delta += 3.0 + 2.0 * boss_ratio
+                    route_reasons.append("持续成长")
+                if damage:
+                    route_delta += 1.0 + boss_ratio
+                    route_reasons.append("即时输出")
+                if block:
+                    route_delta += 1.0 + 0.5 * boss_ratio
+                    route_reasons.append("直接防御")
             if cost is not None and cost >= 3:
                 route_delta -= boss_ratio
                 route_reasons.append("高费启动较慢")

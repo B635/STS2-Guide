@@ -340,6 +340,16 @@ def _minimal_payload(entity_type: str, item: Mapping[str, object]) -> dict:
         if field in item and item[field] is not None
     }
     if entity_type == "cards":
+        # Preserve the current catalog's explicit no-tags fact. An absent
+        # field stays absent so the mechanic estimate cannot guess zero.
+        if "tags" in item:
+            payload["tags"] = [] if item["tags"] is None else item["tags"]
+        if item.get("id") == "PERFECTED_STRIKE" and isinstance(item.get("vars"), dict):
+            payload["vars"] = {
+                key: item["vars"][key]
+                for key in ("CalculationBase", "ExtraDamage")
+                if key in item["vars"]
+            }
         # The runtime cannot observe Osty's HP.  Materialize this one data
         # dependency as a boolean before prose is removed so the Necrobinder
         # adapter still fails transparently instead of silently overrating it.

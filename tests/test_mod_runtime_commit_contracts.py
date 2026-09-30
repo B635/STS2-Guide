@@ -30,6 +30,28 @@ def _csharp_method(source: str, signature: str) -> str:
 
 
 class ModRuntimeCommitContractTests(unittest.TestCase):
+    def test_run_cleanup_closes_observation_without_ending_saved_run(self):
+        self.assertIn("nameof(RunManager.CleanUp)", self.lifecycle)
+        self.assertIn("StateEventWriter.EmitRunObservationClosed", self.lifecycle)
+        close = _csharp_method(self.writer, "internal static void EmitRunObservationClosed(")
+        self.assertIn("ClosePendingDecision", close)
+        self.assertIn('Kind = "closed_unknown"', close)
+        self.assertNotIn("EmitRunEnded", close)
+        self.assertNotIn("_ended =", close)
+        self.assertNotIn("_runId =", close)
+
+    def test_card_unavailable_rows_keep_screen_localized_names(self):
+        show = _csharp_method(self.card_panel, "private static void ShowCore(")
+        match = _csharp_method(self.card_panel, "private static bool PendingMatchesScreen(")
+        invalidate = _csharp_method(self.card_panel, "private static void Invalidate(")
+        hide = _csharp_method(self.card_panel, "private static void HideInternal(")
+        self.assertIn("model.Title", match)
+        self.assertIn("out var captions", show)
+        self.assertIn("_captions = captions", show)
+        self.assertIn("_captions", invalidate)
+        self.assertNotIn("option.CardId", invalidate)
+        self.assertIn("_captions = []", hide)
+
     @classmethod
     def setUpClass(cls) -> None:
         cls.writer = (MOD / "StateEventWriter.cs").read_text(encoding="utf-8")
@@ -94,6 +116,48 @@ class ModRuntimeCommitContractTests(unittest.TestCase):
                 "DeckEditObserver.cs",
             )
         )
+
+    def test_generic_backend_liveness_precedes_mtime_cache(self):
+        poll = _csharp_method(self.generic_controller, "private static void Poll()")
+        self.assertLess(poll.index("Backend.Read("), poll.index("ticks == _lastWriteTicks"))
+        self.assertIn("Invalidate(backendStatus)", poll)
+        self.assertIn("AdviceFileReader.Read", poll)
+        self.assertIn("Invalidate(result.Availability)", poll)
+        self.assertNotIn("_lastWriteTicks = ticks;\n                    Invalidate", poll)
+        invalidation = _csharp_method(self.generic_controller, "private static void Invalidate(")
+        self.assertIn(".ToList(), availability", invalidation)
+
+    def test_card_screen_refreshes_snapshot_before_exposing_advice(self):
+        show = _csharp_method(self.card_panel, "private static void ShowCore(")
+        match = show.index("PendingMatchesScreen(screen, _pending, out var captions)")
+        bind = show.index("StateEventWriter.BindCardRewardScreen(")
+        refresh = show.index("_pending = StateEventWriter.RefreshCardRewardScreen(")
+        drawer = show.index("_drawerHandle = ContextDrawer.Show(")
+        self.assertLess(match, bind)
+        self.assertLess(bind, refresh)
+        self.assertLess(refresh, drawer)
+        self.assertIn("if (_pending is null)", show[refresh:drawer])
+
+        refresh_method = _csharp_method(
+            self.writer, "internal static PendingDecisionView? RefreshCardRewardScreen("
+        )
+        for guard in (
+            'pending.EventType != "card_reward"',
+            "pending.DecisionId != expectedDecisionId",
+            "ReferenceEquals(pending.ScreenOwner, owner)",
+            "pending.CardContext is null",
+        ):
+            self.assertIn(guard, refresh_method)
+        self.assertIn("EmitCardReward(", refresh_method)
+        self.assertIn("pending.DecisionSource", refresh_method)
+        self.assertIn("pending.CardContext", refresh_method)
+        self.assertIn("_pendingDecisionParent", refresh_method)
+        self.assertIn("_pendingDecision.Sequence > pending.Sequence", refresh_method)
+        self.assertIn("ToPendingDecisionView(_pendingDecision)", refresh_method)
+
+        emit = _csharp_method(self.writer, "internal static void EmitCardReward(")
+        self.assertLess(emit.index("RunStateReader.TryCapture"), emit.index("var eventId = Write("))
+        self.assertLess(emit.index("if (eventId is not null)"), emit.index("CardContext = decision"))
 
     def test_card_resume_accepts_v9_without_losing_v5_v8_compatibility(self):
         recover = _csharp_method(
@@ -335,8 +399,13 @@ class ModRuntimeCommitContractTests(unittest.TestCase):
             "internal static void EmitRunEnded(",
         )
         failure = ended.index("if (eventId is null)")
-        reset = ended.index("_routeMode = GuideRouteModes.Balanced;")
-        self.assertLess(failure, reset)
+        complete = ended.index("CompleteRunEnd();")
+        self.assertLess(failure, complete)
+        completion = _csharp_method(
+            self.writer,
+            "private static void CompleteRunEnd()",
+        )
+        self.assertIn("_routeMode = GuideRouteModes.Balanced;", completion)
         activate = _csharp_method(
             self.writer,
             "private static void ActivateRun(",
@@ -405,7 +474,20 @@ class ModRuntimeCommitContractTests(unittest.TestCase):
             "private static bool EnsureStableRunIdentity(",
         )
         self.assertIn("if (_runTransitionPending)", retry)
-        self.assertIn("return !_runTransitionPending;", retry)
+        # A provisional identity may be normal during the first post-Neow
+        # map observation, but emitting with it permanently locks a
+        # temporary run_id before the stable seed/start time becomes
+        # available.  Every production event therefore fails closed until
+        # identity promotion succeeds.
+        provisional = retry.index("if (!identity.IsStable)")
+        transition = retry.index("if (_runTransitionPending)", provisional)
+        self.assertIn("return false;", retry[provisional:transition])
+        stale = retry.index(
+            "if (!RunIdentityGuard.TryAcceptStableIdentity(",
+            transition,
+        )
+        stale_end = retry.index("if (_runTransitionPending)", stale)
+        self.assertIn("return false;", retry[stale:stale_end])
         retry_write = retry.index("var syntheticEndEventId = Write(")
         retry_guard = retry.index("if (syntheticEndEventId is null)")
         retry_remember = retry.index("RememberCurrentIdentityEnded();")
@@ -416,7 +498,38 @@ class ModRuntimeCommitContractTests(unittest.TestCase):
         self.assertLess(retry_guard, retry_remember)
         self.assertLess(retry_remember, retry_activate)
 
-    def test_stable_identity_requires_current_runstate_seed(self):
+    def test_main_menu_saved_run_abandon_uses_committed_checkpoint(self):
+        # Main-menu abandon does not call RunManager.Abandon: the verified
+        # 0.110.1 API is NMainMenu.AbandonRun().  The game has already deleted
+        # current_run.save by Postfix time, so the Guide must finalize only
+        # from its own exact, committed active-run checkpoint.
+        self.assertIn("typeof(NMainMenu), nameof(NMainMenu.AbandonRun)", self.lifecycle)
+        self.assertIn("[HarmonyPostfix]", self.lifecycle)
+        self.assertIn("StateEventWriter.EmitSavedRunEnded(\"abandon\")", self.lifecycle)
+
+        saved_end = _csharp_method(
+            self.writer,
+            "internal static void EmitSavedRunEnded(",
+        )
+        for needle in (
+            '"active-run.json"',
+            '"checkpoint_version"',
+            "version != 3",
+            '"release_fingerprint"',
+            "StateEvent.ReleaseFingerprint",
+            '"last_sequence"',
+            '"state"',
+            "JsonSerializer.Deserialize<RunStateSnapshot>",
+            'var eventId = Write(\n                    "run_ended"',
+        ):
+            self.assertIn(needle, saved_end)
+        self.assertLess(
+            saved_end.index('var eventId = Write(\n                    "run_ended"'),
+            saved_end.index("CompleteRunEnd();"),
+        )
+        self.assertIn("if (eventId is null)", saved_end)
+
+    def test_stable_identity_uses_current_runstate_seed_and_manager_start_time(self):
         reader = _csharp_method(
             self.identity_reader,
             "internal static RunIdentity Read()",
@@ -427,17 +540,14 @@ class ModRuntimeCommitContractTests(unittest.TestCase):
         unavailable = reader.index(
             "if (string.IsNullOrWhiteSpace(currentRunSeed))"
         )
-        mismatch = reader.index(
-            "&& !string.Equals(\n"
-            "                    historySeed,\n"
-            "                    currentRunSeed,"
-        )
+        current_start = reader.index("StartTimeField?.GetValue(manager)")
         stable_hash = reader.index("SHA256.HashData(")
         self.assertLess(unavailable, stable_hash)
-        self.assertLess(mismatch, stable_hash)
+        self.assertLess(current_start, stable_hash)
         self.assertIn("return Temporary(", reader[unavailable:stable_hash])
-        self.assertIn("identity remains provisional", reader[mismatch:stable_hash])
-        self.assertNotIn("var seed = history?.Seed;", reader)
+        self.assertNotIn("historySeed", reader)
+        self.assertNotIn("history?.StartTime", reader)
+        self.assertIn("var startTime = internalStartTime;", reader)
 
         ensure = _csharp_method(
             self.writer,
@@ -583,8 +693,7 @@ class ModRuntimeCommitContractTests(unittest.TestCase):
         self.assertIn('effect.Certainty == "exact"', resolve_parent)
         self.assertIn('effect.TargetMode == "choose"', resolve_parent)
         self.assertIn("ClosePendingDecision(", resolve_parent)
-        self.assertIn("ReadReasons(candidate)", read)
-        self.assertIn(".Take(3)", self.generic_controller)
+        self.assertIn("AdviceReasonReader.Read(candidate)", read)
         self.assertIn("TooltipText", self.drawer)
 
     def test_mod_capability_gate_is_embedded_and_fails_closed(self):
@@ -794,15 +903,6 @@ class ModRuntimeCommitContractTests(unittest.TestCase):
         self.assertIn("catch (Exception exception)", self.observer_safety)
         self.assertIn("catch\n            {", self.observer_safety)
         self.assertNotIn("throw", self.observer_safety)
-
-    def test_reason_labels_receive_hover_without_game_actions(self):
-        rows = self.drawer[self.drawer.index("_rows = []"):]
-        label = rows[rows.index("var label = new Label"):]
-        self.assertIn(
-            "MouseFilter = Control.MouseFilterEnum.Stop",
-            label,
-        )
-
 
 if __name__ == "__main__":
     unittest.main()

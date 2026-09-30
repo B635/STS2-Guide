@@ -287,6 +287,7 @@ class V9DecisionPipelineTests(unittest.TestCase):
                     "costs": [],
                     "payload": {
                         "operation": "upgrade",
+                        "upgrades": 0,
                         "target_candidate_ids": [],
                     },
                 }],

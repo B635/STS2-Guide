@@ -83,6 +83,43 @@ internal static class StateEventWriter
         string expectedDecisionId)
         => BindDecisionScreen(owner, expectedDecisionId);
 
+    internal static PendingDecisionView? RefreshCardRewardScreen(
+        NCardRewardSelectionScreen owner,
+        string expectedDecisionId)
+    {
+        lock (WriteGate)
+        {
+            var pending = _pendingDecision;
+            if (pending is null
+                || pending.EventType != "card_reward"
+                || pending.DecisionId != expectedDecisionId
+                || !ReferenceEquals(pending.ScreenOwner, owner)
+                || pending.DecisionSource is null
+                || pending.CardContext is null)
+            {
+                return null;
+            }
+
+            // Populate runs before the player collects gold/potions. Once
+            // the visible candidates are matched and bound, capture again
+            // through the same commit path and preserve this decision's
+            // source and lineage. A failed capture/write must not expose
+            // the old event's advice on the newly opened screen.
+            EmitCardReward(
+                pending.Options,
+                pending.CardContext,
+                pending.DecisionSource,
+                _pendingDecisionParent?.SourceType,
+                _pendingDecisionParent
+            );
+            return _pendingDecision is not null
+                && _pendingDecision.DecisionId == expectedDecisionId
+                && _pendingDecision.Sequence > pending.Sequence
+                    ? ToPendingDecisionView(_pendingDecision)
+                    : null;
+        }
+    }
+
     internal static bool BindDecisionScreen(
         object owner,
         string expectedDecisionId)
@@ -111,6 +148,20 @@ internal static class StateEventWriter
                 && ReferenceEquals(_pendingDecision.ScreenOwner, owner))
             {
                 _pendingDecision.ScreenOwner = null;
+            }
+        }
+    }
+
+    internal static void EmitRunObservationClosed()
+    {
+        lock (WriteGate)
+        {
+            // The run remains resumable. Only the observed opportunity ends;
+            // Continue must read the actual restored screen, not old advice.
+            if (_pendingDecision is not null
+                && !ClosePendingDecision(new DecisionOutcome { Kind = "closed_unknown" }))
+            {
+                Log.Error("[STS2-Guide] Run observation close was not committed; retaining pending decision for retry.");
             }
         }
     }
@@ -234,23 +285,136 @@ internal static class StateEventWriter
                 );
                 return;
             }
-            _ended = true;
-            // Preserve the most recently ended stable identity until a
-            // genuinely different stable identity is accepted.
-            RunIdentityGuard.RememberEndedStableIdentity(
-                ref _lastEndedStableRunId,
-                _runId,
-                _runIdentityStable
-            );
-            _lastState = null;
-            _pendingDecision = null;
-            _pendingDecisionParent = null;
-            _pendingChildParent = null;
-            _resumeCardDecisionRecoveryAvailable = false;
-            _resumeRouteDecisionRecoveryAvailable = false;
-            _routeMode = GuideRouteModes.Balanced;
-            RunStateReader.Clear();
+            CompleteRunEnd();
         }
+    }
+
+    internal static void EmitSavedRunEnded(string outcome)
+    {
+        lock (WriteGate)
+        {
+            if (_ended)
+            {
+                return;
+            }
+            var directory = GetExchangeDirectory();
+            if (directory is null)
+            {
+                return;
+            }
+            var checkpointPath = Path.Combine(
+                directory,
+                "active-run.json"
+            );
+            try
+            {
+                using var document = JsonDocument.Parse(
+                    File.ReadAllText(checkpointPath)
+                );
+                var root = document.RootElement;
+                if (!root.TryGetProperty(
+                        "checkpoint_version",
+                        out var checkpointVersion
+                    )
+                    || !checkpointVersion.TryGetInt32(out var version)
+                    || version != 3
+                    || !TryReadRequiredString(root, "run_id", out var runId)
+                    || runId.StartsWith(
+                        "temporary-",
+                        StringComparison.Ordinal
+                    )
+                    || !StringPropertyEquals(
+                        root,
+                        "release_fingerprint",
+                        StateEvent.ReleaseFingerprint
+                    )
+                    || !StringPropertyEquals(
+                        root,
+                        "game_version",
+                        GameVersionReader.Read()
+                    )
+                    || !root.TryGetProperty(
+                        "last_sequence",
+                        out var lastSequenceElement
+                    )
+                    || !lastSequenceElement.TryGetInt64(
+                        out var lastSequence
+                    )
+                    || lastSequence < 0
+                    || !TryReadGuideRouteMode(root, out var routeMode)
+                    || !root.TryGetProperty("state", out var storedState)
+                    || storedState.ValueKind != JsonValueKind.Object)
+                {
+                    Log.Error(
+                        "[STS2-Guide] Saved run abandon not committed: "
+                        + "active-run checkpoint is missing or incompatible."
+                    );
+                    return;
+                }
+                var state = JsonSerializer.Deserialize<RunStateSnapshot>(
+                    storedState.GetRawText(),
+                    JsonOptions
+                );
+                if (state is null)
+                {
+                    return;
+                }
+
+                _runId = runId;
+                _runIdentityStable = true;
+                _sequence = Math.Max(_sequence, lastSequence);
+                _routeMode = routeMode;
+                _lastState = state;
+                var eventId = Write(
+                    "run_ended",
+                    state,
+                    new List<DecisionOption>(),
+                    runResult: new RunResult
+                    {
+                        Outcome = outcome,
+                        FinalScore = null,
+                        StartedAt = null,
+                        EndedAt = DateTimeOffset.UtcNow.ToString("O"),
+                    }
+                );
+                if (eventId is null)
+                {
+                    Log.Error(
+                        "[STS2-Guide] Saved run abandon not committed "
+                        + "because the event write failed."
+                    );
+                    return;
+                }
+                CompleteRunEnd();
+            }
+            catch (Exception exception)
+            {
+                Log.Error(
+                    "[STS2-Guide] Saved run abandon recovery failed: "
+                    + exception.Message
+                );
+            }
+        }
+    }
+
+    private static void CompleteRunEnd()
+    {
+        _ended = true;
+        // Preserve the most recently ended stable identity until a genuinely
+        // different stable identity is accepted.
+        RunIdentityGuard.RememberEndedStableIdentity(
+            ref _lastEndedStableRunId,
+            _runId,
+            _runIdentityStable
+        );
+        _lastState = null;
+        _pendingDecision = null;
+        _pendingDecisionParent = null;
+        _pendingChildParent = null;
+        _resumeCardDecisionRecoveryAvailable = false;
+        _resumeRouteDecisionRecoveryAvailable = false;
+        _routeMode = GuideRouteModes.Balanced;
+        RunStateReader.Clear();
     }
 
     internal static void EmitCardReward(
@@ -364,6 +528,7 @@ internal static class StateEventWriter
                 )
                 {
                     ScreenOwner = screenOwner,
+                    CardContext = decision,
                 };
             }
         }
@@ -1756,7 +1921,13 @@ internal static class StateEventWriter
             {
                 state.CaptureWarnings.Add("run_identity_fallback");
             }
-            return !_runTransitionPending;
+            // Never publish a production event with a provisional identity.
+            // In particular, a post-Neow map observation can arrive while
+            // History still describes the previous run. Emitting here would
+            // lock that temporary ID and prevent promotion on the next stable
+            // observation. The observer will retry without exposing stale or
+            // cross-run advice.
+            return false;
         }
 
         if (_runTransitionPending)
@@ -1806,7 +1977,7 @@ internal static class StateEventWriter
             {
                 state.CaptureWarnings.Add("run_identity_fallback");
             }
-            return !_runTransitionPending;
+            return false;
         }
         if (_runTransitionPending)
         {
@@ -2636,7 +2807,10 @@ internal static class StateEventWriter
                 current.MaxHp
             )
             || !NullableIntPropertyEquals(stored, "gold", current.Gold)
-            || !IntPropertyEquals(stored, "energy", current.Energy)
+            // A post-combat save can retain the last combat energy in the
+            // checkpoint while loading the same reward resets it to zero.
+            // Energy cannot change this out-of-combat card decision, so it
+            // is deliberately excluded from stable resume identity.
             || !NullableIntPropertyEquals(
                 stored,
                 "max_potion_slots",
@@ -3046,6 +3220,7 @@ internal static class StateEventWriter
     )
     {
         internal object? ScreenOwner { get; set; }
+        internal DecisionContext? CardContext { get; init; }
     }
 
     private sealed record PendingDecisionCandidate(

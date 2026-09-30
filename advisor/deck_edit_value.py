@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from collections import Counter
 import re
 from typing import Any, Mapping
 
@@ -10,6 +11,7 @@ from advisor.character_mechanics import (
     signals_for_card,
 )
 from advisor.choice_effects import AssessmentDraft, ChoiceEffect
+from advisor.contextual_scoring import card_energy_cost
 from advisor.decision_core import WorldState
 from storage.relational import RelationalRepository
 
@@ -55,6 +57,10 @@ def _upgrade_value(card: Mapping[str, Any]) -> float | None:
     upgrade = card.get("upgrade")
     if not isinstance(upgrade, Mapping) or not upgrade:
         return None
+    if set(upgrade) - {
+        "damage", "block", "cards_draw", "energy_gain", "hit_count", "cost",
+    }:
+        return None
     value = 0.0
     recognized = False
     for field_name, weight in (
@@ -65,12 +71,16 @@ def _upgrade_value(card: Mapping[str, Any]) -> float | None:
         ("hit_count", 2.0),
     ):
         delta = _number(upgrade.get(field_name))
+        if field_name in upgrade and delta is None:
+            return None
         if delta is not None:
             recognized = True
             value += delta * weight
-    upgraded_cost = _number(upgrade.get("cost"))
-    base_cost = _number(card.get("cost"))
-    if upgraded_cost is not None and base_cost is not None:
+    if "cost" in upgrade:
+        base_cost = card_energy_cost(card)
+        upgraded_cost = card_energy_cost(card, upgrades=1)
+        if base_cost is None or upgraded_cost is None:
+            return None
         recognized = True
         value += max(-8.0, min(8.0, (base_cost - upgraded_cost) * 8.0))
     if not recognized:
@@ -78,38 +88,63 @@ def _upgrade_value(card: Mapping[str, Any]) -> float | None:
     return round(max(0.0, min(18.0, value)), 4)
 
 
+def _verified_targets(world: WorldState, operation: str, facts):
+    """Validate complete snapshot-scoped facts; never infer game eligibility."""
+    if facts is None:
+        return (), ("deck_edit:targets_unknown",)
+    if not isinstance(facts, Mapping) or set(facts) != {"operation", "source_code", "targets"}:
+        return (), ("deck_edit:targets_invalid",)
+    source = facts["source_code"]
+    targets = facts["targets"]
+    if (facts["operation"] != operation or not isinstance(source, str)
+            or not source.strip() or len(source) > 200
+            or not isinstance(targets, (list, tuple)) or len(targets) > 200):
+        return (), ("deck_edit:targets_invalid",)
+    remaining = Counter()
+    for entry in world.deck:
+        remaining[(entry.card, entry.upgrades)] += entry.count
+    ids = set()
+    for target in targets:
+        if not isinstance(target, Mapping) or set(target) != {"target_id", "card", "upgrades"}:
+            return (), ("deck_edit:targets_invalid",)
+        if any(not isinstance(target[key], str) or not target[key].strip()
+               or len(target[key]) > limit for key, limit in (("target_id", 240), ("card", 200))):
+            return (), ("deck_edit:targets_invalid",)
+        if (type(target["upgrades"]) is not int or not 0 <= target["upgrades"] <= 9
+                or target["target_id"] in ids):
+            return (), ("deck_edit:targets_invalid",)
+        ids.add(target["target_id"])
+        key = (target["card"], target["upgrades"])
+        if remaining[key] <= 0:
+            return (), ("deck_edit:targets_state_mismatch",)
+        remaining[key] -= 1
+    if not targets:
+        return (), (f"deck_edit:no_{operation}_target",)
+    return targets, ()
+
+
 def best_upgrade_opportunity(
     world: WorldState,
     repository: RelationalRepository,
+    target_facts=None,
 ) -> DeckEditOpportunity:
-    rows, gaps = _resolved_deck(world, repository)
+    targets, gaps = _verified_targets(world, "upgrade", target_facts)
     if gaps:
         return DeckEditOpportunity("upgrade", None, None, gaps)
     best_id = None
     best_value = -1.0
-    unsupported_upgrade = False
-    for row in rows:
-        entry = row["entry"]
-        card = row["card"]
-        if entry.upgrades > 0 or card is None:
-            continue
-        upgrade = card.get("upgrade")
-        if not isinstance(upgrade, Mapping) or not upgrade:
-            continue
+    for target in targets:
+        if target["upgrades"] > 0:
+            return DeckEditOpportunity("upgrade", None, None, ("deck_edit:repeat_upgrade_unmodeled",))
+        card = repository.find_card(target["card"])
+        if card is None:
+            return DeckEditOpportunity("upgrade", None, None, (f"unknown_card:{target['card']}",))
         value = _upgrade_value(card)
         if value is None:
-            unsupported_upgrade = True
-            continue
+            return DeckEditOpportunity("upgrade", None, None, ("deck_edit:upgrade_delta_unknown",))
         if value > best_value:
-            best_id = entry.card
+            best_id = target["card"]
             best_value = value
-    if best_id is None:
-        gap = (
-            ("deck_edit:upgrade_delta_unknown",)
-            if unsupported_upgrade
-            else ("deck_edit:no_upgrade_target",)
-        )
-        return DeckEditOpportunity("upgrade", None, None, gap)
     return DeckEditOpportunity("upgrade", best_id, best_value)
 
 
@@ -152,7 +187,11 @@ def _removal_value(
 def best_remove_opportunity(
     world: WorldState,
     repository: RelationalRepository,
+    target_facts=None,
 ) -> DeckEditOpportunity:
+    targets, gaps = _verified_targets(world, "remove", target_facts)
+    if gaps:
+        return DeckEditOpportunity("remove", None, None, gaps)
     rows, gaps = _resolved_deck(world, repository)
     if gaps:
         return DeckEditOpportunity("remove", None, None, gaps)
@@ -162,11 +201,10 @@ def best_remove_opportunity(
     )
     best_id = None
     best_value = -100.0
-    for row in rows:
-        card = row["card"]
-        entry = row["entry"]
-        if card is None:
-            continue
+    for target in targets:
+        row = next(row for row in rows if row["entry"].card == target["card"]
+                   and row["entry"].upgrades == target["upgrades"])
+        card, entry = row["card"], row["entry"]
         value = _removal_value(
             world=world,
             card=card,
@@ -195,18 +233,25 @@ def score_deck_effect(
     if effect.certainty != "exact":
         draft.gap(f"deck_edit:{effect.kind}:uncertain")
         return
+    if effect.target_mode == "choose" and effect.kind in {"upgrade_card", "remove_card"}:
+        choices = [item for item in draft.candidate.payload.get("effects", ())
+                   if isinstance(item, Mapping) and item.get("target_mode") == "choose"]
+        if len(choices) != 1 or effect.amount not in (None, 1):
+            draft.gap("deck_edit:multiple_selection_unmodeled")
+            return
     if effect.kind == "upgrade_card":
         opportunity = (
-            best_upgrade_opportunity(world, repository)
+            best_upgrade_opportunity(world, repository, draft.candidate.payload.get("deck_edit_targets"))
             if effect.target_mode == "choose"
             else _specific_upgrade(effect, repository)
         )
         _apply_opportunity(draft, opportunity)
     elif effect.kind == "remove_card":
         opportunity = (
-            best_remove_opportunity(world, repository)
+            best_remove_opportunity(world, repository, draft.candidate.payload.get("deck_edit_targets"))
             if effect.target_mode == "choose"
-            else _specific_removal(effect, world, repository)
+            else _specific_removal(effect, world, repository,
+                                   upgrades=draft.candidate.payload.get("upgrades"))
         )
         _apply_opportunity(draft, opportunity)
     elif effect.kind == "add_card":
@@ -267,6 +312,8 @@ def _specific_removal(
     effect: ChoiceEffect,
     world: WorldState,
     repository: RelationalRepository,
+    *,
+    upgrades: int | None = None,
 ) -> DeckEditOpportunity:
     if not effect.entity_id:
         return DeckEditOpportunity(
@@ -283,6 +330,7 @@ def _specific_removal(
             item
             for item in rows
             if item["entry"].card == effect.entity_id
+            and (upgrades is None or item["entry"].upgrades == upgrades)
         ),
         None,
     )

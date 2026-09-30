@@ -35,19 +35,25 @@ internal static class MapNodeReader
                 return Empty();
             }
 
-            // ActMap.GetAllMapPoints() only enumerates the regular Grid.  Boss
-            // points are special nodes stored separately on ActMap, so they
-            // must be added before we build the node lookup.  Otherwise the
-            // final-row edges to the boss are silently discarded as well.
+            // ActMap.GetAllMapPoints() only enumerates the regular Grid. The
+            // unique act-start point and Boss points are public special
+            // nodes stored separately on ActMap, so they must be added before
+            // building the lookup. Otherwise the real initial origin and the
+            // final-row edges to the Boss are silently discarded.
             var specialBossPoints = new MapPoint?[]
             {
                 map.BossMapPoint,
                 map.SecondBossMapPoint,
             };
+            var specialMapPoints = new MapPoint?[]
+                {
+                    map.StartingMapPoint,
+                }
+                .Concat(specialBossPoints);
             var points = map
                 .GetAllMapPoints()
                 .Cast<MapPoint?>()
-                .Concat(specialBossPoints)
+                .Concat(specialMapPoints)
                 .OfType<MapPoint>()
                 .Distinct()
                 .OrderBy(point => point.coord.row)
@@ -70,7 +76,7 @@ internal static class MapNodeReader
                         .Distinct(StringComparer.Ordinal)
                         .OrderBy(id => id, StringComparer.Ordinal)
                         .ToList(),
-                    Label = point.PointType.ToString(),
+                    Label = DisplayLabel(point.PointType),
                 })
                 .ToList();
 
@@ -314,6 +320,22 @@ internal static class MapNodeReader
             MapPointType.Boss => "BOSS",
             MapPointType.Treasure => "TREASURE",
             _ => "UNKNOWN",
+        };
+    }
+
+    private static string DisplayLabel(MapPointType pointType)
+    {
+        return pointType switch
+        {
+            MapPointType.Monster => "普通战斗",
+            MapPointType.Elite => "精英战斗",
+            MapPointType.RestSite => "篝火",
+            MapPointType.Shop => "商店",
+            MapPointType.Unknown => "问号房",
+            MapPointType.Ancient => "远古事件",
+            MapPointType.Boss => "首领",
+            MapPointType.Treasure => "宝箱",
+            _ => "--",
         };
     }
 }

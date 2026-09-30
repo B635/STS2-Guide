@@ -17,6 +17,7 @@ internal static class RouteAdviceController
     private static PendingDecisionView? _pending;
     private static ContextDrawerHandle _drawer;
     private static long _lastWriteTicks;
+    private static readonly BackendLiveness Backend = new();
 
     internal static void Show(NMapScreen screen, PendingDecisionView pending)
     {
@@ -53,7 +54,7 @@ internal static class RouteAdviceController
             HideInternal();
             _pending = pending;
             _screen = screen;
-            var captions = pending.Candidates.Select(candidate => candidate.Label).ToList();
+            var captions = BuildDisplayLabels(pending);
             _drawer = ContextDrawer.Show(
                 screen,
                 null,
@@ -134,6 +135,14 @@ internal static class RouteAdviceController
                 return;
             }
             ContextDrawer.Reposition(_drawer);
+            var backendStatus = Backend.Read(ProjectSettings.GlobalizePath(
+                "user://STS2Guide/runtime-status.json"), StateEvent.ReleaseFingerprint);
+            if (backendStatus != AdviceAvailability.Ready)
+            {
+                _lastWriteTicks = 0;
+                Invalidate(backendStatus);
+                return;
+            }
             var path = ProjectSettings.GlobalizePath("user://STS2Guide/advice-event.json");
             if (!File.Exists(path))
             {
@@ -149,7 +158,7 @@ internal static class RouteAdviceController
             catch
             {
                 _lastWriteTicks = 0;
-                Invalidate();
+                Invalidate(AdviceAvailability.Unavailable);
                 return;
             }
             if (ticks == _lastWriteTicks)
@@ -158,15 +167,15 @@ internal static class RouteAdviceController
             }
             try
             {
-                using var document = JsonDocument.Parse(File.ReadAllText(path));
-                var matched = ReadMatching(document.RootElement, _pending);
+                var result = AdviceFileReader.Read(path, root => ReadMatching(root, _pending));
+                var matched = result.Value;
                 if (matched is null)
                 {
-                    _lastWriteTicks = ticks;
-                    Invalidate();
+                    _lastWriteTicks = 0; // transient read failures must retry even with unchanged mtime
+                    Invalidate(result.Availability);
                     return;
                 }
-                ContextDrawer.Render(_drawer, matched.Rows);
+                ContextDrawer.Render(_drawer, matched.Rows, result.Availability);
                 RouteMapOverlay.Render(
                     _screen,
                     _pending.DecisionId,
@@ -179,7 +188,7 @@ internal static class RouteAdviceController
             {
                 _lastWriteTicks = 0;
                 Log.Error("[STS2-Guide] Route advice read failed: " + exception.Message);
-                Invalidate();
+                Invalidate(AdviceAvailability.Unavailable);
             }
         }
     }
@@ -279,6 +288,7 @@ internal static class RouteAdviceController
             return null;
         }
         var rows = new ContextDrawerRow[expected.Count];
+        var displayLabels = BuildDisplayLabels(pending);
         var matched = new bool[expected.Count];
         var recommendedMatched = recommended is null;
         foreach (var candidate in candidates.EnumerateArray())
@@ -290,6 +300,7 @@ internal static class RouteAdviceController
                 || index < 0 || index >= expected.Count
                 || matched[index]
                 || expected[index].CandidateId != candidateId
+                || expected[index].Label != label
                 || !AdviceContractReader.HasCandidateMetadata(candidate)
                 || !BoolEquals(candidate, "eligible", true))
             {
@@ -324,9 +335,10 @@ internal static class RouteAdviceController
                 recommendedMatched = true;
             }
             rows[index] = new ContextDrawerRow(
-                label,
+                displayLabels[index],
                 score,
-                isRecommended
+                isRecommended,
+                AdviceReasonReader.Read(candidate)
             );
             matched[index] = true;
         }
@@ -480,15 +492,42 @@ internal static class RouteAdviceController
         return true;
     }
 
-    private static void Invalidate()
+    private static void Invalidate(AdviceAvailability availability = AdviceAvailability.Waiting)
     {
         if (_pending is null || !_drawer.IsValid)
         {
             return;
         }
-        ContextDrawer.Render(_drawer, _pending.Candidates.Select(candidate =>
-            new ContextDrawerRow(candidate.Label, null, false)).ToList());
+        ContextDrawer.Render(_drawer, BuildDisplayLabels(_pending).Select(label =>
+            new ContextDrawerRow(label, null, false)).ToList(), availability);
         RouteMapOverlay.Hide(_screen, _pending.DecisionId);
+    }
+
+    private static IReadOnlyList<string> BuildDisplayLabels(
+        PendingDecisionView pending)
+    {
+        var ordered = pending.Candidates
+            .OrderBy(candidate => candidate.DisplayIndex)
+            .ToList();
+        var repeatedLabels = ordered
+            .GroupBy(candidate => candidate.Label, StringComparer.Ordinal)
+            .Where(group => group.Count() > 1)
+            .Select(group => group.Key)
+            .ToHashSet(StringComparer.Ordinal);
+        var nodes = pending.RouteContext?.Nodes.ToDictionary(
+            node => node.NodeId,
+            StringComparer.Ordinal
+        ) ?? new Dictionary<string, MapNodeState>(StringComparer.Ordinal);
+
+        return ordered.Select(candidate =>
+        {
+            if (repeatedLabels.Contains(candidate.Label)
+                && nodes.TryGetValue(candidate.CandidateId, out var node))
+            {
+                return $"{candidate.Label} · 第{node.Col + 1}列";
+            }
+            return candidate.Label;
+        }).ToList();
     }
 
     private static bool StringEquals(JsonElement root, string property, string? expected)

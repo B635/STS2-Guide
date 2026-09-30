@@ -22,8 +22,10 @@ internal static class CardRewardAdvicePanel
     private static NCardRewardSelectionScreen? _screen;
     private static Godot.Timer? _timer;
     private static PendingDecisionView? _pending;
+    private static List<string> _captions = [];
     private static ContextDrawerHandle _drawerHandle;
     private static long _lastWriteTicks;
+    private static readonly BackendLiveness Backend = new();
     private static SpecialRewardExpectation? _specialExpectation;
 
     internal static void PrepareSpecialReward(
@@ -103,7 +105,7 @@ internal static class CardRewardAdvicePanel
                     );
                     return;
                 }
-                if (!PendingMatchesScreen(screen, _pending))
+                if (!PendingMatchesScreen(screen, _pending, out var captions))
                 {
                     Log.Info(
                         "[STS2-Guide] Advice panel skipped: pending decision "
@@ -125,14 +127,26 @@ internal static class CardRewardAdvicePanel
                     return;
                 }
 
+                _pending = StateEventWriter.RefreshCardRewardScreen(
+                    screen,
+                    _pending.DecisionId
+                );
+                if (_pending is null)
+                {
+                    StateEventWriter.UnbindCardRewardScreen(screen);
+                    Log.Info(
+                        "[STS2-Guide] Advice panel skipped: fresh card "
+                        + "snapshot could not be committed."
+                    );
+                    return;
+                }
+
                 _screen = screen;
-                var captions = _pending.Options
-                    .Select(option => option.CardId)
-                    .ToList();
                 if (_pending.CanSkip)
                 {
                     captions.Add("跳过");
                 }
+                _captions = captions;
                 _drawerHandle = ContextDrawer.Show(
                     screen,
                     CardRowField?.GetValue(screen) as Control,
@@ -191,6 +205,7 @@ internal static class CardRewardAdvicePanel
         _screen = null;
         _timer = null;
         _pending = null;
+        _captions = [];
         _drawerHandle = default;
         _lastWriteTicks = 0;
     }
@@ -213,6 +228,14 @@ internal static class CardRewardAdvicePanel
                 return;
             }
             ContextDrawer.Reposition(_drawerHandle);
+            var backendStatus = Backend.Read(ProjectSettings.GlobalizePath(
+                "user://STS2Guide/runtime-status.json"), StateEvent.ReleaseFingerprint);
+            if (backendStatus != AdviceAvailability.Ready)
+            {
+                _lastWriteTicks = 0;
+                Invalidate(backendStatus);
+                return;
+            }
             var advicePath = ProjectSettings.GlobalizePath(
                 "user://STS2Guide/advice-event.json"
             );
@@ -230,7 +253,7 @@ internal static class CardRewardAdvicePanel
             catch
             {
                 _lastWriteTicks = 0;
-                Invalidate();
+                Invalidate(AdviceAvailability.Unavailable);
                 return;
             }
             if (writeTicks == _lastWriteTicks)
@@ -239,14 +262,15 @@ internal static class CardRewardAdvicePanel
             }
             try
             {
-                var rows = ReadMatchingRows(advicePath, _pending);
+                var result = AdviceFileReader.Read(advicePath, root => ReadMatchingRows(root, _pending));
+                var rows = result.Value;
                 if (rows is null)
                 {
-                    _lastWriteTicks = writeTicks;
-                    Invalidate();
+                    _lastWriteTicks = 0; // transient read failures must retry even with unchanged mtime
+                    Invalidate(result.Availability);
                     return;
                 }
-                ContextDrawer.Render(_drawerHandle, rows);
+                ContextDrawer.Render(_drawerHandle, rows, result.Availability);
                 _lastWriteTicks = writeTicks;
             }
             catch (Exception exception)
@@ -256,17 +280,15 @@ internal static class CardRewardAdvicePanel
                     "[STS2-Guide] Advice panel read failed: "
                     + exception.Message
                 );
-                Invalidate();
+                Invalidate(AdviceAvailability.Unavailable);
             }
         }
     }
 
     private static IReadOnlyList<ContextDrawerRow>? ReadMatchingRows(
-        string path,
+        JsonElement root,
         PendingDecisionView pending)
     {
-        using var document = JsonDocument.Parse(File.ReadAllText(path));
-        var root = document.RootElement;
         if (!AdviceCompatibilityReader.MatchesCurrentRuntime(root)
             || !GuidePreferencesMatch(root, pending.RouteMode)
             || !TryReadString(root, "run_id", out var runId)
@@ -413,11 +435,14 @@ internal static class CardRewardAdvicePanel
             rows[displayIndex] = new ContextDrawerRow(
                 label,
                 score,
-                isRecommended
+                isRecommended,
+                AdviceReasonReader.Read(candidate)
             );
             matched[displayIndex] = true;
         }
-        return matched.All(value => value) && recommendedMatched ? rows : null;
+        if (!matched.All(value => value) || !recommendedMatched)
+            return null;
+        return rows;
     }
 
     private static bool GuidePreferencesMatch(
@@ -436,24 +461,20 @@ internal static class CardRewardAdvicePanel
             )
             && routeMode == expectedMode;
 
-    private static void Invalidate()
+    private static void Invalidate(AdviceAvailability availability = AdviceAvailability.Waiting)
     {
         if (_pending is null || !_drawerHandle.IsValid)
         {
             return;
         }
-        var rows = _pending.Options
-            .Select(option => new ContextDrawerRow(
-                option.CardId,
+        var rows = _captions
+            .Select(caption => new ContextDrawerRow(
+                caption,
                 null,
                 false
             ))
             .ToList();
-        if (_pending.CanSkip)
-        {
-            rows.Add(new ContextDrawerRow("跳过", null, false));
-        }
-        ContextDrawer.Render(_drawerHandle, rows);
+        ContextDrawer.Render(_drawerHandle, rows, availability);
     }
 
     private static bool TryReadString(
@@ -495,8 +516,10 @@ internal static class CardRewardAdvicePanel
 
     private static bool PendingMatchesScreen(
         NCardRewardSelectionScreen screen,
-        PendingDecisionView pending)
+        PendingDecisionView pending,
+        out List<string> captions)
     {
+        captions = [];
         var visible = new List<DecisionOption>();
         try
         {
@@ -510,6 +533,11 @@ internal static class CardRewardAdvicePanel
                 if (child is NGridCardHolder { CardModel: { } model })
                 {
                     visible.Add(RunStateReader.ReadDecisionOption(model));
+                    // The visible game model owns the localized title even
+                    // when the backend has never produced an advice file.
+                    captions.Add(string.IsNullOrWhiteSpace(model.Title)
+                        ? $"卡牌 {visible.Count}"
+                        : model.Title);
                 }
             }
             if (visible.Count != pending.Options.Count)

@@ -28,6 +28,7 @@
     "processed_at": { "type": "string", "format": "date-time" },
     "decision_id": { "type": "string", "minLength": 3 },
     "guide_preferences": { "$ref": "#/$defs/guidePreferences" },
+    "scoring_preferences": { "$ref": "#/$defs/scoringPreferences" },
     "recommendation": { "$ref": "#/$defs/recommendation" },
     "advice_disposition": {
       "type": "object",
@@ -43,6 +44,17 @@
     "advice": { "$ref": "#/$defs/cardRewardLegacyAdvice" }
   },
   "$defs": {
+    "scoringPreferences": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "survival", "immediate_power", "long_term_growth"],
+      "properties": {
+        "schema_version": { "const": 1 },
+        "survival": { "type": "number", "minimum": 0.75, "maximum": 1.25 },
+        "immediate_power": { "type": "number", "minimum": 0.75, "maximum": 1.25 },
+        "long_term_growth": { "type": "number", "minimum": 0.75, "maximum": 1.25 }
+      }
+    },
     "guidePreferences": {
       "type": "object",
       "additionalProperties": false,

@@ -1,17 +1,17 @@
 {
   "manifest_version": 2,
-  "release_fingerprint": "3ec6911d1288fe9c57b92a37c4f935fc8464d4eafabd6ccddddc896edb657e2f",
+  "release_fingerprint": "31439e8d119ce56bc0ec6ac52eac2ac51c527d697694ef08116e462c15b254c8",
   "status": "enabled",
   "guide": {
-    "version": "0.3.0-alpha.0"
+    "version": "0.3.11-alpha.0"
   },
   "game": {
-    "version": "0.110.1",
-    "sts2_dll_sha256": "7c446efabf80614c429b5088e87101423aa5bb4c04fc3e73393261f6e6d404fd"
+    "version": "0.111.0",
+    "sts2_dll_sha256": "0861bfa1df347538d932f22d580e75420f08082792eb914e53b4882764acdbe9"
   },
   "mod": {
     "id": "STS2GuideReadOnlyExporter",
-    "version": "0.3.0",
+    "version": "0.3.11",
     "producer": "sts2-guide-readonly-mod"
   },
   "protocol": {
@@ -21,19 +21,19 @@
   },
   "sqlite": {
     "schema_version": 8,
-    "snapshot_id": "knowledge-c89bfae17269ddbd",
-    "knowledge_sha256": "c89bfae17269ddbd01223611d240edf041466e1aa5138aa1c097ecb0801a22c0",
+    "snapshot_id": "knowledge-a380bbcd7fd80d88",
+    "knowledge_sha256": "a380bbcd7fd80d88660e4802fc2aa31a34f5d16b0a27d68a44af466a20a33078",
     "community_scores_sha256": "97c3458a0d2191c3b0769771f420c028693c1b6fe3019e2a3402012af34e6678"
   },
   "policy": {
-    "bundle_version": "extended-decision-policy-v1",
-    "card_reward_version": "card_reward:contextual_mechanics_v1",
-    "route_version": "route:mode_aware_risk_v1",
-    "merchant_version": "merchant_structured_v1",
-    "campfire_version": "campfire_structured_v1",
-    "neow_version": "neow_structured_v1",
-    "event_version": "event_structured_allowlist_v1",
-    "deck_edit_version": "deck_edit:structured_targets_v1"
+    "bundle_version": "extended-decision-policy-v6",
+    "card_reward_version": "card_reward:contextual_mechanics_v5",
+    "route_version": "route:mode_aware_risk_v3",
+    "merchant_version": "merchant_structured_v6",
+    "campfire_version": "campfire_structured_v4",
+    "neow_version": "neow_structured_v4",
+    "event_version": "event_structured_allowlist_v4",
+    "deck_edit_version": "deck_edit:structured_targets_v4"
   },
   "capabilities": {
     "card_reward": "enabled",

@@ -30,6 +30,7 @@ tools/**/bin/
 tools/**/obj/
 tools/**/artifacts/
 tools/**/pack/.godot/
+tools/DrawerLayoutTests/.godot/
 p0-host*.log
 p0-live-host*.log
 p0-*.log

@@ -4,8 +4,11 @@ import re
 import os
 import tempfile
 import unittest
+import json
+from unittest.mock import patch
 from pathlib import Path
 
+from scripts import audit_public_beta
 from scripts.audit_public_beta import assert_artifact_fresh
 
 
@@ -13,6 +16,30 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class PublicBetaPackagingTests(unittest.TestCase):
+    def test_audit_selects_exact_candidate_and_preserves_old_installers(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "packaging").mkdir()
+            (root / "packaging/compatibility.json").write_text(
+                json.dumps({"guide": {"version": "0.3.1-alpha.0"}}), encoding="utf-8"
+            )
+            current = root / "STS2-Guide-0.3.1-alpha.0-win-x64-setup.exe"
+            old = root / "STS2-Guide-0.3.0-alpha.0-win-x64-setup.exe"
+            for path in (current, old, root / "guide.exe", root / "STS2GuideReadOnlyExporter.dll",
+                         root / "STS2GuideReadOnlyExporter.json", root / "STS2GuideReadOnlyExporter.pck"):
+                path.touch()
+            with patch.multiple(audit_public_beta, ROOT=root, INSTALLER_DIR=root,
+                                MOD_DIR=root, EXE=root / "guide.exe"):
+                # Stop after selecting the candidate, before unrelated payload checks.
+                with patch.object(audit_public_beta, "assert_artifact_fresh", side_effect=[None, RuntimeError("selected")]) as check:
+                    with self.assertRaisesRegex(RuntimeError, "selected"):
+                        audit_public_beta.main()
+                self.assertEqual(check.call_args.args[0], current)
+                self.assertTrue(old.exists())
+                current.unlink()
+                with self.assertRaisesRegex(SystemExit, "0.3.1-alpha.0"):
+                    audit_public_beta.main()
+
     def test_frozen_payload_uses_release_db_and_original_icon(self):
         spec = (ROOT / "packaging" / "sts2-guide.spec").read_text(
             encoding="utf-8"

@@ -1,6 +1,7 @@
 import os
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from advisor.deck_edit import DECK_EDIT, DeckEditPolicy
 from advisor.decision_core import (
@@ -45,6 +46,7 @@ def _candidate(candidate_id, card, operation="upgrade", eligible=True):
             "candidate_kind": "deck_edit",
             "entity_id": card,
             "operation": operation,
+            "upgrades": 0,
             "costs": [],
         },
         label=card,
@@ -87,18 +89,73 @@ class DeckEditPolicyTests(unittest.TestCase):
     def test_upgrade_targets_are_scored_without_mutating_deck(self):
         request = self._request([
             _candidate("deck:0", "STRIKE_IRONCLAD"),
-            _candidate("deck:9", "BASH"),
+            _candidate("deck:5", "DEFEND_IRONCLAD"),
         ])
         first = self.policy.recommend(request)
         second = self.policy.recommend(request)
         self.assertEqual(first.as_dict(), second.as_dict())
         self.assertEqual(
             {row.candidate_id for row in first.candidates},
-            {"deck:0", "deck:9"},
+            {"deck:0", "deck:5"},
         )
         self.assertTrue(all(
             row.score is not None for row in first.candidates
         ))
+
+    def test_partially_modeled_upgrade_does_not_claim_complete_value(self):
+        result = self.policy.recommend(self._request([
+            _candidate("deck:0", "STRIKE_IRONCLAD"),
+            _candidate("deck:9", "BASH"),
+        ]))
+        self.assertEqual(result.status, "uncertain")
+        self.assertIsNone(result.recommended_candidate_id)
+        self.assertIsNotNone(result.candidates[0].score)
+        bash = result.candidates[1]
+        self.assertIsNone(bash.score)
+        self.assertIn("deck_edit:upgrade_delta_unknown", bash.data_gaps)
+        self.assertFalse(any(
+            factor["code"] == "deck_upgrade_opportunity"
+            for factor in bash.factors
+        ))
+
+    def test_upgrade_targets_respect_signed_and_absolute_costs(self):
+        original_find = self.repository.find_card
+        original = original_find("BASH")
+        for cost, expected in (
+            ("+1", "deck:5"),
+            ("-1", "deck:9"),
+            (1, "deck:9"),
+            (0, "deck:9"),
+            (3, "deck:5"),
+        ):
+            card = {**original, "cost": 2, "upgrade": {"cost": cost}}
+
+            def find(identifier):
+                return card if identifier == "BASH" else original_find(identifier)
+
+            with self.subTest(cost=cost), patch.object(
+                self.repository, "find_card", side_effect=find
+            ):
+                result = self.policy.recommend(self._request([
+                    _candidate("deck:5", "DEFEND_IRONCLAD"),
+                    _candidate("deck:9", "BASH"),
+                ]))
+                self.assertEqual(result.recommended_candidate_id, expected)
+                self.assertEqual(result.data_gaps, ())
+
+    def test_unknown_upgrade_cost_is_not_given_a_growth_value(self):
+        original = self.repository.find_card("BASH")
+        for cost in (None, "X", True, -1, 1.5, "-3"):
+            card = {**original, "cost": 2, "upgrade": {"cost": cost}}
+            with self.subTest(cost=cost), patch.object(
+                self.repository, "find_card", return_value=card
+            ):
+                result = self.policy.recommend(self._request([
+                    _candidate("deck:9", "BASH"),
+                ]))
+                self.assertEqual(result.status, "uncertain")
+                self.assertIsNone(result.candidates[0].score)
+                self.assertIn("deck_edit:upgrade_delta_unknown", result.data_gaps)
 
     def test_unknown_target_fails_closed(self):
         result = self.policy.recommend(self._request([

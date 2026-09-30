@@ -1,0 +1,15 @@
+config_version=5
+
+[application]
+config/name="DrawerLayoutTests"
+run/main_scene="res://Main.tscn"
+
+[display]
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+
+[dotnet]
+project/assembly_name="DrawerLayoutTests"
+
+[rendering]
+renderer/rendering_method="gl_compatibility"

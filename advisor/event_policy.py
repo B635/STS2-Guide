@@ -5,6 +5,8 @@ never reads a description/title field and cannot derive effects from prose.
 """
 from __future__ import annotations
 
+import re
+
 from advisor.choice_effects import (
     AssessmentDraft,
     bundle_with_costs,
@@ -15,6 +17,7 @@ from advisor.resource_budget import (
     build_resource_budget,
     score_effect_bundle,
 )
+from advisor.scoring_preferences import DEFAULT_SCORING_PREFERENCES, ScoringPreferences
 from storage.relational import RelationalRepository
 from advisor.versions import EVENT_POLICY_VERSION
 
@@ -25,8 +28,10 @@ EVENT_OPTION = "event_option"
 class EventPolicy:
     decision_type = EVENT_OPTION
 
-    def __init__(self, repository: RelationalRepository):
+    def __init__(self, repository: RelationalRepository,
+                 preferences: ScoringPreferences = DEFAULT_SCORING_PREFERENCES):
         self.repository = repository
+        self.preferences = preferences
 
     def recommend(self, request: DecisionRequest) -> Recommendation:
         if request.decision_type != self.decision_type:
@@ -46,7 +51,7 @@ class EventPolicy:
         scope_mismatch = len(scopes) > 1
         drafts = []
         for candidate in request.candidates:
-            draft = AssessmentDraft(candidate)
+            draft = AssessmentDraft(candidate, preferences=self.preferences)
             drafts.append(draft)
             if not candidate.eligible:
                 continue
@@ -117,10 +122,30 @@ class EventPolicy:
         event = self.repository.event_tree(event_id)
         if event is None:
             return False
+        pages = event.get("_pages") or ()
+        fingerprint = re.fullmatch(r"PAGE_[0-9A-F]{16}", page_id) is not None
+        # The runtime key is an API identity, not prose: preserve it in the
+        # candidate and resolve only this event's exact author page/option.
+        # Never strip an arbitrary suffix or silently retry another page.
+        if "." in option_id:
+            match = re.fullmatch(
+                re.escape(event_id) + r"\.pages\.([A-Z0-9_]+)\.options\.([A-Z0-9_]+)",
+                option_id,
+            )
+            if match is None:
+                return False
+            catalog_page, catalog_option = match.groups()
+            if not fingerprint and page_id != catalog_page:
+                return False
+            matching_pages = [row for row in pages if str(row.get("id") or "") == catalog_page]
+            return len(matching_pages) == 1 and sum(
+                str(option.get("id") or "") == catalog_option
+                for option in matching_pages[0].get("options") or ()
+            ) == 1
         page = next(
             (
                 row
-                for row in event.get("_pages") or ()
+                for row in pages
                 if str(row.get("id") or "") == page_id
             ),
             None,
@@ -130,14 +155,14 @@ class EventPolicy:
                 str(option.get("id") or "") == option_id
                 for option in page.get("options") or ()
             )
-        # The public runtime API exposes stable EventOption.TextKey values
-        # but not the author's page key.  A Mod page fingerprint may
-        # therefore differ from the static catalog ID.  Resolve only when
-        # the structured option identity occurs on exactly one catalog
-        # page; reused options remain unknown instead of parsing prose.
+        # Older replay fixtures can have a short option ID and an opaque
+        # runtime page fingerprint. Require a unique catalog occurrence;
+        # an explicit but unknown page is not such a fingerprint.
+        if not fingerprint:
+            return False
         matching_pages = [
             row
-            for row in event.get("_pages") or ()
+            for row in pages
             if any(
                 str(option.get("id") or "") == option_id
                 for option in row.get("options") or ()

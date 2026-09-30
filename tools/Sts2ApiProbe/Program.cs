@@ -25,6 +25,25 @@ loadContext.Resolving += (context, name) =>
 };
 var assembly = loadContext.LoadFromAssemblyPath(assemblyPath);
 var typeNames = args.Skip(1).ToArray();
+if (typeNames.Length >= 2 && typeNames[0] == "--entries")
+{
+    var modelDb = assembly.GetType("MegaCrit.Sts2.Core.Models.ModelDb", true)!;
+    var getEntry = modelDb.GetMethod("GetEntry", [typeof(Type)])
+        ?? throw new MissingMethodException(modelDb.FullName, "GetEntry(Type)");
+    var modelType = assembly.GetType("MegaCrit.Sts2.Core.Models.AbstractModel", true)!;
+    var entries = assembly.GetTypes()
+        .Where(type => !type.IsAbstract && !type.IsNested && modelType.IsAssignableFrom(type)
+            && typeNames.Skip(1).Any(prefix =>
+            type.Namespace == prefix))
+        .OrderBy(type => type.FullName)
+        .Select(type => new
+        {
+            type = type.FullName,
+            entry = (string?)getEntry.Invoke(null, [type]),
+        }).ToArray();
+    Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(entries));
+    return 0;
+}
 if (typeNames.Length >= 2 && typeNames[0] == "--find")
 {
     foreach (var type in assembly.GetTypes()

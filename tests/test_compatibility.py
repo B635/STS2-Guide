@@ -46,15 +46,16 @@ class CompatibilityManifestTests(unittest.TestCase):
     def setUp(self):
         self.manifest = load_compatibility_manifest(MANIFEST_PATH)
 
-    def test_checked_in_manifest_enables_validated_01101_baseline(self):
-        self.assertEqual(self.manifest.game.version, "0.110.1")
+    def test_checked_in_manifest_identifies_01110_test_candidate(self):
+        # Build identity permits local acceptance testing; it is not live evidence.
+        self.assertEqual(self.manifest.game.version, "0.111.0")
         self.assertEqual(
             self.manifest.release_fingerprint,
             compute_release_fingerprint(self.manifest),
         )
         self.assertEqual(
             self.manifest.game.sts2_dll_sha256,
-            "7c446efabf80614c429b5088e87101423aa5bb4c04fc3e73393261f6e6d404fd",
+            "0861bfa1df347538d932f22d580e75420f08082792eb914e53b4882764acdbe9",
         )
         self.assertEqual(self.manifest.status, "enabled")
         self.assertTrue(self.manifest.is_enabled)
@@ -482,9 +483,14 @@ class EventHandshakeTests(unittest.TestCase):
         self.assertFalse(assessment.compatible)
         self.assertEqual(assessment.reason_codes, ("component_mismatch",))
 
-    def test_01101_game_version_matches_enabled_manifest(self):
-        assessment = self.assess_game_version("0.110.1")
+    def test_candidate_game_version_matches_enabled_manifest(self):
+        assessment = self.assess_game_version(self.manifest.game.version)
         self.assertTrue(assessment.compatible)
+
+    def test_previous_release_game_version_fails_closed(self):
+        assessment = self.assess_game_version("0.110.1")
+        self.assertFalse(assessment.compatible)
+        self.assertEqual(assessment.reason_codes, ("component_mismatch",))
 
     def test_unknown_game_version_fails_closed(self):
         assessment = self.assess_game_version("0.999.0")
@@ -495,7 +501,7 @@ class EventHandshakeTests(unittest.TestCase):
         assessment = assess_event_handshake(
             self.manifest,
             EventHandshake(
-                game_version="0.110.1",
+                game_version=self.manifest.game.version,
                 schema_version=6,
                 source="unknown-mod",
                 producer_id="other-mod",
@@ -522,7 +528,7 @@ class EventHandshakeTests(unittest.TestCase):
         assessment = assess_event_handshake(
             pending,
             EventHandshake(
-                game_version="0.110.1",
+                game_version=pending.game.version,
                 schema_version=CURRENT_SCHEMA_VERSION,
                 source="sts2-guide-readonly-mod",
                 producer_id="STS2GuideReadOnlyExporter",
@@ -547,7 +553,7 @@ class LiveCompatibilityGateTests(unittest.TestCase):
     def tearDown(self):
         self.tempdir.cleanup()
 
-    def _event(self, *, game_version: str | None = "0.110.1") -> dict:
+    def _event(self, *, game_version: str | None = "0.111.0") -> dict:
         event = json.loads(
             (ROOT / "protocol" / "state-event.example.json").read_text(
                 encoding="utf-8"
@@ -615,6 +621,154 @@ class LiveCompatibilityGateTests(unittest.TestCase):
             event_policy_version=manifest.policy.event_version,
             deck_edit_policy_version=manifest.policy.deck_edit_version,
         )
+
+    def test_save_to_menu_close_preserves_run_and_reopens_from_real_screen(self):
+        manifest = load_compatibility_manifest(MANIFEST_PATH)
+        self.repository.sync_catalog(str(ROOT / "data/knowledge.json"))
+        for filename in ("state-event.example.json", "route-event.example.json"):
+            with self.subTest(filename=filename), tempfile.TemporaryDirectory() as directory:
+                exchange = Path(directory)
+                events = exchange / "events"
+                events.mkdir()
+                snapshot = exchange / "state-event.json"
+                output = exchange / "advice-event.json"
+                checkpoint = ActiveRunCheckpointStore(exchange / "active-run.json")
+                event = json.loads((ROOT / "protocol" / filename).read_text(encoding="utf-8"))
+                event["guide_preferences"]["route_mode"] = "survival"
+
+                def make_bridge():
+                    return GameStateFileBridge(RealtimeEventProcessor(
+                        self.repository, checkpoint=checkpoint,
+                        compatibility_manifest=manifest,
+                        runtime_components=self._matching_runtime(manifest),
+                    ), snapshot, output, events)
+
+                snapshot.write_text(json.dumps(event), encoding="utf-8")
+                bridge = make_bridge()
+                self.assertEqual(bridge.run_once()["status"], "processed")
+                self.assertTrue(output.exists())
+                closed = dict(event, event_type="decision_closed", sequence=event["sequence"] + 1,
+                              state_revision=event["sequence"] + 1,
+                              event_id=event["run_id"] + ":menu-close",
+                              parent_event_id=event["event_id"], options=[], candidates=[],
+                              decision=None, map_context=None, outcome={"kind": "closed_unknown",
+                                  "selected_candidate_id": None, "selected_card": None,
+                                  "selected_option_index": None})
+                snapshot.write_text(json.dumps(closed), encoding="utf-8")
+                close_result = bridge.run_once()
+                self.assertEqual(close_result["status"], "observed_unresolved", close_result)
+                self.assertFalse(output.exists())
+                saved = checkpoint.load()
+                self.assertEqual(saved["run_id"], event["run_id"])
+                self.assertEqual(saved["guide_preferences"], {"route_mode": "survival"})
+                self.assertIsNone(saved["current_decision"])
+                self.assertIsNotNone(saved["closed_decision"])
+                bridge = make_bridge()
+                self.assertTrue(bridge.run_once()["duplicate"])
+                self.assertFalse(output.exists())
+                resumed = dict(event, sequence=closed["sequence"] + 1,
+                               state_revision=closed["sequence"] + 1,
+                               event_id=event["run_id"] + ":continue",
+                               decision_id=event["decision_id"] + ":new-observation")
+                snapshot.write_text(json.dumps(resumed), encoding="utf-8")
+                result = bridge.run_once()
+                self.assertEqual(result["status"], "processed", result)
+                self.assertEqual(result["decision_id"], resumed["decision_id"])
+                self.assertTrue(output.exists())
+
+    def test_production_restart_recovers_card_and_route_from_empty_spool(self):
+        manifest = load_compatibility_manifest(MANIFEST_PATH)
+        self.repository.sync_catalog(str(ROOT / "data/knowledge.json"))
+        for filename in ("state-event.example.json", "route-event.example.json"):
+            with self.subTest(filename=filename), tempfile.TemporaryDirectory() as directory:
+                exchange = Path(directory)
+                events = exchange / "events"
+                events.mkdir()
+                snapshot = exchange / "state-event.json"
+                output = exchange / "advice-event.json"
+                checkpoint = ActiveRunCheckpointStore(exchange / "active-run.json")
+                event = json.loads((ROOT / "protocol" / filename).read_text(encoding="utf-8"))
+                snapshot.write_text(json.dumps(event), encoding="utf-8")
+                (events / "001.json").write_text(json.dumps(event), encoding="utf-8")
+
+                def make_bridge():
+                    return GameStateFileBridge(RealtimeEventProcessor(
+                        self.repository, checkpoint=checkpoint,
+                        compatibility_manifest=manifest,
+                        runtime_components=self._matching_runtime(manifest),
+                    ), snapshot, output, events)
+
+                first = make_bridge().run_once()
+                self.assertEqual(first["status"], "processed", first)
+                output.unlink()
+                bridge = make_bridge()
+                replay = bridge.run_once()
+                self.assertEqual(replay["recommendation"], first["recommendation"])
+                self.assertTrue(replay["duplicate"])
+                self.assertTrue(output.exists())
+                self.assertIsNone(bridge.run_once())
+                # A colliding payload is not made trustworthy by the checkpoint.
+                event["state"]["hp"] -= 1
+                snapshot.write_text(json.dumps(event), encoding="utf-8")
+                self.assertEqual(make_bridge().run_once()["status"], "unsupported")
+                self.assertFalse(output.exists())
+                event["game_version"] = "unsupported-version"
+                snapshot.write_text(json.dumps(event), encoding="utf-8")
+                self.assertEqual(make_bridge().run_once()["status"], "unsupported")
+                self.assertFalse(output.exists())
+
+    def test_lagging_mirror_does_not_clear_newer_queue_advice_and_recovers_after_restart(self):
+        manifest = load_compatibility_manifest(MANIFEST_PATH)
+        self.repository.sync_catalog(str(ROOT / "data/knowledge.json"))
+        snapshot = self.root / "state-event.json"
+        output = self.root / "advice-event.json"
+        events = self.root / "events"
+        events.mkdir()
+        checkpoint = ActiveRunCheckpointStore(self.root / "active-run.json")
+        old = self._event()
+        newer = json.loads(json.dumps(old))
+        newer.update(sequence=2, state_revision=2, event_id="example-run:2")
+        newer["state"]["hp"] -= 1
+        snapshot.write_text(json.dumps(old), encoding="utf-8")
+        (events / "002.json").write_text(json.dumps(newer), encoding="utf-8")
+
+        def make_bridge():
+            return GameStateFileBridge(RealtimeEventProcessor(
+                self.repository, checkpoint=checkpoint,
+                compatibility_manifest=manifest,
+                runtime_components=self._matching_runtime(manifest),
+            ), snapshot, output, events)
+
+        bridge = make_bridge()
+        self.assertEqual(bridge.run_once()["event_id"], newer["event_id"])
+        bridge.run_once()
+        self.assertTrue(output.exists(), "Lagging mirror must not erase newer queued advice")
+        self.assertEqual(json.loads(output.read_text(encoding="utf-8"))["event_id"], newer["event_id"])
+        output.unlink()
+        replay = make_bridge().run_once()
+        self.assertEqual(replay["event_id"], newer["event_id"])
+        self.assertTrue(output.exists())
+        old["run_id"] = "previous-run"
+        old["event_id"] = "previous-run:1"
+        old["decision_id"] = "previous-run:reward"
+        old["emitted_at"] = "2020-01-01T00:00:00+00:00"
+        snapshot.write_text(json.dumps(old), encoding="utf-8")
+        self.assertEqual(make_bridge().run_once()["event_id"], newer["event_id"])
+        # A genuinely later run is not hidden by the recovery preference.
+        old["emitted_at"] = "2090-01-01T00:00:00+00:00"
+        snapshot.write_text(json.dumps(old), encoding="utf-8")
+        self.assertEqual(make_bridge().run_once()["run_id"], "previous-run")
+        self.assertEqual(checkpoint.load()["run_id"], "previous-run")
+        old.update(run_id="invalid-new-run", event_id="invalid-new-run:2",
+                   decision_id="invalid-new-run:reward", sequence=2, state_revision=2,
+                   emitted_at="2091-01-01T00:00:00+00:00")
+        snapshot.write_text(json.dumps(old), encoding="utf-8")
+        (events / "003.json").write_text(json.dumps(old), encoding="utf-8")
+        bridge = make_bridge()
+        self.assertEqual(bridge.run_once()["status"], "unsupported")
+        self.assertFalse(output.exists())
+        self.assertEqual(bridge.run_once()["status"], "unsupported")
+        self.assertFalse(output.exists(), "Rejected new run must not revive previous run advice")
 
     def test_explicit_pending_manifest_clears_visible_advice(self):
         manifest = replace(

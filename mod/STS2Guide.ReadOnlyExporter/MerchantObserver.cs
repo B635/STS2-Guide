@@ -101,6 +101,7 @@ internal static class MerchantObserver
             if (!TryBuildCandidate(
                 entry,
                 index,
+                inventory,
                 out var candidate
             ))
             {
@@ -130,6 +131,7 @@ internal static class MerchantObserver
     private static bool TryBuildCandidate(
         MerchantEntry entry,
         int index,
+        MerchantInventory inventory,
         out DecisionCandidateEnvelope candidate)
     {
         var stocked = entry.IsStocked;
@@ -141,6 +143,7 @@ internal static class MerchantObserver
                 : "sold_out";
         string offerKind;
         string? entityId;
+        int? upgrades = null;
         string label;
         ChoiceEffect effect;
 
@@ -150,6 +153,7 @@ internal static class MerchantObserver
                 when cardEntry.CreationResult?.Card is not null:
             {
                 var model = cardEntry.CreationResult.Card;
+                upgrades = model.CurrentUpgradeLevel;
                 offerKind = "card";
                 entityId = StableIds.FromType(
                     model.GetType(),
@@ -256,7 +260,10 @@ internal static class MerchantObserver
                 SlotId = slotId,
                 OfferKind = offerKind,
                 IsStocked = stocked,
+                Upgrades = upgrades,
                 Effects = [effect],
+                DeckEditTargets = offerKind == "card_removal"
+                    ? DeckEditTargetReader.Read(inventory.Player, "remove") : null,
             },
         };
         return true;

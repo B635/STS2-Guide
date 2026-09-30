@@ -1,0 +1,125 @@
+{
+  "schema_version": 9,
+  "event_id": "example-target-run:1",
+  "event_type": "merchant",
+  "emitted_at": "2026-09-25T08:00:00+00:00",
+  "source": "sts2-guide-readonly-mod",
+  "game_version": "0.111.0",
+  "snapshot_kind": "complete",
+  "state_revision": 1,
+  "producer_id": "STS2GuideReadOnlyExporter",
+  "producer_version": "0.3.11",
+  "game_assembly_sha256": "0861bfa1df347538d932f22d580e75420f08082792eb914e53b4882764acdbe9",
+  "release_fingerprint": "31439e8d119ce56bc0ec6ac52eac2ac51c527d697694ef08116e462c15b254c8",
+  "guide_preferences": { "route_mode": "balanced" },
+  "run_id": "example-target-run",
+  "sequence": 1,
+  "decision_id": "example-target-run:merchant:1",
+  "state": {
+    "character": "IRONCLAD",
+    "ascension": 0,
+    "act": 1,
+    "floor": 3,
+    "hp": 72,
+    "max_hp": 80,
+    "gold": 116,
+    "energy": 3,
+    "deck": [
+      {
+        "card": "STRIKE_IRONCLAD",
+        "count": 2,
+        "upgrades": 0,
+        "enchantment": null,
+        "enchantment_amount": null,
+        "affliction": null,
+        "affliction_amount": null
+      }
+    ],
+    "relics": [],
+    "relic_states": [],
+    "potions": [],
+    "max_potion_slots": 3,
+    "modifiers": [],
+    "capture_warnings": []
+  },
+  "options": [],
+  "candidates": [
+    {
+      "candidate_id": "merchant:card_removal:0",
+      "kind": "merchant_offer",
+      "entity_id": null,
+      "label": "移除一张牌",
+      "eligible": true,
+      "unavailable_reason": null,
+      "costs": [{ "kind": "gold", "amount": 75, "resource_id": null }],
+      "payload": {
+        "slot_id": "merchant:card_removal:0",
+        "offer_kind": "card_removal",
+        "is_stocked": true,
+        "deck_edit_targets": {
+          "operation": "remove",
+          "source_code": "game_api:merchant_removal_targets",
+          "targets": [
+            { "target_id": "remove:0", "card": "STRIKE_IRONCLAD", "upgrades": 0 },
+            { "target_id": "remove:1", "card": "STRIKE_IRONCLAD", "upgrades": 0 }
+          ]
+        },
+        "effects": [{
+          "kind": "remove_card",
+          "amount": null,
+          "min_amount": null,
+          "max_amount": null,
+          "child_decision_type": null,
+          "entity_type": "cards",
+          "entity_id": null,
+          "target_mode": "choose",
+          "certainty": "exact",
+          "source_code": "game_api:merchant_card_removal_entry"
+        }]
+      }
+    },
+    {
+      "candidate_id": "merchant:card:1:SHRUG_IT_OFF",
+      "kind": "merchant_offer",
+      "entity_id": "SHRUG_IT_OFF",
+      "label": "耸肩无视+",
+      "eligible": true,
+      "unavailable_reason": null,
+      "costs": [{ "kind": "gold", "amount": 35, "resource_id": null }],
+      "payload": {
+        "slot_id": "merchant:card:1",
+        "offer_kind": "card",
+        "is_stocked": true,
+        "upgrades": 1,
+        "effects": [{
+          "kind": "add_card",
+          "amount": null,
+          "min_amount": null,
+          "max_amount": null,
+          "child_decision_type": null,
+          "entity_type": "cards",
+          "entity_id": "SHRUG_IT_OFF",
+          "target_mode": "specific",
+          "certainty": "exact",
+          "source_code": "game_api:merchant_card_entry"
+        }]
+      }
+    },
+    {
+      "candidate_id": "leave",
+      "kind": "leave",
+      "entity_id": null,
+      "label": "离开",
+      "eligible": true,
+      "unavailable_reason": null,
+      "costs": [],
+      "payload": {}
+    }
+  ],
+  "decision": { "can_skip": false, "can_reroll": false, "reward_source": "MERCHANT" },
+  "decision_parent": null,
+  "parent_event_id": null,
+  "outcome": null,
+  "map_context": null,
+  "run_result": null
+}

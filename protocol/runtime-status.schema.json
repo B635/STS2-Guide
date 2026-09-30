@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "STS2 Guide local runtime status v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "session_id", "heartbeat_sequence", "release_fingerprint", "state", "game_running", "worker_running", "compatibility_reasons", "activation_count"],
+  "properties": {
+    "schema_version": {"const": 2},
+    "session_id": {"type": "string", "pattern": "^[0-9a-f]{32}$"},
+    "heartbeat_sequence": {"type": "integer", "minimum": 1, "maximum": 9223372036854775807},
+    "release_fingerprint": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "state": {"enum": ["IDLE", "CHECKING_COMPATIBILITY", "RUNNING", "DRAINING", "INCOMPATIBLE", "WORKER_FAILED", "EXITING"]},
+    "game_running": {"type": ["boolean", "null"], "description": "null when a standalone developer worker does not probe the game process"},
+    "worker_running": {"type": "boolean"},
+    "compatibility_reasons": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "activation_count": {"type": "integer", "minimum": 0}
+  }
+}

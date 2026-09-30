@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../../mod/STS2Guide.ReadOnlyExporter/local.props" Condition="Exists('../../mod/STS2Guide.ReadOnlyExporter/local.props')" />
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="sts2"><HintPath>$(STS2GamePath)/data_sts2_windows_x86_64/sts2.dll</HintPath><Private>false</Private></Reference>
+    <Compile Include="../../mod/STS2Guide.ReadOnlyExporter/StableIds.cs" Link="StableIds.cs" />
+    <Compile Include="../../mod/STS2Guide.ReadOnlyExporter/ProtocolModels.cs" Link="ProtocolModels.cs" />
+    <Compile Include="../../mod/STS2Guide.ReadOnlyExporter/DeckEditTargetReader.cs" Link="DeckEditTargetReader.cs" />
+    <Compile Include="../../mod/STS2Guide.ReadOnlyExporter/VerifiedEventEffectReader.cs" Link="VerifiedEventEffectReader.cs" />
+    <Compile Include="../../mod/STS2Guide.ReadOnlyExporter/AdviceAvailability.cs" Link="AdviceAvailability.cs" />
+    <Compile Include="../../mod/STS2Guide.ReadOnlyExporter/AdviceReasonReader.cs" Link="AdviceReasonReader.cs" />
+    <Compile Include="../../mod/STS2Guide.ReadOnlyExporter/AdviceFileReader.cs" Link="AdviceFileReader.cs" />
+    <Compile Include="../../mod/STS2Guide.ReadOnlyExporter/BackendLiveness.cs" Link="BackendLiveness.cs" />
+  </ItemGroup>
+</Project>

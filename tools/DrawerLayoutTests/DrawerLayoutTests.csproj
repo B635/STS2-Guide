@@ -1,0 +1,14 @@
+<Project Sdk="Godot.NET.Sdk/4.5.1">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../mod/STS2Guide.ReadOnlyExporter/ContextDrawer.cs" Link="ContextDrawer.cs" />
+    <Compile Include="../../mod/STS2Guide.ReadOnlyExporter/ContextDrawerRowView.cs" Link="ContextDrawerRowView.cs" />
+    <Compile Include="../../mod/STS2Guide.ReadOnlyExporter/AdviceAvailability.cs" Link="AdviceAvailability.cs" />
+    <Compile Include="../../mod/STS2Guide.ReadOnlyExporter/ProtocolModels.cs" Link="ProtocolModels.cs" />
+  </ItemGroup>
+</Project>

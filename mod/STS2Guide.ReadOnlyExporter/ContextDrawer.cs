@@ -27,8 +27,8 @@ internal static class ContextDrawer
     private const float MaxViewportCoverage = 0.3F;
     private const float RowHeight = 32F;
     private const float HeaderHeight = 42F;
+    private const float StatusHeight = 22F;
     private const float RouteModeHeight = 38F;
-    private const float VerticalPadding = 24F;
     private const float EdgeMargin = 10F;
     private const float ToggleWidth = 30F;
     private const float ToggleHeight = 48F;
@@ -39,9 +39,14 @@ internal static class ContextDrawer
     private static Control? _owner;
     private static Control? _anchor;
     private static PanelContainer? _panel;
+    private static VBoxContainer? _column;
+    private static VBoxContainer? _rowColumn;
+    private static ScrollContainer? _scroll;
     private static Button? _toggle;
     private static Tween? _slideTween;
-    private static List<Label> _rows = [];
+    private static List<ContextDrawerRowView> _rows = [];
+    private static int _expandedRow = -1;
+    private static Label? _statusLabel;
     private static Dictionary<string, Button> _routeModeButtons = new(
         StringComparer.Ordinal
     );
@@ -51,7 +56,6 @@ internal static class ContextDrawer
     private static bool _sliding;
     private static long _nextHandle;
     private static ContextDrawerHandle _activeHandle;
-    private static float _requestedHeight;
 
     internal static bool IsVisible(ContextDrawerHandle handle)
     {
@@ -96,19 +100,9 @@ internal static class ContextDrawer
                 _anchor = anchor;
                 _routeMode = routeMode;
                 _routeModeChanged = routeModeChanged;
-                _requestedHeight = HeaderHeight
-                    + (routeMode is null ? 0F : RouteModeHeight)
-                    + captions.Count * RowHeight
-                    + VerticalPadding;
-                var viewport = owner.GetViewport().GetVisibleRect();
-                var initialHeight = Math.Min(
-                    _requestedHeight,
-                    AvailableHeight(viewport)
-                );
                 _panel = BuildPanel(
                     title,
                     captions,
-                    initialHeight,
                     routeMode
                 );
                 owner.AddChild(_panel);
@@ -130,7 +124,8 @@ internal static class ContextDrawer
 
     internal static void Render(
         ContextDrawerHandle handle,
-        IReadOnlyList<ContextDrawerRow> rows)
+        IReadOnlyList<ContextDrawerRow> rows,
+        AdviceAvailability availability = AdviceAvailability.Ready)
     {
         lock (Gate)
         {
@@ -138,29 +133,29 @@ internal static class ContextDrawer
             {
                 return;
             }
+            if (_statusLabel is not null)
+                _statusLabel.Text = availability == AdviceAvailability.Ready
+                    ? "局面适合度 · 非胜率" : AdviceAvailabilityText.Message(availability);
             for (var index = 0; index < rows.Count; index++)
             {
                 var row = rows[index];
-                _rows[index].Text = row.Score.HasValue
-                    ? $"{row.Caption}   {Math.Clamp(row.Score.Value, 0, 100):0}"
-                    : $"{row.Caption}   --";
-                _rows[index].AddThemeColorOverride(
-                    "font_color",
-                    row.Recommended
-                        ? new Color(1F, 0.78F, 0.24F)
-                        : new Color(0.92F, 0.94F, 0.98F)
-                );
-                _rows[index].TooltipText = row.Reasons is { Count: > 0 }
-                    ? row.Caption
-                        + "\n"
-                        + string.Join(
-                            "\n",
-                            row.Reasons
-                                .Take(3)
-                                .Select(reason => "• " + reason)
-                        )
-                    : row.Caption;
+                _rows[index].Render(row, index == _expandedRow);
             }
+            if (_expandedRow >= 0 && !_rows[_expandedRow].HasReasons)
+                _expandedRow = -1;
+        }
+    }
+
+    private static void ToggleReasons(ContextDrawerHandle handle, int index)
+    {
+        lock (Gate)
+        {
+            if (handle != _activeHandle || !IsValid() || index < 0 || index >= _rows.Count
+                || !_rows[index].HasReasons)
+                return;
+            _expandedRow = _expandedRow == index ? -1 : index;
+            for (var i = 0; i < _rows.Count; i++)
+                _rows[i].SetExpanded(i == _expandedRow);
         }
     }
 
@@ -206,15 +201,13 @@ internal static class ContextDrawer
     private static PanelContainer BuildPanel(
         string title,
         IReadOnlyList<string> captions,
-        float height,
         string? routeMode)
     {
         var panel = new PanelContainer
         {
             Name = "STS2GuideContextDrawer",
             MouseFilter = Control.MouseFilterEnum.Ignore,
-            CustomMinimumSize = new Vector2(MinWidth, height),
-            Size = new Vector2(MinWidth, height),
+            CustomMinimumSize = new Vector2(MinWidth, 0F),
             ZIndex = 100,
         };
         panel.AddThemeStyleboxOverride("panel", new StyleBoxFlat
@@ -241,11 +234,14 @@ internal static class ContextDrawer
             SizeFlagsVertical = Control.SizeFlags.ExpandFill,
         };
         column.AddThemeConstantOverride("separation", 5);
+        _column = column;
         panel.AddChild(column);
 
         var heading = new Label
         {
             Text = title,
+            ClipText = true,
+            TextOverrunBehavior = TextServer.OverrunBehavior.TrimEllipsis,
             HorizontalAlignment = HorizontalAlignment.Center,
             MouseFilter = Control.MouseFilterEnum.Ignore,
             CustomMinimumSize = new Vector2(0F, HeaderHeight - 10F),
@@ -256,6 +252,17 @@ internal static class ContextDrawer
             new Color(0.78F, 0.88F, 1F)
         );
         column.AddChild(heading);
+
+        _statusLabel = new Label
+        {
+            Text = AdviceAvailabilityText.Message(AdviceAvailability.Waiting),
+            ClipText = true,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            MouseFilter = Control.MouseFilterEnum.Ignore,
+            CustomMinimumSize = new Vector2(0F, StatusHeight),
+        };
+        _statusLabel.AddThemeFontSizeOverride("font_size", 14);
+        column.AddChild(_statusLabel);
 
         if (routeMode is not null)
         {
@@ -300,30 +307,25 @@ internal static class ContextDrawer
             CustomMinimumSize = new Vector2(0F, RowHeight),
         };
         column.AddChild(scroll);
+        _scroll = scroll;
         var rowColumn = new VBoxContainer
         {
             MouseFilter = Control.MouseFilterEnum.Ignore,
             SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
         };
         rowColumn.AddThemeConstantOverride("separation", 5);
+        _rowColumn = rowColumn;
         scroll.AddChild(rowColumn);
 
         _rows = [];
-        foreach (var caption in captions)
+        var handle = _activeHandle;
+        for (var index = 0; index < captions.Count; index++)
         {
-            var label = new Label
-            {
-                Text = $"{caption}   --",
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center,
-                // Rows are read-only, but must receive hover events so their
-                // deterministic reason tooltip is actually reachable.
-                MouseFilter = Control.MouseFilterEnum.Stop,
-                CustomMinimumSize = new Vector2(0F, RowHeight),
-            };
-            label.AddThemeFontSizeOverride("font_size", 18);
-            rowColumn.AddChild(label);
-            _rows.Add(label);
+            var capturedIndex = index;
+            var row = new ContextDrawerRowView(index, captions[index],
+                () => ToggleReasons(handle, capturedIndex));
+            rowColumn.AddChild(row.Node);
+            _rows.Add(row);
         }
         return panel;
     }
@@ -336,7 +338,12 @@ internal static class ContextDrawer
         var button = new Button
         {
             Name = "STS2GuideRouteMode_" + routeMode,
-            Text = caption,
+            Text = routeMode switch
+            {
+                GuideRouteModes.Balanced => "均衡",
+                GuideRouteModes.Survival => "生存",
+                _ => "成长",
+            },
             TooltipText = caption,
             MouseFilter = Control.MouseFilterEnum.Stop,
             FocusMode = Control.FocusModeEnum.None,
@@ -344,18 +351,20 @@ internal static class ContextDrawer
             CustomMinimumSize = new Vector2(0F, RouteModeHeight - 4F),
         };
         button.AddThemeFontSizeOverride("font_size", 14);
-        button.Pressed += () => RouteModePressed(routeMode);
+        button.AddThemeColorOverride("font_disabled_color", new Color(1F, 0.78F, 0.24F));
+        var handle = _activeHandle;
+        button.Pressed += () => RouteModePressed(handle, routeMode);
         row.AddChild(button);
         _routeModeButtons[routeMode] = button;
     }
 
-    private static void RouteModePressed(string requestedMode)
+    private static void RouteModePressed(ContextDrawerHandle source, string requestedMode)
     {
         Func<string, bool>? callback;
         ContextDrawerHandle handle;
         lock (Gate)
         {
-            if (!IsValid()
+            if (source != _activeHandle || !IsValid()
                 || _routeModeChanged is null
                 || !GuideRouteModes.IsValid(requestedMode)
                 || _routeMode == requestedMode)
@@ -489,8 +498,16 @@ internal static class ContextDrawer
             MinWidth,
             maximumWidth
         );
+        // A ScrollContainer deliberately excludes its content from its minimum
+        // height. Substitute the rows' measured height, retaining actual theme
+        // margins, font metrics and both VBox separations. Do not use the panel's
+        // own minimum here: it includes our previous viewport-clamped height.
+        var contentHeight = _column!.GetCombinedMinimumSize().Y
+            - _scroll!.GetCombinedMinimumSize().Y
+            + Math.Max(_scroll.GetCombinedMinimumSize().Y, _rowColumn!.GetCombinedMinimumSize().Y)
+            + _panel.GetThemeStylebox("panel").GetMinimumSize().Y;
         var height = Math.Min(
-            Math.Max(1F, _requestedHeight),
+            Math.Max(1F, contentHeight),
             AvailableHeight(viewport)
         );
         _panel.CustomMinimumSize = new Vector2(MinWidth, height);
@@ -598,16 +615,20 @@ internal static class ContextDrawer
         _owner = null;
         _anchor = null;
         _panel = null;
+        _column = null;
+        _rowColumn = null;
+        _scroll = null;
         _toggle = null;
         _rows = [];
+        _expandedRow = -1;
         _routeModeButtons = new Dictionary<string, Button>(
             StringComparer.Ordinal
         );
         _routeModeChanged = null;
+        _statusLabel = null;
         _routeMode = null;
         _collapsed = false;
         _sliding = false;
         _activeHandle = default;
-        _requestedHeight = 0F;
     }
 }

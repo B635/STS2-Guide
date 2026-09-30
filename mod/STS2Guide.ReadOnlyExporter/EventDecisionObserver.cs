@@ -312,6 +312,7 @@ internal static class EventDecisionObserver
                 optionId
             );
             var candidate = BuildCandidate(
+                model,
                 option,
                 candidateId,
                 eventId,
@@ -354,6 +355,7 @@ internal static class EventDecisionObserver
     }
 
     private static DecisionCandidateEnvelope BuildCandidate(
+        EventModel model,
         EventOption option,
         string candidateId,
         string eventId,
@@ -366,13 +368,7 @@ internal static class EventDecisionObserver
         {
             label = optionId;
         }
-        var effect = new ChoiceEffect
-        {
-            Kind = "followup_choice",
-            TargetMode = "none",
-            Certainty = "unknown",
-            SourceCode = "game_api:event_effect_not_exposed",
-        };
+        var effect = VerifiedEventEffectReader.Read(model, option);
         if (isNeow)
         {
             return new DecisionCandidateEnvelope

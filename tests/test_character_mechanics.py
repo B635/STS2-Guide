@@ -38,8 +38,8 @@ class CharacterMechanicSignalTests(unittest.TestCase):
                 confidence="structured",
             )
 
-    def test_effect_tag_version_is_5(self):
-        self.assertEqual(EFFECT_TAG_VERSION, "5")
+    def test_effect_tag_version_is_8(self):
+        self.assertEqual(EFFECT_TAG_VERSION, "8")
 
     def test_known_false_positive_tags_are_removed(self):
         rupture = derive_effect_tags(
@@ -636,8 +636,9 @@ class CharacterMechanicScoringTests(unittest.TestCase):
         self.assertEqual(
             necrobinder_result.candidates[0]
             .dimensions["data_completeness"],
-            0.0,
+            1.0,
         )
+        self.assertEqual(necrobinder_result.confidence, "low")
 
         regent_world = WorldState.create(
             run_id="mechanic-policy-regent",

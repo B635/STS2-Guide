@@ -11,7 +11,7 @@ import re
 from typing import Dict, Iterable, Tuple
 
 
-EFFECT_TAG_VERSION = "5"
+EFFECT_TAG_VERSION = "8"
 EffectTags = Dict[str, Tuple[float, str]]
 
 
@@ -25,10 +25,18 @@ _DRAW_ACTION_PATTERN = (
 _DRAW_ACTION_RE = re.compile(_DRAW_ACTION_PATTERN, flags=re.IGNORECASE)
 _DISCARD_ACTION_PATTERN = (
     r"(?:丢弃|弃掉|舍弃)"
-    r"|\bdiscard(?:s|ed|ing)?\b(?!\s+pile\b)"
+    r"|\bdiscard(?:s|ed|ing)?\b(?![\s-]+pile\b)"
 )
 _DISCARD_ACTION_RE = re.compile(
     _DISCARD_ACTION_PATTERN,
+    flags=re.IGNORECASE,
+)
+_DISCARD_NEGATION_RE = re.compile(
+    r"(?:不(?:再|会|能|要)?|无需)(?:在(?:你的)?回合结束时)?"
+    r"(?:自动|主动|被)?\s*$"
+    r"|\b(?:no\s+longer|not|never|cannot|without|"
+    r"(?:don|doesn|can|won)['’]t)\s+(?:automatically\s+)?"
+    r"(?:(?:be|been|being)\s+)?(?:automatically\s+)?$",
     flags=re.IGNORECASE,
 )
 _UPGRADE_HAND_RE = re.compile(
@@ -67,11 +75,25 @@ def _has_explicit_draw_action(text: str) -> bool:
 
 
 def _has_explicit_discard_action(text: str) -> bool:
-    """Recognize discard actions without matching discard-pile nouns."""
-    return any(
-        not _is_trigger_clause(text, match.start())
-        for match in _DISCARD_ACTION_RE.finditer(text)
-    )
+    """Recognize discard effects, not negation, conditions, or pile nouns."""
+    for match in _DISCARD_ACTION_RE.finditer(text):
+        prefix = re.split(r"[。！？；，,.!?;\n]", text[:match.start()])[-1]
+        suffix = re.split(r"[。！？；，,.!?;\n]", text[match.end():])[0]
+        # The condition is not a provider. A later effect clause can still
+        # provide discard, e.g. ``如果手牌超过5张，丢弃1张牌``.
+        if (
+            _is_trigger_clause(text, match.start())
+            or _DISCARD_NEGATION_RE.search(prefix)
+            or re.search(
+                r"(?:当|如果|若)\S{0,24}$|\b(?:if|after)\b.{0,48}$",
+                prefix,
+                flags=re.IGNORECASE,
+            )
+            or re.search(r"^.{0,16}时\s*$", suffix)
+        ):
+            continue
+        return True
+    return False
 
 
 def _number(value) -> float | None:
@@ -196,6 +218,13 @@ def derive_mechanic_effect_tags(item: Dict) -> EffectTags:
 
         if "EXHAUST" in keywords:
             add("exhaust", "provider", source="keywords_key")
+        if item.get("id") == "TRUE_GRIT":
+            # Verified in 0.111.0: OnPlay exhausts another hand card
+            # (random before upgrade, selected after), not this card itself.
+            add(
+                "exhaust", "provider",
+                source="assembly:0.111.0:TrueGrit.OnPlay.CardCmd.Exhaust",
+            )
         if _card_interacts_with_exhaust(description):
             add("exhaust", "payoff", source="description_rule")
 
@@ -207,12 +236,7 @@ def derive_mechanic_effect_tags(item: Dict) -> EffectTags:
             add("strength", "payoff", hit_count, "hit_count")
 
     elif color == "silent":
-        if re.search(
-            r"(丢弃|弃掉|舍弃).{0,8}\d*.{0,3}(张|牌)|"
-            r"discard.{0,10}(card|\d)",
-            description,
-            flags=re.IGNORECASE,
-        ):
+        if _has_explicit_discard_action(description):
             add("discard", "provider", source="description_rule")
         if "SLY" in keywords:
             add("discard", "payoff", source="keywords_key")
@@ -588,6 +612,16 @@ def derive_effect_tags(entity_type: str, item: Dict) -> EffectTags:
         for tag, pattern in support_patterns.items():
             if re.search(pattern, identity, flags=re.IGNORECASE):
                 add(tag, source="description_rule")
+
+    elif entity_type == "potions" and item.get("id") == "BLOOD_POTION":
+        # Exact vanilla 0.111.0 assembly allowlist, not a description rule.
+        # BloodPotion.CanonicalVars is DynamicVar("HealPercent", 20m);
+        # OnUse heals MaxHp * BaseValue / 100. Release identity pins this DLL.
+        add(
+            "potion_heal_max_hp_percent",
+            20,
+            "assembly:0.111.0:BloodPotion.CanonicalVars.HealPercent",
+        )
 
     return tags
 

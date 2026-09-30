@@ -1,6 +1,7 @@
 import os
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from advisor.campfire import CAMPFIRE_ACTION, CampfirePolicy
 from advisor.decision_core import (
@@ -82,11 +83,29 @@ def _candidate(candidate_id, action_kind, effects=None, **extra):
 
 
 def _request(candidates, *, world=None):
+    world = world or _world()
+    # These positive fixtures model a normal single Smith screen explicitly.
+    # Missing/unknown eligibility is exercised independently in target tests.
+    verified = []
+    for candidate in candidates:
+        payload = dict(candidate.payload)
+        if payload.get("action_id") == "smith" and "deck_edit_targets" not in payload:
+            targets = []
+            for entry in world.deck:
+                if entry.upgrades == 0:
+                    for _ in range(entry.count):
+                        targets.append({"target_id": f"fixture:{len(targets)}",
+                                        "card": entry.card, "upgrades": entry.upgrades})
+            payload["deck_edit_targets"] = {
+                "operation": "upgrade", "source_code": "fixture:single_smith", "targets": targets,
+            }
+        verified.append(DecisionCandidate.create(candidate.candidate_id, payload,
+                                                label=candidate.label, eligible=candidate.eligible))
     return DecisionRequest.create(
         decision_id="campfire:visit:1",
         decision_type=CAMPFIRE_ACTION,
-        world=world or _world(),
-        candidates=candidates,
+        world=world,
+        candidates=verified,
     )
 
 
@@ -158,6 +177,78 @@ class CampfirePolicyTests(unittest.TestCase):
         ))
         self.assertEqual(result.status, "uncertain")
         self.assertIn("deck_edit:no_upgrade_target", result.data_gaps)
+
+    def test_smith_does_not_discard_unmodeled_upgrade_targets(self):
+        for deck in (
+            [{"card": "STRIKE_IRONCLAD"}, {"card": "INFLAME"}],
+            [{"card": "INFLAME"}, {"card": "STRIKE_IRONCLAD"}],
+            [{"card": "STRIKE_IRONCLAD"}, {"card": "BASH"}],
+        ):
+            with self.subTest(deck=deck):
+                result = self.policy.recommend(_request(
+                    [
+                        _candidate("rest", "rest", _heal(24)),
+                        _candidate("smith", "smith"),
+                    ],
+                    world=_world(hp=80, deck=deck),
+                ))
+                self.assertEqual(result.status, "uncertain")
+                self.assertIsNone(result.recommended_candidate_id)
+                smith = result.candidates[1]
+                self.assertIsNone(smith.score)
+                self.assertIn("deck_edit:upgrade_delta_unknown", smith.data_gaps)
+                self.assertFalse(any(
+                    factor["code"] == "deck_upgrade_opportunity"
+                    for factor in smith.factors
+                ))
+
+    def test_already_upgraded_unmodeled_card_does_not_block_smith(self):
+        result = self.policy.recommend(_request(
+            [
+                _candidate("rest", "rest", _heal(24)),
+                _candidate("smith", "smith"),
+            ],
+            world=_world(hp=80, deck=[
+                {"card": "STRIKE_IRONCLAD"},
+                {"card": "INFLAME", "upgrades": 1},
+            ]),
+        ))
+        self.assertEqual(result.recommended_candidate_id, "smith")
+        self.assertEqual(result.data_gaps, ())
+
+    def test_known_cost_upgrade_remains_scoreable(self):
+        result = self.policy.recommend(_request(
+            [
+                _candidate("rest", "rest", _heal(24)),
+                _candidate("smith", "smith"),
+            ],
+            world=_world(hp=80, deck=[{"card": "BODY_SLAM"}]),
+        ))
+        self.assertEqual(result.recommended_candidate_id, "smith")
+        self.assertEqual(result.data_gaps, ())
+
+    def test_smith_respects_signed_and_absolute_upgrade_costs(self):
+        original = self.repository.find_card("BASH")
+        for cost, expected in (
+            ("+1", "rest"),
+            ("-1", "smith"),
+            (1, "smith"),
+            (0, "smith"),
+            (3, "rest"),
+        ):
+            card = {**original, "cost": 2, "upgrade": {"cost": cost}}
+            with self.subTest(cost=cost), patch.object(
+                self.repository, "find_card", return_value=card
+            ):
+                result = self.policy.recommend(_request(
+                    [
+                        _candidate("rest", "rest", _heal(1)),
+                        _candidate("smith", "smith"),
+                    ],
+                    world=_world(hp=79, deck=[{"card": "BASH"}]),
+                ))
+                self.assertEqual(result.recommended_candidate_id, expected)
+                self.assertEqual(result.data_gaps, ())
 
     def test_unknown_special_action_without_effects_fails_closed(self):
         result = self.policy.recommend(_request([

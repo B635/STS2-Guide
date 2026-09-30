@@ -1207,10 +1207,73 @@
         }
       ]
     },
+    "deckEditTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target_id",
+        "card",
+        "upgrades"
+      ],
+      "properties": {
+        "target_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240,
+          "pattern": ".*\\S.*"
+        },
+        "card": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": ".*\\S.*"
+        },
+        "upgrades": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9
+        }
+      }
+    },
+    "deckEditTargets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "operation",
+        "source_code",
+        "targets"
+      ],
+      "properties": {
+        "operation": {
+          "enum": [
+            "upgrade",
+            "remove"
+          ]
+        },
+        "source_code": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": ".*\\S.*"
+        },
+        "targets": {
+          "type": "array",
+          "maxItems": 200,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/deckEditTarget"
+          }
+        }
+      },
+      "$comment": "target_id uniqueness across different rows is additionally enforced by the consumer; uniqueItems checks whole objects."
+    },
     "candidatePayload": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "deck_edit_targets": {
+          "anyOf": [{ "$ref": "#/$defs/deckEditTargets" }, { "type": "null" }]
+        },
         "card": {
           "type": ["string", "null"],
           "minLength": 1,
@@ -1367,6 +1430,128 @@
       "allOf": [
         {
           "if": {
+            "properties": {
+              "payload": {
+                "properties": {
+                  "deck_edit_targets": {
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "deck_edit_targets"
+                ]
+              }
+            },
+            "required": [
+              "payload"
+            ]
+          },
+          "then": {
+            "anyOf": [
+              {
+                "properties": {
+                  "kind": {
+                    "const": "merchant_offer"
+                  },
+                  "payload": {
+                    "properties": {
+                      "offer_kind": {
+                        "const": "card_removal"
+                      },
+                      "deck_edit_targets": {
+                        "properties": {
+                          "operation": {
+                            "const": "remove"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "kind": {
+                    "const": "rest_action"
+                  },
+                  "payload": {
+                    "properties": {
+                      "deck_edit_targets": {
+                        "properties": {
+                          "operation": {
+                            "const": "upgrade"
+                          }
+                        }
+                      },
+                      "effects": {
+                        "contains": {
+                          "properties": {
+                            "kind": {
+                              "const": "upgrade_card"
+                            },
+                            "target_mode": {
+                              "const": "choose"
+                            },
+                            "certainty": {
+                              "const": "exact"
+                            },
+                            "amount": {
+                              "enum": [null, 1]
+                            }
+                          },
+                          "required": [
+                            "kind",
+                            "target_mode",
+                            "certainty"
+                          ]
+                        },
+                        "maxContains": 1,
+                        "items": {
+                          "if": {
+                            "properties": {
+                              "target_mode": {
+                                "const": "choose"
+                              }
+                            },
+                            "required": [
+                              "target_mode"
+                            ]
+                          },
+                          "then": {
+                            "properties": {
+                              "kind": {
+                                "const": "upgrade_card"
+                              },
+                              "target_mode": {
+                                "const": "choose"
+                              },
+                              "certainty": {
+                                "const": "exact"
+                              },
+                              "amount": {
+                                "enum": [null, 1]
+                              }
+                            },
+                            "required": [
+                              "kind",
+                              "target_mode",
+                              "certainty"
+                            ]
+                          }
+                        }
+                      }
+                    },
+                    "required": [
+                      "effects"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "if": {
             "properties": { "eligible": { "const": false } },
             "required": ["eligible"]
           },
@@ -1506,6 +1691,13 @@
                   "blessing_id": { "const": null },
                   "event_id": { "const": null },
                   "target_candidate_ids": { "maxItems": 0 }
+                },
+                "if": {
+                  "properties": { "offer_kind": { "const": "card" } },
+                  "required": ["offer_kind"]
+                },
+                "else": {
+                  "properties": { "upgrades": { "const": null } }
                 }
               }
             }

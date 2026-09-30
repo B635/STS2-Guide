@@ -6,10 +6,10 @@ internal sealed class StateEvent
 {
     internal const int CurrentSchemaVersion = 9;
     internal const string ProducerId = "STS2GuideReadOnlyExporter";
-    internal const string ProducerVersion = "0.3.0";
+    internal const string ProducerVersion = "0.3.11";
     internal const string ProducerSource = "sts2-guide-readonly-mod";
     internal const string ReleaseFingerprint =
-        "3ec6911d1288fe9c57b92a37c4f935fc8464d4eafabd6ccddddc896edb657e2f";
+        "31439e8d119ce56bc0ec6ac52eac2ac51c527d697694ef08116e462c15b254c8";
 
     [JsonPropertyName("schema_version")]
     public int SchemaVersion { get; init; } = CurrentSchemaVersion;
@@ -300,6 +300,29 @@ internal sealed class CandidatePayload
 
     [JsonPropertyName("effects")]
     public List<ChoiceEffect> Effects { get; init; } = [];
+
+    [JsonPropertyName("deck_edit_targets")]
+    public DeckEditTargetSet? DeckEditTargets { get; init; }
+}
+
+internal sealed class DeckEditTargetSet
+{
+    [JsonPropertyName("operation")]
+    public required string Operation { get; init; }
+    [JsonPropertyName("source_code")]
+    public required string SourceCode { get; init; }
+    [JsonPropertyName("targets")]
+    public required List<DeckEditTarget> Targets { get; init; }
+}
+
+internal sealed class DeckEditTarget
+{
+    [JsonPropertyName("target_id")]
+    public required string TargetId { get; init; }
+    [JsonPropertyName("card")]
+    public required string Card { get; init; }
+    [JsonPropertyName("upgrades")]
+    public required int Upgrades { get; init; }
 }
 
 internal sealed class ChoiceEffect

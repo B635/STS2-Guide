@@ -1,32 +1,13 @@
-using System.Text.RegularExpressions;
+using MegaCrit.Sts2.Core.Models;
 
 namespace STS2Guide.ReadOnlyExporter;
 
-internal static partial class StableIds
+internal static class StableIds
 {
-    [GeneratedRegex("([a-z0-9])([A-Z])")]
-    private static partial Regex WordBoundary();
-
-    internal static string FromType(Type type, params string[] suffixes)
+    internal static string FromType(Type type, params string[] legacySuffixes)
     {
-        var name = type.Name;
-        var removed = true;
-        while (removed)
-        {
-            removed = false;
-            foreach (var suffix in suffixes)
-            {
-                if (name.EndsWith(suffix, StringComparison.Ordinal))
-                {
-                    name = name[..^suffix.Length];
-                    removed = true;
-                    break;
-                }
-            }
-        }
-        return WordBoundary()
-            .Replace(name, "$1_$2")
-            .Replace(' ', '_')
-            .ToUpperInvariant();
+        // The game owns identity, including meaningful suffixes such as POTION.
+        // Keep the call signature for existing observers; suffixes no longer alter IDs.
+        return ModelDb.GetEntry(type);
     }
 }

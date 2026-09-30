@@ -25,8 +25,6 @@ internal static class RunIdentityReader
         try
         {
             var manager = RunManager.Instance;
-            var history = manager.History;
-            var historySeed = history?.Seed;
             string? currentRunSeed = null;
             try
             {
@@ -46,10 +44,9 @@ internal static class RunIdentityReader
                 );
             }
 
-            // History is useful for the run start time, but History.Seed can
-            // still describe the run that just ended.  Never promote an
-            // identity to stable unless the current RunState/player supplies
-            // the seed used by that identity.
+            // Both inputs must belong to the active RunManager. History is an
+            // ended-run record and can still describe the previous run while
+            // the first actionable map is already open.
             if (string.IsNullOrWhiteSpace(currentRunSeed))
             {
                 return Temporary(
@@ -57,44 +54,29 @@ internal static class RunIdentityReader
                     + "observation point"
                 );
             }
-            if (!string.IsNullOrWhiteSpace(historySeed)
-                && !string.Equals(
-                    historySeed,
-                    currentRunSeed,
-                    StringComparison.Ordinal
-                ))
+            if (StartTimeField?.GetValue(manager) is not long internalStartTime
+                || internalStartTime <= 0)
             {
-                Log.Info(
-                    "[STS2-Guide] History seed does not match the current "
-                    + "RunState seed; identity remains provisional."
-                );
                 return Temporary(
-                    "History and current RunState seeds do not agree"
+                    "Current RunManager start time is not available at this "
+                    + "observation point"
                 );
             }
 
-            var startTime = history?.StartTime ?? 0;
-            if (startTime <= 0
-                && StartTimeField?.GetValue(manager) is long internalStartTime)
-            {
-                startTime = internalStartTime;
-            }
-            if (startTime > 0)
-            {
-                var identityBytes = SHA256.HashData(
-                    Encoding.UTF8.GetBytes($"{currentRunSeed}|{startTime}")
-                );
-                var digest = Convert
-                    .ToHexString(identityBytes)
-                    .ToLowerInvariant();
-                return new RunIdentity(
-                    $"sts2-{digest[..24]}",
-                    DateTimeOffset
-                        .FromUnixTimeSeconds(startTime)
-                        .ToString("O"),
-                    true
-                );
-            }
+            var startTime = internalStartTime;
+            var identityBytes = SHA256.HashData(
+                Encoding.UTF8.GetBytes($"{currentRunSeed}|{startTime}")
+            );
+            var digest = Convert
+                .ToHexString(identityBytes)
+                .ToLowerInvariant();
+            return new RunIdentity(
+                $"sts2-{digest[..24]}",
+                DateTimeOffset
+                    .FromUnixTimeSeconds(startTime)
+                    .ToString("O"),
+                true
+            );
         }
         catch (Exception exception)
         {

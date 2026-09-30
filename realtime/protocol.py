@@ -476,6 +476,29 @@ class ChoiceEffect(BaseModel):
         return self
 
 
+class DeckEditTarget(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+
+    target_id: str = Field(min_length=1, max_length=240, pattern=r".*\S.*")
+    card: str = Field(min_length=1, max_length=200, pattern=r".*\S.*")
+    upgrades: int = Field(ge=0, le=9)
+
+
+class DeckEditTargets(BaseModel):
+    """Complete legal instance set in this snapshot, not permanent card IDs."""
+    model_config = ConfigDict(extra="forbid", strict=True)
+
+    operation: Literal["upgrade", "remove"]
+    source_code: str = Field(min_length=1, max_length=200, pattern=r".*\S.*")
+    targets: List[DeckEditTarget] = Field(max_length=200)
+
+    @model_validator(mode="after")
+    def _unique_targets(self) -> "DeckEditTargets":
+        if len({target.target_id for target in self.targets}) != len(self.targets):
+            raise ValueError("deck_edit_targets target_id must be unique")
+        return self
+
+
 class CandidatePayload(BaseModel):
     """Closed payload vocabulary shared by every v9 candidate kind."""
 
@@ -512,6 +535,7 @@ class CandidatePayload(BaseModel):
         ]
     ] = Field(default_factory=list, max_length=200)
     effects: List[ChoiceEffect] = Field(default_factory=list, max_length=50)
+    deck_edit_targets: Optional[DeckEditTargets] = None
 
     @model_validator(mode="after")
     def _validate_target_candidate_ids(self) -> "CandidatePayload":
@@ -596,17 +620,21 @@ class DecisionCandidateEnvelope(BaseModel):
                 "offer_kind",
                 "is_stocked",
                 "replacement_supported",
+                "upgrades",
                 "effects",
+                "deck_edit_targets",
             },
             CandidateKind.LEAVE: set(),
             CandidateKind.REST_ACTION: {
                 "action_id",
                 "replacement_supported",
                 "effects",
+                "deck_edit_targets",
             },
             CandidateKind.DECK_EDIT: {
                 "operation",
                 "target_candidate_ids",
+                "upgrades",
             },
             CandidateKind.NEOW_BLESSING: {
                 "blessing_id",
@@ -629,7 +657,23 @@ class DecisionCandidateEnvelope(BaseModel):
                 f"{self.kind.value} candidate has unrelated payload "
                 f"fields: {sorted(unexpected)}"
             )
+        targets = self.payload.deck_edit_targets
+        if targets is not None:
+            if self.kind == CandidateKind.MERCHANT_OFFER:
+                if self.payload.offer_kind != "card_removal" or targets.operation != "remove":
+                    raise ValueError("merchant deck targets require removal offer")
+            elif self.kind == CandidateKind.REST_ACTION:
+                choices = [effect for effect in self.payload.effects
+                           if effect.target_mode == "choose"]
+                if targets.operation != "upgrade" or len(choices) != 1 or any(
+                    effect.kind != "upgrade_card" or effect.certainty != "exact"
+                    or effect.amount not in (None, 1)
+                    for effect in choices
+                ):
+                    raise ValueError("rest deck targets require one exact choose upgrade")
         if self.kind == CandidateKind.MERCHANT_OFFER:
+            if self.payload.upgrades is not None and self.payload.offer_kind != "card":
+                raise ValueError("merchant upgrades require a card offer")
             gold_costs = [
                 cost for cost in self.costs
                 if cost.kind == DecisionCostKind.GOLD

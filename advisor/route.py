@@ -22,8 +22,37 @@ from advisor.decision_core import (
     ROUTE_MODE_SURVIVAL,
 )
 from advisor.versions import ROUTE_POLICY_VERSION
+from advisor.boss_context import build_boss_preparation
 from storage.relational import RelationalRepository
 
+# Messages describe existing local risk factors, not future encounters or score-point deltas.
+_FACTOR_MESSAGES = {
+    "monster_encounter_pool_pressure": "按本幕普通敌人遭遇池估计战斗压力，并非预知下一只敌人。",
+    "elite_encounter_pool_pressure": "按本幕精英遭遇池估计压力，并非预知下一场精英。",
+    "monster_expected_risk": "路线包含普通战斗，计入基础战斗风险。",
+    "elite_expected_risk": "路线包含精英战斗，计入较高的基础风险。",
+    "monster_aoe_relief": "当前牌组的群体伤害能力缓解普通战斗压力。",
+    "elite_low_hp": "当前生命偏低，经过精英的风险提高。",
+    "elite_growth_relief": "当前牌组的成长能力缓解精英压力。",
+    "known_boss_risk": "计入本幕已知 Boss 的威胁。",
+    "rest_low_hp": "当前生命偏低，路线中的篝火提供休整机会。",
+    "boss_preparation_opportunity": "路线中的篝火提供应对本幕 Boss 的准备机会。",
+    "shop_affordability": "当前金币达到策略阈值，商店具有补强机会；未假定未来库存。",
+    "shop_low_gold": "当前金币较少，商店补强空间有限。",
+    "potion_buffer_once": "当前药水作为一次战斗缓冲计入，不在沿途重复消耗同一瓶。",
+}
+
+
+def _described_factor(factor: dict[str, Any]) -> dict[str, Any]:
+    code = factor["code"]
+    message = _FACTOR_MESSAGES.get(code)
+    if code.startswith("route_mode_survival_"):
+        message = "稳健生存偏好调整沿途节点的风险权重。"
+    elif code.startswith("route_mode_growth_safety_floor_"):
+        message = "当前生命触及安全底线，激进成长偏好也会优先保命。"
+    elif code.startswith("route_mode_growth_"):
+        message = "激进成长偏好在生命安全约束内调整沿途收益。"
+    return {**factor, "message": message} if message else factor
 
 RISK_PROFILE_KEY = "route_risk_profile_v1"
 MAX_ROUTE_SEARCH_EXPANSIONS = 256
@@ -85,6 +114,24 @@ def _number(value: Any, default: float = 0.0) -> float:
 
 def _clamp(value: float, low: float = 0.0, high: float = 100.0) -> float:
     return round(max(low, min(high, value)), 2)
+
+
+def _route_display_score(effective_risk: float, relic_support: float) -> float:
+    """Map route risk to a readable 0-100 suitability score.
+
+    Route risk is the value used by the path search and remains the ranking
+    truth.  A hard linear clamp used to turn every sufficiently favourable
+    first-act route into ``100``, erasing real differences and making route
+    modes fall back to map display order.  The bounded logistic mapping stays
+    monotonic without presenting the score as a win probability.
+    """
+
+    # Preserve the previous small relic-support contribution in risk units:
+    # the former linear display slope was 3.5 points per risk unit and relic
+    # support added 0.4 display points.
+    adjusted_risk = effective_risk - relic_support * (0.4 / 3.5)
+    exponent = max(-60.0, min(60.0, adjusted_risk / 10.0))
+    return round(100.0 / (1.0 + math.exp(exponent)), 2)
 
 
 def _unique(values: Iterable[str]) -> tuple[str, ...]:
@@ -436,47 +483,12 @@ class RoutePolicy:
     ) -> tuple[float, tuple[str, ...]]:
         """Use known boss HP and move records, otherwise disclose the gap."""
         expected = _number(profile["encounter_expected_risk"]["BOSS"])
-        identifiers = _unique(request.world.map.boss_encounter_ids if request.world.map else ())
-        if not identifiers:
-            return expected, ("boss_encounter_ids_missing",)
-        threats: list[float] = []
-        gaps: list[str] = []
-        for identifier in identifiers:
-            encounter = self.repository.encounter_profile(identifier)
-            if encounter is None:
-                gaps.append(f"unknown_boss_encounter:{identifier}")
-                continue
-            monsters = encounter.get("_monsters") or []
-            if not monsters:
-                gaps.append(f"boss_encounter_members_missing:{identifier}")
-                continue
-            hp = 0.0
-            attacks = 0.0
-            for monster in monsters:
-                hp_value = (
-                    monster.get("max_hp_ascension")
-                    if request.world.ascension >= 8
-                    else monster.get("max_hp")
-                )
-                hp += _number(
-                    hp_value
-                    or monster.get("max_hp")
-                    or monster.get("min_hp_ascension")
-                    or monster.get("min_hp")
-                )
-                peak_attack, has_attack = _monster_peak_attack(
-                    monster.get("moves") or (),
-                    ascension=request.world.ascension,
-                )
-                if not has_attack:
-                    gaps.append(
-                        f"boss_attack_moves_missing:{identifier}:{monster.get('id') or 'unknown'}"
-                    )
-                attacks += peak_attack
-            threats.append(expected + min(12.0, hp / 45.0 + attacks / 18.0))
-        if not threats:
-            return expected, _unique(gaps)
-        return round(sum(threats) / len(threats), 3), _unique(gaps)
+        facts = build_boss_preparation(
+            self.repository,
+            request.world.map.boss_encounter_ids if request.world.map else (),
+            ascension=request.world.ascension,
+        )
+        return facts.route_threat(expected), facts.data_gaps
 
     def _encounter_pools(
         self,
@@ -831,6 +843,7 @@ class RoutePolicy:
 
         assessments: list[CandidateAssessment] = []
         path_rows: list[dict[str, Any]] = []
+        ranking_risk: dict[str, float] = {}
         for candidate in request.candidates:
             path = paths[candidate.candidate_id]
             # The capability baseline is shared, while its effect on expected
@@ -838,8 +851,13 @@ class RoutePolicy:
             # only as an auditable 0-100 output scale, not a win probability.
             potion_relief = self._potion_relief(path, capabilities)
             effective_risk = path.risk - potion_relief
-            score = _clamp(
-                82.0 - effective_risk * 3.5 + capabilities.relic_support * 0.4
+            score = _route_display_score(
+                effective_risk,
+                capabilities.relic_support,
+            )
+            ranking_risk[candidate.candidate_id] = (
+                effective_risk
+                - capabilities.relic_support * (0.4 / 3.5)
             )
             path_rows.append({
                 "candidate_id": candidate.candidate_id,
@@ -867,6 +885,10 @@ class RoutePolicy:
                 *boss_gaps,
                 *pool_gaps,
             ))
+            path_factor_rows = tuple(
+                _described_factor(factor)
+                for factor in path_factor_rows
+            )
             dimensions = {
                 "immediate_power": round(min(10.0, capabilities.immediate_power / 12.0), 3),
                 "survival": round(min(10.0, capabilities.survival / 10.0), 3),
@@ -890,7 +912,14 @@ class RoutePolicy:
 
         eligible = sorted(
             (assessment for assessment in assessments if assessment.eligible and assessment.score is not None),
-            key=lambda assessment: (-float(assessment.score), assessment.display_index, assessment.candidate_id),
+            # Rank with the unrounded search value.  Display scores are only a
+            # readable projection and may legitimately round to the same
+            # number for nearly identical paths.
+            key=lambda assessment: (
+                ranking_risk[assessment.candidate_id],
+                assessment.display_index,
+                assessment.candidate_id,
+            ),
         )
         rank_by_id = {
             assessment.candidate_id: rank
@@ -967,38 +996,3 @@ class RoutePolicy:
             world_sequence=request.world.sequence,
             contract_version=2,
         )
-
-
-def _monster_peak_attack(
-    moves: Iterable[Mapping[str, Any]],
-    *,
-    ascension: int,
-) -> tuple[float, bool]:
-    """Return a conservative one-turn pressure from explicit attack moves.
-
-    ``attack_pattern`` records transition state, not damage.  Summing every
-    alternative move would also invent a turn sequence, so use the largest
-    confirmed attack move for each monster and let the route model treat it
-    as pressure rather than a predicted action.
-    """
-    attacks: list[float] = []
-    for move in moves:
-        intent = str(move.get("intent") or "").upper()
-        if "ATTACK" not in intent:
-            continue
-        damage = _number(
-            move.get("damage_ascension")
-            if ascension >= 9
-            else move.get("damage_normal")
-        )
-        if damage <= 0:
-            # Some catalog entries only populate one variant; preserving the
-            # known alternative is more truthful than treating it as no move.
-            damage = _number(
-                move.get("damage_normal")
-                if ascension >= 9
-                else move.get("damage_ascension")
-            )
-        if damage > 0:
-            attacks.append(damage * max(1.0, _number(move.get("hit_count"), 1.0)))
-    return (max(attacks), True) if attacks else (0.0, False)

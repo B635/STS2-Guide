@@ -10,6 +10,7 @@ from advisor.deck_edit_value import score_deck_effect
 from advisor.decision_core import DecisionRequest, Recommendation
 from storage.relational import RelationalRepository
 from advisor.versions import DECK_EDIT_POLICY_VERSION
+from advisor.scoring_preferences import DEFAULT_SCORING_PREFERENCES, ScoringPreferences
 
 
 DECK_EDIT = "deck_edit"
@@ -19,8 +20,10 @@ _OPERATIONS = frozenset({"upgrade", "remove", "transform"})
 class DeckEditPolicy:
     decision_type = DECK_EDIT
 
-    def __init__(self, repository: RelationalRepository):
+    def __init__(self, repository: RelationalRepository,
+                 preferences: ScoringPreferences = DEFAULT_SCORING_PREFERENCES):
         self.repository = repository
+        self.preferences = preferences
 
     def recommend(self, request: DecisionRequest) -> Recommendation:
         if request.decision_type != self.decision_type:
@@ -35,7 +38,7 @@ class DeckEditPolicy:
         operation_mismatch = len(operations) > 1
         drafts: list[AssessmentDraft] = []
         for candidate in request.candidates:
-            draft = AssessmentDraft(candidate)
+            draft = AssessmentDraft(candidate, preferences=self.preferences)
             drafts.append(draft)
             if not candidate.eligible:
                 continue
@@ -71,6 +74,20 @@ class DeckEditPolicy:
                 continue
             if not entity_id:
                 draft.gap("deck_edit:entity_id_missing")
+                continue
+            upgrades = candidate.payload.get("upgrades")
+            if type(upgrades) is not int or not 0 <= upgrades <= 9:
+                draft.gap("deck_edit:target_upgrades_unknown")
+                continue
+            if self.repository.find_card(entity_id) is None:
+                draft.gap(f"unknown_card:{entity_id}")
+                continue
+            if not any(entry.card == entity_id and entry.upgrades == upgrades
+                       for entry in request.world.deck):
+                draft.gap("deck_edit:targets_state_mismatch")
+                continue
+            if operation == "upgrade" and upgrades > 0:
+                draft.gap("deck_edit:repeat_upgrade_unmodeled")
                 continue
             score_deck_effect(
                 draft,

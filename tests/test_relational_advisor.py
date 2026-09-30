@@ -989,11 +989,11 @@ class RelationalAdvisorTests(unittest.TestCase):
         self.assertNotIn("draw_coverage", codes)
         self.assertNotIn("upgrade_value", codes)
 
-    def test_effect_tag_v4_database_migrates_to_v5(self):
+    def test_effect_tag_v5_database_migrates_to_v8(self):
         with self.repository.connect() as connection:
             connection.execute(
                 """
-                UPDATE schema_metadata SET value = '4'
+                UPDATE schema_metadata SET value = '5'
                 WHERE key = 'effect_tag_version'
                 """
             )
@@ -1024,12 +1024,12 @@ class RelationalAdvisorTests(unittest.TestCase):
                 WHERE entity_key = 'potions:TEST_DAMAGE_POTION'
                 """
             ).fetchone()["count"]
-        self.assertEqual(version, "5")
+        self.assertEqual(version, "8")
         self.assertEqual(stale, 0)
 
-    def test_effect_tag_version_is_5(self):
+    def test_effect_tag_version_is_8(self):
         from storage.effect_tags import EFFECT_TAG_VERSION
-        self.assertEqual(EFFECT_TAG_VERSION, "5")
+        self.assertEqual(EFFECT_TAG_VERSION, "8")
 
     # ── Vulnerable window relic synergy ──────────────────────────────
 

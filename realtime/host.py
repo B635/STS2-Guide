@@ -14,6 +14,7 @@ from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
 from advisor.data_sources import load_local_card_tiers
+from advisor.scoring_preferences import ScoringPreferences, load_scoring_preferences
 from advisor.versions import (
     CAMPFIRE_POLICY_VERSION,
     CARD_REWARD_POLICY_VERSION,
@@ -255,7 +256,23 @@ def _release_instance_lock(exchange_dir: Path) -> None:
         lock_path.unlink(missing_ok=True)
 
 
+def _application_scoring_preferences(args: argparse.Namespace) -> ScoringPreferences:
+    """Freeze preferences once per application arguments, not per Worker."""
+    existing = getattr(args, "_scoring_preferences", None)
+    if existing is None:
+        path = getattr(args, "scoring_preferences", None)
+        if path is None:
+            path = default_exchange_dir() / "scoring-preferences.json"
+        existing = load_scoring_preferences(path)
+        args._scoring_preferences = existing
+        LOGGER.info("Scoring preferences loaded for this Guide application: %s", existing.as_dict())
+    if not isinstance(existing, ScoringPreferences):
+        raise ValueError("application scoring preferences must be validated")
+    return existing
+
+
 def build_bridge(args: argparse.Namespace) -> GameStateFileBridge:
+    preferences = _application_scoring_preferences(args)
     compatibility_manifest = load_compatibility_manifest(
         args.compatibility_manifest
     )
@@ -286,6 +303,7 @@ def build_bridge(args: argparse.Namespace) -> GameStateFileBridge:
         repository,
         checkpoint=ActiveRunCheckpointStore(args.checkpoint),
         local_tiers=local_tiers,
+        preferences=preferences,
         compatibility_manifest=compatibility_manifest,
         runtime_components=_observe_local_components(
             repository,
@@ -361,6 +379,11 @@ def _parser() -> argparse.ArgumentParser:
         default=default_manifest_path(),
     )
     parser.add_argument("--poll-interval", type=float, default=0.1)
+    parser.add_argument(
+        "--scoring-preferences", type=Path,
+        default=default_exchange_dir() / "scoring-preferences.json",
+        help="Local bounded scoring preferences; restart Guide to reload.",
+    )
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--tray", action="store_true")
     mode.add_argument("--worker", action="store_true")
@@ -440,6 +463,7 @@ def main() -> int:
         args.log_file,
         args.console_log,
     )
+    _application_scoring_preferences(args)
     if mode == "tray":
         try:
             from realtime.public_beta import run_public_beta_controller
@@ -452,6 +476,7 @@ def main() -> int:
     # Acquire instance lock *before* database/bridge initialization so a
     # second host never opens the SQLite file or syncs the catalog.
     lock_acquired = False
+    runtime_status = None
     if not args.once:
         try:
             _acquire_instance_lock(args.checkpoint.parent)
@@ -485,7 +510,15 @@ def main() -> int:
             )
             return 0
         try:
-            bridge.run_forever(args.poll_interval)
+            from realtime.runtime_status import RuntimeStatusPublisher
+
+            manifest = bridge.processor.compatibility_manifest
+            if manifest is None:
+                raise RuntimeError("Continuous live worker requires a compatibility manifest")
+            runtime_status = RuntimeStatusPublisher(args.runtime_status, manifest.release_fingerprint)
+            bridge.run_forever(min(1.0, args.poll_interval), on_poll=lambda: runtime_status.update(
+                "RUNNING", None, True,  # standalone worker does not probe the game process
+            ))
         except KeyboardInterrupt:
             LOGGER.info("P0 host stopped.")
             return 0
@@ -493,8 +526,13 @@ def main() -> int:
             LOGGER.exception("P0 host stopped unexpectedly.")
             return 1
     finally:
-        if lock_acquired:
-            _release_instance_lock(args.checkpoint.parent)
+        try:
+            if runtime_status is not None:
+                runtime_status.close()
+                _clear_visible_advice(args.output)
+        finally:
+            if lock_acquired:
+                _release_instance_lock(args.checkpoint.parent)
 
 
 if __name__ == "__main__":

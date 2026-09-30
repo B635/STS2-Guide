@@ -2,6 +2,7 @@ import math
 import os
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from advisor.decision_core import (
     DecisionCandidate,
@@ -10,6 +11,7 @@ from advisor.decision_core import (
     WorldState,
 )
 from advisor.merchant import MERCHANT_CHOICE, MerchantPolicy
+from advisor.scoring_preferences import ScoringPreferences
 from storage.relational import RelationalRepository
 
 
@@ -22,6 +24,8 @@ def _world(
     deck=None,
     potions=(),
     max_potion_slots=3,
+    hp=60,
+    max_hp=80,
 ):
     return WorldState.create(
         run_id="merchant-run",
@@ -30,8 +34,8 @@ def _world(
             "character": "IRONCLAD",
             "act": 1,
             "floor": 6,
-            "hp": 60,
-            "max_hp": 80,
+            "hp": hp,
+            "max_hp": max_hp,
             "gold": gold,
             "energy": 3,
             "deck": deck or [
@@ -63,6 +67,7 @@ def _candidate(candidate_id, kind, *, entity_id=None, price=None, **extra):
             "candidate_kind": "merchant_offer",
             "offer_kind": legacy_to_v9.get(kind, kind),
             "is_stocked": True,
+            **({"upgrades": 0} if legacy_to_v9.get(kind, kind) == "card" else {}),
             "costs": (
                 [{"kind": "gold", "amount": price, "resource_id": None}]
                 if price is not None
@@ -178,6 +183,47 @@ class MerchantPolicyTests(unittest.TestCase):
             for gap in result.data_gaps
         ))
 
+    def test_non_gold_costs_are_not_silently_ignored(self):
+        for cost in (
+            {"kind": "hp", "amount": 100, "resource_id": None},
+            {"kind": "max_hp", "amount": 10, "resource_id": None},
+            {"kind": "resource", "amount": 1, "resource_id": "fixture"},
+        ):
+            with self.subTest(cost=cost):
+                result = self.policy.recommend(_request([
+                    _candidate(
+                        "relic",
+                        "relic_offer",
+                        entity_id="SHURIKEN",
+                        costs=[
+                            {"kind": "gold", "amount": 0, "resource_id": None},
+                            cost,
+                        ],
+                    ),
+                    _candidate("leave", "leave"),
+                ]))
+                self.assertEqual(result.status, "uncertain")
+                self.assertIsNone(result.recommended_candidate_id)
+                self.assertIsNone(result.candidates[0].score)
+                self.assertTrue(any(
+                    gap.startswith("merchant:costs_invalid:")
+                    for gap in result.data_gaps
+                ))
+
+    def test_known_free_offer_with_only_gold_cost_remains_scoreable(self):
+        result = self.policy.recommend(_request([
+            _candidate(
+                "relic",
+                "relic_offer",
+                entity_id="SHURIKEN",
+                price=0,
+            ),
+            _candidate("leave", "leave"),
+        ]))
+        self.assertEqual(result.recommended_candidate_id, "relic")
+        self.assertIsNotNone(result.candidates[0].score)
+        self.assertEqual(result.data_gaps, ())
+
     def test_affordability_inconsistency_fails_closed(self):
         result = self.policy.recommend(_request(
             [
@@ -230,6 +276,10 @@ class MerchantPolicyTests(unittest.TestCase):
                     "remove",
                     "card_remove_service",
                     price=30,
+                    deck_edit_targets={
+                        "operation": "remove", "source_code": "fixture:merchant_removal",
+                        "targets": [{"target_id": "remove:0", "card": "WOUND", "upgrades": 0}],
+                    },
                 ),
                 _candidate("leave", "leave"),
             ],
@@ -267,6 +317,81 @@ class MerchantPolicyTests(unittest.TestCase):
                 self.assertTrue(math.isfinite(row.score))
                 self.assertGreaterEqual(row.score, 0)
                 self.assertLessEqual(row.score, 100)
+
+    def test_actual_upgrade_state_is_used_without_defaulting_missing(self):
+        candidates = [
+            _candidate("base", "card_offer", entity_id="SHRUG_IT_OFF", price=20, upgrades=0),
+            _candidate("upgraded", "card_offer", entity_id="SHRUG_IT_OFF", price=20, upgrades=1),
+        ]
+        result = self.policy.recommend(_request(candidates))
+        self.assertGreater(result.candidates[1].score, result.candidates[0].score)
+        for value in (None, True, "0", -1, 10):
+            with self.subTest(value=value):
+                candidate = _candidate("unknown", "card_offer", entity_id="SHRUG_IT_OFF", price=20, upgrades=value)
+                result = self.policy.recommend(_request([candidate]))
+                self.assertIsNone(result.candidates[0].score)
+                self.assertIn("merchant:card_upgrades_unknown", result.data_gaps)
+
+    def test_card_estimate_scope_survives_merchant_without_adding_score(self):
+        result = self.policy.recommend(_request([
+            _candidate("card", "card_offer", entity_id="PERFECTED_STRIKE", price=30),
+            _candidate("leave", "leave"),
+        ]))
+        card = result.candidates[0]
+        factors = {factor["code"]: factor for factor in card.factors}
+        # Five existing Strikes plus this offer give the 18-damage baseline.
+        # The existing inner state_score=51.65 contributes 0.9075 to merchant.
+        self.assertEqual(card.score, 54.9075)
+        self.assertEqual(factors["merchant_card_context_fit"]["delta"], 0.9075)
+        self.assertEqual(set(factors), {
+            "merchant_card_access", "merchant_card_context_fit",
+            "gold_liquidity_cost", "estimate_scope",
+        })
+        self.assertEqual(factors["estimate_scope"]["delta"], 0.0)
+        self.assertIn("战前基准为 18 点伤害", factors["estimate_scope"]["message"])
+        self.assertIn("不是当回合实伤", factors["estimate_scope"]["message"])
+        self.assertEqual(result.data_gaps, ())
+        self.assertEqual(result.recommended_candidate_id, "card")
+
+    def test_defensive_relic_uses_actual_tag_hp_and_deck_need(self):
+        offer = _candidate("anchor", "relic_offer", entity_id="ANCHOR", price=20)
+        healthy = self.policy.recommend(_request([offer], world=_world(hp=80)))
+        injured = self.policy.recommend(_request([offer], world=_world(hp=20)))
+        self.assertGreater(injured.candidates[0].score, healthy.candidates[0].score)
+        self.assertIn("merchant_relic_survival", {f["code"] for f in injured.candidates[0].factors})
+        lacking = self.policy.recommend(_request([offer], world=_world(deck=[{"card": "STRIKE_IRONCLAD", "count": 8}])))
+        defended = self.policy.recommend(_request([offer], world=_world(deck=[{"card": "DEFEND_IRONCLAD", "count": 8}])))
+        self.assertGreater(lacking.candidates[0].score, defended.candidates[0].score)
+
+    def test_unmodeled_potion_is_not_a_precise_purchase_recommendation(self):
+        result = self.policy.recommend(_request([
+            _candidate("potion", "potion_offer", entity_id="STRENGTH_POTION", price=0),
+            _candidate("leave", "leave"),
+        ]))
+        self.assertIsNone(result.candidates[0].score)
+        self.assertIn("merchant:potion_mechanism_unmodeled:STRENGTH_POTION", result.data_gaps)
+        self.assertIsNone(result.recommended_candidate_id)
+
+    def test_identity_without_relic_effects_is_not_full_mechanism_coverage(self):
+        offer = _candidate("relic", "relic_offer", entity_id="SHURIKEN", price=0)
+        with patch.object(self.repository, "find_relic", return_value={"id": "SHURIKEN", "_effect_tags": {}}):
+            result = self.policy.recommend(_request([offer]))
+        self.assertIsNone(result.candidates[0].score)
+        self.assertIn("merchant:relic_mechanism_unmodeled:SHURIKEN", result.data_gaps)
+
+    def test_preferences_apply_once_and_leave_price_and_internal_card_fit_unchanged(self):
+        request = _request([
+            _candidate("card", "card_offer", entity_id="SHRUG_IT_OFF", price=30, upgrades=1),
+            _candidate("leave", "leave"),
+        ])
+        baseline = self.policy.recommend(request)
+        configured = MerchantPolicy(self.repository, ScoringPreferences(survival=1.25, long_term_growth=1.25)).recommend(request)
+        before = {f["code"]: f["delta"] for f in baseline.candidates[0].factors}
+        after = {f["code"]: f["delta"] for f in configured.candidates[0].factors}
+        self.assertEqual(after["merchant_card_access"], before["merchant_card_access"] * 1.25)
+        self.assertEqual(after["merchant_card_context_fit"], before["merchant_card_context_fit"])
+        self.assertEqual(after["gold_liquidity_cost"], before["gold_liquidity_cost"])
+        self.assertEqual(configured.candidates[1].score, baseline.candidates[1].score)
 
 
 if __name__ == "__main__":

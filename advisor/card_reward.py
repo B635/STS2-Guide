@@ -14,10 +14,13 @@ from typing import Dict, Iterable, List, Optional
 from advisor.character_mechanics import assess_card_mechanics
 from advisor.contextual_scoring import (
     build_context,
+    card_energy_cost,
+    perfected_strike_baseline,
     score_dynamic_skip,
     score_state_factors,
 )
 from advisor.data_sources import LocalCardTierSource
+from advisor.scoring_preferences import DEFAULT_SCORING_PREFERENCES, ScoringPreferences
 from storage.relational import RelationalRepository
 from config import (
     ADVISOR_COMMUNITY_SCORE_MIN_PICKS,
@@ -43,20 +46,6 @@ LOCAL_TIER_DELTAS = {
 
 def _factor(code: str, delta: float, message: str) -> Dict:
     return {"code": code, "delta": float(delta), "message": message}
-
-
-def _numeric_cost(card: Optional[Dict]) -> Optional[int]:
-    if not card:
-        return None
-    value = card.get("cost")
-    if isinstance(value, bool):
-        return int(value)
-    if isinstance(value, (int, float)):
-        return int(value)
-    try:
-        return int(value)
-    except (TypeError, ValueError):
-        return None
 
 
 def _expand_deck(deck: Iterable[Dict]) -> List[Dict]:
@@ -86,8 +75,10 @@ def _deck_profile(resolved_deck: List[Dict]) -> Dict:
     known_cards = [row["card"] for row in resolved_deck if row["card"]]
     costs = [
         cost
-        for card in known_cards
-        if (cost := _numeric_cost(card)) is not None and cost >= 0
+        for row in resolved_deck
+        if (cost := card_energy_cost(
+            row["card"], int(row["input"].get("upgrades", 0))
+        )) is not None
     ]
     type_counts = Counter(
         str(card.get("type_key") or "").lower()
@@ -119,6 +110,7 @@ def _score_candidate(
     context: Dict,
     character_id: str,
     local_tiers: Optional[LocalCardTierSource],
+    preferences: ScoringPreferences,
 ) -> Dict:
     identifier = option["card"]
     upgrades = int(option.get("upgrades", 0))
@@ -150,6 +142,7 @@ def _score_candidate(
             "known": False,
             "mechanic_signals": [],
             "data_gaps": [
+                *list(context.get("data_gaps") or ()),
                 *list(
                     (context.get("mechanics") or {}).get("data_gaps") or ()
                 ),
@@ -163,13 +156,16 @@ def _score_candidate(
         card,
         context.get("mechanics") or {},
     )
+    damage_baseline = perfected_strike_baseline(card, option, context)
     state_factors = score_state_factors(
         card,
         option,
         profile,
         context,
         mechanic_assessment=mechanic_assessment,
+        damage_baseline=damage_baseline,
     )
+    state_factors = preferences.card_factors(state_factors)
     for factor in state_factors:
         score += float(factor["delta"])
     factors.extend(state_factors)
@@ -248,6 +244,42 @@ def _score_candidate(
             )
         )
 
+    candidate_gaps = []
+    if card_id == "perfected_strike" and damage_baseline is None:
+        # Incomplete facts or modified instances cannot use the static
+        # permanent-deck baseline. Keep the original limited estimate.
+        candidate_gaps.append(
+            "card_mechanic:PERFECTED_STRIKE:strike_count_damage"
+        )
+        factors.append(_factor(
+            "unmodeled_mechanic",
+            0.0,
+            "评分尚未覆盖按打击牌数量增加的伤害；输出效率仅按基础伤害估算。",
+        ))
+    elif damage_baseline is not None:
+        factors.append(_factor(
+            "estimate_scope",
+            0.0,
+            f"拿取后永久牌组有 {damage_baseline['strike_count']} 张打击标签牌，"
+            f"战前基准为 {damage_baseline['damage']:g} 点伤害；"
+            "不含临时生成/移除、力量或敌方修正，不是当回合实伤。",
+        ))
+    if card_id == "true_grit":
+        target = "选择" if upgrades > 0 else "随机"
+        factors.append(_factor(
+            "estimate_scope",
+            0.0,
+            f"{target}消耗另一张手牌；仅评估耗竭提供者与收益方的潜在配合，"
+            "未估计空手、目标价值或触发频率；牌组拥有收益牌不代表战斗中已激活。",
+        ))
+    elif card_id == "unrelenting":
+        candidate_gaps.append("card_mechanic:UNRELENTING:next_attack_free")
+        factors.append(_factor(
+            "unmodeled_mechanic",
+            0.0,
+            "评分尚未覆盖下一张攻击牌耗能变为0的收益；当前保留已有基础评分。",
+        ))
+
     return {
         "card": card.get("name") or identifier,
         "card_id": card.get("id"),
@@ -271,7 +303,10 @@ def _score_candidate(
             signal.as_dict()
             for signal in mechanic_assessment["signals"]
         ],
-        "data_gaps": list(mechanic_assessment["data_gaps"]),
+        "data_gaps": list(dict.fromkeys((
+            *context.get("data_gaps", ()), *mechanic_assessment["data_gaps"],
+            *candidate_gaps,
+        ))),
     }
 
 
@@ -281,6 +316,7 @@ def recommend_card_reward(
     repository: RelationalRepository,
     local_tiers: Optional[LocalCardTierSource] = None,
     can_skip: bool = True,
+    preferences: ScoringPreferences = DEFAULT_SCORING_PREFERENCES,
 ) -> Dict:
     """Rank reward options against the current structured run state."""
     options = list(options)
@@ -300,6 +336,7 @@ def recommend_card_reward(
             context,
             character_id,
             local_tiers,
+            preferences,
         )
         result["option_index"] = option_index
         recommendations.append(result)

@@ -852,6 +852,61 @@ class RealtimeEventTests(unittest.TestCase):
         self.assertEqual(written["event_id"], "test-run:1")
         self.assertIsNone(bridge.run_once())
 
+    def test_empty_spool_restart_recovers_current_snapshot_advice(self):
+        exchange = Path(self.tempdir.name) / "restart-empty-spool"
+        events = exchange / "events"
+        events.mkdir(parents=True)
+        snapshot = exchange / "state-event.json"
+        output = exchange / "advice-event.json"
+        payload = _v5_decision_payload()
+        snapshot.write_text(json.dumps(payload), encoding="utf-8")
+        (events / "001.json").write_text(json.dumps(payload), encoding="utf-8")
+        bridge = GameStateFileBridge(self.processor, snapshot, output, events)
+        expected = bridge.run_once()
+        self.assertTrue(output.exists())
+        self.assertEqual(list(events.glob("*.json")), [])
+        output.unlink()  # Production controller clears advice when it restarts.
+        restarted = RealtimeEventProcessor(self.repository, checkpoint=self.checkpoint)
+        bridge = GameStateFileBridge(restarted, snapshot, output, events)
+        recovered = bridge.run_once()
+        self.assertIsNotNone(recovered, "Empty spool must not hide the current snapshot")
+        self.assertEqual(json.loads(output.read_text(encoding="utf-8"))["recommendation"], expected["recommendation"])
+        self.assertTrue(recovered["duplicate"])
+        self.assertIsNone(bridge.run_once())
+
+    def test_snapshot_publish_failure_is_retried_without_new_game_event(self):
+        snapshot = Path(self.tempdir.name) / "state-event.json"
+        output = Path(self.tempdir.name) / "advice-event.json"
+        snapshot.write_text(json.dumps(_v5_decision_payload()), encoding="utf-8")
+        bridge = GameStateFileBridge(self.processor, snapshot, output)
+        with patch("realtime.file_bridge._atomic_write_json", side_effect=PermissionError("locked")):
+            with self.assertRaises(PermissionError):
+                bridge.run_once()
+        self.assertFalse(output.exists())
+        self.assertTrue(bridge.run_once()["duplicate"])
+        self.assertTrue(output.exists())
+        self.assertIsNone(bridge.run_once())
+
+    def test_queued_close_precedes_restart_snapshot_and_cannot_resurrect_advice(self):
+        exchange = Path(self.tempdir.name) / "closed-restart"
+        events = exchange / "events"
+        events.mkdir(parents=True)
+        snapshot = exchange / "state-event.json"
+        output = exchange / "advice-event.json"
+        payload = _v5_decision_payload()
+        snapshot.write_text(json.dumps(payload), encoding="utf-8")
+        self.processor.process(GameStateEvent.model_validate(payload))
+        closed = _v5_decision_payload(sequence=2, event_type="decision_closed", outcome={"kind": "skipped"})
+        closed["parent_event_id"] = payload["event_id"]
+        (events / "002.json").write_text(json.dumps(closed), encoding="utf-8")
+        restarted = RealtimeEventProcessor(self.repository, checkpoint=self.checkpoint)
+        bridge = GameStateFileBridge(restarted, snapshot, output, events)
+        self.assertEqual(bridge.run_once()["status"], "outcome_recorded")
+        self.assertFalse(output.exists())
+        self.assertNotEqual(bridge.run_once()["advice_disposition"]["action"], "publish")
+        self.assertFalse(output.exists())
+        self.assertIsNone(bridge.run_once())
+
     def test_publish_failure_keeps_queue_for_checkpoint_replay(self):
         exchange_dir = Path(self.tempdir.name) / "exchange-publish-retry"
         events_dir = exchange_dir / "events"
@@ -1862,7 +1917,6 @@ class RealtimeEventTests(unittest.TestCase):
             '"hp"',
             '"max_hp"',
             '"gold"',
-            '"energy"',
             '"deck"',
             '"relics"',
             '"relic_states"',
@@ -1871,6 +1925,11 @@ class RealtimeEventTests(unittest.TestCase):
             '"modifiers"',
         ):
             self.assertIn(property_name, state_match)
+        # Combat energy is transient at a post-battle reward boundary. The
+        # game can save it before leaving combat and restore the same reward
+        # with energy reset to zero; it must not break stable decision-id
+        # recovery when every decision-relevant field still matches.
+        self.assertNotIn('"energy"', state_match)
 
         invalidation_end = writer_source.index(
             "private static bool TryReadRequiredString("

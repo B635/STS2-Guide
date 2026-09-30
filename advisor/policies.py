@@ -6,6 +6,7 @@ from types import MappingProxyType
 
 from advisor.card_reward import recommend_card_reward
 from advisor.data_sources import LocalCardTierSource
+from advisor.scoring_preferences import DEFAULT_SCORING_PREFERENCES, ScoringPreferences
 from advisor.versions import CARD_REWARD_POLICY_VERSION
 from advisor.decision_core import (
     CARD_REWARD,
@@ -19,6 +20,9 @@ from storage.relational import RelationalRepository
 def _factor_dimension(code: str) -> str | None:
     """Classify existing score factors without changing their weights."""
     code = code.lower()
+    if code in {"boss_prepare_defense", "boss_prepare_damage", "boss_prepare_scaling"}:
+        return {"boss_prepare_defense": "survival", "boss_prepare_damage": "immediate_power",
+                "boss_prepare_scaling": "long_term_growth"}[code]
     if code.startswith("route_"):
         return "route_fit"
     if code.startswith("mechanic_resource_"):
@@ -78,9 +82,11 @@ class CardRewardPolicy:
         self,
         repository: RelationalRepository,
         local_tiers: LocalCardTierSource | None = None,
+        preferences: ScoringPreferences = DEFAULT_SCORING_PREFERENCES,
     ):
         self.repository = repository
         self.local_tiers = local_tiers
+        self.preferences = preferences
 
     def recommend(self, request: DecisionRequest) -> Recommendation:
         card_candidates = [
@@ -103,6 +109,7 @@ class CardRewardPolicy:
             self.repository,
             local_tiers=self.local_tiers,
             can_skip=bool(request.constraints.get("can_skip", True)),
+            preferences=self.preferences,
         )
         rows_by_index = {
             int(row["option_index"]): row
@@ -136,7 +143,8 @@ class CardRewardPolicy:
                 factors=tuple(factors),
                 dimensions=_dimensions(
                     factors,
-                    known=known and not row_gaps,
+                    # Entity lookup coverage is distinct from mechanism gaps.
+                    known=known,
                 ),
                 data_gaps=row_gaps,
             ))

@@ -9,6 +9,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 import math
 from typing import Any, Iterable, Mapping
+from advisor.scoring_preferences import DEFAULT_SCORING_PREFERENCES, ScoringPreferences
 
 from advisor.decision_core import (
     RECOMMENDATION_DIMENSIONS,
@@ -283,6 +284,12 @@ def actual_gold_cost(payload: Mapping[str, Any]) -> int:
     raw_costs = payload.get("costs")
     if not isinstance(raw_costs, (list, tuple)):
         raise ValueError("merchant candidate requires costs")
+    if any(
+        not isinstance(cost, Mapping)
+        or str(cost.get("kind") or "").strip() != "gold"
+        for cost in raw_costs
+    ):
+        raise ValueError("merchant only supports gold costs")
     gold_costs = [
         cost
         for cost in raw_costs
@@ -326,6 +333,7 @@ class AssessmentDraft:
     data_gaps: list[str] = field(default_factory=list)
     blocking_unknown: bool = False
     safety_violation: bool = False
+    preferences: ScoringPreferences = DEFAULT_SCORING_PREFERENCES
 
     def add(
         self,
@@ -334,7 +342,7 @@ class AssessmentDraft:
         message: str,
         dimension: str,
     ) -> None:
-        self.factors.append(factor(code, delta, message, dimension))
+        self.factors.append(factor(code, self.preferences.adjust(delta, dimension, code=code), message, dimension))
 
     def gap(self, code: str, *, blocking: bool = True) -> None:
         code = str(code).strip()

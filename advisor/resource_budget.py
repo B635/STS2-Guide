@@ -1,7 +1,8 @@
 """Pure cross-decision resource budgets derived from one WorldState."""
 from __future__ import annotations
 
-from dataclasses import dataclass
+from collections import Counter
+from dataclasses import dataclass, replace
 import math
 from typing import Iterable
 
@@ -42,6 +43,7 @@ class PotionBudget:
     max_slots: int | None
     free_slots: int | None
     slot_identity_valid: bool
+    potion_ids: tuple[str, ...]
 
     @property
     def known(self) -> bool:
@@ -103,7 +105,7 @@ def build_resource_budget(world: WorldState) -> ResourceBudget:
     )
     safety_floor = None
     spendable = None
-    if hp is not None and max_hp is not None and max_hp > 0:
+    if hp is not None and max_hp is not None and 0 <= hp <= max_hp and max_hp > 0:
         ratio = 0.30 + min(0.20, pressure * 0.08)
         if world.route_mode == "survival":
             ratio += 0.10
@@ -122,6 +124,10 @@ def build_resource_budget(world: WorldState) -> ResourceBudget:
         and world.max_potion_slots >= 0
         else None
     )
+    if max_slots is not None:
+        slot_identity_valid = slot_identity_valid and all(
+            slot < max_slots for slot in slots
+        )
     free_slots = (
         max(0, max_slots - len(slots))
         if max_slots is not None and slot_identity_valid
@@ -148,6 +154,7 @@ def build_resource_budget(world: WorldState) -> ResourceBudget:
             max_slots=max_slots,
             free_slots=free_slots,
             slot_identity_valid=slot_identity_valid,
+            potion_ids=tuple(potion.potion for potion in world.potions),
         ),
     )
 
@@ -201,6 +208,37 @@ def _exact_amount(effect: ChoiceEffect) -> float | None:
     return effect.amount if effect.certainty == "exact" else None
 
 
+def _combined_resource_effects(
+    draft: AssessmentDraft,
+    bundle: EffectBundle,
+) -> tuple[ChoiceEffect, ...]:
+    """Coalesce same-direction deltas; the envelope is not an execution trace."""
+    numeric: dict[str, list[ChoiceEffect]] = {}
+    other = []
+    for effect in bundle.effects:
+        if effect.certainty == "exact" and effect.kind in {
+            "hp_delta", "max_hp_delta", "gold_delta",
+        }:
+            numeric.setdefault(effect.kind, []).append(effect)
+        else:
+            other.append(effect)
+    health_changed = {
+        kind for kind in ("hp_delta", "max_hp_delta")
+        if any(effect.amount != 0 for effect in numeric.get(kind, ()))
+    }
+    if len(health_changed) == 2:
+        draft.gap("resource:coupled_health_effects_unmodeled")
+    for kind, effects in sorted(numeric.items()):
+        amounts = [float(effect.amount or 0) for effect in effects]
+        if min(amounts) < 0 < max(amounts):
+            draft.gap(f"resource:{kind}:order_unmodeled")
+            continue
+        if len(health_changed) == 2 and kind in health_changed:
+            continue
+        other.append(replace(effects[0], amount=sum(amounts)))
+    return tuple(other)
+
+
 def score_resource_effects(
     draft: AssessmentDraft,
     budget: ResourceBudget,
@@ -208,7 +246,18 @@ def score_resource_effects(
     *,
     replacement_supported: bool = False,
 ) -> None:
-    for effect in bundle.effects:
+    effects = _combined_resource_effects(draft, bundle)
+    adds = [effect for effect in effects
+            if effect.kind == "add_potion" and effect.certainty == "exact"]
+    removes = [effect for effect in effects
+               if effect.kind == "remove_potion" and effect.certainty == "exact"]
+    if adds and removes:
+        draft.gap("resource:potion_order_unmodeled")
+    free_slots = int(budget.potions.free_slots or 0)
+    inventory = Counter(budget.potions.potion_ids)
+    if budget.potions.known and len(adds) > int(budget.potions.max_slots or 0):
+        draft.gap("resource:potion_capacity_exceeded")
+    for effect in effects:
         if effect.certainty != "exact":
             draft.gap(
                 f"effect:{effect.kind}:"
@@ -252,6 +301,18 @@ def score_resource_effects(
             if not budget.health.known or amount is None:
                 draft.gap("resource:max_hp_missing")
                 continue
+            after_max = int(budget.health.max_hp or 0) + int(amount)
+            if after_max <= 0:
+                draft.gap("resource:max_hp_effect_infeasible")
+                continue
+            if amount < 0 and min(int(budget.health.hp or 0), after_max) < int(
+                budget.health.safety_floor or 1
+            ):
+                draft.safety_violation = True
+                draft.add(
+                    "hp_safety_floor_violation", -80.0,
+                    "最大生命降低后无法维持当前安全底线。", "survival",
+                )
             delta = max(-20.0, min(20.0, amount * 1.4))
             draft.add(
                 "max_hp_change",
@@ -273,9 +334,15 @@ def score_resource_effects(
                 "resource_efficiency",
             )
         elif effect.kind == "add_potion":
+            if adds and removes:
+                continue
+            if effect.amount not in (None, 1):
+                draft.gap("resource:potion_quantity_unmodeled")
+                continue
             if not budget.potions.known:
                 draft.gap("resource:potion_slots_missing")
-            elif int(budget.potions.free_slots or 0) > 0:
+            elif free_slots > 0:
+                free_slots -= 1
                 draft.add(
                     "potion_free_slot",
                     5.0,
@@ -290,10 +357,24 @@ def score_resource_effects(
                     "resource_efficiency",
                 )
             else:
-                draft.gap("resource:potion_replacement_unresolved")
+                draft.gap(
+                    "resource:potion_capacity_exceeded" if len(adds) > 1
+                    else "resource:potion_replacement_unresolved"
+                )
         elif effect.kind == "remove_potion":
+            if adds and removes:
+                continue
+            if effect.amount not in (None, 1):
+                draft.gap("resource:potion_quantity_unmodeled")
+                continue
             if not budget.potions.known:
                 draft.gap("resource:potion_slots_missing")
+            elif effect.target_mode != "specific" or not effect.entity_id:
+                draft.gap("resource:potion_remove_target_unresolved")
+            elif inventory[effect.entity_id] <= 0:
+                draft.gap("resource:potion_remove_target_missing")
+            else:
+                inventory[effect.entity_id] -= 1
 
 
 def contains_kind(effects: Iterable[ChoiceEffect], kind: str) -> bool:

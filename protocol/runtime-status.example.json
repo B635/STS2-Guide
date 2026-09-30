@@ -1,0 +1,11 @@
+{
+  "schema_version": 2,
+  "session_id": "1234567890abcdef1234567890abcdef",
+  "heartbeat_sequence": 2,
+  "release_fingerprint": "31439e8d119ce56bc0ec6ac52eac2ac51c527d697694ef08116e462c15b254c8",
+  "state": "RUNNING",
+  "game_running": true,
+  "worker_running": true,
+  "compatibility_reasons": [],
+  "activation_count": 0
+}

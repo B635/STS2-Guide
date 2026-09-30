@@ -13,14 +13,17 @@ from advisor.resource_budget import (
 )
 from storage.relational import RelationalRepository
 from advisor.versions import CAMPFIRE_POLICY_VERSION
+from advisor.scoring_preferences import DEFAULT_SCORING_PREFERENCES, ScoringPreferences
 
 
 CAMPFIRE_ACTION = "campfire_action"
 class CampfirePolicy:
     decision_type = CAMPFIRE_ACTION
 
-    def __init__(self, repository: RelationalRepository):
+    def __init__(self, repository: RelationalRepository,
+                 preferences: ScoringPreferences = DEFAULT_SCORING_PREFERENCES):
         self.repository = repository
+        self.preferences = preferences
 
     def recommend(self, request: DecisionRequest) -> Recommendation:
         if request.decision_type != self.decision_type:
@@ -28,7 +31,7 @@ class CampfirePolicy:
         budget = build_resource_budget(request.world)
         drafts = []
         for candidate in request.candidates:
-            draft = AssessmentDraft(candidate)
+            draft = AssessmentDraft(candidate, preferences=self.preferences)
             drafts.append(draft)
             if not candidate.eligible:
                 continue

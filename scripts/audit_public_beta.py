@@ -71,7 +71,12 @@ def archive_listing(exe: Path) -> str:
 
 
 def main() -> int:
-    installers = sorted(INSTALLER_DIR.glob("STS2-Guide-*-win-x64-setup.exe"))
+    manifest = json.loads(
+        (ROOT / "packaging" / "compatibility.json").read_text(encoding="utf-8")
+    )
+    installer = INSTALLER_DIR / (
+        f"STS2-Guide-{manifest['guide']['version']}-win-x64-setup.exe"
+    )
     required = [
         EXE,
         MOD_DIR / "STS2GuideReadOnlyExporter.dll",
@@ -79,10 +84,8 @@ def main() -> int:
         MOD_DIR / "STS2GuideReadOnlyExporter.pck",
     ]
     missing = [str(path) for path in required if not path.is_file()]
-    if len(installers) != 1:
-        missing.append(
-            f"expected exactly one installer, found {len(installers)}"
-        )
+    if not installer.is_file():
+        missing.append(str(installer))
     if missing:
         raise SystemExit("Release payload incomplete: " + "; ".join(missing))
 
@@ -99,7 +102,6 @@ def main() -> int:
         *list((ROOT / "scripts").glob("*.ps1")),
         ROOT / "requirements-p0.txt",
     ]
-    installer = installers[0]
     assert_artifact_fresh(EXE, package_sources, label="Guide executable")
     assert_artifact_fresh(installer, package_sources, label="installer")
 
@@ -145,12 +147,7 @@ def main() -> int:
                 f"Required archive member is missing: {required_member}"
             )
 
-    manifest = json.loads(
-        (ROOT / "packaging" / "compatibility.json").read_text(
-            encoding="utf-8"
-        )
-    )
-    artifacts = required + installers
+    artifacts = required + [installer]
     release_manifest = {
         "schema_version": 1,
         "guide_version": manifest["guide"]["version"],

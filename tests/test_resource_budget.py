@@ -77,6 +77,137 @@ def _route():
 
 
 class ResourceBudgetTests(unittest.TestCase):
+    def _score_bundle(self, effects, *, world=None, replacement=False):
+        draft = AssessmentDraft(DecisionCandidate.create("bundle", label="资源变化"))
+        budget = build_resource_budget(world or _world())
+        score_resource_effects(
+            draft,
+            budget,
+            EffectBundle.from_payload({"effects": [
+                {"source_code": "fixture:compound", **effect}
+                for effect in effects
+            ]}),
+            replacement_supported=replacement,
+        )
+        return draft
+
+    def test_split_hp_costs_cannot_reuse_original_health(self):
+        effects = [{"kind": "hp_delta", "amount": -15}] * 2
+        split = self._score_bundle(effects, world=_world(hp=50))
+        combined = self._score_bundle(
+            [{"kind": "hp_delta", "amount": -30}], world=_world(hp=50)
+        )
+        self.assertTrue(split.safety_violation)
+        self.assertEqual(split.score, combined.score)
+        self.assertEqual(split.factors, combined.factors)
+
+    def test_split_healing_cannot_reuse_missing_health(self):
+        split = self._score_bundle(
+            [{"kind": "hp_delta", "amount": 10}] * 2, world=_world(hp=75)
+        )
+        combined = self._score_bundle(
+            [{"kind": "hp_delta", "amount": 20}], world=_world(hp=75)
+        )
+        self.assertEqual(split.score, combined.score)
+        self.assertEqual(len(split.factors), 1)
+
+    def test_split_gold_costs_cannot_reuse_balance(self):
+        draft = self._score_bundle(
+            [{"kind": "gold_delta", "amount": -60}] * 2
+        )
+        self.assertIsNone(draft.score)
+        self.assertIn("resource:gold_effect_infeasible", draft.data_gaps)
+
+    def test_unordered_payment_and_reward_are_not_netted(self):
+        for kind in ("hp_delta", "gold_delta", "max_hp_delta"):
+            with self.subTest(kind=kind):
+                effects = [
+                    {"kind": kind, "amount": -100},
+                    {"kind": kind, "amount": 120},
+                ]
+                first = self._score_bundle(effects)
+                second = self._score_bundle(list(reversed(effects)))
+                self.assertIsNone(first.score)
+                self.assertIn(f"resource:{kind}:order_unmodeled", first.data_gaps)
+                self.assertEqual(first.data_gaps, second.data_gaps)
+
+    def test_coupled_health_effects_do_not_guess_execution_order(self):
+        draft = self._score_bundle([
+            {"kind": "max_hp_delta", "amount": 10},
+            {"kind": "hp_delta", "amount": 10},
+        ])
+        self.assertIsNone(draft.score)
+        self.assertIn("resource:coupled_health_effects_unmodeled", draft.data_gaps)
+
+    def test_max_hp_loss_checks_feasibility_and_safety(self):
+        impossible = self._score_bundle([{"kind": "max_hp_delta", "amount": -80}])
+        self.assertIsNone(impossible.score)
+        self.assertIn("resource:max_hp_effect_infeasible", impossible.data_gaps)
+        unsafe = self._score_bundle([{"kind": "max_hp_delta", "amount": -70}])
+        self.assertTrue(unsafe.safety_violation)
+
+    def test_potion_slot_outside_capacity_is_unknown(self):
+        for slot, capacity in ((3, 3), (0, 0)):
+            budget = build_resource_budget(_world(
+                potions=({"potion": "STRENGTH_POTION", "slot": slot},),
+                max_potion_slots=capacity,
+            ))
+            self.assertFalse(budget.potions.known)
+            self.assertIsNone(budget.potions.free_slots)
+
+    def test_multiple_potions_cannot_share_one_free_slot(self):
+        effect = {"kind": "add_potion", "entity_type": "potions",
+                  "entity_id": "STRENGTH_POTION", "target_mode": "specific"}
+        draft = self._score_bundle([effect, effect], world=_world(max_potion_slots=1))
+        self.assertIsNone(draft.score)
+        self.assertIn("resource:potion_capacity_exceeded", draft.data_gaps)
+
+    def test_replacement_cannot_claim_more_potions_than_total_capacity(self):
+        effect = {"kind": "add_potion", "entity_type": "potions",
+                  "entity_id": "STRENGTH_POTION", "target_mode": "specific"}
+        draft = self._score_bundle(
+            [effect, effect], world=_world(max_potion_slots=1), replacement=True
+        )
+        self.assertIsNone(draft.score)
+
+    def test_multiple_potions_can_use_distinct_free_slots(self):
+        effect = {"kind": "add_potion", "entity_type": "potions",
+                  "entity_id": "STRENGTH_POTION", "target_mode": "specific"}
+        draft = self._score_bundle([effect, effect], world=_world(max_potion_slots=2))
+        self.assertIsNotNone(draft.score)
+        self.assertFalse(draft.data_gaps)
+
+    def test_potion_removal_uses_each_inventory_item_once(self):
+        effect = {"kind": "remove_potion", "entity_type": "potions",
+                  "entity_id": "STRENGTH_POTION", "target_mode": "specific"}
+        world = _world(potions=({"potion": "STRENGTH_POTION", "slot": 0},))
+        single = self._score_bundle([effect], world=world)
+        duplicate = self._score_bundle([effect, effect], world=world)
+        self.assertIsNotNone(single.score)
+        self.assertFalse(single.data_gaps)
+        self.assertIsNone(duplicate.score)
+        self.assertIn("resource:potion_remove_target_missing", duplicate.data_gaps)
+
+    def test_add_and_remove_potion_does_not_guess_replacement_order(self):
+        effects = [
+            {"kind": kind, "entity_type": "potions",
+             "entity_id": "STRENGTH_POTION", "target_mode": "specific"}
+            for kind in ("add_potion", "remove_potion")
+        ]
+        world = _world(potions=({"potion": "STRENGTH_POTION", "slot": 0},))
+        first = self._score_bundle(effects, world=world)
+        reverse = self._score_bundle(list(reversed(effects)), world=world)
+        self.assertIsNone(first.score)
+        self.assertIn("resource:potion_order_unmodeled", first.data_gaps)
+        self.assertEqual(first.data_gaps, reverse.data_gaps)
+
+    def test_unknown_potion_removal_does_not_claim_known_inventory(self):
+        effect = {"kind": "remove_potion", "entity_type": "potions",
+                  "entity_id": "STRENGTH_POTION", "target_mode": "specific"}
+        draft = self._score_bundle([effect])
+        self.assertIsNone(draft.score)
+        self.assertIn("resource:potion_remove_target_missing", draft.data_gaps)
+
     def test_route_pressure_and_survival_mode_raise_hp_floor(self):
         plain = build_resource_budget(_world())
         dangerous = build_resource_budget(_world(map_context=_route()))

@@ -91,6 +91,7 @@ internal static class DeckEditObserver
                     Payload = new CandidatePayload
                     {
                         Operation = operation,
+                        Upgrades = card.CurrentUpgradeLevel,
                         TargetCandidateIds = [],
                     },
                 });

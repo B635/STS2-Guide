@@ -3,6 +3,7 @@ import json
 import time
 import re
 import os
+import argparse
 from datetime import datetime, timezone
 
 BASE_URL = "https://spire-codex.com/api"
@@ -10,6 +11,7 @@ LANG = "zhs"
 RATE_LIMIT_DELAY = 1.1
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 KNOWLEDGE_FILE = os.path.join(ROOT_DIR, "data", "knowledge.json")
+GUIDE_MECHANICS_FILE = os.path.join(ROOT_DIR, "data", "guide_mechanics.json")
 
 
 def clean_text(text):
@@ -241,25 +243,44 @@ def build_structured_entity(raw, entity_type):
     return fields
 
 
-def fetch_all():
+def fetch_all(channel="main", expected_game_version=None):
+    if channel not in {"main", "beta"}:
+        raise ValueError("channel must be main or beta")
+    if expected_game_version and channel != "beta":
+        raise ValueError("version confirmation is only available for the beta API")
+
+    def beta_version():
+        payload = fetch_with_delay("beta/version")
+        version = payload.get("beta_version") if isinstance(payload, dict) else None
+        if not isinstance(version, str) or not version.strip():
+            raise RuntimeError("beta API did not identify its game version")
+        return version.removeprefix("v")
+
+    source_version = beta_version() if channel == "beta" else None
+    if expected_game_version and source_version != expected_game_version.removeprefix("v"):
+        raise RuntimeError(f"Expected game {expected_game_version}, API serves {source_version}")
+
+    def fetch(endpoint):
+        return fetch_with_delay(endpoint, params={"channel": channel})
+
     print("正在拉取角色数据...")
-    characters = [build_character(c) for c in fetch_with_delay("characters")]
+    characters = [build_character(c) for c in fetch("characters")]
     print(f"获取到 {len(characters)} 个角色")
 
     print("正在拉取卡牌数据...")
-    cards = [build_card(c) for c in fetch_with_delay("cards")]
+    cards = [build_card(c) for c in fetch("cards")]
     print(f"获取到 {len(cards)} 张卡牌")
 
     print("正在拉取遗物数据...")
-    relics = [build_relic(r) for r in fetch_with_delay("relics")]
+    relics = [build_relic(r) for r in fetch("relics")]
     print(f"获取到 {len(relics)} 个遗物")
 
     print("正在拉取药水数据...")
-    potions = [build_potion(p) for p in fetch_with_delay("potions")]
+    potions = [build_potion(p) for p in fetch("potions")]
     print(f"获取到 {len(potions)} 个药水")
 
     print("正在拉取怪物数据...")
-    monsters = [build_monster(m) for m in fetch_with_delay("monsters")]
+    monsters = [build_monster(m) for m in fetch("monsters")]
     print(f"获取到 {len(monsters)} 个怪物")
 
     result = {
@@ -283,7 +304,7 @@ def fetch_all():
     )
     for entity_type in structured_endpoints:
         print(f"正在拉取 {entity_type} 数据...")
-        raw_items = fetch_with_delay(entity_type)
+        raw_items = fetch(entity_type)
         if not isinstance(raw_items, list):
             raise RuntimeError(f"{entity_type} endpoint returned a non-list")
         result[entity_type] = [
@@ -293,6 +314,7 @@ def fetch_all():
         ]
         print(f"获取到 {len(result[entity_type])} 条 {entity_type}")
 
+    # These configuration endpoints do not promise versioned beta data.
     mechanics = fetch_with_delay("mechanics/constants")
     merchant = fetch_with_delay("merchant/config")
     if not isinstance(mechanics, dict) or not isinstance(merchant, dict):
@@ -301,10 +323,15 @@ def fetch_all():
         **mechanics,
         "merchant_config": merchant,
     }
+    if channel == "beta" and beta_version() != source_version:
+        raise RuntimeError("beta version changed during download; catalog not written")
     result["_source"] = {
         "id": "spire_codex_api",
         "base_url": BASE_URL,
         "language": LANG,
+        "entity_channel": channel,
+        "game_version": source_version,
+        "unversioned_endpoints": ["mechanics/constants", "merchant/config"],
         "terms_url": (
             "https://github.com/ptrlrd/spire-codex/blob/main/API_TERMS.md"
         ),
@@ -313,11 +340,28 @@ def fetch_all():
             len(value) for value in result.values() if isinstance(value, list)
         ),
     }
+    # Owned policy parameters are not Spire Codex game facts. Upstream refreshes
+    # must not erase (or replace) them, and the merged snapshot binds them to DB identity.
+    with open(GUIDE_MECHANICS_FILE, encoding="utf-8") as stream:
+        guide_mechanics = json.load(stream)
+    if not isinstance(guide_mechanics, dict) or "route_risk_profile_v1" not in guide_mechanics:
+        raise RuntimeError("Guide route mechanics are missing; catalog not written")
+    result["mechanics"].update(guide_mechanics)
+    result["_guide_source"] = {
+        "id": "sts2_guide_policy",
+        "path": "data/guide_mechanics.json",
+        "keys": sorted(guide_mechanics),
+    }
     return result
 
 
-def main():
-    knowledge = fetch_all()
+def main(argv=None):
+    parser = argparse.ArgumentParser(description="Download a Spire Codex catalog for review.")
+    parser.add_argument("--channel", choices=("main", "beta"), default="main")
+    parser.add_argument("--expected-game-version")
+    parser.add_argument("--output", default=KNOWLEDGE_FILE)
+    args = parser.parse_args(argv)
+    knowledge = fetch_all(args.channel, args.expected_game_version)
     total = sum(
         len(knowledge.get(entity_type, []))
         for entity_type in (
@@ -328,13 +372,13 @@ def main():
     )
     print(f"\n共生成 {total} 条结构化条目")
 
-    temp_file = f"{KNOWLEDGE_FILE}.tmp"
+    temp_file = f"{args.output}.tmp"
     with open(temp_file, "w", encoding="utf-8") as f:
         json.dump(knowledge, f, ensure_ascii=False, indent=2)
         f.write("\n")
-    os.replace(temp_file, KNOWLEDGE_FILE)
+    os.replace(temp_file, args.output)
 
-    print(f"知识库已更新：{KNOWLEDGE_FILE}")
+    print(f"知识库已更新：{args.output}")
 
 
 if __name__ == "__main__":

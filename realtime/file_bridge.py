@@ -7,10 +7,11 @@ import threading
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, Optional, Tuple
+from typing import Callable, Dict, Optional, Tuple
 
 from pydantic import ValidationError
 
+from realtime.checkpoint import checkpoint_record_payload_matches
 from realtime.processor import (
     RealtimeCompatibilityError,
     RealtimeEventProcessor,
@@ -95,10 +96,19 @@ class GameStateFileBridge:
         if event_path is None:
             return None
 
+        # A mirror read is acknowledged only after its advice side effect
+        # succeeds, just like a queued event. Capture before reading so a
+        # concurrently replaced snapshot remains eligible for the next poll.
+        fingerprint = None
+        if not queued:
+            stat = event_path.stat()
+            fingerprint = (stat.st_mtime_ns, stat.st_size)
         raw: dict = {}
         try:
             raw = json.loads(event_path.read_text(encoding="utf-8"))
             event = GameStateEvent.model_validate(raw)
+            if not queued:
+                event = self._prefer_committed_snapshot(event)
             result = self.processor.process(event)
         except RealtimeCompatibilityError as exc:
             result = {
@@ -169,7 +179,36 @@ class GameStateFileBridge:
                     self.events_dir.rmdir()
                 except OSError:
                     pass
+        else:
+            self._last_fingerprint = fingerprint
         return result
+
+    def _prefer_committed_snapshot(self, mirror: GameStateEvent) -> GameStateEvent:
+        # The Mod commits the spool before its best-effort mirror. A drained
+        # spool may therefore have left a newer successfully processed snapshot
+        # in the checkpoint. Replay that snapshot through process(), not its
+        # cached advice directly. Equal IDs/revisions still take the normal
+        # collision path; an actually newer run still takes the takeover path.
+        store = self.processor.checkpoint
+        checkpoint = store.load() if store is not None else None
+        latest = checkpoint.get("latest_event") if checkpoint else None
+        if not checkpoint or not checkpoint_record_payload_matches(latest):
+            return mirror
+        payload = latest["payload"]
+        if (payload.get("run_id") != checkpoint.get("run_id")
+                or payload.get("sequence") != checkpoint.get("last_sequence")):
+            return mirror
+        same_run = mirror.run_id == checkpoint["run_id"]
+        committed = GameStateEvent.model_validate(payload)
+        if same_run:
+            older = mirror.sequence < committed.sequence
+        else:
+            # Failure to qualify as a new-run start is not proof of age.
+            # Never resurrect an old run after rejecting a newer malformed start.
+            older = (mirror.emitted_at.tzinfo is not None
+                     and committed.emitted_at.tzinfo is not None
+                     and mirror.emitted_at < committed.emitted_at)
+        return committed if older else mirror
 
     def _apply_advice_disposition(
         self,
@@ -246,15 +285,16 @@ class GameStateFileBridge:
             )
             if queued:
                 return queued[0], True
-            return None, False
 
+        # The spool is a notification queue, not the sole recovery source.
+        # Once drained, replay the complete snapshot through the same schema,
+        # compatibility and checkpoint/lifecycle validation as queued events.
         if not self.input_path.exists():
             return None, False
         stat = self.input_path.stat()
         fingerprint = (stat.st_mtime_ns, stat.st_size)
         if fingerprint == self._last_fingerprint:
             return None, False
-        self._last_fingerprint = fingerprint
         return self.input_path, False
 
     @staticmethod
@@ -331,8 +371,11 @@ class GameStateFileBridge:
         self,
         poll_interval: float = 0.25,
         stop_event: threading.Event | None = None,
+        on_poll: Callable[[], None] | None = None,
     ) -> None:
         stop = stop_event or threading.Event()
         while not stop.is_set():
+            if on_poll is not None:
+                on_poll()
             self.run_once()
             stop.wait(max(0.05, poll_interval))

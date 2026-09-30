@@ -60,6 +60,9 @@ if ($actualGameHash -ne $manifest.game.sts2_dll_sha256.ToLowerInvariant()) {
     throw "Local sts2.dll does not match packaging/compatibility.json."
 }
 
+$PreviousTestGamePath = $env:STS2_TEST_GAME_PATH
+$PreviousTestGodotPath = $env:STS2_TEST_GODOT_PATH
+$PreviousRequireGameTests = $env:STS2_REQUIRE_GAME_TESTS
 Push-Location $ProjectRoot
 try {
     & $Python -c "import sys; from pathlib import Path; from realtime.installation import read_release_info_version; observed=read_release_info_version(Path(sys.argv[1])); raise SystemExit(0 if observed == sys.argv[2] else 2)" $GamePath $manifest.game.version
@@ -86,6 +89,9 @@ if bad:
     }
 
     Write-Host "Running the complete Python release gate..." -ForegroundColor Cyan
+    $env:STS2_TEST_GAME_PATH = $GamePath
+    $env:STS2_TEST_GODOT_PATH = $GodotExePath
+    $env:STS2_REQUIRE_GAME_TESTS = "1"
     & $Python -m unittest discover -s tests -v
     if ($LASTEXITCODE -ne 0) {
         throw "Complete Python release gate failed."
@@ -199,5 +205,8 @@ if bad:
     Write-Host "Public Beta artifacts are ready under dist\." -ForegroundColor Green
 }
 finally {
+    $env:STS2_TEST_GAME_PATH = $PreviousTestGamePath
+    $env:STS2_TEST_GODOT_PATH = $PreviousTestGodotPath
+    $env:STS2_REQUIRE_GAME_TESTS = $PreviousRequireGameTests
     Pop-Location
 }

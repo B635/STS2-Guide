@@ -335,9 +335,9 @@ internal static class CardRewardAdvicePanelExitPatch
     {
         try
         {
-            // Tree exit is presentation lifecycle only. Saving to the menu
-            // also removes this screen, while the game decision remains
-            // unfinished and must be recoverable on Continue.
+            // Tree exit alone is presentation lifecycle only. RunManager
+            // cleanup explicitly closes the observation on save-to-menu;
+            // Continue rebuilds from the game's actual restored screen.
             StateEventWriter.UnbindCardRewardScreen(__instance);
             CardRewardAdvicePanel.Hide(__instance);
         }

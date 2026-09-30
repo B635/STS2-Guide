@@ -17,7 +17,7 @@ from realtime.controller import (
     WindowsGuideController,
 )
 from realtime.diagnostics import DiagnosticSnapshot, export_diagnostics_zip
-from realtime.file_bridge import _atomic_write_json, default_exchange_dir
+from realtime.file_bridge import default_exchange_dir
 from realtime.installation import (
     InstallReceipt,
     InstallationPreflight,
@@ -35,6 +35,7 @@ from realtime.windows_runtime import (
     NamedInstanceCoordinator,
 )
 from storage.relational import SCHEMA_VERSION
+from realtime.runtime_status import RuntimeStatusPublisher
 
 
 LOGGER = logging.getLogger("sts2-guide")
@@ -137,29 +138,20 @@ class InstallationCompatibilityChecker:
 class StatusTrayBackend:
     """Publish a strict local status file alongside the actual tray UI."""
 
-    def __init__(self, backend: TrayBackend, status_path: Path) -> None:
+    def __init__(self, backend: TrayBackend, status_path: Path, release_fingerprint: str) -> None:
         self.backend = backend
         self.status_path = status_path
         self.last_snapshot: ControllerSnapshot | None = None
+        self.publisher = RuntimeStatusPublisher(status_path, release_fingerprint)
 
     def start(self, request_exit: Callable[[], None]) -> None:
         self.backend.start(request_exit)
 
     def update(self, snapshot: ControllerSnapshot) -> None:
         self.last_snapshot = snapshot
-        _atomic_write_json(
-            self.status_path,
-            {
-                "schema_version": 1,
-                "state": snapshot.state.value,
-                "game_running": snapshot.game_running,
-                "worker_running": snapshot.worker_running,
-                "compatibility_reasons": list(
-                    snapshot.compatibility_reasons
-                ),
-                "activation_count": snapshot.activation_count,
-            },
-        )
+        self.publisher.update(snapshot.state.value, snapshot.game_running,
+                              snapshot.worker_running, snapshot.compatibility_reasons,
+                              snapshot.activation_count)
         self.backend.update(snapshot)
 
     def activate(self) -> None:
@@ -169,10 +161,7 @@ class StatusTrayBackend:
         try:
             self.backend.stop()
         finally:
-            self.status_path.unlink(missing_ok=True)
-            self.status_path.with_name(
-                f"{self.status_path.name}.tmp"
-            ).unlink(missing_ok=True)
+            self.publisher.close()
 
 
 def _open_directory(path: Path) -> None:
@@ -182,6 +171,10 @@ def _open_directory(path: Path) -> None:
 
 
 def build_public_beta_controller(args) -> WindowsGuideController:
+    # Capture once while the tray application is created.  Game exits and
+    # automatic Worker restarts must not hot-load edited preferences.
+    from realtime.host import _application_scoring_preferences
+    _application_scoring_preferences(args)
     manifest = load_compatibility_manifest(args.compatibility_manifest)
     receipt_path = Path(args.install_receipt)
     discovery = discover_game_directory(
@@ -303,7 +296,7 @@ def build_public_beta_controller(args) -> WindowsGuideController:
             / "sts2-guide.png"
         ),
     )
-    tray = StatusTrayBackend(graphical, args.runtime_status)
+    tray = StatusTrayBackend(graphical, args.runtime_status, manifest.release_fingerprint)
     status_holder["tray"] = tray
 
     def create_worker() -> ThreadWorker:

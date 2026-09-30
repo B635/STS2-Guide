@@ -25,7 +25,7 @@ from advisor.decision_core import (
     Recommendation,
     WorldState,
 )
-from advisor.route import RoutePolicy, validate_route_graph
+from advisor.route import RoutePolicy, SearchPath, validate_route_graph
 from realtime.checkpoint import ActiveRunCheckpointStore
 import realtime.checkpoint as checkpoint_module
 from realtime.file_bridge import GameStateFileBridge
@@ -796,6 +796,42 @@ class RouteDecisionTests(unittest.TestCase):
             self.assertEqual(path[-1], "2:3")
             self.assertTrue(all(second in by_id[first]["edges"] for first, second in zip(path, path[1:])))
 
+    def test_favourable_routes_do_not_saturate_or_rank_by_display_order(self):
+        context = _map_context(candidates=("1:4", "1:2"))
+        request = _route_request(context)
+        policy = RoutePolicy(self.repository)
+        paths = {
+            # Put the worse path first in map display order.  Both values
+            # exceeded 100 under the former linear formula and therefore tied.
+            "1:4": SearchPath(("1:4", "2:4", "3:3"), -5.524, 0.0),
+            "1:2": SearchPath(("1:2", "2:2", "3:3"), -10.0, 0.0),
+        }
+        with patch.object(
+            policy,
+            "_best_paths",
+            return_value=(paths, {}, ()),
+        ):
+            result = policy.recommend(request)
+
+        scores = {
+            candidate.candidate_id: candidate.score
+            for candidate in result.candidates
+        }
+        self.assertEqual(result.recommended_candidate_id, "1:2")
+        self.assertGreater(scores["1:2"], scores["1:4"])
+        self.assertLess(scores["1:2"], 100.0)
+
+    def test_route_reasons_describe_only_existing_factors(self):
+        recommendation = RoutePolicy(self.repository).recommend(_route_request(state=_state(hp=15)))
+        factors = [factor for candidate in recommendation.candidates for factor in candidate.factors]
+        by_code = {factor["code"]: factor for factor in factors}
+        self.assertIn("elite_low_hp", by_code)
+        self.assertIn("当前生命偏低", by_code["elite_low_hp"]["message"])
+        self.assertLess(by_code["elite_low_hp"]["delta"], 0)
+        self.assertIn("遭遇池", by_code["elite_encounter_pool_pressure"]["message"])
+        self.assertTrue(all(isinstance(factor["message"], str) and factor["message"]
+                            for factor in factors if factor.get("delta") != 0))
+
     def test_one_candidate_has_no_forged_backup(self):
         nodes = [
             {"node_id": "0:3", "kind": "MONSTER", "row": 0, "col": 3, "edges": ["1:2"]},
@@ -990,13 +1026,25 @@ class RouteDecisionTests(unittest.TestCase):
         high_context["boss_encounter_ids"] = ["HIGH_BOSS_ENCOUNTER"]
         high_boss = RoutePolicy(self.repository).recommend(_route_request(high_context))
         weak_scores = {row.candidate_id: row.score for row in weak_boss.candidates}
-        base_gap = weak_scores["1:2"] - weak_scores["1:4"]
         high_scores = {row.candidate_id: row.score for row in high_boss.candidates}
-        high_gap = high_scores["1:2"] - high_scores["1:4"]
-        self.assertGreater(high_gap, base_gap)
-        self.assertIn(
-            "boss_preparation_opportunity",
-            {factor["code"] for row in high_boss.candidates if row.candidate_id == "1:2" for factor in row.factors},
+        self.assertGreater(weak_scores["1:2"], weak_scores["1:4"])
+        self.assertGreater(high_scores["1:2"], high_scores["1:4"])
+
+        def preparation(result):
+            return next(
+                factor["delta"]
+                for row in result.candidates
+                if row.candidate_id == "1:2"
+                for factor in row.factors
+                if factor["code"] == "boss_preparation_opportunity"
+            )
+
+        # A more dangerous known boss strengthens the explicit preparation
+        # benefit.  The bounded display projection need not enlarge the
+        # visible point gap as both routes move toward the low end of 0-100.
+        self.assertGreater(
+            preparation(high_boss),
+            preparation(weak_boss),
         )
 
     def test_missing_hp_fails_closed_while_missing_gold_degrades_honestly(self):
@@ -1156,7 +1204,17 @@ class RouteDecisionTests(unittest.TestCase):
         self.assertNotIn("HarmonyPrefix", all_route)
         self.assertNotIn("TravelToMapCoord", all_route)
         self.assertNotIn("EnterMapCoord", all_route)
+        # ActMap.GetAllMapPoints() omits the unique real act-start node in
+        # STS2 0.110.1.  Production must merge the verified public
+        # StartingMapPoint so CurrentMapPoint/CurrentMapCoord 0:3 resolves to
+        # a real origin.  It must not pick an arbitrary member of the legacy
+        # startMapPoints candidate set as a fabricated origin.
+        self.assertIn("map.StartingMapPoint", reader)
         self.assertNotIn("startMapPoints\n                    .Where", reader)
+        self.assertIn("Label = DisplayLabel(point.PointType)", reader)
+        for label in ("普通战斗", "精英战斗", "篝火", "商店", "问号房", "首领", "宝箱"):
+            self.assertIn(label, reader)
+        self.assertNotIn("Label = point.PointType.ToString()", reader)
         self.assertNotIn("_resumeDecisionRecoveryAvailable", writer)
         self.assertIn("_resumeCardDecisionRecoveryAvailable", writer)
         self.assertIn("_resumeRouteDecisionRecoveryAvailable", writer)
@@ -1279,6 +1337,19 @@ class RouteDecisionTests(unittest.TestCase):
             self.assertIn(needle, reuse)
         self.assertIn("TryReadNullableString", controller)
         self.assertNotIn("NullableString(JsonElement", controller)
+        # Candidate labels remain canonical in the protocol, but the drawer
+        # must distinguish adjacent nodes of the same type for the player.
+        # Map columns are zero-based internally and one-based in the UI.
+        display_labels = _csharp_method(
+            controller,
+            "private static IReadOnlyList<string> BuildDisplayLabels(",
+        )
+        self.assertIn("GroupBy(candidate => candidate.Label", display_labels)
+        self.assertIn("node.Col + 1", display_labels)
+        self.assertIn("\u7b2c{node.Col + 1}\u5217", display_labels)
+        self.assertIn("BuildDisplayLabels(pending)", show)
+        self.assertIn("BuildDisplayLabels(pending)", controller)
+        self.assertIn("expected[index].Label != label", controller)
 
         # Recovery and UPDATE identity cover the complete logical map plus
         # every exported policy input, not only current HP/deck fields.
@@ -1312,9 +1383,9 @@ class RouteDecisionTests(unittest.TestCase):
         # results, and the overlay redraw is genuinely frame-driven.
         poll = _csharp_method(controller, "private static void Poll()")
         mismatch = poll.index("if (matched is null)")
-        self.assertIn("Invalidate();", poll[mismatch:poll.index("ContextDrawer.Render", mismatch)])
+        self.assertIn("Invalidate(result.Availability);", poll[mismatch:poll.index("ContextDrawer.Render", mismatch)])
         self.assertIn("return;", poll[mismatch:poll.index("ContextDrawer.Render", mismatch)])
-        invalidate = _csharp_method(controller, "private static void Invalidate()")
+        invalidate = _csharp_method(controller, "private static void Invalidate(")
         self.assertIn("RouteMapOverlay.Hide(_screen, _pending.DecisionId)", invalidate)
         process = _csharp_method(overlay, "public override void _Process(double delta)")
         self.assertIn("RefreshLine();", process)

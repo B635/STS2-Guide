@@ -128,6 +128,8 @@ internal static class RestSiteObserver
             {
                 ActionId = optionId,
                 Effects = [ReadEffect(option, player)],
+                DeckEditTargets = option is SmithRestSiteOption smith
+                    ? DeckEditTargetReader.Read(player, "upgrade", smith.SmithCount) : null,
             },
         };
     }

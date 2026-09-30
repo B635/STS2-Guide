@@ -16,6 +16,7 @@ internal static class GenericAdviceController
     private static PendingDecisionView? _pending;
     private static ContextDrawerHandle _drawer;
     private static long _lastWriteTicks;
+    private static readonly BackendLiveness Backend = new();
 
     internal static void Show(
         Control owner,
@@ -140,6 +141,14 @@ internal static class GenericAdviceController
                 return;
             }
             ContextDrawer.Reposition(_drawer);
+            var backendStatus = Backend.Read(ProjectSettings.GlobalizePath(
+                "user://STS2Guide/runtime-status.json"), StateEvent.ReleaseFingerprint);
+            if (backendStatus != AdviceAvailability.Ready)
+            {
+                _lastWriteTicks = 0;
+                Invalidate(backendStatus);
+                return;
+            }
             var path = ProjectSettings.GlobalizePath(
                 "user://STS2Guide/advice-event.json"
             );
@@ -166,20 +175,15 @@ internal static class GenericAdviceController
             }
             try
             {
-                using var document = JsonDocument.Parse(
-                    File.ReadAllText(path)
-                );
-                var rows = ReadMatchingRows(
-                    document.RootElement,
-                    _pending
-                );
+                var result = AdviceFileReader.Read(path, root => ReadMatchingRows(root, _pending));
+                var rows = result.Value;
                 if (rows is null)
                 {
-                    _lastWriteTicks = ticks;
-                    Invalidate();
+                    _lastWriteTicks = 0;
+                    Invalidate(result.Availability);
                     return;
                 }
-                ContextDrawer.Render(_drawer, rows);
+                ContextDrawer.Render(_drawer, rows, result.Availability);
                 _lastWriteTicks = ticks;
             }
             catch (Exception exception)
@@ -319,7 +323,7 @@ internal static class GenericAdviceController
                 expected[index].Label,
                 score,
                 isRecommended,
-                ReadReasons(candidate)
+                AdviceReasonReader.Read(candidate)
             );
             matched[index] = true;
         }
@@ -337,37 +341,7 @@ internal static class GenericAdviceController
         return rows;
     }
 
-    private static IReadOnlyList<string> ReadReasons(
-        JsonElement candidate)
-    {
-        if (!candidate.TryGetProperty("factors", out var factors)
-            || factors.ValueKind != JsonValueKind.Array)
-        {
-            return [];
-        }
-        var reasons = new List<(double Weight, int Index, string Message)>();
-        var index = 0;
-        foreach (var factor in factors.EnumerateArray())
-        {
-            if (factor.ValueKind == JsonValueKind.Object
-                && StringProperty(factor, "message", out var message)
-                && factor.TryGetProperty("delta", out var delta)
-                && delta.TryGetDouble(out var numeric)
-                && double.IsFinite(numeric))
-            {
-                reasons.Add((Math.Abs(numeric), index, message));
-            }
-            index++;
-        }
-        return reasons
-            .OrderByDescending(reason => reason.Weight)
-            .ThenBy(reason => reason.Index)
-            .Take(3)
-            .Select(reason => reason.Message)
-            .ToList();
-    }
-
-    private static void Invalidate()
+    private static void Invalidate(AdviceAvailability availability = AdviceAvailability.Waiting)
     {
         if (_pending is null)
         {
@@ -382,7 +356,7 @@ internal static class GenericAdviceController
                     null,
                     false
                 ))
-                .ToList()
+                .ToList(), availability
         );
     }
 

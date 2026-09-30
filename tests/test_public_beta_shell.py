@@ -151,7 +151,7 @@ class PublicBetaShellTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tempdir:
             path = Path(tempdir) / "runtime-status.json"
             inner = FakeTray()
-            tray = StatusTrayBackend(inner, path)
+            tray = StatusTrayBackend(inner, path, "a" * 64)
             tray.start(lambda: None)
             snapshot = ControllerSnapshot(
                 ControllerState.INCOMPATIBLE,
@@ -167,6 +167,9 @@ class PublicBetaShellTests(unittest.TestCase):
                 set(payload),
                 {
                     "schema_version",
+                    "session_id",
+                    "heartbeat_sequence",
+                    "release_fingerprint",
                     "state",
                     "game_running",
                     "worker_running",

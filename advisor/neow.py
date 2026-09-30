@@ -13,6 +13,7 @@ from advisor.resource_budget import (
 )
 from storage.relational import RelationalRepository
 from advisor.versions import NEOW_POLICY_VERSION
+from advisor.scoring_preferences import DEFAULT_SCORING_PREFERENCES, ScoringPreferences
 
 
 NEOW_BLESSING = "neow_blessing"
@@ -21,8 +22,10 @@ NEOW_BLESSING = "neow_blessing"
 class NeowPolicy:
     decision_type = NEOW_BLESSING
 
-    def __init__(self, repository: RelationalRepository):
+    def __init__(self, repository: RelationalRepository,
+                 preferences: ScoringPreferences = DEFAULT_SCORING_PREFERENCES):
         self.repository = repository
+        self.preferences = preferences
 
     def recommend(self, request: DecisionRequest) -> Recommendation:
         if request.decision_type != self.decision_type:
@@ -36,7 +39,7 @@ class NeowPolicy:
         stage_mismatch = len(stages) > 1
         drafts = []
         for candidate in request.candidates:
-            draft = AssessmentDraft(candidate)
+            draft = AssessmentDraft(candidate, preferences=self.preferences)
             drafts.append(draft)
             if not candidate.eligible:
                 continue
