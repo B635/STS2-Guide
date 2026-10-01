@@ -14,6 +14,8 @@
 4. 状态：能完整描述的写 `converted`；只有选牌时**真正无法得知**的部分（例如取决于敌人下一步意图）才写入 `unknowable`，
    并在 `reason` 说明为什么无法得知。能用牌组、路线、已知分布估算的都不属于无法得知。
 5. 记下审核依据的指纹：`fingerprint` 保持为提取结果中的当前值，`reviewed_by` 写票号。
+6. 确认（2026-10-02 用户决定）：每条起草的事实由另一个独立 Agent 对照 IL 逐条复核，结论写入 `audit`
+   （`{"by": ..., "verdict": "agree"|"resolved", "notes": ...}`）；分歧由开发者依据 IL 裁决并写明。用户在真机中抽查。
 
 ## 公共结构
 
@@ -119,3 +121,12 @@
 - 修正：`power_amount_given`、`card_play_count`、`damage_received`、`energy_carryover`、`retain_hand`、`keep_block`、
   `hp_loss_per_turn_cap`、`hp_loss_reduce`、`power_gain`、`auto_play_turn`、`no_potions`、`card_reward_*`（暂不计分）。
 - 只改变“提供哪些卡牌奖励”的遗物（卡池、额外选项）不影响对已提供候选的评分，归为 `irrelevant`，行为写进证据。
+
+## 卡牌与能力审核扩充（票 05）
+
+- 卡牌字段：`upgrade_keywords: {"add": [...], "remove": [...]}`（升级增减关键词）、`multiplayer_only: true`、
+  `cost_modifier`（按局面改变自身费用，如每打出一张攻击牌费用 −1）。
+- 能力字段：`duration`：`{"kind": "combat" | "turns_decrement" | "this_turn" | "until_triggered", ...}`。
+- 效果（暂不计分）：`auto_play`、`auto_play_card`、`auto_play_from_draw`、`transform_cards`、`gain_max_hp`。
+- 时机（暂不计分）：`auto_post_play_phase`、`card_drawn`、`block_gained`、`power_applied`、`power_applied_self`、`creature_added`（敌人中途加入战斗）。
+- 修正（暂不计分）：`exhaust_on_play`、`vulnerable_multiplier`、`strength`（临时力量）。

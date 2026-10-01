@@ -79,6 +79,16 @@ class CommittedAssemblyFactsTests(unittest.TestCase):
         ))
 
 
+    def test_every_reviewed_fact_is_cross_reviewed(self):
+        # Product spec 2.8: drafted facts count only after an independent
+        # review against the IL (or the structural rule for irrelevant relics).
+        missing = [
+            entry["entity_key"] for entry in self.facts["entities"]
+            if entry["status"] in ("converted", "unknowable")
+            and (entry.get("audit") or {}).get("verdict") not in ("agree", "resolved")
+        ]
+        self.assertEqual(missing, [])
+
     def test_irrelevant_relics_cannot_act_inside_a_fight(self):
         from storage.assembly_facts import COMBAT_COMMAND_PATTERN, RUN_HOOKS, extract_index
 

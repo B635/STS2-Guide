@@ -113,30 +113,30 @@ class DeckFitnessPolicyTests(unittest.TestCase):
 
     def test_unknown_candidate_gets_no_score_and_is_not_ranked(self):
         result = self.recommend(
-            [card("STRIKE_IRONCLAD", 5), card("DEFEND_IRONCLAD", 4)], ["TAUNT", "DEFEND_IRONCLAD"]
+            [card("STRIKE_IRONCLAD", 5), card("DEFEND_IRONCLAD", 4)], ["UNREVIEWED_CARD", "DEFEND_IRONCLAD"]
         )
-        taunt = next(r for r in result.candidates if r.candidate_id == "0:TAUNT")
+        taunt = next(r for r in result.candidates if r.candidate_id == "0:UNREVIEWED_CARD")
         self.assertIsNone(taunt.score)
         self.assertIsNone(taunt.rank)
         self.assertEqual(taunt.factors[0]["code"], "insufficient_data")
-        self.assertIn("card_fact_missing:TAUNT", result.data_gaps)
+        self.assertIn("card_fact_missing:UNREVIEWED_CARD", result.data_gaps)
         defend = next(r for r in result.candidates if r.candidate_id == "1:DEFEND_IRONCLAD")
         self.assertIsNotNone(defend.rank)
-        self.assertNotEqual(result.recommended_candidate_id, "0:TAUNT")
+        self.assertNotEqual(result.recommended_candidate_id, "0:UNREVIEWED_CARD")
 
     def test_all_unknown_candidates_leave_the_decision_uncertain(self):
-        result = self.recommend([card("STRIKE_IRONCLAD", 5)], ["TAUNT", "STONE_ARMOR"])
+        result = self.recommend([card("STRIKE_IRONCLAD", 5)], ["UNREVIEWED_CARD", "UNREVIEWED_CARD_B"])
         self.assertEqual(result.status, "uncertain")
         self.assertIsNone(result.recommended_candidate_id)
         self.assertIsNotNone(self.scores(result)["skip"])
 
     def test_unknown_deck_cards_only_dilute_and_are_disclosed(self):
         known = self.recommend([card("STRIKE_IRONCLAD", 5)], ["DEFEND_IRONCLAD"])
-        diluted = self.recommend([card("STRIKE_IRONCLAD", 5), card("TAUNT", 5)], ["DEFEND_IRONCLAD"])
+        diluted = self.recommend([card("STRIKE_IRONCLAD", 5), card("UNREVIEWED_CARD", 5)], ["DEFEND_IRONCLAD"])
         self.assertLess(self.scores(diluted)["skip"], self.scores(known)["skip"])
         defend = next(r for r in diluted.candidates if r.candidate_id == "0:DEFEND_IRONCLAD")
         self.assertEqual(defend.factors[0]["code"], "unmodeled_deck_cards")
-        self.assertIn("TAUNT", defend.factors[0]["message"])
+        self.assertIn("UNREVIEWED_CARD", defend.factors[0]["message"])
         self.assertEqual(defend.dimensions["data_completeness"], 0.0)
 
     def test_survival_preference_raises_the_value_of_defense_once(self):

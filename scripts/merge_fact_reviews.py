@@ -33,12 +33,14 @@ EFFECT_KINDS = SUPPORTED_EFFECTS | {
     "add_card", "upgrade_cards", "channel_orb", "summon", "forge", "gain_stars",
     "orb_passive", "orb_passive_all", "orb_slots", "set_free_this_turn", "extra_turn",
     "cost_reduction", "add_pet", "procure_potion", "set_enemy_hp", "replay_card", "move_card",
+    "auto_play", "auto_play_card", "auto_play_from_draw", "transform_cards", "gain_max_hp",
 }
 WHEN = {
     "combat_start", "turn_start", "turn_end", "card_played", "card_exhausted",
     "card_discarded", "shuffle", "hand_emptied", "damage_received", "enemy_died",
     "potion_used", "stars_spent", "orb_channeled", "card_generated", "block_broken",
-    "lethal_damage",
+    "lethal_damage", "auto_post_play_phase", "card_drawn", "block_gained",
+    "power_applied", "power_applied_self", "creature_added",
 }
 MODIFIERS = {
     "hand_draw", "max_energy", "damage", "block", "energy_cost", "x_value",
@@ -47,12 +49,13 @@ MODIFIERS = {
     "power_amount_given", "card_play_count", "damage_received", "energy_carryover",
     "power_gain", "no_potions", "auto_play_turn", "card_reward_pool",
     "card_reward_options", "card_reward_extra_card", "card_reward_alternative",
-    "card_reward_choice",
+    "card_reward_choice", "exhaust_on_play", "vulnerable_multiplier", "strength",
 }
 CATEGORIES = {"baseline", "trigger", "irrelevant"}
 REVIEW_FIELDS = {
     "status", "category", "cost", "card_type", "tags", "keywords", "effects",
     "mechanics", "unknowable", "evidence", "open_questions", "reviewed_by",
+    "duration", "upgrade_keywords", "multiplayer_only", "cost_modifier", "audit",
 }
 
 
@@ -65,6 +68,42 @@ def _effect_problems(effect: object, where: str) -> list[str]:
     if amount is not None and not isinstance(amount, (int, float)):
         return [f"{where}: amount must be a number (use amount_from for derived amounts)"]
     return []
+
+
+def codex_conflicts(entry: dict, catalog: dict) -> list[str]:
+    """Spire Codex structured card fields that disagree with the reviewed fact.
+
+    Codex is a cross-check only: conflicts go to a re-check list, the fact
+    (from the assembly) is never overwritten by them.
+    """
+
+    key = entry["entity_key"]
+    if not key.startswith("cards:") or entry.get("status") != "converted":
+        return []
+    card = catalog.get(key.split(":", 1)[1])
+    if card is None:
+        return []
+    conflicts = []
+    cost = (entry.get("cost") or {}).get("base") if isinstance(entry.get("cost"), dict) else entry.get("cost")
+    codex_cost = "X" if card.get("is_x_cost") else card.get("cost")
+    if cost is not None and codex_cost is not None and cost != codex_cost:
+        conflicts.append(f"cost {cost} vs Codex {codex_cost}")
+    if entry.get("card_type") and card.get("type_key") and entry["card_type"] != card["type_key"]:
+        conflicts.append(f"type {entry['card_type']} vs Codex {card['type_key']}")
+    effects = entry.get("effects") or []
+    for field, kind in (("damage", "damage"), ("block", "block"), ("cards_draw", "draw"), ("energy_gain", "energy")):
+        value = card.get(field)
+        if value is None:
+            continue
+        amounts = {e.get("amount") for e in effects if e.get("kind") == kind}
+        if amounts and value not in amounts:
+            conflicts.append(f"{kind} {sorted(a for a in amounts if a is not None)} vs Codex {value}")
+    hits = card.get("hit_count")
+    if hits is not None:
+        fact_hits = {e.get("hits") for e in effects if e.get("kind") == "damage"}
+        if fact_hits and hits not in fact_hits:
+            conflicts.append(f"hits {sorted(h for h in fact_hits if h is not None)} vs Codex {hits}")
+    return [f"{key}: {c}" for c in conflicts]
 
 
 def validate_entry(entry: dict, index: dict, facts_by_key: dict) -> list[str]:
@@ -109,13 +148,16 @@ def main() -> int:
     args = parser.parse_args()
 
     index = extract_index(load_extract(DEFAULT_EXTRACT_PATH))
+    knowledge = json.loads((ROOT_DIR / "data" / "knowledge.json").read_text(encoding="utf-8"))
+    catalog = {card["id"]: card for card in knowledge["cards"]}
     facts = load_facts(DEFAULT_FACTS_PATH)
     by_key = {entry["entity_key"]: entry for entry in facts["entities"]}
 
-    entries, problems, unsupported, questions = [], [], [], []
+    entries, problems, unsupported, questions, recheck = [], [], [], [], []
     for path in args.batches:
         for entry in json.loads(path.read_text(encoding="utf-8")):
             problems.extend(validate_entry(entry, index, by_key))
+            recheck.extend(codex_conflicts(entry, catalog))
             entries.append(entry)
             for mechanic in entry.get("mechanics") or ():
                 reason = unsupported_reason(mechanic)
@@ -124,13 +166,16 @@ def main() -> int:
             questions.extend(f"{entry['entity_key']}: {q}" for q in entry.get("open_questions") or ())
 
     print(f"{len(entries)} entries, {len(problems)} problems, "
-          f"{len(unsupported)} engine-unsupported mechanics, {len(questions)} open questions")
+          f"{len(unsupported)} engine-unsupported mechanics, {len(questions)} open questions, "
+          f"{len(recheck)} Codex conflicts to re-check")
     for line in problems:
         print("PROBLEM", line)
     for line in unsupported:
         print("UNSUPPORTED", line)
     for line in questions:
         print("QUESTION", line)
+    for line in recheck:
+        print("RECHECK", line)
     if problems or args.check:
         return 1 if problems else 0
 

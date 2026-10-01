@@ -321,7 +321,11 @@ def _dimension_factors(
     return sorted(rows, key=lambda row: -abs(row["delta"]))
 
 
-def _gap_notes(unknown_cards: Sequence[str], unmodeled_relics: Sequence[str]) -> list[dict]:
+def _gap_notes(
+    unknown_cards: Sequence[str],
+    unmodeled_relics: Sequence[str],
+    partial_cards: Sequence[str] = (),
+) -> list[dict]:
     notes = []
     if unknown_cards:
         notes.append({
@@ -329,6 +333,13 @@ def _gap_notes(unknown_cards: Sequence[str], unmodeled_relics: Sequence[str]) ->
             "delta": 0.0,
             "message": f"牌组中 {len(unknown_cards)} 张牌（{'、'.join(sorted(set(unknown_cards)))}）"
                        "尚无经核对的机制事实，只计入稀释。",
+        })
+    if partial_cards:
+        notes.append({
+            "code": "partially_modeled_deck_cards",
+            "delta": 0.0,
+            "message": f"牌组中 {len(partial_cards)} 张牌（{'、'.join(sorted(set(partial_cards)))}）"
+                       "有部分效果尚未计入评分。",
         })
     if unmodeled_relics:
         notes.append({
@@ -397,6 +408,7 @@ class DeckFitnessPolicy:
         state = request.world.scoring_state()
         deck: List[Optional[CardProfile]] = []
         unknown_cards: List[str] = []
+        partial_cards: List[str] = []
         gaps: List[str] = []
         for entry in state.get("deck") or ():
             count = int(entry.get("count") or 1)
@@ -408,6 +420,8 @@ class DeckFitnessPolicy:
             gaps.extend(profile_gaps)
             if profile is None:
                 unknown_cards.extend([str(entry["card"])] * count)
+            elif profile_gaps:
+                partial_cards.extend([str(entry["card"])] * count)
             deck.extend([profile] * count)
         relics: List[RelicProfile] = []
         unmodeled_relics = []
@@ -446,9 +460,12 @@ class DeckFitnessPolicy:
 
         engine_gap_count = len(gaps)
         baseline = evaluate(deck)
-        notes = _gap_notes(unknown_cards, unmodeled_relics)
+        notes = _gap_notes(unknown_cards, unmodeled_relics, partial_cards)
         # Engine gaps (e.g. an unsupported power) also make the data incomplete.
-        complete = not unknown_cards and not unmodeled_relics and len(gaps) == engine_gap_count
+        complete = (
+            not unknown_cards and not partial_cards and not unmodeled_relics
+            and len(gaps) == engine_gap_count
+        )
 
         assessments: List[CandidateAssessment] = []
         legacy_rows: List[tuple[DecisionCandidate, Optional[float]]] = []
@@ -494,6 +511,12 @@ class DeckFitnessPolicy:
             profile = adjust_added_card(profile, relics, self.repository)
             after = evaluate([*deck, profile])
             raw_by_id[candidate.candidate_id] = after.raw
+            own_notes = ({
+                "code": "unmodeled_mechanic",
+                "delta": 0.0,
+                "message": f"{candidate.label} 的部分效果尚未计入评分："
+                           + "、".join(gap.split(":", 2)[-1] for gap in profile_gaps),
+            },) if profile_gaps else ()
             assessments.append(CandidateAssessment(
                 candidate_id=candidate.candidate_id,
                 label=candidate.label,
@@ -502,10 +525,11 @@ class DeckFitnessPolicy:
                 score=after.score,
                 rank=None,
                 # Unmodeled notes first, then dimensions by absolute effect.
-                factors=(*notes, *_dimension_factors(
+                factors=(*own_notes, *notes, *_dimension_factors(
                     candidate.label, baseline, after, needs, len(deck)
                 )),
-                dimensions=_contract_dimensions(baseline, after, complete),
+                dimensions=_contract_dimensions(baseline, after, complete and not profile_gaps),
+                data_gaps=profile_gaps,
             ))
             legacy_rows.append((candidate, after.score))
 
