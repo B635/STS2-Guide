@@ -213,7 +213,15 @@ def _hook_names(overrides: Iterable[str]) -> list[str]:
     )
 
 
-def triage_relic(overrides: Iterable[str]) -> Dict[str, object]:
+# Game commands that act inside a fight. Entering a combat room is how some
+# relics grant fight-start powers, so a room hook calling one is not "run only".
+COMBAT_COMMAND_PATTERN = re.compile(
+    r"Commands\.(CreatureCmd::(GainBlock|Damage|LoseBlock)|PowerCmd::Apply|DamageCmd"
+    r"|CardPileCmd::(Draw|AddGeneratedCard)|PlayerCmd::GainEnergy|OrbCmd|OstyCmd)"
+)
+
+
+def triage_relic(overrides: Iterable[str], calls: Iterable[str] = ()) -> Dict[str, object]:
     """Initial, structure-only relic category; review may still change it."""
 
     hooks = _hook_names(overrides)
@@ -232,6 +240,10 @@ def triage_relic(overrides: Iterable[str]) -> Dict[str, object]:
     elif groups["trigger"]:
         category = CATEGORY_TRIGGER
     elif groups["baseline"]:
+        category = CATEGORY_BASELINE
+    elif "AfterRoomEntered" in groups["run"] and any(
+        COMBAT_COMMAND_PATTERN.search(call) for call in calls
+    ):
         category = CATEGORY_BASELINE
     else:
         category = CATEGORY_IRRELEVANT
@@ -327,7 +339,9 @@ def refresh_facts(
             "hook_tokens": {hook: tokens[hook] for hook in hooks if hook in tokens},
         }
         if key.startswith("relics:"):
-            entry["triage"] = triage_relic(source.get("overrides") or ())
+            entry["triage"] = triage_relic(
+                source.get("overrides") or (), source.get("calls") or ()
+            )
         status = prior.get("status", STATUS_UNREVIEWED)
         if status in REVIEWED_STATUSES | {STATUS_STALE}:
             entry.update({

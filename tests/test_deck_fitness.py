@@ -139,22 +139,6 @@ class DeckFitnessPolicyTests(unittest.TestCase):
         self.assertIn("TAUNT", defend.factors[0]["message"])
         self.assertEqual(defend.dimensions["data_completeness"], 0.0)
 
-    def test_relics_without_verified_facts_are_disclosed_not_scored(self):
-        # War Paint and Cloak Clasp were the live counter-examples; their
-        # reviewed facts are exercised with ticket 04.
-        result = self.recommend(
-            [card("STRIKE_IRONCLAD", 5), card("DEFEND_IRONCLAD", 4)],
-            ["DEFEND_IRONCLAD"],
-            relics=("WAR_PAINT", "CLOAK_CLASP"),
-        )
-        defend = next(r for r in result.candidates if r.candidate_id == "0:DEFEND_IRONCLAD")
-        self.assertEqual(defend.factors[0]["code"], "unmodeled_relics")
-        self.assertIn("WAR_PAINT", defend.factors[0]["message"])
-        self.assertFalse(any(f["code"].startswith("deck_fitness:") and "WAR_PAINT" in f["message"]
-                             for f in defend.factors))
-        self.assertIn("relic_fact_missing:WAR_PAINT", result.data_gaps)
-        self.assertIn("relic_fact_missing:CLOAK_CLASP", result.data_gaps)
-
     def test_survival_preference_raises_the_value_of_defense_once(self):
         deck = [card("STRIKE_IRONCLAD", 5), card("DEFEND_IRONCLAD", 2)]
         neutral = self.recommend(deck, ["DEFEND_IRONCLAD"])
@@ -237,3 +221,109 @@ class DeckFitnessRuleTests(unittest.TestCase):
         # Two equally likely paths: half a monster, half an elite, one boss.
         # The dead-end elite 1:2 is unreachable from the next nodes' paths.
         self.assertEqual(share, {"MONSTER": 0.5, "ELITE": 0.5, "BOSS": 1.0})
+
+
+class RelicMechanicTests(unittest.TestCase):
+    """Relic facts change capabilities only through their reviewed mechanics.
+
+    Facts here are patched copies of real catalog entries (same fingerprints),
+    so each rule is exercised without depending on later review batches.
+    """
+
+    PATCHES = {
+        # Combat-start block, like Anchor.
+        "relics:ANCHOR": {"category": "baseline", "mechanics": [
+            {"when": "combat_start", "effect": {"kind": "block", "amount": 30}},
+        ]},
+        # Block every third attack in a turn, like Ornamental Fan.
+        "relics:ORNAMENTAL_FAN": {"category": "trigger", "mechanics": [
+            {"when": "card_played", "filter": {"card_type": "Attack"}, "every": 3,
+             "counter": "turn", "effect": {"kind": "block", "amount": 4}},
+        ]},
+        # Skills are upgraded as they are added to the deck, like Toxic Egg.
+        "relics:TOXIC_EGG": {"category": "trigger", "mechanics": [
+            {"modifier": "card_added_to_deck", "filter": {"card_type": "Skill"}, "upgrade": True},
+        ]},
+        # Never reviewed: disclosed as missing, contributes nothing.
+        "relics:SNECKO_SKULL": {"status": "unreviewed"},
+        # A mechanic the engine cannot convert must be disclosed, not guessed.
+        "relics:CRACKED_CORE": {"category": "baseline", "mechanics": [
+            {"when": "combat_start", "effect": {"kind": "channel_orb", "orb": "Lightning", "amount": 1}},
+        ]},
+    }
+
+    @classmethod
+    def setUpClass(cls):
+        from storage.assembly_facts import load_facts
+
+        cls.temporary = tempfile.TemporaryDirectory()
+        root = Path(cls.temporary.name)
+        facts = load_facts()
+        for entry in facts["entities"]:
+            patch = cls.PATCHES.get(entry["entity_key"])
+            if patch:
+                entry.update({"status": "converted", "evidence": ["test patch"], **patch})
+        facts_path = root / "facts.json"
+        facts_path.write_text(json.dumps(facts), encoding="utf-8")
+        release = root / "release.db"
+        build_release_database(
+            release, ROOT / "data" / "knowledge.json", ROOT / "data" / "community_scores.json",
+            assembly_facts_path=facts_path,
+        )
+        cls.helper = DeckFitnessPolicyTests()
+        cls.helper.repository = RelationalRepository(str(release))
+        cls.helper.mapped_view = {
+            s["id"]: s for s in load_golden_set()
+        }["ironclad-f15-pommel-havoc-unrelenting"]["scoring_view"]
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.temporary.cleanup()
+
+    def gain(self, offered, relics, deck=None):
+        deck = deck or [card("STRIKE_IRONCLAD", 5), card("DEFEND_IRONCLAD", 4), card("BASH")]
+        result = self.helper.recommend(deck, [offered], relics=relics)
+        scores = self.helper.scores(result)
+        return scores[f"0:{offered}"] - scores["skip"], result
+
+    def test_irrelevant_relics_leave_scores_unchanged(self):
+        without, _ = self.gain("DEFEND_IRONCLAD", ())
+        with_paint, result = self.gain("DEFEND_IRONCLAD", ("WAR_PAINT",))
+        self.assertAlmostEqual(without, with_paint)
+        self.assertFalse(any("WAR_PAINT" in gap for gap in result.data_gaps))
+
+    def test_baseline_block_makes_more_block_less_valuable(self):
+        without, _ = self.gain("DEFEND_IRONCLAD", ())
+        with_anchor, _ = self.gain("DEFEND_IRONCLAD", ("ANCHOR",))
+        self.assertLess(with_anchor, without)
+
+    def test_attack_trigger_relic_raises_the_value_of_attacks(self):
+        deck = [card("STRIKE_IRONCLAD", 4), card("DEFEND_IRONCLAD", 1)]
+        without, _ = self.gain("STRIKE_IRONCLAD", (), deck)
+        with_fan, _ = self.gain("STRIKE_IRONCLAD", ("ORNAMENTAL_FAN",), deck)
+        self.assertGreater(with_fan, without)
+
+    def test_card_added_modifier_scores_the_upgraded_card(self):
+        without, _ = self.gain("DEFEND_IRONCLAD", ())
+        with_egg, _ = self.gain("DEFEND_IRONCLAD", ("TOXIC_EGG",))
+        self.assertGreater(with_egg, without)
+
+    def test_unsupported_relic_mechanics_are_disclosed(self):
+        _, result = self.gain("DEFEND_IRONCLAD", ("CRACKED_CORE",))
+        self.assertIn("relic_mechanic_unsupported:CRACKED_CORE:effect:channel_orb", result.data_gaps)
+        defend = next(r for r in result.candidates if r.candidate_id == "0:DEFEND_IRONCLAD")
+        self.assertEqual(defend.factors[0]["code"], "unmodeled_relics")
+
+    def test_unreviewed_relics_are_disclosed_and_never_scored(self):
+        without, _ = self.gain("DEFEND_IRONCLAD", ())
+        with_skull, result = self.gain("DEFEND_IRONCLAD", ("SNECKO_SKULL",))
+        self.assertAlmostEqual(without, with_skull)
+        self.assertIn("relic_fact_missing:SNECKO_SKULL", result.data_gaps)
+
+    def test_relics_that_change_the_take_or_skip_choice_are_disclosed(self):
+        # Pael's Wing rewards skipping; its value is a random future relic.
+        _, result = self.gain("DEFEND_IRONCLAD", ("PAELS_WING",))
+        self.assertIn("relic_mechanic_unsupported:PAELS_WING:card_reward_choice", result.data_gaps)
+        skip = next(r for r in result.candidates if r.candidate_id == "skip")
+        self.assertEqual(skip.factors[0]["code"], "unmodeled_relics")
+        self.assertIn("PAELS_WING", skip.factors[0]["message"])

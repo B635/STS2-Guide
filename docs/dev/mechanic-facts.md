@@ -93,3 +93,29 @@
 
 卡牌施加的能力若不是 Strength / Dexterity / Vulnerable / Weak / Poison 等通用能力，需要为该能力类单独写事实
 （`entity_key` 为 `powers:<ID>`，结构同遗物的 `mechanics`），卡牌的 `apply_power` 引用它。
+
+## 已核对的枚举值（程序集 0861bfa1…）
+
+用 `Sts2FactExtractor.exe <sts2.dll> --enum <枚举名>` 读取，不要从描述文字推断。
+
+| 枚举 | 值 |
+|---|---|
+| `CardType` | 1 Attack，2 Skill，3 Power，4 Status，5 Curse，6 Quest |
+| `PileType` | 1 Draw，2 Hand，3 Discard，4 Exhaust，5 Play，6 Deck |
+| `CardKeyword` | 1 Exhaust，2 Ethereal，3 Innate，4 Unplayable，5 Retain，6 Sly，7 Eternal |
+| `RoomType` | 1 Monster，2 Elite，3 Boss，4 Treasure，5 Shop，6 Event，7 RestSite，8 Map |
+| `MapPointType` | 1 Unknown，2 Shop，3 Treasure，4 RestSite，5 Monster，6 Elite，7 Boss，8 Ancient |
+
+## 已记录但暂不计分的写法（TASK-025 票 04 遗物审核扩充）
+
+事实如实记录，评分引擎不能换算的部分会在推荐中显示为缺口，不会被猜测计分（引擎对不认识的字段、条件、过滤一律视为不支持）。
+
+- 效果：`orb_passive`、`orb_passive_all`、`orb_slots`、`set_free_this_turn`、`extra_turn`、`cost_reduction`、`add_pet`、
+  `procure_potion`、`set_enemy_hp`、`replay_card`、`move_card`。
+- 时机：`lethal_damage`。计数：`counter: "run"`（跨战斗不清零；期望值同 `combat`）。
+- 回合：`turns_from: n`（第 n 回合起）。数值无法写成常数时用 `amount_from` 说明来源（如“等于受到的伤害”“等于当前回合数”）。
+- 条件：`turn_at_least`、`unblocked_damage`（引擎已支持）；`during_own_turn`、`cards_played_last_turn_at_most`、
+  `card_types_played_this_turn_include_all`、`unspent_energy_last_turn`、`after_rest_site`、`previous_room`、`gold_at_least` 等（暂不计分）。
+- 修正：`power_amount_given`、`card_play_count`、`damage_received`、`energy_carryover`、`retain_hand`、`keep_block`、
+  `hp_loss_per_turn_cap`、`hp_loss_reduce`、`power_gain`、`auto_play_turn`、`no_potions`、`card_reward_*`（暂不计分）。
+- 只改变“提供哪些卡牌奖励”的遗物（卡池、额外选项）不影响对已提供候选的评分，归为 `irrelevant`，行为写进证据。

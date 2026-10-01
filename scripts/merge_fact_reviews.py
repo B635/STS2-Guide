@@ -1,0 +1,149 @@
+"""Validate reviewed fact batches and merge them into the committed facts.
+
+A batch is a JSON array of fact objects written by a reviewer following
+docs/dev/mechanic-facts.md. Every entry must name an existing catalog entity,
+carry the class fingerprint of the current extract, and use the spec's
+vocabulary. Nothing is merged unless the whole batch validates (``--check``
+only reports). Mechanics the scoring engine cannot convert yet are listed.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from pathlib import Path
+
+ROOT_DIR = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT_DIR))
+
+from advisor.deck_mechanics import SUPPORTED_EFFECTS, unsupported_reason  # noqa: E402
+from storage.assembly_facts import (  # noqa: E402
+    DEFAULT_EXTRACT_PATH,
+    DEFAULT_FACTS_PATH,
+    REVIEWED_STATUSES,
+    extract_index,
+    load_extract,
+    load_facts,
+)
+
+# Recorded vocabulary (docs/dev/mechanic-facts.md). It is wider than what the
+# engine scores: true facts are kept even before the engine can convert them.
+EFFECT_KINDS = SUPPORTED_EFFECTS | {
+    "add_card", "upgrade_cards", "channel_orb", "summon", "forge", "gain_stars",
+    "orb_passive", "orb_passive_all", "orb_slots", "set_free_this_turn", "extra_turn",
+    "cost_reduction", "add_pet", "procure_potion", "set_enemy_hp", "replay_card", "move_card",
+}
+WHEN = {
+    "combat_start", "turn_start", "turn_end", "card_played", "card_exhausted",
+    "card_discarded", "shuffle", "hand_emptied", "damage_received", "enemy_died",
+    "potion_used", "stars_spent", "orb_channeled", "card_generated", "block_broken",
+    "lethal_damage",
+}
+MODIFIERS = {
+    "hand_draw", "max_energy", "damage", "block", "energy_cost", "x_value",
+    "keep_block", "retain_hand", "no_draw_during_turn", "cards_per_turn_limit",
+    "hp_loss_per_turn_cap", "hp_loss_reduce", "card_added_to_deck",
+    "power_amount_given", "card_play_count", "damage_received", "energy_carryover",
+    "power_gain", "no_potions", "auto_play_turn", "card_reward_pool",
+    "card_reward_options", "card_reward_extra_card", "card_reward_alternative",
+    "card_reward_choice",
+}
+CATEGORIES = {"baseline", "trigger", "irrelevant"}
+REVIEW_FIELDS = {
+    "status", "category", "cost", "card_type", "tags", "keywords", "effects",
+    "mechanics", "unknowable", "evidence", "open_questions", "reviewed_by",
+}
+
+
+def _effect_problems(effect: object, where: str) -> list[str]:
+    if not isinstance(effect, dict):
+        return [f"{where}: effect is not an object"]
+    if effect.get("kind") not in EFFECT_KINDS:
+        return [f"{where}: unknown effect kind {effect.get('kind')!r}"]
+    amount = effect.get("amount")
+    if amount is not None and not isinstance(amount, (int, float)):
+        return [f"{where}: amount must be a number (use amount_from for derived amounts)"]
+    return []
+
+
+def validate_entry(entry: dict, index: dict, facts_by_key: dict) -> list[str]:
+    key = entry.get("entity_key")
+    problems: list[str] = []
+    if key not in facts_by_key:
+        return [f"{key}: not a catalog entity"]
+    source = index.get(key)
+    if source is None or entry.get("fingerprint") != source["fingerprint"]:
+        problems.append(f"{key}: fingerprint does not match the current extract")
+    if entry.get("status") not in REVIEWED_STATUSES:
+        problems.append(f"{key}: status must be converted or unknowable")
+    if not entry.get("evidence"):
+        problems.append(f"{key}: evidence is required")
+    extra = set(entry) - REVIEW_FIELDS - {"entity_key", "class", "fingerprint"}
+    if extra:
+        problems.append(f"{key}: unknown fields {sorted(extra)}")
+    entity_type = key.split(":", 1)[0]
+    if entity_type == "relics" and entry.get("category") not in CATEGORIES:
+        problems.append(f"{key}: relic category must be one of {sorted(CATEGORIES)}")
+    for i, effect in enumerate(entry.get("effects") or ()):
+        problems.extend(_effect_problems(effect, f"{key} effects[{i}]"))
+    for i, mechanic in enumerate(entry.get("mechanics") or ()):
+        where = f"{key} mechanics[{i}]"
+        if "modifier" in mechanic:
+            if mechanic["modifier"] not in MODIFIERS:
+                problems.append(f"{where}: unknown modifier {mechanic['modifier']!r}")
+            continue
+        if mechanic.get("when") not in WHEN:
+            problems.append(f"{where}: unknown when {mechanic.get('when')!r}")
+        problems.extend(_effect_problems(mechanic.get("effect"), where))
+    for item in entry.get("unknowable") or ():
+        if not item.get("what") or not item.get("reason"):
+            problems.append(f"{key}: unknowable items need what and reason")
+    return problems
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("batches", nargs="+", type=Path)
+    parser.add_argument("--check", action="store_true", help="validate only")
+    args = parser.parse_args()
+
+    index = extract_index(load_extract(DEFAULT_EXTRACT_PATH))
+    facts = load_facts(DEFAULT_FACTS_PATH)
+    by_key = {entry["entity_key"]: entry for entry in facts["entities"]}
+
+    entries, problems, unsupported, questions = [], [], [], []
+    for path in args.batches:
+        for entry in json.loads(path.read_text(encoding="utf-8")):
+            problems.extend(validate_entry(entry, index, by_key))
+            entries.append(entry)
+            for mechanic in entry.get("mechanics") or ():
+                reason = unsupported_reason(mechanic)
+                if reason:
+                    unsupported.append(f"{entry['entity_key']}: {reason}")
+            questions.extend(f"{entry['entity_key']}: {q}" for q in entry.get("open_questions") or ())
+
+    print(f"{len(entries)} entries, {len(problems)} problems, "
+          f"{len(unsupported)} engine-unsupported mechanics, {len(questions)} open questions")
+    for line in problems:
+        print("PROBLEM", line)
+    for line in unsupported:
+        print("UNSUPPORTED", line)
+    for line in questions:
+        print("QUESTION", line)
+    if problems or args.check:
+        return 1 if problems else 0
+
+    for entry in entries:
+        target = by_key[entry["entity_key"]]
+        for field in ("mechanics", "effects", "unknowable", "open_questions", "category"):
+            target.pop(field, None)
+        target.update({k: v for k, v in entry.items() if k != "class"})
+    with DEFAULT_FACTS_PATH.open("w", encoding="utf-8", newline="\n") as stream:
+        stream.write(json.dumps(facts, ensure_ascii=False, indent=1, sort_keys=True) + "\n")
+    print(f"merged {len(entries)} entries into {DEFAULT_FACTS_PATH}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

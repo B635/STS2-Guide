@@ -25,6 +25,15 @@ from types import MappingProxyType
 from typing import Dict, List, Mapping, Optional, Sequence
 
 from advisor.boss_context import build_boss_preparation
+from advisor.deck_mechanics import (
+    CardProfile,
+    RelicProfile,
+    Situation,
+    adjust_added_card,
+    card_profile,
+    deck_capabilities,
+    relic_profile,
+)
 from advisor.decision_core import (
     CARD_REWARD,
     ROUTE_CHOICE,
@@ -60,37 +69,12 @@ CONTRACT_DIMENSIONS = {
     "energy": "resource_efficiency",
 }
 FIGHT_KINDS = ("MONSTER", "ELITE", "BOSS")
-# Powers a card may apply, with the side that benefits.
-POWER_EFFECTS = {
-    ("Vulnerable", "enemy"): "vulnerable_turns",
-    ("Weak", "enemy"): "weak_turns",
-    ("Strength", "self"): "strength",
-}
 REQUIRED_PARAMETERS = (
     "hand_size", "base_energy", "fight_turns", "fight_importance", "block_share",
     "low_hp_defense_pressure", "scaling_onset_turns", "cycle_need",
     "vulnerable_damage_bonus", "weak_damage_reduction", "dimension_weights",
     "preference_dimensions", "surplus_slope", "satisfaction_cap",
 )
-
-
-@dataclass(frozen=True)
-class CardProfile:
-    """Per-play effects of one card instance, from a valid assembly fact."""
-
-    card_id: str
-    cost: Optional[float]
-    single_damage: float = 0.0
-    all_damage: float = 0.0
-    attack_hits: float = 0.0
-    block: float = 0.0
-    draw: float = 0.0
-    energy: float = 0.0
-    vulnerable_turns: float = 0.0
-    weak_turns: float = 0.0
-    strength: float = 0.0
-    hp_loss: float = 0.0
-    exhausts_self: bool = False
 
 
 @dataclass(frozen=True)
@@ -123,57 +107,6 @@ def _parameter_gaps(params: object) -> tuple[str, ...]:
     if sum(float(value) for value in params["dimension_weights"].values()) <= 0:
         return ("deck_fitness_parameter_invalid:dimension_weights",)
     return ()
-
-
-def _amount(effect: Mapping, upgraded: bool) -> float:
-    value = float(effect.get("amount") or 0.0)
-    if upgraded:
-        value += float(effect.get("upgrade") or 0.0)
-    return value
-
-
-def card_profile(
-    repository: RelationalRepository,
-    card_id: str,
-    upgrades: int,
-) -> tuple[Optional[CardProfile], tuple[str, ...]]:
-    """Resolve one card instance to its per-play profile, or report why not."""
-
-    fact = repository.find_assembly_fact("cards", card_id)
-    if fact is None or fact.get("status") != "converted":
-        return None, (f"card_fact_missing:{card_id}",)
-    if upgrades > 1:
-        return None, (f"card_upgrade_count_unmodeled:{card_id}",)
-    upgraded = upgrades == 1
-    cost = (fact.get("cost") or {}).get("upgraded" if upgraded else "base")
-    values: Dict[str, float] = {}
-    exhausts_self = False
-    for effect in fact.get("effects") or ():
-        kind = effect.get("kind")
-        if kind == "damage":
-            hits = float(effect.get("hits") or 1)
-            key = "all_damage" if effect.get("target") == "all" else "single_damage"
-            values[key] = values.get(key, 0.0) + _amount(effect, upgraded) * hits
-            values["attack_hits"] = values.get("attack_hits", 0.0) + hits
-        elif kind in {"block", "draw", "energy", "hp_loss"}:
-            values[kind] = values.get(kind, 0.0) + _amount(effect, upgraded)
-        elif kind == "apply_power":
-            key = POWER_EFFECTS.get((effect.get("power"), effect.get("target")))
-            if key is None:
-                return None, (
-                    f"card_power_unmodeled:{card_id}:{effect.get('power')}:{effect.get('target')}",
-                )
-            values[key] = values.get(key, 0.0) + _amount(effect, upgraded)
-        elif kind == "exhaust_self":
-            exhausts_self = True
-        else:
-            return None, (f"card_effect_unmodeled:{card_id}:{kind}",)
-    return CardProfile(
-        card_id=card_id,
-        cost=None if cost is None else float(cost),
-        exhausts_self=exhausts_self,
-        **values,
-    ), ()
 
 
 def _weighted(rows: Sequence[tuple[float, float]]) -> float:
@@ -331,51 +264,6 @@ def compute_needs(
     )
 
 
-def deck_capabilities(
-    cards: Sequence[Optional[CardProfile]],
-    needs: Needs,
-    params: Mapping,
-) -> Dict[str, float]:
-    """Expected per-turn capabilities; unknown cards only take a deck slot."""
-
-    size = max(1, len(cards))
-    known = [card for card in cards if card is not None]
-    hand = float(params["hand_size"])
-    base = min(1.0, hand / size)
-    drawn = min(float(size), hand + sum(base * card.draw for card in known))
-    per_turn = min(1.0, drawn / size)
-
-    def drawn_rate(card: CardProfile) -> float:
-        # A self-exhausting card is played at most once per fight.
-        return min(per_turn, 1.0 / needs.fight_turns) if card.exhausts_self else per_turn
-
-    demand = sum(drawn_rate(c) * c.cost for c in known if c.cost is not None)
-    supply = float(params["base_energy"]) + sum(drawn_rate(c) * c.energy for c in known)
-    # Cards drawn beyond the energy available are not played this turn.
-    playable = min(1.0, supply / demand) if demand > 0 else 1.0
-
-    def total(attribute: str) -> float:
-        return sum(drawn_rate(c) * playable * getattr(c, attribute) for c in known)
-
-    vulnerable = min(1.0, total("vulnerable_turns"))
-    amplify = 1.0 + float(params["vulnerable_damage_bonus"]) * vulnerable
-    average_strength = total("strength") * max(0.0, needs.fight_turns - 1.0) / 2.0
-    # Vulnerable sits on one enemy: it amplifies damage to that target only.
-    return {
-        "frontload": (total("single_damage") + total("all_damage")) * amplify,
-        "aoe": total("all_damage") * needs.extra_enemies,
-        "defense": (
-            total("block")
-            + float(params["weak_damage_reduction"]) * needs.incoming_attack
-            * min(1.0, total("weak_turns"))
-            - total("hp_loss")
-        ),
-        "scaling": average_strength * total("attack_hits") * amplify,
-        "cycle": drawn / size,
-        "energy": supply / demand if demand > 0 else float(params["satisfaction_cap"]),
-    }
-
-
 def fitness(capabilities: Mapping[str, float], needs: Needs, params: Mapping) -> Fitness:
     cap = float(params["satisfaction_cap"])
     slope = float(params["surplus_slope"])
@@ -521,15 +409,15 @@ class DeckFitnessPolicy:
             if profile is None:
                 unknown_cards.extend([str(entry["card"])] * count)
             deck.extend([profile] * count)
+        relics: List[RelicProfile] = []
         unmodeled_relics = []
         for relic in state.get("relics") or ():
-            fact = self.repository.find_assembly_fact("relics", str(relic).upper())
-            if fact is None or fact.get("category") != "irrelevant":
+            profile, relic_gaps = relic_profile(self.repository, str(relic).upper())
+            gaps.extend(relic_gaps)
+            if profile is not None:
+                relics.append(profile)
+            if profile is None or relic_gaps:
                 unmodeled_relics.append(str(relic))
-                gaps.append(
-                    f"relic_fact_missing:{relic}" if fact is None
-                    else f"relic_effect_unmodeled:{relic}"
-                )
 
         needs = compute_needs(
             self.repository, self.route_policy, request, params, self.preferences
@@ -537,9 +425,30 @@ class DeckFitnessPolicy:
         gaps.extend(needs.gaps)
         if not needs.values:
             return self._uncertain(request, gaps)
-        baseline = fitness(deck_capabilities(deck, needs, params), needs, params)
+        situation = Situation(
+            fight_turns=needs.fight_turns,
+            extra_enemies=needs.extra_enemies,
+            incoming_attack=needs.incoming_attack,
+            fight_mix=needs.fight_mix,
+            hp_ratio=(
+                request.world.hp / request.world.max_hp
+                if request.world.hp is not None and request.world.max_hp else 1.0
+            ),
+            potion_count=(
+                len(state["potions"]) if isinstance(state.get("potions"), list) else None
+            ),
+        )
+
+        def evaluate(cards: List[Optional[CardProfile]]) -> Fitness:
+            capabilities, engine_gaps = deck_capabilities(cards, relics, situation, params)
+            gaps.extend(engine_gaps)
+            return fitness(capabilities, needs, params)
+
+        engine_gap_count = len(gaps)
+        baseline = evaluate(deck)
         notes = _gap_notes(unknown_cards, unmodeled_relics)
-        complete = not unknown_cards and not unmodeled_relics
+        # Engine gaps (e.g. an unsupported power) also make the data incomplete.
+        complete = not unknown_cards and not unmodeled_relics and len(gaps) == engine_gap_count
 
         assessments: List[CandidateAssessment] = []
         legacy_rows: List[tuple[DecisionCandidate, Optional[float]]] = []
@@ -582,7 +491,8 @@ class DeckFitnessPolicy:
                 ))
                 legacy_rows.append((candidate, None))
                 continue
-            after = fitness(deck_capabilities([*deck, profile], needs, params), needs, params)
+            profile = adjust_added_card(profile, relics, self.repository)
+            after = evaluate([*deck, profile])
             raw_by_id[candidate.candidate_id] = after.raw
             assessments.append(CandidateAssessment(
                 candidate_id=candidate.candidate_id,

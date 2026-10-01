@@ -12,11 +12,13 @@ using System.Text;
 using System.Text.Json;
 
 var dumpClass = args.Length == 3 && args[1] == "--dump" ? args[2] : null;
-if (args.Length != 2 && dumpClass is null)
+var enumName = args.Length == 3 && args[1] == "--enum" ? args[2] : null;
+if (args.Length != 2 && dumpClass is null && enumName is null)
 {
     Console.Error.WriteLine(
         "Usage: Sts2FactExtractor <path-to-sts2.dll> <output.json>\n"
-        + "       Sts2FactExtractor <path-to-sts2.dll> --dump <ClassName>");
+        + "       Sts2FactExtractor <path-to-sts2.dll> --dump <ClassName>\n"
+        + "       Sts2FactExtractor <path-to-sts2.dll> --enum <EnumName>");
     return 2;
 }
 
@@ -43,6 +45,26 @@ var opcodes = typeof(OpCodes)
     .GetFields(BindingFlags.Static | BindingFlags.Public)
     .Select(field => (OpCode)field.GetValue(null)!)
     .ToDictionary(op => (ushort)op.Value);
+if (enumName is not null)
+{
+    // Print every enum whose simple name matches, with its full name.
+    var found = false;
+    foreach (var handle in reader.TypeDefinitions)
+    {
+        var fullName = names.Type(handle);
+        if (fullName.EndsWith("." + enumName, StringComparison.Ordinal)
+            && reader.GetTypeDefinition(handle).GetFields().Any(f => !reader.GetFieldDefinition(f).GetDefaultValue().IsNil))
+        {
+            found = true;
+            foreach (var (value, label) in EnumNames(reader, names, fullName).OrderBy(pair => pair.Key))
+            {
+                Console.WriteLine($"{fullName} {value} {label}");
+            }
+        }
+    }
+    return found ? 0 : 1;
+}
+
 var cardTypeNames = EnumNames(reader, names, CardTypeEnum);
 var cardTagNames = EnumNames(reader, names, CardTagEnum);
 

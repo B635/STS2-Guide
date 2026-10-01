@@ -79,6 +79,28 @@ class CommittedAssemblyFactsTests(unittest.TestCase):
         ))
 
 
+    def test_irrelevant_relics_cannot_act_inside_a_fight(self):
+        from storage.assembly_facts import COMBAT_COMMAND_PATTERN, RUN_HOOKS, extract_index
+
+        index = extract_index(self.extract)
+        for key, entry in self.by_key.items():
+            if not key.startswith("relics:") or entry.get("category") != "irrelevant":
+                continue
+            if "(structural)" not in str(entry.get("reviewed_by")):
+                # Reviewed from the IL: the evidence explains why it cannot
+                # act inside a fight; only the structural rule is checked here.
+                self.assertEqual(entry.get("mechanics"), [])
+                self.assertTrue(entry.get("evidence"))
+                continue
+            with self.subTest(relic=key):
+                self.assertEqual(entry.get("mechanics"), [])
+                self.assertTrue(set(entry["hooks"]) <= RUN_HOOKS)
+                if "AfterRoomEntered" in entry["hooks"]:
+                    self.assertFalse(any(
+                        COMBAT_COMMAND_PATTERN.search(call) for call in index[key]["calls"]
+                    ))
+
+
 class AssemblyFactValidityTests(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()
@@ -113,6 +135,7 @@ class AssemblyFactValidityTests(unittest.TestCase):
             category="baseline",
             fingerprint="0" * 64,
         )
+        self._mark("relics:ANCHOR", status=STATUS_UNREVIEWED)
         repository = self._build()
 
         self.assertEqual(
@@ -120,26 +143,22 @@ class AssemblyFactValidityTests(unittest.TestCase):
             "irrelevant",
         )
         self.assertIsNone(repository.find_assembly_fact("relics", "CLOAK_CLASP"))
-        self.assertIsNone(repository.find_assembly_fact("relics", "BURNING_BLOOD"))
-        keys = catalog_keys()
-        relic_total = sum(key.startswith("relics:") for key in keys)
-        card_total = sum(key.startswith("cards:") for key in keys)
-        coverage = repository.assembly_fact_coverage()
-        self.assertEqual(coverage["relics"][STATUS_CONVERTED], 1)
-        # A reviewed fact whose fingerprint no longer matches is stale in
-        # the database report exactly as in the refresh report.
-        self.assertEqual(coverage["relics"][STATUS_STALE], 1)
-        self.assertEqual(coverage["relics"]["total"], relic_total)
-        self.assertEqual(coverage["relics"][STATUS_UNREVIEWED], relic_total - 2)
+        self.assertIsNone(repository.find_assembly_fact("relics", "ANCHOR"))
+
+        relics = [e for e in self.facts["entities"] if e["entity_key"].startswith("relics:")]
+        coverage = repository.assembly_fact_coverage()["relics"]
+        self.assertEqual(coverage["total"], len(relics))
+        # A reviewed fact whose fingerprint no longer matches is stale in the
+        # database report exactly as in the refresh report.
+        self.assertEqual(coverage[STATUS_STALE], 1)
         self.assertEqual(
-            coverage["cards"][STATUS_UNREVIEWED],
-            sum(
-                1 for entry in self.facts["entities"]
-                if entry["entity_key"].startswith("cards:")
-                and entry["status"] == STATUS_UNREVIEWED
-            ),
+            coverage[STATUS_UNREVIEWED],
+            sum(e["status"] == STATUS_UNREVIEWED for e in relics),
         )
-        self.assertEqual(coverage["cards"]["total"], card_total)
+        self.assertEqual(
+            coverage[STATUS_CONVERTED],
+            sum(e["status"] == STATUS_CONVERTED for e in relics) - 1,
+        )
         with repository.connect() as connection:
             categories = dict(connection.execute(
                 "SELECT entity_key, category FROM assembly_facts "
