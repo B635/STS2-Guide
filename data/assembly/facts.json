@@ -402,6 +402,7 @@
   {
    "audit": {
     "by": "TASK-025 cross-review G",
+    "notes": "restructured by developer (semantics unchanged): damage scale per exhaust_pile",
     "verdict": "agree"
    },
    "card_type": "Attack",
@@ -413,11 +414,14 @@
    "effects": [
     {
      "amount": 6,
-     "amount_from": "6 + ExtraDamage x cards in the owner's Exhaust pile (ExtraDamage 3, upgraded 4): CalculatedDamageVar = CalculationBase 6 + ExtraDamage * PileType 4 Exhaust Count",
-     "extra_per_card": 3,
-     "extra_per_card_upgrade": 1,
+     "amount_text": "6 + ExtraDamage x cards in the owner's Exhaust pile (ExtraDamage 3, upgraded 4): CalculatedDamageVar = CalculationBase 6 + ExtraDamage * PileType 4 Exhaust Count",
      "hits": 1,
      "kind": "damage",
+     "scale": {
+      "factor": 3,
+      "factor_upgrade": 1,
+      "per": "exhaust_pile"
+     },
      "target": "single",
      "upgrade": 0
     }
@@ -1121,6 +1125,7 @@
   {
    "audit": {
     "by": "TASK-025 cross-review F",
+    "notes": "restructured by developer (semantics unchanged): damage scale per current block",
     "verdict": "agree"
    },
    "card_type": "Attack",
@@ -1131,10 +1136,14 @@
    },
    "effects": [
     {
-     "amount": null,
-     "amount_from": "CalculatedDamage = CalculationBase(0) + ExtraDamage(1) x owner creature's current Block",
+     "amount": 0,
+     "amount_text": "CalculatedDamage = CalculationBase(0) + ExtraDamage(1) x owner creature's current Block",
      "hits": 1,
      "kind": "damage",
+     "scale": {
+      "factor": 1,
+      "per": "block"
+     },
      "target": "single",
      "upgrade": 0
     }
@@ -1491,6 +1500,7 @@
   {
    "audit": {
     "by": "TASK-025 cross-review G",
+    "notes": "restructured by developer (semantics unchanged): damage scale per target Vulnerable stacks",
     "verdict": "agree"
    },
    "card_type": "Attack",
@@ -1502,11 +1512,14 @@
    "effects": [
     {
      "amount": 4,
-     "amount_from": "4 + ExtraDamage x target's Vulnerable stacks (ExtraDamage 2, upgraded 3): CalculatedDamageVar = CalculationBase 4 + ExtraDamage * target.GetPowerAmount<VulnerablePower>()",
-     "extra_per_stack": 2,
-     "extra_per_stack_upgrade": 1,
+     "amount_text": "4 + ExtraDamage x target's Vulnerable stacks (ExtraDamage 2, upgraded 3): CalculatedDamageVar = CalculationBase 4 + ExtraDamage * target.GetPowerAmount<VulnerablePower>()",
      "hits": 1,
      "kind": "damage",
+     "scale": {
+      "factor": 2,
+      "factor_upgrade": 1,
+      "per": "enemy_vulnerable"
+     },
      "target": "single",
      "upgrade": 0
     }
@@ -3175,6 +3188,7 @@
   {
    "audit": {
     "by": "TASK-025 cross-review G",
+    "notes": "restructured by developer (semantics unchanged): 2 hits when the target has Vulnerable",
     "verdict": "agree"
    },
    "card_type": "Attack",
@@ -3186,13 +3200,15 @@
    "effects": [
     {
      "amount": 8,
-     "conditional_hits": {
+     "hits": 1,
+     "hits_scale": {
+      "base": 1,
       "condition": {
        "target_has_power": "Vulnerable"
       },
-      "hits": 2
+      "hits_if": 2,
+      "per": "condition"
      },
-     "hits": 1,
      "kind": "damage",
      "target": "single",
      "upgrade": 2
@@ -3253,6 +3269,7 @@
   {
    "audit": {
     "by": "TASK-025 cross-review F",
+    "notes": "restructured by developer (semantics unchanged): Strength scale per target Vulnerable stacks",
     "verdict": "agree"
    },
    "card_type": "Skill",
@@ -3270,10 +3287,14 @@
      "upgrade": 1
     },
     {
-     "amount": null,
-     "amount_from": "equal to the target enemy's VulnerablePower amount after the Vulnerable application above (0 if none); the 'StrengthPerVulnerable'(1) var is not read in OnPlay",
+     "amount": 0,
+     "amount_text": "equal to the target enemy's VulnerablePower amount after the Vulnerable application above (0 if none); the 'StrengthPerVulnerable'(1) var is not read in OnPlay",
      "kind": "apply_power",
      "power": "Strength",
+     "scale": {
+      "factor": 1,
+      "per": "enemy_vulnerable"
+     },
      "target": "self",
      "upgrade": 0
     }
@@ -3746,6 +3767,7 @@
   {
    "audit": {
     "by": "TASK-025 cross-review H",
+    "notes": "restructured by developer (semantics unchanged): block scale per Strength",
     "verdict": "agree"
    },
    "card_type": "Skill",
@@ -3757,13 +3779,13 @@
    "effects": [
     {
      "amount": 15,
-     "amount_from": "plus CalculationExtra (5, +3 on upgrade) x max(0, owner's Strength); total = 15 + 5*Strength (upgraded 16 + 8*Strength)",
+     "amount_text": "plus CalculationExtra (5, +3 on upgrade) x max(0, owner's Strength); total = 15 + 5*Strength (upgraded 16 + 8*Strength)",
      "kind": "block",
-     "scaling": {
-      "amount": 5,
-      "min_stacks": 0,
-      "per": "Strength",
-      "upgrade": 3
+     "scale": {
+      "factor": 5,
+      "factor_upgrade": 3,
+      "min": 0,
+      "per": "strength"
      },
      "upgrade": 1
     }
@@ -4053,6 +4075,7 @@
   {
    "audit": {
     "by": "TASK-025 cross-review F",
+    "notes": "restructured by developer (semantics unchanged): hits scale per hand size",
     "verdict": "agree"
    },
    "card_type": "Attack",
@@ -4063,14 +4086,20 @@
    },
    "effects": [
     {
-     "choice": "all",
-     "count": "all",
+     "count": null,
+     "count_scale": {
+      "per": "hand_size"
+     },
      "kind": "exhaust_other"
     },
     {
      "amount": 7,
-     "hits": null,
-     "hits_from": "number of cards in hand when played (PileType.Hand count snapshot taken before exhausting; Fiend Fire itself is not in hand)",
+     "hits": 0,
+     "hits_scale": {
+      "base": 0,
+      "per": "hand_size"
+     },
+     "hits_text": "number of cards in hand when played (PileType.Hand count snapshot taken before exhausting; Fiend Fire itself is not in hand)",
      "kind": "damage",
      "target": "single",
      "upgrade": 3
@@ -6595,6 +6624,7 @@
   {
    "audit": {
     "by": "TASK-025 cross-review G",
+    "notes": "restructured by developer (semantics unchanged): Vulnerable equal to existing stacks when present",
     "verdict": "agree"
    },
    "card_type": "Attack",
@@ -6613,13 +6643,16 @@
     },
     {
      "amount": 0,
-     "amount_from": "equal to the target's current Vulnerable stacks (doubles them)",
+     "amount_text": "equal to the target's current Vulnerable stacks (doubles them)",
      "condition": {
-      "target_alive": true,
       "target_has_power": "Vulnerable"
      },
      "kind": "apply_power",
      "power": "Vulnerable",
+     "scale": {
+      "factor": 1,
+      "per": "enemy_vulnerable"
+     },
      "target": "enemy",
      "upgrade": 0
     }
@@ -7361,6 +7394,7 @@
   {
    "audit": {
     "by": "TASK-025 cross-review F",
+    "notes": "restructured by developer (semantics unchanged): damage scale per Strike-tagged card",
     "verdict": "agree"
    },
    "card_type": "Attack",
@@ -7372,11 +7406,14 @@
    "effects": [
     {
      "amount": 6,
-     "amount_from": "CalculatedDamage = CalculationBase(6) + ExtraDamage(2, +1 on upgrade) x count of cards in Owner.PlayerCombatState.AllCards whose Tags contain Strike(1)",
+     "amount_text": "CalculatedDamage = CalculationBase(6) + ExtraDamage(2, +1 on upgrade) x count of cards in Owner.PlayerCombatState.AllCards whose Tags contain Strike(1)",
      "hits": 1,
      "kind": "damage",
-     "per_strike_card": 2,
-     "per_strike_card_upgrade": 1,
+     "scale": {
+      "factor": 2,
+      "factor_upgrade": 1,
+      "per": "strike_cards"
+     },
      "target": "single",
      "upgrade": 0
     }
@@ -7455,6 +7492,7 @@
   {
    "audit": {
     "by": "TASK-025 cross-review F",
+    "notes": "restructured by developer (semantics unchanged): draws until a non-Attack: expected chain length",
     "verdict": "agree"
    },
    "card_type": "Attack",
@@ -7472,9 +7510,13 @@
      "upgrade": 3
     },
     {
-     "amount": null,
-     "amount_from": "draw one card at a time; repeat while the drawn card is an Attack and hand size < MaxCardsInHand; stops on a non-Attack draw (which is kept), a failed draw (null), or full hand",
+     "amount": 0,
+     "amount_text": "draw one card at a time; repeat while the drawn card is an Attack and hand size < MaxCardsInHand; stops on a non-Attack draw (which is kept), a failed draw (null), or full hand",
      "kind": "draw",
+     "scale": {
+      "factor": 1,
+      "per": "attack_draw_chain"
+     },
      "upgrade": 0
     }
    ],
@@ -8041,6 +8083,7 @@
   {
    "audit": {
     "by": "TASK-025 cross-review G",
+    "notes": "restructured by developer (semantics unchanged): damage grows per previous play this combat",
     "verdict": "agree"
    },
    "card_type": "Attack",
@@ -8054,8 +8097,11 @@
      "amount": 10,
      "hits": 1,
      "kind": "damage",
-     "per_play_increase": 5,
-     "per_play_increase_upgrade": 5,
+     "scale": {
+      "factor": 5,
+      "factor_upgrade": 5,
+      "per": "own_previous_plays"
+     },
      "target": "single",
      "upgrade": 0
     }
@@ -8570,6 +8616,7 @@
   {
    "audit": {
     "by": "TASK-025 cross-review H",
+    "notes": "restructured by developer (semantics unchanged): block per non-Attack card in hand",
     "verdict": "agree"
    },
    "card_type": "Skill",
@@ -8580,18 +8627,22 @@
    },
    "effects": [
     {
-     "choice": "all",
-     "count": "all",
-     "filter": {
-      "card_type_not": "Attack"
+     "count": null,
+     "count_scale": {
+      "per": "non_attack_in_hand"
      },
      "kind": "exhaust_other"
     },
     {
-     "amount": 5,
-     "amount_from": "granted once per card exhausted by this play (each non-Attack card in hand)",
+     "amount": 0,
+     "amount_text": "granted once per card exhausted by this play (each non-Attack card in hand)",
      "kind": "block",
-     "upgrade": 2
+     "scale": {
+      "factor": 5,
+      "factor_upgrade": 2,
+      "per": "non_attack_in_hand"
+     },
+     "upgrade": 0
     }
    ],
    "entity_key": "cards:SECOND_WIND",
@@ -10188,6 +10239,7 @@
   {
    "audit": {
     "by": "TASK-025 cross-review G",
+    "notes": "restructured by developer (semantics unchanged): hits 1 + times HP was lost this combat",
     "verdict": "agree"
    },
    "card_type": "Attack",
@@ -10199,8 +10251,12 @@
    "effects": [
     {
      "amount": 5,
-     "hits": 1,
-     "hits_from": "1 + number of DamageReceivedEntry in CombatManager.History where Receiver == owner creature and UnblockedDamage > 0 (times the player lost HP to damage this combat)",
+     "hits": 0,
+     "hits_scale": {
+      "base": 1,
+      "per": "hp_loss_events"
+     },
+     "hits_text": "1 + number of DamageReceivedEntry in CombatManager.History where Receiver == owner creature and UnblockedDamage > 0 (times the player lost HP to damage this combat)",
      "kind": "damage",
      "target": "single",
      "upgrade": 2

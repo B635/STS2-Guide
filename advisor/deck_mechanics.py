@@ -41,18 +41,33 @@ EFFECT_KEYS = frozenset({
     # says Strength/Dexterity do not apply, which the engine never adds to
     # mechanic effects anyway.
     "amount_per_stack", "unpowered", "hits_upgrade",
+    # State-dependent amounts (see ``_Engine._resolve``); *_text keeps the
+    # reviewer's wording of the same rule.
+    "scale", "hits_scale", "count_scale", "condition", "amount_text", "hits_text",
+    # Timing notes that do not change per-turn expectations.
+    "deferred_to", "timing",
+})
+# Game-state quantities an amount may scale with, estimated per play.
+SCALE_SOURCES = frozenset({
+    "exhaust_pile", "block", "enemy_vulnerable", "strength", "strike_cards",
+    "hand_size", "hp_loss_events", "non_attack_in_hand", "attack_draw_chain",
+    "own_previous_plays", "condition",
+})
+EFFECT_CONDITIONS = frozenset({
+    "target_has_power", "exhaust_pile_at_least", "lost_hp_this_turn",
+    "card_exhausted_this_turn", "target_alive",
 })
 NUMERIC_EFFECT_KEYS = ("amount", "upgrade", "hits", "count", "amount_per_stack", "hits_upgrade")
 POWER_DURATIONS = frozenset({"combat", "this_turn", "turns_decrement"})
 SUPPORTED_WHEN = frozenset({
     "combat_start", "turn_start", "turn_end", "card_played", "card_exhausted",
-    "card_discarded", "shuffle", "damage_received", "enemy_died",
+    "card_discarded", "shuffle", "damage_received", "enemy_died", "block_gained",
 })
 SUPPORTED_CONDITIONS = frozenset({
     "no_block", "per_card_in_hand", "hand_empty", "block_at_least",
     "hp_ratio_at_most", "no_card_type_played_this_turn",
     "cards_played_this_turn_at_most", "no_potions", "turn_at_least",
-    "unblocked_damage",
+    "unblocked_damage", "during_own_turn", "caused_by_ethereal", "block_gained_above",
 })
 MECHANIC_KEYS = frozenset({
     "when", "filter", "every", "counter", "limit", "condition", "effect",
@@ -68,6 +83,8 @@ MODIFIER_FIELDS = {
     "energy_cost": {"add", "filter"},
     "cards_per_turn_limit": {"max"},
     "no_draw_during_turn": set(),
+    "keep_block": {"max"},
+    "strength": {"add"},  # temporary Strength on the owner
     "card_added_to_deck": {"filter", "upgrade"},
 }
 CARD_FILTER_KEYS = frozenset({"card_type", "tag", "min_cost", "upgraded", "x_cost"})
@@ -98,6 +115,7 @@ class CardProfile:
     exhausts_self: bool
     effects: tuple
     powers: tuple = ()
+    ethereal: bool = False
 
     @property
     def once_per_fight(self) -> bool:
@@ -144,7 +162,11 @@ class _Totals:
     poison_single: float = 0.0
     poison_all: float = 0.0
     exhausts: float = 0.0
+    ethereal_exhausts: float = 0.0
     discards: float = 0.0
+    block_events: float = 0.0
+    self_damage_events: float = 0.0
+    temp_strength: float = 0.0
     gaps: List[str] = field(default_factory=list)
 
 
@@ -163,6 +185,16 @@ def effect_unsupported(effect: object) -> Optional[str]:
         value = effect.get(key)
         if value is not None and (isinstance(value, bool) or not isinstance(value, (int, float))):
             return f"effect_value:{key}"
+    for key in ("scale", "hits_scale", "count_scale"):
+        scale = effect.get(key)
+        if scale is not None and (not isinstance(scale, Mapping) or scale.get("per") not in SCALE_SOURCES):
+            return f"{key}:unsupported"
+    for condition in (effect.get("condition") or {}, (effect.get("hits_scale") or {}).get("condition") or {}):
+        for key, value in condition.items():
+            if key not in EFFECT_CONDITIONS:
+                return f"condition:{key}"
+            if key == "target_has_power" and value not in {"Vulnerable", "Weak"}:
+                return f"condition:{key}:{value}"
     if kind == "damage" and (effect.get("target") or "single") not in DAMAGE_TARGETS:
         return f"effect_target:{effect.get('target')}"
     if kind in {"exhaust_other", "discard"} and effect.get("choice") not in {None, "random", "choose"}:
@@ -184,8 +216,9 @@ def _resolve_stacks(mechanic: Mapping, stacks: float) -> dict:
         effect["amount"] = float(effect.pop("amount_per_stack")) * stacks
     if effect:
         resolved["effect"] = effect
-    if "amount_per_stack" in resolved:
-        resolved["add"] = float(resolved.pop("amount_per_stack")) * stacks
+    for key in ("amount_per_stack", "add_per_stack"):
+        if key in resolved:
+            resolved["add"] = float(resolved.pop(key)) * stacks
     return resolved
 
 
@@ -314,6 +347,10 @@ def card_profile(
             gaps.append(f"card_effect_unsupported:{card_id}:{reason}")
             continue
         resolved = {**effect, "amount": _amount(effect, upgraded)}
+        if upgraded and "scale" in effect:
+            scale = dict(effect["scale"])
+            scale["factor"] = float(scale.get("factor") or 0.0) + float(scale.get("factor_upgrade") or 0.0)
+            resolved["scale"] = scale
         if upgraded and effect.get("hits_upgrade"):
             # Some upgrades add hits rather than damage (e.g. Sword Boomerang).
             resolved["hits"] = float(effect.get("hits") or 1) + float(effect["hits_upgrade"])
@@ -333,6 +370,7 @@ def card_profile(
         tags=frozenset(fact.get("tags") or ()),
         upgraded=upgraded,
         exhausts_self="Exhaust" in keywords or any(e.get("kind") == "exhaust_self" for e in effects),
+        ethereal="Ethereal" in keywords,
         effects=tuple(effects),
         powers=tuple(powers),
     ), tuple(gaps)
@@ -433,6 +471,7 @@ class _Engine:
         # (mechanic, weight): relics always apply; powers by how much of the
         # fight they are active, recomputed each pass (see ``_activate``).
         self.relic_mechanics = [(m, 1.0) for relic in relics for m in relic.mechanics]
+        self.estimates: Dict[str, float] = {}
         self._set_mechanics(self.relic_mechanics)
 
     def _set_mechanics(self, weighted: Sequence[tuple[Mapping, float]]) -> None:
@@ -512,6 +551,7 @@ class _Engine:
     def run(self) -> tuple[Dict[str, float], tuple[str, ...]]:
         params, turns = self.params, self.situation.fight_turns
         extra_draw = extra_energy = block_estimate = 0.0
+        previous = _Totals()
         for _ in range(FEEDBACK_PASSES):
             totals = _Totals()
             hand = float(params["hand_size"]) + self._modifier_total("hand_draw")
@@ -546,18 +586,98 @@ class _Engine:
                 scale = play_limit / played
                 plays = {k: v * scale for k, v in plays.items()}
                 played = play_limit
+            totals.ethereal_exhausts = sum(
+                max(0.0, rates[id(c)] - plays[id(c)]) for c in self.known if c.ethereal
+            )
+            self._estimate(previous, plays, drawn)
             for card in self.known:
                 for effect in card.effects:
-                    self._apply(totals, effect, plays[id(card)], x_value if card.x_cost else None)
+                    resolved, chance = self._resolve(effect, card, plays[id(card)])
+                    self._apply(totals, resolved, plays[id(card)] * chance, x_value if card.x_cost else None)
             self._apply_damage_modifiers(totals, plays, x_value)
             self._apply_block_modifiers(totals, plays)
             self._apply_events(totals, plays, drawn, played, block_estimate, x_value)
             extra_draw, extra_energy, block_estimate = totals.draw, totals.energy, totals.block
+            previous = totals
             self._activate(plays, drawn)
         return (
             self._capabilities(totals, drawn, supply, demand, plays),
             tuple(dict.fromkeys(totals.gaps)),
         )
+
+    def _estimate(self, previous: "_Totals", plays: Mapping[int, float], drawn: float) -> None:
+        """Per-play estimates of the game state amounts may scale with.
+
+        Uses the previous pass's totals; quantities that build up during a
+        fight are taken at its average elapsed turn.
+        """
+
+        turns = self.situation.fight_turns
+        elapsed = max(0.0, turns - 1.0) / 2.0
+        exhausts = previous.exhausts + sum(plays[id(c)] for c in self.known if c.exhausts_self)
+        known = max(1, len(self.known))
+        attacks = sum(1 for c in self.known if c.card_type == "Attack") / known
+        hand = max(0.0, drawn - 1.0) / 2.0  # other cards still in hand at a random play
+        incoming = self.situation.incoming_attack
+        hit = max(0.0, min(1.0, (incoming - previous.block) / incoming)) if incoming > 0 else 0.0
+        self.estimates = {
+            "exhaust_pile": exhausts * elapsed,
+            "exhausts_per_turn": exhausts,
+            "block": previous.block / 2.0,
+            "enemy_vulnerable": previous.vulnerable,
+            "vulnerable_uptime": min(1.0, previous.vulnerable),
+            "weak_uptime": min(1.0, previous.weak),
+            "strength": previous.strength_flat + previous.strength_rate * elapsed,
+            "strike_cards": float(sum(1 for c in self.known if "Strike" in c.tags)),
+            "hand_size": hand,
+            "hp_loss_events": hit * elapsed,
+            "hp_lost_this_turn": hit,
+            "non_attack_in_hand": hand * (1.0 - attacks),
+            "attack_draw_chain": min(10.0, 1.0 / max(1e-9, 1.0 - attacks)),
+        }
+
+    def _condition_chance(self, condition: Mapping) -> float:
+        chance = 1.0
+        for key, value in condition.items():
+            if key == "target_has_power":
+                chance *= self.estimates["vulnerable_uptime" if value == "Vulnerable" else "weak_uptime"]
+            elif key == "exhaust_pile_at_least":
+                chance *= _poisson_at_least(self.estimates["exhaust_pile"], int(value))
+            elif key == "lost_hp_this_turn":
+                chance *= self.estimates["hp_lost_this_turn"]
+            elif key == "card_exhausted_this_turn":
+                chance *= 1.0 - math.exp(-self.estimates["exhausts_per_turn"])
+            # target_alive: the card is played on a living target.
+        return chance
+
+    def _resolve(self, effect: Mapping, card: CardProfile, rate: float) -> tuple:
+        """Fill a state-dependent effect with per-play estimates.
+
+        Returns the resolved effect and the chance its condition holds.
+        """
+
+        resolved = dict(effect)
+        estimates = dict(self.estimates)
+        # Plays of this card earlier in the same fight, on average.
+        estimates["own_previous_plays"] = max(0.0, rate * self.situation.fight_turns - 1.0) / 2.0
+        scale = effect.get("scale")
+        if scale:
+            value = estimates[scale["per"]]
+            if "min" in scale:
+                value = max(float(scale["min"]), value)
+            resolved["amount"] = float(effect.get("amount") or 0.0) + float(scale.get("factor") or 0.0) * value
+        hits_scale = effect.get("hits_scale")
+        if hits_scale:
+            base = float(hits_scale.get("base") or 0.0)
+            if hits_scale["per"] == "condition":
+                chance = self._condition_chance(hits_scale.get("condition") or {})
+                resolved["hits"] = base + (float(hits_scale["hits_if"]) - base) * chance
+            else:
+                resolved["hits"] = base + estimates[hits_scale["per"]]
+        count_scale = effect.get("count_scale")
+        if count_scale:
+            resolved["count"] = estimates[count_scale["per"]]
+        return resolved, self._condition_chance(effect.get("condition") or {})
 
     def _apply(
         self,
@@ -591,6 +711,10 @@ class _Engine:
             setattr(totals, target, getattr(totals, target) + amount * hits * times)
         elif kind in {"block", "draw", "energy", "heal", "hp_loss"}:
             setattr(totals, kind, getattr(totals, kind) + amount * times)
+            if kind == "block":
+                totals.block_events += times
+            elif kind == "hp_loss":
+                totals.self_damage_events += times
         elif kind == "exhaust_other":
             totals.exhausts += float(effect.get("count") or 1) * times
         elif kind == "discard":
@@ -668,11 +792,22 @@ class _Engine:
                 if self._matches(c, mechanic.get("filter"), x_value)
             )
         if when == "card_exhausted":
-            return totals.exhausts + sum(plays[id(c)] for c in self.known if c.exhausts_self)
+            own = totals.exhausts + sum(plays[id(c)] for c in self.known if c.exhausts_self)
+            ethereal = (mechanic.get("condition") or {}).get("caused_by_ethereal")
+            if ethereal is True:
+                return totals.ethereal_exhausts
+            if ethereal is False:
+                return own
+            return own + totals.ethereal_exhausts
+        if when == "block_gained":
+            return totals.block_events
         if when == "card_discarded":
             return totals.discards
         if when == "shuffle":
             return drawn / self.size
+        if when == "damage_received" and (mechanic.get("condition") or {}).get("during_own_turn"):
+            # HP lost during the owner's own turn comes from its own cards.
+            return totals.self_damage_events
         if when == "damage_received":
             incoming = situation.incoming_attack
             return max(0.0, min(1.0, (incoming - block_estimate) / incoming)) if incoming > 0 else 0.0
@@ -709,8 +844,9 @@ class _Engine:
                     probability = 0.0
                 else:
                     probability *= 1.0 if count == 0 else 0.0
-            # turn_at_least: handled by the schedule; unblocked_damage: what
-            # the damage_received rate already measures.
+            # turn_at_least: handled by the schedule; unblocked_damage,
+            # during_own_turn and caused_by_ethereal: what the event rate
+            # already measures; block_gained_above 0: every block event.
         return probability
 
     def _apply_events(
@@ -747,14 +883,24 @@ class _Engine:
         # Strength or Dexterity gained during a fight is on average half built up.
         growth = max(0.0, turns - 1.0) / 2.0
         vigor = totals.vigor if attack_hits > 0 else 0.0  # next attack only
+        temp_strength = sum(
+            float(m.get("add") or 0.0) * w for m, w in self.modifiers if m["modifier"] == "strength"
+        )
+        incoming = situation.incoming_attack
+        kept_block = 0.0
+        for m, w in self.modifiers:
+            if m["modifier"] == "keep_block":
+                surplus = max(0.0, totals.block - incoming)
+                cap = m.get("max")
+                kept_block += w * (min(surplus, float(cap)) if cap else surplus)
         return {
             "frontload": (
                 totals.single + totals.all + totals.random + vigor
-                + totals.strength_flat * attack_hits
+                + (totals.strength_flat + temp_strength) * attack_hits
             ) * amplify + totals.poison_single + totals.poison_all,
             "aoe": (totals.all + totals.poison_all) * situation.extra_enemies,
             "defense": (
-                totals.block + totals.heal - totals.hp_loss
+                totals.block + kept_block + totals.heal - totals.hp_loss
                 + (totals.dexterity_flat + totals.dexterity_rate * growth) * self._block_plays(plays)
                 + float(params["weak_damage_reduction"]) * situation.incoming_attack
                 * min(1.0, totals.weak)

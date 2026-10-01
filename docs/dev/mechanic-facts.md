@@ -130,3 +130,16 @@
 - 效果（暂不计分）：`auto_play`、`auto_play_card`、`auto_play_from_draw`、`transform_cards`、`gain_max_hp`。
 - 时机（暂不计分）：`auto_post_play_phase`、`card_drawn`、`block_gained`、`power_applied`、`power_applied_self`、`creature_added`（敌人中途加入战斗）。
 - 修正（暂不计分）：`exhaust_on_play`、`vulnerable_multiplier`、`strength`（临时力量）。
+
+## 数值随局面变化（票 05 起）
+
+数值依赖战斗状态时，不写自由文本，而用结构化来源（引擎按牌组每回合期望估算；原文可留在 `amount_text` / `hits_text`）：
+
+- `scale: {"per": 来源, "factor": n, "factor_upgrade": m, "min": 0}`：数值 = `amount` + `factor` × 来源；升级时 `factor` 加 `factor_upgrade`。
+- `hits_scale: {"per": 来源, "base": b}`：攻击次数 = `b` + 来源；条件次数用 `{"per": "condition", "condition": {...}, "base": 1, "hits_if": 2}`。
+- `count_scale: {"per": 来源}`：耗竭/弃牌张数随局面。
+- 来源：`exhaust_pile`（耗竭堆张数）、`block`（当前格挡）、`enemy_vulnerable`（目标易伤层数）、`strength`（力量）、`strike_cards`（打击标签牌数）、
+  `hand_size`（打出时其余手牌数）、`hp_loss_events`（本场失血次数）、`non_attack_in_hand`（手牌中非攻击牌数）、`attack_draw_chain`（连续抽到攻击牌的期望长度）、
+  `own_previous_plays`（本场此前打出本牌的次数）。不在列表内的来源写 `amount_text` 并加 open_question。
+- 效果上的 `condition`：`target_has_power`（Vulnerable/Weak）、`exhaust_pile_at_least`、`lost_hp_this_turn`、`card_exhausted_this_turn`、`target_alive`。
+- 升级增加攻击次数：`hits_upgrade`。

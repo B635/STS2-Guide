@@ -327,3 +327,46 @@ class RelicMechanicTests(unittest.TestCase):
         skip = next(r for r in result.candidates if r.candidate_id == "skip")
         self.assertEqual(skip.factors[0]["code"], "unmodeled_relics")
         self.assertIn("PAELS_WING", skip.factors[0]["message"])
+
+
+class CardMechanicTests(unittest.TestCase):
+    """Reviewed IRONCLAD facts: powers and state-dependent amounts."""
+
+    @classmethod
+    def setUpClass(cls):
+        DeckFitnessPolicyTests.setUpClass()
+        cls.helper = DeckFitnessPolicyTests()
+
+    @classmethod
+    def tearDownClass(cls):
+        DeckFitnessPolicyTests.tearDownClass()
+
+    def gain(self, offered, deck):
+        result = self.helper.recommend(deck, [offered])
+        scores = self.helper.scores(result)
+        return scores[f"0:{offered}"] - scores["skip"], result
+
+    def test_perfected_strike_is_worth_more_with_more_strikes(self):
+        few, _ = self.gain("PERFECTED_STRIKE", [card("DEFEND_IRONCLAD", 6), card("STRIKE_IRONCLAD", 1)])
+        many, _ = self.gain("PERFECTED_STRIKE", [card("DEFEND_IRONCLAD", 2), card("STRIKE_IRONCLAD", 5)])
+        self.assertGreater(many, few)
+
+    def test_body_slam_is_worth_more_in_a_block_heavy_deck(self):
+        block, _ = self.gain("BODY_SLAM", [card("DEFEND_IRONCLAD", 7), card("STRIKE_IRONCLAD", 1)])
+        attack, _ = self.gain("BODY_SLAM", [card("DEFEND_IRONCLAD", 1), card("STRIKE_IRONCLAD", 7)])
+        self.assertGreater(block, attack)
+
+    def test_demon_form_counts_as_growth_through_its_power(self):
+        _, result = self.gain("DEMON_FORM", [card("STRIKE_IRONCLAD", 5), card("DEFEND_IRONCLAD", 4)])
+        demon = next(r for r in result.candidates if r.candidate_id == "0:DEMON_FORM")
+        scaling = [f for f in demon.factors if f["code"] == "deck_fitness:scaling"]
+        self.assertTrue(scaling and scaling[0]["delta"] > 0)
+        self.assertFalse(demon.data_gaps)
+
+    def test_partially_modeled_cards_are_scored_and_disclosed(self):
+        _, result = self.gain("INFERNAL_BLADE", [card("STRIKE_IRONCLAD", 5), card("DEFEND_IRONCLAD", 4)])
+        blade = next(r for r in result.candidates if r.candidate_id == "0:INFERNAL_BLADE")
+        self.assertIsNotNone(blade.score)
+        self.assertEqual(blade.factors[0]["code"], "unmodeled_mechanic")
+        self.assertIn("card_effect_unsupported:INFERNAL_BLADE:effect:add_card", blade.data_gaps)
+        self.assertEqual(blade.dimensions["data_completeness"], 0.0)
