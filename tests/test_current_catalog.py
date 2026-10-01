@@ -5,7 +5,7 @@ import tempfile
 from pathlib import Path
 
 from advisor.route import RoutePolicy
-from storage.release_database import build_release_database
+from storage.release_database import GUIDE_PARAMETER_KEYS, build_release_database
 from storage.relational import RelationalRepository
 from storage.effect_tags import derive_effect_tags
 from test_route_decision import _route_request
@@ -33,6 +33,9 @@ class CurrentCatalogTests(unittest.TestCase):
         self.assertEqual(self.catalog["_source"]["game_version"], manifest["game"]["version"])
         owned = json.loads((ROOT / "data/guide_mechanics.json").read_text(encoding="utf-8"))
         for key, value in owned.items():
+            if key in GUIDE_PARAMETER_KEYS:
+                # Loaded into the release database directly, not via the catalog.
+                continue
             self.assertEqual(self.catalog["mechanics"][key], value)
         for kind in ("characters", "cards", "relics", "potions", "monsters", "acts", "encounters"):
             ids = [item["id"] for item in self.catalog[kind]]

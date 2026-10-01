@@ -19,15 +19,25 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Mapping
 
+from storage.assembly_facts import DEFAULT_EXTRACT_PATH, DEFAULT_FACTS_PATH
 from storage.effect_tags import EFFECT_TAG_VERSION
 from storage.relational import RelationalRepository, SCHEMA_VERSION
 
+
+DEFAULT_GUIDE_PARAMETERS_PATH = (
+    Path(__file__).resolve().parents[1] / "data" / "guide_mechanics.json"
+)
+# Guide-owned parameters loaded directly (not via the catalog snapshot).
+GUIDE_PARAMETER_KEYS = ("deck_fitness_v1",)
 
 RELEASE_IDENTITY_KEYS = (
     "schema_version",
     "effect_tag_version",
     "catalog_sha256",
     "community_scores_sha256",
+    "assembly_extract_sha256",
+    "assembly_facts_sha256",
+    "guide_parameters_sha256",
     "release_catalog_profile",
 )
 RELEASE_CATALOG_PROFILE = "public-beta-card-route-v1"
@@ -188,7 +198,13 @@ def _read_metadata(connection: sqlite3.Connection) -> dict[str, str]:
 
 
 def _validate_hash_metadata(metadata: Mapping[str, str]) -> None:
-    for key in ("catalog_sha256", "community_scores_sha256"):
+    for key in (
+        "catalog_sha256",
+        "community_scores_sha256",
+        "assembly_extract_sha256",
+        "assembly_facts_sha256",
+        "guide_parameters_sha256",
+    ):
         value = metadata.get(key, "")
         if not _SHA256_RE.fullmatch(value):
             raise ReleaseDatabaseError(
@@ -437,17 +453,29 @@ def build_release_database(
     template_path: str | Path,
     catalog_path: str | Path,
     community_scores_path: str | Path,
+    assembly_extract_path: str | Path = DEFAULT_EXTRACT_PATH,
+    assembly_facts_path: str | Path = DEFAULT_FACTS_PATH,
+    guide_parameters_path: str | Path = DEFAULT_GUIDE_PARAMETERS_PATH,
 ) -> ReleaseDatabaseResult:
     """Create a clean template and publish it with one atomic replacement."""
     template = Path(template_path)
     catalog = Path(catalog_path)
     community = Path(community_scores_path)
+    assembly_extract = Path(assembly_extract_path)
+    assembly_facts = Path(assembly_facts_path)
+    guide_parameters = Path(guide_parameters_path)
     if not catalog.is_file():
         raise ReleaseDatabaseError(f"catalog snapshot is missing: {catalog}")
     if not community.is_file():
         raise ReleaseDatabaseError(
             f"community score snapshot is missing: {community}"
         )
+    if not assembly_extract.is_file():
+        raise ReleaseDatabaseError(f"assembly extract is missing: {assembly_extract}")
+    if not assembly_facts.is_file():
+        raise ReleaseDatabaseError(f"assembly facts are missing: {assembly_facts}")
+    if not guide_parameters.is_file():
+        raise ReleaseDatabaseError(f"Guide parameters are missing: {guide_parameters}")
 
     try:
         community_payload = json.loads(community.read_text(encoding="utf-8"))
@@ -464,8 +492,20 @@ def build_release_database(
         repository.ensure_schema()
         repository.sync_catalog(str(catalog))
         repository.sync_entity_statistics(str(community))
+        try:
+            repository.sync_assembly_facts(
+                str(assembly_extract), str(assembly_facts)
+            )
+        except ValueError as exc:
+            raise ReleaseDatabaseError(str(exc)) from exc
         with repository.connect() as connection:
             _minimize_release_catalog(connection)
+        try:
+            repository.sync_guide_parameters(
+                str(guide_parameters), GUIDE_PARAMETER_KEYS, imported_at
+            )
+        except ValueError as exc:
+            raise ReleaseDatabaseError(str(exc)) from exc
         _normalize_release_database(temporary, imported_at=imported_at)
 
         metadata = _validate_template(temporary)
@@ -474,6 +514,17 @@ def build_release_database(
         if metadata["community_scores_sha256"] != _sha256_path(community):
             raise ReleaseDatabaseError(
                 "community score hash metadata does not match input"
+            )
+        if (
+            metadata["assembly_extract_sha256"] != _sha256_path(assembly_extract)
+            or metadata["assembly_facts_sha256"] != _sha256_path(assembly_facts)
+        ):
+            raise ReleaseDatabaseError(
+                "assembly fact hash metadata does not match input"
+            )
+        if metadata["guide_parameters_sha256"] != _sha256_path(guide_parameters):
+            raise ReleaseDatabaseError(
+                "Guide parameter hash metadata does not match input"
             )
         _fsync_file(temporary)
         os.replace(temporary, template)

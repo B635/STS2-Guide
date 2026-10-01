@@ -16,6 +16,14 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, Iterable, Iterator, List, Optional
 
+from storage.assembly_facts import (
+    ASSEMBLY_FACTS_VERSION,
+    AssemblyFactsError,
+    coverage_summary,
+    evaluate_facts,
+    load_extract,
+    load_facts,
+)
 from storage.effect_tags import EFFECT_TAG_VERSION, derive_effect_tags
 
 
@@ -259,6 +267,18 @@ class RelationalRepository:
                     constant_key TEXT PRIMARY KEY,
                     value_json TEXT NOT NULL,
                     imported_at TEXT NOT NULL
+                );
+
+                CREATE TABLE IF NOT EXISTS assembly_facts (
+                    entity_key TEXT PRIMARY KEY,
+                    class_name TEXT,
+                    state TEXT NOT NULL,
+                    category TEXT,
+                    triage_category TEXT,
+                    fingerprint TEXT,
+                    current_fingerprint TEXT,
+                    valid INTEGER NOT NULL,
+                    fact_json TEXT NOT NULL
                 );
 
                 CREATE TABLE IF NOT EXISTS run_summaries (
@@ -1041,6 +1061,131 @@ class RelationalRepository:
                 (snapshot_hash,),
             )
         return imported
+
+    def sync_assembly_facts(
+        self,
+        extract_path: str,
+        facts_path: str,
+    ) -> Dict[str, Dict[str, int]]:
+        """Replace assembly facts; validity is judged per class fingerprint."""
+
+        extract = load_extract(extract_path)
+        facts = load_facts(facts_path)
+        if facts.get("assembly_sha256") != extract.get("assembly_sha256"):
+            raise AssemblyFactsError(
+                "assembly facts were refreshed for a different extract"
+            )
+        evaluated = evaluate_facts(facts, extract)
+        extract_hash = hashlib.sha256(Path(extract_path).read_bytes()).hexdigest()
+        facts_hash = hashlib.sha256(Path(facts_path).read_bytes()).hexdigest()
+        with self.connect() as connection:
+            connection.execute("DELETE FROM assembly_facts")
+            for key, entry in sorted(evaluated.items()):
+                fact = {
+                    k: v for k, v in entry.items()
+                    if k not in {"current_fingerprint", "state", "valid"}
+                }
+                connection.execute(
+                    """
+                    INSERT INTO assembly_facts(
+                        entity_key, class_name, state, category,
+                        triage_category, fingerprint, current_fingerprint,
+                        valid, fact_json
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        key,
+                        entry.get("class"),
+                        entry["state"],
+                        entry.get("category") if entry["valid"] else None,
+                        (entry.get("triage") or {}).get("category"),
+                        entry.get("fingerprint"),
+                        entry.get("current_fingerprint"),
+                        1 if entry["valid"] else 0,
+                        _json_dumps(fact),
+                    ),
+                )
+            connection.executemany(
+                """
+                INSERT INTO schema_metadata(key, value) VALUES (?, ?)
+                ON CONFLICT(key) DO UPDATE SET value = excluded.value
+                """,
+                [
+                    ("assembly_extract_sha256", extract_hash),
+                    ("assembly_facts_sha256", facts_hash),
+                    ("assembly_facts_version", ASSEMBLY_FACTS_VERSION),
+                ],
+            )
+        return coverage_summary(
+            (key, entry["state"]) for key, entry in evaluated.items()
+        )
+
+    def sync_guide_parameters(
+        self,
+        path: str,
+        keys: Iterable[str],
+        imported_at: str,
+    ) -> None:
+        """Store Guide-owned policy parameters that are not catalog facts."""
+
+        parameters = json.loads(Path(path).read_text(encoding="utf-8"))
+        with self.connect() as connection:
+            for key in keys:
+                if not isinstance(parameters.get(key), dict):
+                    raise ValueError(f"Guide parameters are missing {key}")
+                connection.execute(
+                    """
+                    INSERT INTO mechanic_constants(constant_key, value_json, imported_at)
+                    VALUES (?, ?, ?)
+                    ON CONFLICT(constant_key) DO UPDATE SET
+                        value_json = excluded.value_json,
+                        imported_at = excluded.imported_at
+                    """,
+                    (
+                        key,
+                        _json_dumps({
+                            **parameters[key],
+                            "_source": {"id": "sts2_guide_policy", "path": Path(path).name},
+                        }),
+                        imported_at,
+                    ),
+                )
+            connection.execute(
+                """
+                INSERT INTO schema_metadata(key, value)
+                VALUES('guide_parameters_sha256', ?)
+                ON CONFLICT(key) DO UPDATE SET value = excluded.value
+                """,
+                (hashlib.sha256(Path(path).read_bytes()).hexdigest(),),
+            )
+
+    def find_assembly_fact(
+        self,
+        entity_type: str,
+        identifier: str,
+    ) -> Optional[Dict]:
+        """Return one valid assembly fact, or None when missing or invalid."""
+
+        key = f"{entity_type}:{str(identifier).strip().upper()}"
+        with self.connect() as connection:
+            row = connection.execute(
+                "SELECT fact_json, valid FROM assembly_facts WHERE entity_key = ?",
+                (key,),
+            ).fetchone()
+        if row is None or not int(row["valid"]):
+            return None
+        return json.loads(row["fact_json"])
+
+    def assembly_fact_coverage(self) -> Dict[str, Dict[str, int]]:
+        """Count assembly facts per entity type and review state."""
+
+        with self.connect() as connection:
+            rows = connection.execute(
+                "SELECT entity_key, state FROM assembly_facts"
+            ).fetchall()
+        return coverage_summary(
+            (str(row["entity_key"]), str(row["state"])) for row in rows
+        )
 
     def catalog_counts(self) -> Dict[str, int]:
         counts = {entity_type: 0 for entity_type in CATALOG_TYPES}

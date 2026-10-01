@@ -300,11 +300,11 @@ class RealtimeEventProcessor:
 
         try:
             if event.event_type == EventType.CARD_REWARD:
-                world = self._build_world(event)
-                request = self._build_card_reward_request(event, world)
+                world = self.build_world(event)
+                request = self.build_card_reward_request(event, world)
                 result = self._process_decision(event, request)
             elif event.event_type == EventType.ROUTE_CHOICE:
-                world = self._build_world(event)
+                world = self.build_world(event)
                 request = self._build_route_choice_request(event, world)
                 result = self._process_decision(event, request)
             elif event.event_type == EventType.MERCHANT:
@@ -312,7 +312,7 @@ class RealtimeEventProcessor:
                     event,
                     self._build_generic_decision_request(
                         event,
-                        self._build_world(event),
+                        self.build_world(event),
                         MERCHANT_CHOICE,
                     ),
                 )
@@ -321,7 +321,7 @@ class RealtimeEventProcessor:
                     event,
                     self._build_generic_decision_request(
                         event,
-                        self._build_world(event),
+                        self.build_world(event),
                         CAMPFIRE_ACTION,
                     ),
                 )
@@ -330,7 +330,7 @@ class RealtimeEventProcessor:
                     event,
                     self._build_generic_decision_request(
                         event,
-                        self._build_world(event),
+                        self.build_world(event),
                         NEOW_BLESSING,
                     ),
                 )
@@ -339,7 +339,7 @@ class RealtimeEventProcessor:
                     event,
                     self._build_generic_decision_request(
                         event,
-                        self._build_world(event),
+                        self.build_world(event),
                         EVENT_OPTION,
                     ),
                 )
@@ -348,14 +348,14 @@ class RealtimeEventProcessor:
                     event,
                     self._build_generic_decision_request(
                         event,
-                        self._build_world(event),
+                        self.build_world(event),
                         DECK_EDIT,
                     ),
                 )
             elif event.event_type == EventType.MAP_CHOICE:
                 result = self._process_map_choice(
                     event,
-                    self._build_world(event),
+                    self.build_world(event),
                 )
             elif event.event_type == EventType.DECISION_CLOSED:
                 result = self._process_decision_closed(event)
@@ -604,7 +604,8 @@ class RealtimeEventProcessor:
                 "Unknown character ID or name"
             )
 
-    def _build_world(self, event: GameStateEvent) -> WorldState:
+    @staticmethod
+    def build_world(event: GameStateEvent) -> WorldState:
         state = event.state.model_dump()
         map_context = (
             event.map_context.model_dump()
@@ -662,7 +663,7 @@ class RealtimeEventProcessor:
         return marked
 
     @staticmethod
-    def _build_card_reward_request(
+    def build_card_reward_request(
         event: GameStateEvent,
         world: WorldState,
     ) -> DecisionRequest:
@@ -900,9 +901,9 @@ class RealtimeEventProcessor:
                 **replay, "recommendation": None, "advice": None,
                 "advice_disposition": self._advice_disposition("preserve"),
             }
-        world = self._build_world(event)
+        world = self.build_world(event)
         if event.event_type == EventType.CARD_REWARD:
-            request = self._build_card_reward_request(event, world)
+            request = self.build_card_reward_request(event, world)
         elif event.event_type == EventType.ROUTE_CHOICE:
             request = self._build_route_choice_request(event, world)
         else:

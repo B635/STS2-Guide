@@ -1,0 +1,48 @@
+{
+ "all": {
+  "situations": 2,
+  "hits": 0,
+  "hit_rate": 0.0,
+  "obvious_errors_first": 0
+ },
+ "confirmed": {
+  "situations": 2,
+  "hits": 0,
+  "hit_rate": 0.0,
+  "obvious_errors_first": 0
+ },
+ "rows": [
+  {
+   "id": "ironclad-f12-stone-armor-boomerang-taunt",
+   "label_status": "confirmed",
+   "warnings": [
+    "reconstructed"
+   ],
+   "first": null,
+   "hit": false,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:deck_fitness_1",
+   "scores": {
+    "0:STONE_ARMOR": null,
+    "1:SWORD_BOOMERANG": null,
+    "2:TAUNT": null,
+    "skip": 39.9
+   }
+  },
+  {
+   "id": "ironclad-f15-pommel-havoc-unrelenting",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": null,
+   "hit": false,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:deck_fitness_1",
+   "scores": {
+    "0:POMMEL_STRIKE": null,
+    "1:HAVOC": null,
+    "2:UNRELENTING": null,
+    "skip": 51.5
+   }
+  }
+ ]
+}

@@ -246,7 +246,7 @@ class RealtimeEventTests(unittest.TestCase):
         request = DecisionRequest.create(
             decision_id="test-run:merchant:stable",
             decision_type="merchant",
-            world=processor._build_world(event),
+            world=processor.build_world(event),
             candidates=request_candidates,
         )
         event_payload = event.model_dump(mode="json")
@@ -2007,7 +2007,7 @@ class RealtimeEventTests(unittest.TestCase):
         request = DecisionRequest.create(
             decision_id="merchant:decision:1",
             decision_type="merchant",
-            world=processor._build_world(event),
+            world=processor.build_world(event),
             candidates=[DecisionCandidate.create(
                 "relic:anchor",
                 label="锚",

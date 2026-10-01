@@ -32,6 +32,21 @@ def _parser() -> argparse.ArgumentParser:
         default=ROOT / "data" / "community_scores.json",
     )
     parser.add_argument(
+        "--assembly-extract",
+        type=Path,
+        default=ROOT / "data" / "assembly" / "sts2-extract.json",
+    )
+    parser.add_argument(
+        "--assembly-facts",
+        type=Path,
+        default=ROOT / "data" / "assembly" / "facts.json",
+    )
+    parser.add_argument(
+        "--guide-parameters",
+        type=Path,
+        default=ROOT / "data" / "guide_mechanics.json",
+    )
+    parser.add_argument(
         "--output",
         type=Path,
         default=ROOT / "build" / "release" / "sts2-guide-template.db",
@@ -45,6 +60,9 @@ def main(argv: list[str] | None = None) -> int:
         args.output,
         args.catalog,
         args.community_scores,
+        args.assembly_extract,
+        args.assembly_facts,
+        args.guide_parameters,
     )
     print(json.dumps(result.as_dict(), ensure_ascii=False, sort_keys=True))
     return 0

@@ -15,6 +15,20 @@
 该工具仅作用户授权的开发期测试驱动，不进入只读产品；旧 `/api/v1/state` 示例不能作为
 当前上游 API 事实。隔离编译通过不等于失焦真机通过。
 
+### 2026-10-01 TASK-025 票 02：程序集事实管线
+
+本机0.111.0程序集SHA256 `0861bfa1…dcbe9`。开发工具 `tools/Sts2FactExtractor` 只用
+`System.Reflection.Metadata` 解码元数据与IL，不加载执行程序集、不实例化模型、不调用游戏方法，
+不进入产品或发行包。它枚举 `Models.Relics` 与 `Models.Cards` 命名空间下的全部顶层类（300/596），
+输出重写的钩子、引用的游戏成员（含泛型实参，如 `PowerCmd.Apply<FreeAttackPower>`）、`get_Type`
+后的 `CardType` 常量比较，以及按类代码指纹（含嵌套状态机与匿名方法，操作数解析为名称而非token，
+同一程序集重复提取结果一致）。类名按 PascalCase→UPPER_SNAKE 与目录ID一一对应（298遗物、595卡），
+仅 `DeprecatedRelic`、`VakuuCardSelector`、`DeprecatedCard` 无目录条目。
+
+事实文件每条锁定该类指纹；游戏更新后重新提取，只有代码改动过的条目变为 stale。遗物初分只看钩子
+结构（触发/基线/局外/奖励），奖励类钩子与未归类钩子一律人工审核；战纹涂料仅 `AfterObtained`，
+斗篷扣仅 `BeforeSideTurnEnd`。
+
 ### 2026-09-25 TASK-024：主动耗竭、下一攻击免费与条件遗物
 
 验证目标为本机0.111.0 / 41cef1ea、程序集SHA256 `0861bfa1df347538d932f22d580e75420f08082792eb914e53b4882764acdbe9`。

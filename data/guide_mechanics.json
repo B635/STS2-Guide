@@ -29,5 +29,54 @@
       "growth": 0.5,
       "resource": 0.4
     }
+  },
+  "deck_fitness_v1": {
+    "version": "deck-fitness-v1",
+    "notes": {
+      "units": "frontload/aoe/scaling: damage per turn; defense: block per turn; cycle: share of deck seen per turn; energy: energy supply / energy demand",
+      "needs": "derived per upcoming fight from real encounter-pool HP/attack facts; only the ratios below are Guide-owned parameters",
+      "energy": "energy limits how many drawn cards are played (a cap on every other dimension); its own weight is 0 so it is not counted twice"
+    },
+    "hand_size": 5,
+    "base_energy": 3,
+    "fight_turns": {
+      "MONSTER": 4,
+      "ELITE": 5,
+      "BOSS": 7
+    },
+    "fight_importance": {
+      "MONSTER": 1.0,
+      "ELITE": 2.0,
+      "BOSS": 3.0
+    },
+    "block_share": 0.6,
+    "low_hp_defense_pressure": 1.0,
+    "scaling_onset_turns": 3,
+    "cycle_need": 0.4,
+    "vulnerable_damage_bonus": 0.5,
+    "weak_damage_reduction": 0.25,
+    "dimension_weights": {
+      "frontload": 1.0,
+      "aoe": 0.5,
+      "defense": 1.0,
+      "scaling": 0.7,
+      "cycle": 0.4,
+      "energy": 0.0
+    },
+    "preference_dimensions": {
+      "survival": [
+        "defense"
+      ],
+      "immediate_power": [
+        "frontload",
+        "aoe"
+      ],
+      "long_term_growth": [
+        "scaling",
+        "cycle"
+      ]
+    },
+    "surplus_slope": 0.25,
+    "satisfaction_cap": 3.0
   }
 }

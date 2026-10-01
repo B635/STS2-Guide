@@ -9,6 +9,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from storage.release_database import (
+    GUIDE_PARAMETER_KEYS,
     PROHIBITED_HISTORY_TABLES,
     PUBLIC_CATALOG_TYPES,
     RELEASE_CATALOG_PROFILE,
@@ -230,7 +231,9 @@ class ReleaseDatabaseTests(unittest.TestCase):
             self.assertEqual(
                 connection.execute(
                     "SELECT COUNT(*) FROM mechanic_constants "
-                    "WHERE constant_key <> 'route_risk_profile_v1'"
+                    "WHERE constant_key <> 'route_risk_profile_v1' "
+                    f"AND constant_key NOT IN ({','.join('?' * len(GUIDE_PARAMETER_KEYS))})",
+                    GUIDE_PARAMETER_KEYS,
                 ).fetchone()[0],
                 0,
             )
