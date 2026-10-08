@@ -34,13 +34,16 @@ EFFECT_KINDS = SUPPORTED_EFFECTS | {
     "orb_passive", "orb_passive_all", "orb_slots", "set_free_this_turn", "extra_turn",
     "cost_reduction", "add_pet", "procure_potion", "set_enemy_hp", "replay_card", "move_card",
     "auto_play", "auto_play_card", "auto_play_from_draw", "transform_cards", "gain_max_hp",
+    "add_keyword", "remove_block", "remove_power", "trigger_power", "extra_card_reward",
+    "evoke_orb", "shuffle", "doom_kill", "kill_osty", "spread_debuffs", "add_replay",
+    "end_turn", "gain_gold", "stun", "lose_max_hp",
 }
 WHEN = {
     "combat_start", "turn_start", "turn_end", "card_played", "card_exhausted",
     "card_discarded", "shuffle", "hand_emptied", "damage_received", "enemy_died",
     "potion_used", "stars_spent", "orb_channeled", "card_generated", "block_broken",
     "lethal_damage", "auto_post_play_phase", "card_drawn", "block_gained",
-    "power_applied", "power_applied_self", "creature_added",
+    "power_applied", "power_applied_self", "creature_added", "on_chosen",
 }
 MODIFIERS = {
     "hand_draw", "max_energy", "damage", "block", "energy_cost", "x_value",
@@ -56,6 +59,7 @@ REVIEW_FIELDS = {
     "status", "category", "cost", "card_type", "tags", "keywords", "effects",
     "mechanics", "unknowable", "evidence", "open_questions", "reviewed_by",
     "duration", "upgrade_keywords", "multiplayer_only", "cost_modifier", "audit",
+    "star_cost", "can_be_generated_in_combat", "card_type_text",
 }
 
 
