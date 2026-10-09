@@ -19,7 +19,10 @@ No community prior is used. Unknown facts contribute nothing and are reported.
 
 from __future__ import annotations
 
+import hashlib
 import math
+import random
+import re
 from dataclasses import dataclass, replace
 from types import MappingProxyType
 from typing import Dict, List, Mapping, Optional, Sequence
@@ -87,6 +90,7 @@ class Needs:
     incoming_attack: float
     fight_mix: Mapping[str, float]
     gaps: tuple[str, ...] = ()
+    fight_sequence: tuple[str, ...] = ()   # remaining fights of the act, in route order
 
 
 @dataclass(frozen=True)
@@ -156,15 +160,25 @@ def _reachable_fight_share(
     return share
 
 
+def _sequence_from_mix(mix: Mapping[str, float]) -> tuple[str, ...]:
+    """Fights in a plausible order when no single path is known."""
+
+    return tuple(
+        kind for kind in ("MONSTER", "ELITE", "BOSS")
+        for _ in range(int(round(mix.get(kind, 0.0))))
+    )
+
+
 def _fight_mix(
     route_policy: RoutePolicy,
     request: DecisionRequest,
-) -> tuple[Dict[str, float], tuple[str, ...]]:
-    """Fight kinds ahead: the recommended route, else reachable-path share."""
+) -> tuple[Dict[str, float], tuple[str, ...], tuple[str, ...]]:
+    """Fight kinds ahead (mix, gaps, ordered kinds on the recommended route);
+    without a route, the reachable-path share and no order."""
 
     world_map = request.world.map
     if world_map is None or not world_map.nodes:
-        return {}, ("route_context_missing",)
+        return {}, ("route_context_missing",), ()
     by_id = {node.node_id: node for node in world_map.nodes}
     candidates = [
         DecisionCandidate.create(node_id, by_id[node_id].as_dict(), label=node_id, display_index=i)
@@ -185,14 +199,17 @@ def _fight_mix(
         ))
         path = (route.presentation or {}).get("primary_path_node_ids") or ()
         mix: Dict[str, float] = {}
+        sequence = []
         for node_id in path:
             kind = str(by_id[node_id].kind).upper() if node_id in by_id else ""
             if kind in FIGHT_KINDS:
                 mix[kind] = mix.get(kind, 0.0) + 1.0
+                sequence.append(kind)
         if mix:
-            return mix, ()
+            return mix, (), tuple(sequence)
     share = _reachable_fight_share(world_map)
-    return share, ("route_path_unavailable",) if share else ("route_path_unavailable", "boss_unreachable")
+    gaps = ("route_path_unavailable",) if share else ("route_path_unavailable", "boss_unreachable")
+    return share, gaps, ()
 
 
 def compute_needs(
@@ -203,7 +220,7 @@ def compute_needs(
     preferences: ScoringPreferences,
 ) -> Needs:
     world = request.world
-    mix, gaps = _fight_mix(route_policy, request)
+    mix, gaps, sequence = _fight_mix(route_policy, request)
     boss_ids = world.map.boss_encounter_ids if world.map else ()
     if not mix and world.map and world.map.nodes and not world.map.available_next_node_ids:
         # Reward after the act's boss: the next act's map is not generated
@@ -264,7 +281,9 @@ def compute_needs(
     # How much block a fight needs is set by the enemies; low HP changes how
     # much meeting that need matters, so it scales the weight, not the amount.
     weights["defense"] *= 1.0 + float(params["low_hp_defense_pressure"]) * (1.0 - hp_ratio)
+    sequence = sequence or _sequence_from_mix(mix)
     return Needs(
+        fight_sequence=tuple(sequence),
         values={
             "frontload": _weighted(rows["frontload"]),
             "aoe": _weighted(rows["aoe"]),
@@ -405,6 +424,58 @@ def _legacy_payload(
     }
 
 
+BASIC_CARD = re.compile(r"^(STRIKE|DEFEND)_[A-Z]+$")
+
+
+def _synergy_notes(card, label, deck, score_deck, params, name_of=lambda c: c) -> list[dict]:
+    """Owned cards whose removal lowers this card's gain the most.
+
+    Basic Strikes/Defends are left out: removing one only shifts the deck's
+    mix, which is not a synergy worth naming.
+    """
+
+    settings = params.get("synergy_notes") or {}
+    threshold = float(settings.get("min_gain", 0.0))
+    if not threshold:
+        return []
+    base_gain = score_deck([*deck, card]) - score_deck(deck)
+    seen, rows = set(), []
+    for owned in deck:
+        if owned is None or owned.card_id in seen or BASIC_CARD.match(owned.card_id):
+            continue
+        seen.add(owned.card_id)
+        rest = list(deck)
+        rest.remove(owned)
+        boost = base_gain - (score_deck([*rest, card]) - score_deck(rest))
+        if boost >= threshold:
+            rows.append((boost, owned.card_id))
+    rows.sort(reverse=True)
+    if not rows:
+        return []
+    names = "、".join(name_of(card_id) for _, card_id in rows[: int(settings.get("max_cards", 2))])
+    return [{
+        "code": "deck_fitness:synergy",
+        "delta": 0.0,
+        "message": f"牌组里的 {names} 让{label}更有价值（说明，不另加分）",
+    }]
+
+
+def _scenario_seed(decision_id: str) -> int:
+    return int(hashlib.sha256(decision_id.encode("utf-8")).hexdigest()[:12], 16)
+
+
+def _roll_rarity(rng: random.Random, odds: Mapping[str, float], rare_offset: float) -> str:
+    """CardRarityOdds.RollWithoutChangingFutureOdds: rare, then uncommon, else common."""
+
+    roll = rng.random()
+    rare = float(odds.get("rare", 0.0)) + (rare_offset if odds.get("rare", 0.0) < 1.0 else 0.0)
+    if roll < rare:
+        return "rare"
+    if roll < rare + float(odds.get("uncommon", 0.0)):
+        return "uncommon"
+    return "common"
+
+
 class DeckFitnessPolicy:
     decision_type = CARD_REWARD
 
@@ -416,6 +487,115 @@ class DeckFitnessPolicy:
         self.repository = repository
         self.preferences = preferences
         self.route_policy = RoutePolicy(repository)
+        self._pools: Dict[str, Dict[str, List[CardProfile]]] = {}
+        # Facts are fixed for one release database: resolve each card, relic
+        # and orb once per policy instead of once per request.
+        self._cards: Dict[tuple, tuple] = {}
+        self._relics: Dict[str, tuple] = {}
+        self._orbs: Optional[Dict[str, Mapping]] = None
+
+    def _card(self, card_id: str, upgrades: int) -> tuple:
+        key = (card_id, upgrades)
+        if key not in self._cards:
+            self._cards[key] = card_profile(self.repository, card_id, upgrades)
+        return self._cards[key]
+
+    def _card_name(self, card_id: str) -> str:
+        entity = self.repository.find_entity("cards", card_id)
+        return str((entity or {}).get("name") or card_id)
+
+    def _relic(self, relic_id: str) -> tuple:
+        if relic_id not in self._relics:
+            self._relics[relic_id] = relic_profile(self.repository, relic_id)
+        return self._relics[relic_id]
+
+    def _orb_facts(self) -> Dict[str, Mapping]:
+        if self._orbs is None:
+            self._orbs = {
+                orb: fact for orb in ORB_TYPES.values()
+                if (fact := self.repository.find_assembly_fact("orbs", orb)) is not None
+                and fact.get("status") == "converted"
+            }
+        return self._orbs
+
+    def _pool(self, character: str) -> Dict[str, List[CardProfile]]:
+        """Reward pool by rarity: the character's common/uncommon/rare cards
+        that have a scorable fact, excluding multiplayer-only cards."""
+
+        key = character.upper()
+        if key not in self._pools:
+            pool: Dict[str, List[CardProfile]] = {"common": [], "uncommon": [], "rare": []}
+            for card_id, rarity in self.repository.card_reward_pool(key):
+                fact = self.repository.find_assembly_fact("cards", card_id)
+                if fact is None or fact.get("multiplayer_only"):
+                    continue
+                profile, _ = self._card(card_id, 0)
+                if profile is not None:
+                    pool[rarity].append(profile)
+            self._pools[key] = pool
+        return self._pools[key]
+
+    def _lookahead(
+        self,
+        request: DecisionRequest,
+        options: Dict[str, List[Optional[CardProfile]]],
+        score_deck,
+        needs: Needs,
+        params: Mapping,
+    ) -> tuple[Dict[str, float], int]:
+        """Each option's fitness averaged over the act's remaining fights,
+        with the rewards between them sampled and picked greedily."""
+
+        settings = params.get("lookahead") or {}
+        sequence = needs.fight_sequence
+        rewards = min(int(settings.get("max_rewards", 0)), max(0, len(sequence) - 1))
+        if not rewards or not options:
+            return {}, 0
+        pool = self._pool(str(request.world.character or ""))
+        odds_table = params["card_reward_odds"]
+        high = int(request.world.ascension or 0) >= int(odds_table.get("ascension_threshold", 99))
+        odds_by_kind = odds_table["ascension" if high else "base"]
+        offset = float(odds_table.get("rare_offset_initial", 0.0))
+        importance = params["fight_importance"]
+        rng = random.Random(_scenario_seed(request.decision_id))
+        scenarios = []
+        for _ in range(int(settings.get("scenarios", 1))):
+            offers = []
+            for index in range(rewards):
+                odds = odds_by_kind[sequence[index]]
+                chosen: List[CardProfile] = []
+                for _ in range(64):
+                    if len(chosen) == 3:
+                        break
+                    cards = pool[_roll_rarity(rng, odds, offset)]
+                    if cards:
+                        card = cards[rng.randrange(len(cards))]
+                        if card not in chosen:
+                            chosen.append(card)
+                offers.append(chosen)
+            scenarios.append(offers)
+        weights = [float(importance[kind]) for kind in sequence]
+        total_weight = sum(weights)
+        values: Dict[str, float] = {}
+        for option, start in options.items():
+            totals = 0.0
+            for offers in scenarios:
+                deck = list(start)
+                current = score_deck(deck)
+                value = current * weights[0]
+                for index, offer in enumerate(offers):
+                    best_deck, best_value = deck, current
+                    for card in offer:
+                        trial = score_deck([*deck, card])
+                        if trial > best_value:
+                            best_deck, best_value = [*deck, card], trial
+                    deck, current = best_deck, best_value
+                    value += current * weights[index + 1]
+                # Fights past the horizon keep the last deck.
+                value += current * sum(weights[rewards + 1:])
+                totals += value / total_weight
+            values[option] = totals / len(scenarios)
+        return values, rewards
 
     def recommend(self, request: DecisionRequest) -> Recommendation:
         params = self.repository.mechanic_constant(PARAMETERS_KEY)
@@ -432,8 +612,8 @@ class DeckFitnessPolicy:
             count = int(entry.get("count") or 1)
             if entry.get("enchantment") or entry.get("affliction"):
                 gaps.append(f"card_instance_modifier_unmodeled:{entry['card']}")
-            profile, profile_gaps = card_profile(
-                self.repository, str(entry["card"]).upper(), int(entry.get("upgrades") or 0)
+            profile, profile_gaps = self._card(
+                str(entry["card"]).upper(), int(entry.get("upgrades") or 0)
             )
             gaps.extend(profile_gaps)
             if profile is None:
@@ -444,7 +624,7 @@ class DeckFitnessPolicy:
         relics: List[RelicProfile] = []
         unmodeled_relics = []
         for relic in state.get("relics") or ():
-            profile, relic_gaps = relic_profile(self.repository, str(relic).upper())
+            profile, relic_gaps = self._relic(str(relic).upper())
             gaps.extend(relic_gaps)
             if profile is not None:
                 relics.append(profile)
@@ -472,11 +652,7 @@ class DeckFitnessPolicy:
             orb_slots=float((params.get("base_orb_slots") or {}).get(
                 str(request.world.character or "").upper(), 0.0
             )),
-            orbs={
-                orb: fact for orb in ORB_TYPES.values()
-                if (fact := self.repository.find_assembly_fact("orbs", orb)) is not None
-                and fact.get("status") == "converted"
-            },
+            orbs=self._orb_facts(),
         )
 
         def evaluate(cards: List[Optional[CardProfile]]) -> Fitness:
@@ -497,6 +673,7 @@ class DeckFitnessPolicy:
         legacy_rows: List[tuple[DecisionCandidate, Optional[float]]] = []
         # Rank on unrounded fitness; the displayed score keeps one decimal.
         raw_by_id: Dict[str, float] = {}
+        added_by_id: Dict[str, CardProfile] = {}
         for candidate in request.candidates:
             if candidate.candidate_id == "skip":
                 if candidate.eligible:
@@ -513,9 +690,7 @@ class DeckFitnessPolicy:
                 ))
                 continue
             card_id = str(candidate.payload.get("card") or "").upper()
-            profile, profile_gaps = card_profile(
-                self.repository, card_id, int(candidate.payload.get("upgrades") or 0)
-            )
+            profile, profile_gaps = self._card(card_id, int(candidate.payload.get("upgrades") or 0))
             if profile is None or not candidate.eligible:
                 assessments.append(CandidateAssessment(
                     candidate_id=candidate.candidate_id,
@@ -537,6 +712,7 @@ class DeckFitnessPolicy:
             profile = adjust_added_card(profile, relics, self.repository)
             after = evaluate([*deck, profile])
             raw_by_id[candidate.candidate_id] = after.raw
+            added_by_id[candidate.candidate_id] = profile
             own_notes = ({
                 "code": "unmodeled_mechanic",
                 "delta": 0.0,
@@ -559,6 +735,40 @@ class DeckFitnessPolicy:
             ))
             legacy_rows.append((candidate, after.score))
 
+        def score_deck(cards: List[Optional[CardProfile]]) -> float:
+            capabilities, _ = deck_capabilities(cards, relics, situation, params)
+            return fitness(capabilities, needs, params).raw
+
+        # Explanation only (spec 2.8 addendum): which owned cards make each
+        # candidate stronger. The engine already scores these interactions,
+        # so this never changes a score.
+        assessments = [
+            replace(a, factors=(*a.factors, *_synergy_notes(
+                added_by_id[a.candidate_id], a.label, deck, score_deck, params, self._card_name,
+            ))) if a.candidate_id in added_by_id else a
+            for a in assessments
+        ]
+        options = {cid: list(deck) for cid in raw_by_id if cid == "skip"}
+        options.update({cid: [*deck, card] for cid, card in added_by_id.items()})
+        ahead, rewards = self._lookahead(request, options, score_deck, needs, params)
+        if ahead:
+            assessments = [
+                replace(
+                    a,
+                    score=round(ahead[a.candidate_id], 1),
+                    factors=(*a.factors, {
+                        "code": "deck_fitness:lookahead",
+                        "delta": round(ahead[a.candidate_id] - raw_by_id[a.candidate_id], 2),
+                        "message": f"计入本幕后续 {rewards} 次选牌（按卡池稀有度抽样）后的牌组适合度",
+                    }),
+                ) if a.candidate_id in ahead else a
+                for a in assessments
+            ]
+            legacy_rows = [
+                (c, round(ahead[c.candidate_id], 1) if c.candidate_id in ahead else s)
+                for c, s in legacy_rows
+            ]
+            raw_by_id = dict(ahead)
         ranked = sorted(raw_by_id, key=lambda cid: (
             -raw_by_id[cid],
             next(a.display_index for a in assessments if a.candidate_id == cid),

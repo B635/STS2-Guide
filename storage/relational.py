@@ -1543,6 +1543,22 @@ class RelationalRepository:
         ]
         return event
 
+    def card_reward_pool(self, character: str) -> List[tuple]:
+        """(card id, rarity) of a character's common, uncommon and rare cards."""
+
+        rarities = {"common": "common", "uncommon": "uncommon", "rare": "rare"}
+        with self.connect() as connection:
+            rows = connection.execute(
+                "SELECT external_id, payload_json FROM catalog_entities WHERE entity_type = 'cards'"
+            ).fetchall()
+        pool = []
+        for row in rows:
+            payload = json.loads(row["payload_json"])
+            rarity = rarities.get(str(payload.get("rarity_key") or "").lower())
+            if rarity and str(payload.get("color") or "").lower() == character.lower():
+                pool.append((str(row["external_id"]).upper(), rarity))
+        return sorted(pool)
+
     def next_act_boss_ids(self, boss_identifiers: Iterable[str]) -> List[str]:
         """Possible bosses of the act after the one these bosses belong to.
 

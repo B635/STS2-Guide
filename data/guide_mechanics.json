@@ -81,6 +81,49 @@
     "satisfaction_cap": 3.0,
     "base_orb_slots": {
       "DEFECT": 3
+    },
+    "lookahead": {
+      "scenarios": 6,
+      "max_rewards": 3
+    },
+    "card_reward_odds": {
+      "source": "assembly CardRarityOdds: regular common 0.615/A7 0.6, uncommon 0.37, rare 0.0149/A7 0.03; elite common 0.549/A7 0.5, uncommon 0.4, rare 0.05/A7 0.1; boss rare 1; rare offset starts at -0.05",
+      "ascension_threshold": 7,
+      "rare_offset_initial": -0.05,
+      "base": {
+        "MONSTER": {
+          "common": 0.615,
+          "uncommon": 0.37,
+          "rare": 0.0149
+        },
+        "ELITE": {
+          "common": 0.549,
+          "uncommon": 0.4,
+          "rare": 0.05
+        },
+        "BOSS": {
+          "rare": 1.0
+        }
+      },
+      "ascension": {
+        "MONSTER": {
+          "common": 0.6,
+          "uncommon": 0.37,
+          "rare": 0.03
+        },
+        "ELITE": {
+          "common": 0.5,
+          "uncommon": 0.4,
+          "rare": 0.1
+        },
+        "BOSS": {
+          "rare": 1.0
+        }
+      }
+    },
+    "synergy_notes": {
+      "min_gain": 0.3,
+      "max_cards": 2
     }
   }
 }

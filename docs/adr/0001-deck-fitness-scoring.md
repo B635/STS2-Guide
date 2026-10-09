@@ -7,3 +7,7 @@
 - 在旧加法模型里修正遗物标签：只修数据，仍保留量纲和重复计分问题，之后还要重写一次。
 - 社区先验作为有上限的独立项保留：会把相关性混入因果评分，且无法用局面解释。
 - 分两步切换（先覆盖普通/罕见牌）：演示更早，但同屏会出现两种刻度或降级逻辑。
+
+## Addendum (2026-10-09): lookahead over future card rewards
+
+On 38 confirmed situations v2's overall ranking was slightly better than v1 but its top pick hit less, and the misses were archetype-building picks: v2 valued only the current deck. We decided to score each candidate by the deck's fitness averaged over the act's remaining fights, with the card rewards those fights grant sampled from the character pool at the assembly's `CardRarityOdds` and picked greedily by the same fitness. Only rewards are sampled, never combats; all candidates share one seeded set of scenarios so results are reproducible. Synergy between owned cards is already inside the whole-deck engine, so it is explained (which deck cards make a candidate stronger) but not scored a second time.

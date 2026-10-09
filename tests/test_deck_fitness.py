@@ -696,3 +696,36 @@ class EnemyStrengthTests(unittest.TestCase):
         with_wail, _ = deck_capabilities([strike] * 6 + [wail], (), situation, params)
         without, _ = deck_capabilities([strike] * 7, (), situation, params)
         self.assertGreater(with_wail["defense"], without["defense"])
+
+
+class LookaheadAndSynergyTests(unittest.TestCase):
+    """Spec 2.8 addendum (2026-10-09): lookahead and synergy notes."""
+
+    @classmethod
+    def setUpClass(cls):
+        DeckFitnessPolicyTests.setUpClass()
+        cls.helper = DeckFitnessPolicyTests()
+
+    @classmethod
+    def tearDownClass(cls):
+        DeckFitnessPolicyTests.tearDownClass()
+
+    def test_lookahead_is_reproducible_and_disclosed(self):
+        view = {s["id"]: s for s in load_golden_set()}["silent-f3-ricochet"]["scoring_view"]
+        first = PolicyRegistry([DeckFitnessPolicy(self.helper.repository)]).recommend(card_reward_request(view))
+        again = PolicyRegistry([DeckFitnessPolicy(self.helper.repository)]).recommend(card_reward_request(view))
+        self.assertEqual(
+            [(c.candidate_id, c.score) for c in first.candidates],
+            [(c.candidate_id, c.score) for c in again.candidates],
+        )
+        skip = next(c for c in first.candidates if c.candidate_id == "skip")
+        self.assertTrue(any(f["code"] == "deck_fitness:lookahead" for f in skip.factors))
+
+    def test_synergy_is_explained_but_never_scored(self):
+        view = {s["id"]: s for s in load_golden_set()}["silent-f3-ricochet"]["scoring_view"]
+        result = PolicyRegistry([DeckFitnessPolicy(self.helper.repository)]).recommend(card_reward_request(view))
+        ricochet = next(c for c in result.candidates if c.candidate_id == "2:RICOCHET")
+        notes = [f for f in ricochet.factors if f["code"] == "deck_fitness:synergy"]
+        self.assertEqual(len(notes), 1)
+        self.assertEqual(notes[0]["delta"], 0.0)
+        self.assertNotIn("STRIKE_SILENT", notes[0]["message"])

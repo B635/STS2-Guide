@@ -717,6 +717,9 @@ def _poison_dealt(amount: float, turns: float) -> float:
     return turns * amount - turns * (turns - 1.0) / 2.0
 
 
+_MISSING = object()
+
+
 class _Engine:
     def __init__(
         self,
@@ -739,6 +742,7 @@ class _Engine:
         self.relic_mechanics = [(m, 1.0) for relic in relics for m in relic.mechanics]
         self.estimates: Dict[str, float] = {}
         self.rates: Dict[int, float] = {}
+        self._cost_cache: Dict[int, Optional[float]] = {}
         self.last_plays: Dict[int, float] = {}
         self._set_mechanics(self.relic_mechanics)
 
@@ -787,8 +791,20 @@ class _Engine:
         )
 
     def _cost(self, card: CardProfile) -> Optional[float]:
-        """Printed cost after cost modifiers; X cards are priced separately."""
+        """Printed cost after cost modifiers; X cards are priced separately.
 
+        Constant within a pass (modifiers, rates and last plays are fixed
+        until the pass ends), so it is cached per pass.
+        """
+
+        cached = self._cost_cache.get(id(card), _MISSING)
+        if cached is not _MISSING:
+            return cached
+        cost = self._uncached_cost(card)
+        self._cost_cache[id(card)] = cost
+        return cost
+
+    def _uncached_cost(self, card: CardProfile) -> Optional[float]:
         if card.x_cost or card.cost is None:
             return None
         delta = sum(
@@ -869,6 +885,7 @@ class _Engine:
             for card in self.virtual:
                 rates[id(card)] = 0.0
             self.rates = rates
+            self._cost_cache = {}
             for source, g in self.sources:
                 created = previous_plays.get(id(source), 0.0) * g.count
                 if g.destination == "hand":
