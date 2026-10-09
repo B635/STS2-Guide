@@ -129,10 +129,10 @@
 - 能力字段：`duration`：`{"kind": "combat" | "turns_decrement" | "this_turn" | "until_triggered", ...}`。
 - 效果（暂不计分）：`auto_play`、`auto_play_card`、`auto_play_from_draw`、`transform_cards`、`gain_max_hp`、
   `add_keyword`（给牌临时加关键词）、`remove_block`、`remove_power`、`trigger_power`（立即结算一次能力，如中毒）、`extra_card_reward`（局外收益）、`evoke_orb`（激发充能球，`orbs` + `times`）、`shuffle`（弃牌堆洗入抽牌堆）、`doom_kill`（斩杀生命不高于灾厄层数的敌人）、`kill_osty`、`spread_debuffs`（把目标的减益复制给其他敌人）、`add_replay`（让选中的牌多结算一次）、`end_turn`（立即结束回合）、`gain_gold`（局外收益）、`stun`（眩晕目标）、`lose_max_hp`。
-- 时机（暂不计分）：`on_chosen`（状态牌被选入牌组时）。卡牌字段 `card_type_text`：类型由事件决定时的说明（如 MAD_SCIENCE）。
+- 时机（暂不计分）：`on_chosen`（状态牌被选入牌组时），局外的 `combat_end`、`rest_site`、`room_entered`、`map_generated`、`quest_complete`；效果 `remove_from_deck`、`rest_site_option`、`force_event`；修正 `play_lock`（手牌中时禁止打出其他牌）。卡牌字段 `card_type_text`：类型由事件决定时的说明（如 MAD_SCIENCE）。
 - Osty 造成的伤害：`damage` 加 `source: "osty"` 和条件 `osty_alive`（暂不计分）。
 - 时机（暂不计分）：`auto_post_play_phase`、`card_drawn`、`block_gained`、`power_applied`、`power_applied_self`、`creature_added`（敌人中途加入战斗）。
-- 修正（暂不计分）：`exhaust_on_play`、`vulnerable_multiplier`、`strength`（临时力量）。
+- 修正（暂不计分）：`exhaust_on_play`、`vulnerable_multiplier`、`weak_multiplier`、`strength` / `dexterity` / `focus`（临时力量、敏捷、集中）、`poison_trigger_count`、`negate_debuff`（人工制品）、`hp_loss_negate`（缓冲）、`card_target`（改变牌的目标）、`orb_value`（集中对充能球的加成）、`damage_cap` / `hp_loss_cap`（每次伤害或失血的上限，如无实体）、`card_play_result_location`（打出后去向）、`star_cost`、`sovereign_blade_block`、`add_keyword`（能力给牌加关键词）。时机：`stars_gained`、`damage_dealt`、`forge`、`osty_hp_lost`、`orb_evoked`、`energy_spent`、`power_removed`。效果：`kill_owner`、`kill_target`。
 
 ## 数值随局面变化（票 05 起）
 

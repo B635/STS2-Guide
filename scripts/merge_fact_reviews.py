@@ -37,6 +37,7 @@ EFFECT_KINDS = SUPPORTED_EFFECTS | {
     "add_keyword", "remove_block", "remove_power", "trigger_power", "extra_card_reward",
     "evoke_orb", "shuffle", "doom_kill", "kill_osty", "spread_debuffs", "add_replay",
     "end_turn", "gain_gold", "stun", "lose_max_hp",
+    "remove_from_deck", "rest_site_option", "force_event", "kill_owner", "kill_target",
 }
 WHEN = {
     "combat_start", "turn_start", "turn_end", "card_played", "card_exhausted",
@@ -44,6 +45,8 @@ WHEN = {
     "potion_used", "stars_spent", "orb_channeled", "card_generated", "block_broken",
     "lethal_damage", "auto_post_play_phase", "card_drawn", "block_gained",
     "power_applied", "power_applied_self", "creature_added", "on_chosen",
+    "combat_end", "rest_site", "room_entered", "map_generated", "quest_complete",
+    "stars_gained", "damage_dealt", "forge", "osty_hp_lost", "orb_evoked", "energy_spent", "power_removed",
 }
 MODIFIERS = {
     "hand_draw", "max_energy", "damage", "block", "energy_cost", "x_value",
@@ -52,7 +55,11 @@ MODIFIERS = {
     "power_amount_given", "card_play_count", "damage_received", "energy_carryover",
     "power_gain", "no_potions", "auto_play_turn", "card_reward_pool",
     "card_reward_options", "card_reward_extra_card", "card_reward_alternative",
-    "card_reward_choice", "exhaust_on_play", "vulnerable_multiplier", "strength",
+    "card_reward_choice", "exhaust_on_play", "vulnerable_multiplier", "strength", "play_lock",
+    "poison_trigger_count", "dexterity", "focus", "negate_debuff", "hp_loss_negate",
+    "weak_multiplier", "card_target", "orb_value",
+    "damage_cap", "hp_loss_cap", "card_play_result_location", "star_cost",
+    "sovereign_blade_block", "add_keyword",
 }
 CATEGORIES = {"baseline", "trigger", "irrelevant"}
 REVIEW_FIELDS = {

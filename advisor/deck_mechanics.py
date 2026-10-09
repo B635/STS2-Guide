@@ -373,7 +373,7 @@ def card_profile(
         ethereal="Ethereal" in keywords,
         effects=tuple(effects),
         powers=tuple(powers),
-    ), tuple(gaps)
+    ), tuple(dict.fromkeys(gaps))  # a card may repeat one unsupported effect
 
 
 def relic_profile(

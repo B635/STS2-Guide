@@ -370,3 +370,11 @@ class CardMechanicTests(unittest.TestCase):
         self.assertEqual(blade.factors[0]["code"], "unmodeled_mechanic")
         self.assertIn("card_effect_unsupported:INFERNAL_BLADE:effect:add_card", blade.data_gaps)
         self.assertEqual(blade.dimensions["data_completeness"], 0.0)
+
+    def test_a_repeated_unsupported_effect_is_one_gap(self):
+        # Severance adds Souls to two piles; both add_card effects are one gap.
+        _, result = self.gain("SEVERANCE", [card("STRIKE_IRONCLAD", 5), card("DEFEND_IRONCLAD", 4)])
+        severance = next(r for r in result.candidates if r.candidate_id == "0:SEVERANCE")
+        self.assertEqual(
+            severance.data_gaps.count("card_effect_unsupported:SEVERANCE:effect:add_card"), 1
+        )

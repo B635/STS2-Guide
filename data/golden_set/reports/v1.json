@@ -1,14 +1,14 @@
 {
  "all": {
-  "situations": 2,
-  "hits": 1,
-  "hit_rate": 0.5,
+  "situations": 38,
+  "hits": 15,
+  "hit_rate": 0.3947,
   "obvious_errors_first": 1
  },
  "confirmed": {
-  "situations": 2,
-  "hits": 1,
-  "hit_rate": 0.5,
+  "situations": 38,
+  "hits": 15,
+  "hit_rate": 0.3947,
   "obvious_errors_first": 1
  },
  "rows": [
@@ -42,6 +42,546 @@
     "1:HAVOC": 51.36,
     "2:UNRELENTING": 51.4,
     "skip": 35.6
+   }
+  },
+  {
+   "id": "silent-f2-predator-echoing-prepared",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": "2:PREPARED",
+   "hit": true,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:contextual_mechanics_v5",
+   "scores": {
+    "0:PREDATOR": 60.2,
+    "1:ECHOING_SLASH": 59.49,
+    "2:PREPARED": 61.98,
+    "skip": 30.0
+   }
+  },
+  {
+   "id": "silent-f3-ricochet",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": "2:RICOCHET",
+   "hit": true,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:contextual_mechanics_v5",
+   "scores": {
+    "0:DAGGER_SPRAY": 53.84,
+    "1:FLECHETTES": 53.04,
+    "2:RICOCHET": 54.57,
+    "skip": 30.9
+   }
+  },
+  {
+   "id": "silent-f5-piercing-wail",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": "2:PIERCING_WAIL",
+   "hit": true,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:contextual_mechanics_v5",
+   "scores": {
+    "0:DODGE_AND_ROLL": 53.22,
+    "1:UNTOUCHABLE": 56.62,
+    "2:PIERCING_WAIL": 60.91,
+    "skip": 31.8
+   }
+  },
+  {
+   "id": "silent-f14-echoing-slash",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": "0:ECHOING_SLASH",
+   "hit": true,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:contextual_mechanics_v5",
+   "scores": {
+    "0:ECHOING_SLASH": 55.99,
+    "1:CLOAK_AND_DAGGER": 52.59,
+    "2:DAGGER_SPRAY": 50.34,
+    "skip": 31.8
+   }
+  },
+  {
+   "id": "silent-f17-adrenaline",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": "0:ADRENALINE",
+   "hit": true,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:contextual_mechanics_v5",
+   "scores": {
+    "0:ADRENALINE": 71.47,
+    "1:MURDER": 53.76,
+    "2:SHADOWMELD": 56.76,
+    "skip": 36.5
+   }
+  },
+  {
+   "id": "regent-f2-alignment",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": "2:ALIGNMENT",
+   "hit": true,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:contextual_mechanics_v5",
+   "scores": {
+    "0:CELESTIAL_MIGHT": 50.34,
+    "1:ORBIT": 61.5,
+    "2:ALIGNMENT": 64.12,
+    "skip": 26.4
+   }
+  },
+  {
+   "id": "regent-f5-hidden-cache",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": "2:PHOTON_CUT",
+   "hit": false,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:contextual_mechanics_v5",
+   "scores": {
+    "0:HIDDEN_CACHE": 53.19,
+    "1:CLOAK_OF_STARS": 55.04,
+    "2:PHOTON_CUT": 61.64,
+    "skip": 31.1
+   }
+  },
+  {
+   "id": "regent-f7-alignment",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": "0:DECISIONS_DECISIONS",
+   "hit": false,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:contextual_mechanics_v5",
+   "scores": {
+    "0:DECISIONS_DECISIONS": 68.66,
+    "1:CRESCENT_SPEAR": 53.85,
+    "2:ALIGNMENT": 64.12,
+    "skip": 32.0
+   }
+  },
+  {
+   "id": "regent-f8-shining-strike",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": "2:CLOAK_OF_STARS",
+   "hit": false,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:contextual_mechanics_v5",
+   "scores": {
+    "0:CRUSH_UNDER": 55.13,
+    "1:SHINING_STRIKE": 56.52,
+    "2:CLOAK_OF_STARS": 62.54,
+    "skip": 26.9
+   }
+  },
+  {
+   "id": "regent-f15-glitterstream",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": "1:CONVERGENCE",
+   "hit": false,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:contextual_mechanics_v5",
+   "scores": {
+    "0:KNOW_THY_PLACE": 51.9,
+    "1:CONVERGENCE": 61.3,
+    "2:GLITTERSTREAM": 58.14,
+    "skip": 31.8
+   }
+  },
+  {
+   "id": "defect-f2-sweeping-beam",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": "2:SWEEPING_BEAM",
+   "hit": true,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:contextual_mechanics_v5",
+   "scores": {
+    "0:SYNCHRONIZE": 52.23,
+    "1:GUNK_UP": 50.41,
+    "2:SWEEPING_BEAM": 59.09,
+    "skip": 25.1
+   }
+  },
+  {
+   "id": "defect-f3-momentum-strike",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": "1:HOTFIX",
+   "hit": false,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:contextual_mechanics_v5",
+   "scores": {
+    "0:MOMENTUM_STRIKE": 48.44,
+    "1:HOTFIX": 50.29,
+    "2:COLD_SNAP": 48.09,
+    "skip": 38.0
+   }
+  },
+  {
+   "id": "defect-f5-coolheaded",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": "0:COOLHEADED",
+   "hit": true,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:contextual_mechanics_v5",
+   "scores": {
+    "0:COOLHEADED": 58.72,
+    "1:LIGHTNING_ROD": 49.53,
+    "2:REFRACT": 52.02,
+    "skip": 31.8
+   }
+  },
+  {
+   "id": "defect-f8-tesla-coil",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": "2:COMPILE_DRIVER",
+   "hit": false,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:contextual_mechanics_v5",
+   "scores": {
+    "0:TESLA_COIL": 47.84,
+    "1:ITERATION": 58.86,
+    "2:COMPILE_DRIVER": 60.03,
+    "skip": 34.7
+   }
+  },
+  {
+   "id": "defect-f11-shadow-shield",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": "0:SHADOW_SHIELD",
+   "hit": true,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:contextual_mechanics_v5",
+   "scores": {
+    "0:SHADOW_SHIELD": 55.42,
+    "1:HOTFIX": 50.94,
+    "2:MOMENTUM_STRIKE": 45.44,
+    "skip": 35.6
+   }
+  },
+  {
+   "id": "defect-f15-rocket-punch",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": "1:ROCKET_PUNCH",
+   "hit": true,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:contextual_mechanics_v5",
+   "scores": {
+    "0:SWEEPING_BEAM": 52.59,
+    "1:ROCKET_PUNCH": 63.39,
+    "2:COMPILE_DRIVER": 61.88,
+    "skip": 36.5
+   }
+  },
+  {
+   "id": "necrobinder-f2-flatten",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": "0:FEAR",
+   "hit": false,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:contextual_mechanics_v5",
+   "scores": {
+    "0:FEAR": 52.51,
+    "1:REAP": 50.11,
+    "2:FLATTEN": 51.39,
+    "skip": 34.2
+   }
+  },
+  {
+   "id": "necrobinder-f6-severance",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": null,
+   "hit": false,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:contextual_mechanics_v5",
+   "scores": {
+    "0:SNAP": 52.52,
+    "1:ENFEEBLING_TOUCH": 57.61,
+    "2:SEVERANCE": 55.39,
+    "skip": 36.0
+   }
+  },
+  {
+   "id": "necrobinder-f9-borrowed-time",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": "0:BORROWED_TIME",
+   "hit": true,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:contextual_mechanics_v5",
+   "scores": {
+    "0:BORROWED_TIME": 62.95,
+    "1:DEBILITATE": 62.83,
+    "2:DREDGE": 58.84,
+    "skip": 30.9
+   }
+  },
+  {
+   "id": "necrobinder-f11-wisp",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": null,
+   "hit": false,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:contextual_mechanics_v5",
+   "scores": {
+    "0:LETHALITY": 56.64,
+    "1:BLIGHT_STRIKE": 49.6,
+    "2:WISP": 54.7,
+    "skip": 37.8
+   }
+  },
+  {
+   "id": "necrobinder-f12-reap",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": "1:SHROUD",
+   "hit": false,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:contextual_mechanics_v5",
+   "scores": {
+    "0:REAP": 50.94,
+    "1:SHROUD": 63.97,
+    "2:NEGATIVE_PULSE": 61.9,
+    "skip": 28.7
+   }
+  },
+  {
+   "id": "necrobinder-f14-severance",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": "0:PULL_FROM_BELOW",
+   "hit": false,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:contextual_mechanics_v5",
+   "scores": {
+    "0:PULL_FROM_BELOW": 60.46,
+    "1:SEVERANCE": 53.89,
+    "2:RIGHT_HAND_HAND": 59.92,
+    "skip": 31.6
+   }
+  },
+  {
+   "id": "necrobinder-f17-end-of-days",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": "0:NEUROSURGE",
+   "hit": false,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:contextual_mechanics_v5",
+   "scores": {
+    "0:NEUROSURGE": 77.82,
+    "1:SHARED_FATE": 60.18,
+    "2:END_OF_DAYS": 59.66,
+    "skip": 27.6
+   }
+  },
+  {
+   "id": "necrobinder-f19-friendship",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": "1:FRIENDSHIP",
+   "hit": true,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:contextual_mechanics_v5",
+   "scores": {
+    "0:DIRGE": 61.35,
+    "1:FRIENDSHIP": 62.18,
+    "2:GRAVE_WARDEN": 61.54,
+    "skip": 32.5
+   }
+  },
+  {
+   "id": "necrobinder-f21-right-hand-hand",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": "2:RIGHT_HAND_HAND",
+   "hit": true,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:contextual_mechanics_v5",
+   "scores": {
+    "0:POKE": 55.61,
+    "1:FEAR": 52.51,
+    "2:RIGHT_HAND_HAND": 61.42,
+    "skip": 32.5
+   }
+  },
+  {
+   "id": "necrobinder-f22-death-march",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": null,
+   "hit": false,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:contextual_mechanics_v5",
+   "scores": {
+    "0:PULL_FROM_BELOW": 60.33,
+    "1:CALL_OF_THE_VOID": 61.44,
+    "2:DEATH_MARCH": 55.89,
+    "skip": 39.4
+   }
+  },
+  {
+   "id": "necrobinder-f25-pagestorm",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": "0:PAGESTORM",
+   "hit": true,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:contextual_mechanics_v5",
+   "scores": {
+    "0:PAGESTORM": 68.55,
+    "1:POKE": 55.61,
+    "2:BURY": 53.98,
+    "skip": 34.3
+   }
+  },
+  {
+   "id": "silent-f7-skip",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": "2:UP_MY_SLEEVE",
+   "hit": false,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:contextual_mechanics_v5",
+   "scores": {
+    "0:UNTOUCHABLE": 54.12,
+    "1:DODGE_AND_ROLL": 50.72,
+    "2:UP_MY_SLEEVE": 57.38,
+    "skip": 37.8
+   }
+  },
+  {
+   "id": "silent-f9-skip",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": null,
+   "hit": false,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:contextual_mechanics_v5",
+   "scores": {
+    "0:HAZE": 54.07,
+    "1:BLUR": 55.5,
+    "2:LEADING_STRIKE": 50.57,
+    "skip": 37.8
+   }
+  },
+  {
+   "id": "silent-f12-skip",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": "0:SHADOW_STEP",
+   "hit": false,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:contextual_mechanics_v5",
+   "scores": {
+    "0:SHADOW_STEP": 60.67,
+    "1:SUCKER_PUNCH": 52.38,
+    "2:POISONED_STAB": 47.61,
+    "skip": 37.8
+   }
+  },
+  {
+   "id": "regent-f6-skip",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": "0:PILLAR_OF_CREATION",
+   "hit": false,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:contextual_mechanics_v5",
+   "scores": {
+    "0:PILLAR_OF_CREATION": 56.77,
+    "1:WROUGHT_IN_WAR": 48.14,
+    "2:GATHER_LIGHT": 52.66,
+    "skip": 38.0
+   }
+  },
+  {
+   "id": "regent-f12-skip",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": "2:CLOAK_OF_STARS",
+   "hit": false,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:contextual_mechanics_v5",
+   "scores": {
+    "0:HIDDEN_CACHE": 52.29,
+    "1:WROUGHT_IN_WAR": 50.81,
+    "2:CLOAK_OF_STARS": 65.04,
+    "skip": 27.8
+   }
+  },
+  {
+   "id": "regent-f14-skip",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": "0:ASTRAL_PULSE",
+   "hit": false,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:contextual_mechanics_v5",
+   "scores": {
+    "0:ASTRAL_PULSE": 66.11,
+    "1:SHINING_STRIKE": 61.18,
+    "2:GATHER_LIGHT": 61.76,
+    "skip": 27.8
+   }
+  },
+  {
+   "id": "necrobinder-f5-skip",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": "0:INVOKE",
+   "hit": false,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:contextual_mechanics_v5",
+   "scores": {
+    "0:INVOKE": 59.67,
+    "1:DEFY": 52.58,
+    "2:DEFILE": 51.62,
+    "skip": 30.0
+   }
+  },
+  {
+   "id": "necrobinder-f15-skip",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": "0:DELAY",
+   "hit": false,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:contextual_mechanics_v5",
+   "scores": {
+    "0:DELAY": 67.7,
+    "1:NO_ESCAPE": 54.23,
+    "2:BLIGHT_STRIKE": 46.6,
+    "skip": 27.6
+   }
+  },
+  {
+   "id": "necrobinder-f23-skip",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": "0:FEAR",
+   "hit": false,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:contextual_mechanics_v5",
+   "scores": {
+    "0:FEAR": 56.51,
+    "1:BLIGHT_STRIKE": 52.1,
+    "2:REAVE": 53.33,
+    "skip": 34.3
    }
   }
  ]
