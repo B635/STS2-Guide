@@ -150,6 +150,7 @@ class CardProfile:
     ethereal: bool = False
     generates: tuple = ()           # Generated
     star_cost: Optional[float] = None
+    cost_rule: Optional[tuple] = None   # (kind, value[, card_type]) see ``_cost_rule``
 
     @property
     def once_per_fight(self) -> bool:
@@ -390,6 +391,36 @@ def _amount(effect: Mapping, upgraded: bool) -> float:
     return value
 
 
+def _cost_rule(modifier: object) -> Optional[tuple]:
+    """A cost change driven by the card's own plays/draws or same-turn plays.
+
+    ``("after_first", v)``: costs ``v`` after its first play this combat;
+    ``("per_own_play", a)`` / ``("per_own_draw", a)``: ``a`` per earlier play
+    or draw this combat; ``("per_type_this_turn", a, type)``: ``a`` per card
+    of that type already played this turn. Anything else stays a gap.
+    """
+
+    if not isinstance(modifier, Mapping):
+        return None
+    m = {k: v for k, v in modifier.items() if not str(k).endswith("text")}
+    if m.get("kind") == "set_this_combat" and m.get("after") == "first_play" and isinstance(m.get("value"), (int, float)):
+        return ("after_first", float(m["value"]))
+    flt = m.get("filter") or {}
+    add = m.get("add")
+    if isinstance(add, (int, float)) and m.get("duration") == "combat" and flt == {"self": True}:
+        if m.get("when") == "card_played":
+            return ("per_own_play", float(add))
+        if m.get("when") == "card_drawn":
+            return ("per_own_draw", float(add))
+    if (isinstance(add, (int, float)) and m.get("duration") == "this_turn" and m.get("counter") == "turn"
+            and m.get("when") == "card_played" and set(flt) == {"card_type"}):
+        return ("per_type_this_turn", float(add), str(flt["card_type"]))
+    if (m.get("duration") == "combat" and isinstance(m.get("amount"), (int, float))
+            and str(m.get("per") or "").startswith("each play of this card (EnergyCost.AddThisCombat(1)")):
+        return ("per_own_play", float(m["amount"]))
+    return None
+
+
 def _move_to_hand(effect: Mapping, upgraded: bool) -> Optional[dict]:
     """A chosen move from the draw or discard pile into the hand, as a draw.
 
@@ -492,11 +523,15 @@ def card_profile(
             if use is not None:
                 powers.append(use)
             continue
-        reason = effect_unsupported(effect)
+        reason = effect_unsupported({k: v for k, v in effect.items() if k != "count_upgrade"})
         if reason:
             gaps.append(f"card_effect_unsupported:{card_id}:{reason}")
             continue
         resolved = {**effect, "amount": _amount(effect, upgraded)}
+        if "count_upgrade" in effect:
+            resolved.pop("count_upgrade")
+            if upgraded and isinstance(effect.get("count"), (int, float)):
+                resolved["count"] = float(effect["count"]) + float(effect["count_upgrade"] or 0.0)
         if effect.get("kind") == "evoke_orb" and upgraded:
             resolved["count"] = float(effect.get("count") or 0.0) + float(effect.get("upgrade") or 0.0)
         if upgraded and "scale" in effect:
@@ -507,9 +542,11 @@ def card_profile(
             # Some upgrades add hits rather than damage (e.g. Sword Boomerang).
             resolved["hits"] = float(effect.get("hits") or 1) + float(effect["hits_upgrade"])
         effects.append(resolved)
-    for field_name in ("mechanics", "cost_modifier"):
-        if fact.get(field_name):
-            gaps.append(f"card_effect_unsupported:{card_id}:{field_name}")
+    cost_rule = _cost_rule(fact.get("cost_modifier")) if fact.get("cost_modifier") else None
+    if fact.get("cost_modifier") and cost_rule is None:
+        gaps.append(f"card_effect_unsupported:{card_id}:cost_modifier")
+    if fact.get("mechanics"):
+        gaps.append(f"card_effect_unsupported:{card_id}:mechanics")
     raw_stars = fact.get("star_cost")
     if raw_stars == "X":
         gaps.append(f"card_effect_unsupported:{card_id}:star_cost:X")
@@ -535,6 +572,7 @@ def card_profile(
         powers=tuple(powers),
         generates=tuple(generates),
         star_cost=star_cost,
+        cost_rule=cost_rule,
     ), tuple(dict.fromkeys(gaps))  # a card may repeat one unsupported effect
 
 
@@ -639,6 +677,8 @@ class _Engine:
         # fight they are active, recomputed each pass (see ``_activate``).
         self.relic_mechanics = [(m, 1.0) for relic in relics for m in relic.mechanics]
         self.estimates: Dict[str, float] = {}
+        self.rates: Dict[int, float] = {}
+        self.last_plays: Dict[int, float] = {}
         self._set_mechanics(self.relic_mechanics)
 
     def _set_mechanics(self, weighted: Sequence[tuple[Mapping, float]]) -> None:
@@ -694,7 +734,26 @@ class _Engine:
             float(m.get("add") or 0.0) * w for m, w in self.modifiers
             if m["modifier"] == "energy_cost" and self._matches(card, m.get("filter"), None)
         )
-        return max(0.0, card.cost + delta)
+        cost = max(0.0, card.cost + delta)
+        rule = card.cost_rule
+        if rule:
+            turns = self.situation.fight_turns
+            rate = self.rates.get(id(card), 0.0)
+            plays = max(1.0, self.last_plays.get(id(card), rate) * turns)
+            if rule[0] == "after_first":
+                cost = (cost + (plays - 1.0) * rule[1]) / plays
+            elif rule[0] == "per_own_play":
+                cost = max(0.0, cost + rule[1] * (plays - 1.0) / 2.0)
+            elif rule[0] == "per_own_draw":
+                cost = max(0.0, cost + rule[1] * rate * turns / 2.0)
+            elif rule[0] == "per_type_this_turn":
+                # Cards of that type played earlier the same turn, on average half.
+                others = sum(
+                    self.last_plays.get(id(c), 0.0) for c in self.cards
+                    if c is not card and c.card_type == rule[2]
+                )
+                cost = max(0.0, cost + rule[1] * others / 2.0)
+        return cost
 
     def _matches(self, card: CardProfile, flt: Optional[Mapping], x_value: Optional[float]) -> bool:
         if not flt:
@@ -747,6 +806,7 @@ class _Engine:
             }
             for card in self.virtual:
                 rates[id(card)] = 0.0
+            self.rates = rates
             for source, g in self.sources:
                 created = previous_plays.get(id(source), 0.0) * g.count
                 if g.destination == "hand":
@@ -795,6 +855,7 @@ class _Engine:
             star_supply = totals.stars
             previous = totals
             previous_plays = plays
+            self.last_plays = plays
             self._activate(plays, drawn)
         return (
             self._capabilities(totals, drawn, size, supply, demand, plays),
@@ -1196,7 +1257,9 @@ class _Engine:
                 * min(1.0, totals.weak)
             ),
             "scaling": totals.strength_rate * growth * attack_hits * amplify,
-            "cycle": drawn / size,
+            # Extra cards seen per turn beyond the base hand. Deck size is
+            # not counted here: it already lowers every card's per-turn rate.
+            "cycle": max(0.0, drawn - float(params["hand_size"])),
             "energy": supply / demand if demand > 0 else float(params["satisfaction_cap"]),
         }
 

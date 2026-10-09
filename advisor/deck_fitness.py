@@ -325,8 +325,8 @@ def _dimension_factors(
         if abs(delta) < 0.05:
             continue
         detail = (
-            f"牌组 {deck_size} → {deck_size + 1} 张，每回合看到的比例 "
-            f"{before.capabilities[dimension]:.2f} → {after.capabilities[dimension]:.2f}"
+            f"每回合额外抽牌 {before.capabilities[dimension]:.2f} → {after.capabilities[dimension]:.2f}"
+            f"（需求 {needs.values[dimension]:.1f}）"
             if dimension == "cycle"
             else f"每回合 {before.capabilities[dimension]:.1f} → "
                  f"{after.capabilities[dimension]:.1f}（需求 {needs.values[dimension]:.1f}）"

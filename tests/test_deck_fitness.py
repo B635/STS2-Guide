@@ -430,7 +430,8 @@ class GeneratedCardTests(unittest.TestCase):
         deck = [strike] * 8
         base, _ = deck_capabilities([*deck, boost], (), situation, params)
         without, _ = deck_capabilities([*deck, replace_generates(boost)], (), situation, params)
-        self.assertLess(base["cycle"], without["cycle"])
+        # Dazed copies in the discard pile lower every other card's draw rate.
+        self.assertLess(base["frontload"], without["frontload"])
 
 
 def replace_generates(profile):
@@ -551,3 +552,55 @@ class OrbTests(unittest.TestCase):
             self.capabilities(["ZAP", "ZAP", "ZAP"], slots=3.0)["frontload"],
             self.capabilities(["ZAP", "ZAP", "ZAP"], slots=0.0)["frontload"],
         )
+
+
+class CostRuleTests(unittest.TestCase):
+    """Cost changes driven by the card's own plays, draws or same-turn plays."""
+
+    @classmethod
+    def setUpClass(cls):
+        DeckFitnessPolicyTests.setUpClass()
+        cls.repository = DeckFitnessPolicyTests.repository
+
+    @classmethod
+    def tearDownClass(cls):
+        DeckFitnessPolicyTests.tearDownClass()
+
+    def test_rules_parse_from_reviewed_facts(self):
+        from advisor.deck_mechanics import card_profile
+
+        expected = {
+            "MOMENTUM_STRIKE": ("after_first", 0.0),
+            "MODDED": ("per_own_play", 1.0),
+            "KINGLY_KICK": ("per_own_draw", -1.0),
+            "PINPOINT": ("per_type_this_turn", -1.0, "Skill"),
+        }
+        for card_id, rule in expected.items():
+            profile, gaps = card_profile(self.repository, card_id, 0)
+            self.assertEqual(profile.cost_rule, rule, card_id)
+            self.assertNotIn(f"card_effect_unsupported:{card_id}:cost_modifier", gaps)
+        # A sign the fact does not settle stays a disclosed gap.
+        _, gaps = card_profile(self.repository, "UP_MY_SLEEVE", 0)
+        self.assertIn("card_effect_unsupported:UP_MY_SLEEVE:cost_modifier", gaps)
+
+    def test_a_card_that_becomes_free_frees_energy_for_the_rest(self):
+        import dataclasses
+
+        from advisor.deck_fitness import PARAMETERS_KEY
+        from advisor.deck_mechanics import Situation, card_profile, deck_capabilities
+
+        params = self.repository.mechanic_constant(PARAMETERS_KEY)
+        momentum, _ = card_profile(self.repository, "MOMENTUM_STRIKE", 0)
+        strike, _ = card_profile(self.repository, "STRIKE_DEFECT", 0)
+        situation = Situation(7.0, 0.0, 10.0, {"BOSS": 1.0}, 1.0, 0)
+        with_rule, _ = deck_capabilities([momentum, momentum, strike, strike, strike], (), situation, params)
+        plain = dataclasses.replace(momentum, cost_rule=None)
+        without, _ = deck_capabilities([plain, plain, strike, strike, strike], (), situation, params)
+        self.assertGreater(with_rule["frontload"], without["frontload"])
+
+    def test_upgrade_adds_to_a_card_count(self):
+        from advisor.deck_mechanics import card_profile
+
+        prepared, _ = card_profile(self.repository, "PREPARED", 1)
+        discard = next(e for e in prepared.effects if e["kind"] == "discard")
+        self.assertEqual(discard["count"], 2.0)
