@@ -12,12 +12,14 @@ using System.Text;
 using System.Text.Json;
 
 var dumpClass = args.Length == 3 && args[1] == "--dump" ? args[2] : null;
+var dumpAny = args.Length == 3 && args[1] == "--dump-any" ? args[2] : null;
 var enumName = args.Length == 3 && args[1] == "--enum" ? args[2] : null;
-if (args.Length != 2 && dumpClass is null && enumName is null)
+if (args.Length != 2 && dumpClass is null && dumpAny is null && enumName is null)
 {
     Console.Error.WriteLine(
         "Usage: Sts2FactExtractor <path-to-sts2.dll> <output.json>\n"
         + "       Sts2FactExtractor <path-to-sts2.dll> --dump <ClassName>\n"
+        + "       Sts2FactExtractor <path-to-sts2.dll> --dump-any <TypeName>\n"
         + "       Sts2FactExtractor <path-to-sts2.dll> --enum <EnumName>");
     return 2;
 }
@@ -32,6 +34,8 @@ var targets = new Dictionary<string, string>
     ["MegaCrit.Sts2.Core.Models.Relics"] = "relic",
     ["MegaCrit.Sts2.Core.Models.Cards"] = "card",
     ["MegaCrit.Sts2.Core.Models.Powers"] = "power",
+    ["MegaCrit.Sts2.Core.Models.Orbs"] = "orb",
+    ["MegaCrit.Sts2.Core.Models.Enchantments"] = "enchantment",
 };
 
 var assemblyPath = Path.GetFullPath(args[0]);
@@ -63,6 +67,51 @@ if (enumName is not null)
         }
     }
     return found ? 0 : 1;
+}
+
+if (dumpAny is not null)
+{
+    // Any type in any namespace (engine and combat state classes), by simple
+    // or full name, with its nested types: IL listing only, still read-only.
+    var dumped = false;
+    foreach (var handle in reader.TypeDefinitions)
+    {
+        var definition = reader.GetTypeDefinition(handle);
+        if (!definition.GetDeclaringType().IsNil)
+        {
+            continue;
+        }
+        if (reader.GetString(definition.Name) != dumpAny && names.Type(handle) != dumpAny)
+        {
+            continue;
+        }
+        var tree = new List<TypeDefinitionHandle>();
+        CollectTree(reader, handle, tree);
+        foreach (var typeHandle in tree)
+        {
+            Console.WriteLine("type " + names.Type(typeHandle));
+            foreach (var methodHandle in reader.GetTypeDefinition(typeHandle).GetMethods())
+            {
+                Console.WriteLine("method " + names.MethodKey(methodHandle));
+                var method = reader.GetMethodDefinition(methodHandle);
+                if (method.RelativeVirtualAddress == 0)
+                {
+                    continue;
+                }
+                var il = pe.GetMethodBody(method.RelativeVirtualAddress).GetILBytes()!;
+                foreach (var (op, operand, _) in Decode(il, opcodes, names, reader))
+                {
+                    Console.WriteLine(op.Name + " " + operand);
+                }
+            }
+        }
+        dumped = true;
+    }
+    if (!dumped)
+    {
+        Console.Error.WriteLine($"type {dumpAny} not found");
+    }
+    return dumped ? 0 : 1;
 }
 
 var cardTypeNames = EnumNames(reader, names, CardTypeEnum);

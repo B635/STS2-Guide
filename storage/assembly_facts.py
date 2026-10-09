@@ -27,7 +27,10 @@ ROOT_DIR = Path(__file__).resolve().parents[1]
 DEFAULT_EXTRACT_PATH = ROOT_DIR / "data" / "assembly" / "sts2-extract.json"
 DEFAULT_FACTS_PATH = ROOT_DIR / "data" / "assembly" / "facts.json"
 
-KIND_TO_ENTITY_TYPE = {"card": "cards", "relic": "relics", "power": "powers"}
+KIND_TO_ENTITY_TYPE = {
+    "card": "cards", "relic": "relics", "power": "powers",
+    "orb": "orbs", "enchantment": "enchantments",
+}
 
 # Review states. Only reviewed states can be valid.
 STATUS_UNREVIEWED = "unreviewed"
@@ -217,7 +220,9 @@ def _hook_names(overrides: Iterable[str]) -> list[str]:
 # relics grant fight-start powers, so a room hook calling one is not "run only".
 COMBAT_COMMAND_PATTERN = re.compile(
     r"Commands\.(CreatureCmd::(GainBlock|Damage|LoseBlock)|PowerCmd::Apply|DamageCmd"
-    r"|CardPileCmd::(Draw|AddGeneratedCard)|PlayerCmd::GainEnergy|OrbCmd|OstyCmd)"
+    r"|CardPileCmd::(Draw|AddGeneratedCard)|PlayerCmd::(GainEnergy|GainStars)|OrbCmd|OstyCmd"
+    # Changing combat cards on entering a combat room (e.g. Stone Cracker).
+    r"|CardCmd::)"
 )
 
 
@@ -278,7 +283,8 @@ def load_facts(path: Path | str = DEFAULT_FACTS_PATH) -> dict:
 
 
 def catalog_keys(knowledge_path: Path | str) -> list[str]:
-    """Catalog card and relic entity keys that must each have one fact."""
+    """Catalog entity keys (cards, relics, powers, orbs, enchantments) that
+    must each have one fact."""
 
     knowledge = _read_json(Path(knowledge_path), "catalog")
     return [

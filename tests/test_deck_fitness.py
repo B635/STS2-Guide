@@ -66,6 +66,21 @@ class DeckFitnessPolicyTests(unittest.TestCase):
     def scores(recommendation):
         return {row.candidate_id: row.score for row in recommendation.candidates}
 
+    def test_reward_after_the_act_boss_uses_the_next_act_pools(self):
+        # On the boss node no fight is left on this act's map; the next act's
+        # pools and possible bosses are catalog facts, so the choice is scored.
+        self.assertEqual(
+            self.repository.next_act_boss_ids(["VANTOM_BOSS"]),
+            ["THE_INSATIABLE_BOSS", "KNOWLEDGE_DEMON_BOSS", "KAISER_CRAB_BOSS"],
+        )
+        after_boss = {s["id"]: s for s in load_golden_set()}["silent-f17-adrenaline"]["scoring_view"]
+        result = self.recommend(
+            [card("STRIKE_SILENT", 5), card("DEFEND_SILENT", 5)], ["ADRENALINE"], view=after_boss,
+        )
+        self.assertNotEqual(result.status, "uncertain")
+        self.assertIn("next_act_needs_from_pools", result.data_gaps)
+        self.assertNotIn("situation_needs_unavailable", result.data_gaps)
+
     def test_missing_defense_makes_a_block_card_the_best_choice(self):
         result = self.recommend(
             [card("STRIKE_IRONCLAD", 9), card("BASH")], ["STRIKE_IRONCLAD", "DEFEND_IRONCLAD"]
@@ -248,7 +263,7 @@ class RelicMechanicTests(unittest.TestCase):
         "relics:SNECKO_SKULL": {"status": "unreviewed"},
         # A mechanic the engine cannot convert must be disclosed, not guessed.
         "relics:CRACKED_CORE": {"category": "baseline", "mechanics": [
-            {"when": "combat_start", "effect": {"kind": "channel_orb", "orb": "Lightning", "amount": 1}},
+            {"when": "combat_start", "effect": {"kind": "summon", "amount": 1}},
         ]},
     }
 
@@ -310,7 +325,7 @@ class RelicMechanicTests(unittest.TestCase):
 
     def test_unsupported_relic_mechanics_are_disclosed(self):
         _, result = self.gain("DEFEND_IRONCLAD", ("CRACKED_CORE",))
-        self.assertIn("relic_mechanic_unsupported:CRACKED_CORE:effect:channel_orb", result.data_gaps)
+        self.assertIn("relic_mechanic_unsupported:CRACKED_CORE:effect:summon", result.data_gaps)
         defend = next(r for r in result.candidates if r.candidate_id == "0:DEFEND_IRONCLAD")
         self.assertEqual(defend.factors[0]["code"], "unmodeled_relics")
 
@@ -368,13 +383,171 @@ class CardMechanicTests(unittest.TestCase):
         blade = next(r for r in result.candidates if r.candidate_id == "0:INFERNAL_BLADE")
         self.assertIsNotNone(blade.score)
         self.assertEqual(blade.factors[0]["code"], "unmodeled_mechanic")
-        self.assertIn("card_effect_unsupported:INFERNAL_BLADE:effect:add_card", blade.data_gaps)
+        self.assertIn("card_effect_unsupported:INFERNAL_BLADE:add_card:pool", blade.data_gaps)
         self.assertEqual(blade.dimensions["data_completeness"], 0.0)
 
     def test_a_repeated_unsupported_effect_is_one_gap(self):
-        # Severance adds Souls to two piles; both add_card effects are one gap.
-        _, result = self.gain("SEVERANCE", [card("STRIKE_IRONCLAD", 5), card("DEFEND_IRONCLAD", 4)])
-        severance = next(r for r in result.candidates if r.candidate_id == "0:SEVERANCE")
+        # Malaise records its upgrade bonus on two effects; one gap.
+        _, result = self.gain("MALAISE", [card("STRIKE_SILENT", 4), card("DEFEND_SILENT", 4)])
+        malaise = next(r for r in result.candidates if r.candidate_id == "0:MALAISE")
         self.assertEqual(
-            severance.data_gaps.count("card_effect_unsupported:SEVERANCE:effect:add_card"), 1
+            malaise.data_gaps.count("card_effect_unsupported:MALAISE:effect_key:bonus_if_upgraded"), 1
+        )
+
+
+class GeneratedCardTests(unittest.TestCase):
+    """add_card: named generated cards are played or dilute the deck."""
+
+    @classmethod
+    def setUpClass(cls):
+        DeckFitnessPolicyTests.setUpClass()
+        cls.helper = DeckFitnessPolicyTests()
+
+    @classmethod
+    def tearDownClass(cls):
+        DeckFitnessPolicyTests.tearDownClass()
+
+    def candidate(self, offered, deck):
+        result = self.helper.recommend(deck, [offered])
+        return next(r for r in result.candidates if r.candidate_id == f"0:{offered}")
+
+    def test_shivs_sent_to_hand_count_as_attacks(self):
+        dance = self.candidate("BLADE_DANCE", [card("STRIKE_SILENT", 5), card("DEFEND_SILENT", 5)])
+        self.assertFalse([g for g in dance.data_gaps if "add_card" in g])
+        frontload = [f for f in dance.factors if f["code"] == "deck_fitness:frontload"]
+        self.assertTrue(frontload and frontload[0]["delta"] > 0)
+
+    def test_status_cards_sent_to_a_pile_dilute_the_deck(self):
+        from advisor.deck_fitness import PARAMETERS_KEY
+        from advisor.deck_mechanics import Situation, card_profile, deck_capabilities
+
+        params = self.helper.repository.mechanic_constant(PARAMETERS_KEY)
+        boost, _ = card_profile(self.helper.repository, "BOOST_AWAY", 0)
+        self.assertEqual([g.profile.card_id for g in boost.generates], ["DAZED"])
+        self.assertEqual(boost.generates[0].destination, "discard")
+        situation = Situation(6.0, 0.5, 10.0, {"MONSTER": 1.0}, 1.0, 0)
+        strike, _ = card_profile(self.helper.repository, "STRIKE_SILENT", 0)
+        deck = [strike] * 8
+        base, _ = deck_capabilities([*deck, boost], (), situation, params)
+        without, _ = deck_capabilities([*deck, replace_generates(boost)], (), situation, params)
+        self.assertLess(base["cycle"], without["cycle"])
+
+
+def replace_generates(profile):
+    import dataclasses
+    return dataclasses.replace(profile, generates=())
+
+
+class NextTurnPowerTests(unittest.TestCase):
+    """Until-triggered powers that fire once at the next turn start."""
+
+    @classmethod
+    def setUpClass(cls):
+        DeckFitnessPolicyTests.setUpClass()
+        cls.helper = DeckFitnessPolicyTests()
+
+    @classmethod
+    def tearDownClass(cls):
+        DeckFitnessPolicyTests.tearDownClass()
+
+    def test_next_turn_energy_draw_and_block_resolve_like_this_turn(self):
+        from advisor.deck_mechanics import power_use
+
+        repository = self.helper.repository
+        energy, gaps = power_use(repository, "EnergyNextTurn", 2)
+        self.assertEqual((energy.duration, gaps), ("this_turn", ()))
+        self.assertEqual(energy.mechanics[0]["effect"], {"kind": "energy", "amount": 2.0})
+        draw, _ = power_use(repository, "DrawCardsNextTurn", 2)
+        self.assertEqual(draw.mechanics, ({"modifier": "hand_draw", "add": 2.0},))
+        # Consumed by a later play, not by the next turn: still a gap.
+        free, gaps = power_use(repository, "FreeAttack", 1)
+        self.assertIsNone(free)
+        self.assertEqual(gaps, ("power_duration_unsupported:FREE_ATTACK:until_triggered",))
+
+
+class MoveCardTests(unittest.TestCase):
+    def test_choosing_cards_into_the_hand_counts_as_drawing_them(self):
+        from advisor.deck_mechanics import _move_to_hand
+
+        dredge = {"kind": "move_card", "choice": "choose", "count": 3, "destination": "hand", "from": "discard"}
+        self.assertEqual(_move_to_hand(dredge, False), {"kind": "draw", "amount": 3.0})
+        neow = {**dredge, "count": 2, "count_upgrade": 1}
+        self.assertEqual(_move_to_hand(neow, True)["amount"], 3.0)
+        # Top-decking, moving itself, or filtered sets are not converted.
+        headbutt = {"kind": "move_card", "choice": "choose", "count": 1, "destination": "draw",
+                    "position": "top", "source": "discard"}
+        self.assertIsNone(_move_to_hand(headbutt, False))
+        all_for_one = {"kind": "move_card", "choice": "all", "count": None, "destination": "hand",
+                       "filter": {"cost": 0}, "from": "discard"}
+        self.assertIsNone(_move_to_hand(all_for_one, False))
+
+
+class StarTests(unittest.TestCase):
+    """Stars carry over between turns; star cards share the fight's stars."""
+
+    @classmethod
+    def setUpClass(cls):
+        DeckFitnessPolicyTests.setUpClass()
+        cls.repository = DeckFitnessPolicyTests.repository
+
+    @classmethod
+    def tearDownClass(cls):
+        DeckFitnessPolicyTests.tearDownClass()
+
+    def frontload(self, extra):
+        from advisor.deck_fitness import PARAMETERS_KEY
+        from advisor.deck_mechanics import Situation, card_profile, deck_capabilities
+
+        params = self.repository.mechanic_constant(PARAMETERS_KEY)
+        deck = [card_profile(self.repository, cid, 0)[0] for cid in ["STRIKE_REGENT"] * 5 + extra]
+        capabilities, _ = deck_capabilities(deck, (), Situation(6.0, 0.0, 10.0, {"MONSTER": 1.0}, 1.0, 0), params)
+        return capabilities["frontload"]
+
+    def test_a_star_card_needs_star_income(self):
+        base = self.frontload([])
+        self.assertAlmostEqual(self.frontload(["GAMMA_BLAST"]), base, places=6)
+        self.assertGreater(
+            self.frontload(["GLOW", "GAMMA_BLAST"]), self.frontload(["GLOW"])
+        )
+
+
+class OrbTests(unittest.TestCase):
+    """Channeled orbs from reviewed orb facts (OrbCmd.Channel semantics)."""
+
+    @classmethod
+    def setUpClass(cls):
+        DeckFitnessPolicyTests.setUpClass()
+        cls.repository = DeckFitnessPolicyTests.repository
+
+    @classmethod
+    def tearDownClass(cls):
+        DeckFitnessPolicyTests.tearDownClass()
+
+    def capabilities(self, extra, slots=3.0):
+        from advisor.deck_fitness import PARAMETERS_KEY
+        from advisor.deck_mechanics import ORB_TYPES, Situation, card_profile, deck_capabilities
+
+        params = self.repository.mechanic_constant(PARAMETERS_KEY)
+        orbs = {orb: self.repository.find_assembly_fact("orbs", orb) for orb in ORB_TYPES.values()}
+        deck = [card_profile(self.repository, cid, 0)[0] for cid in ["STRIKE_DEFECT"] * 4 + extra]
+        situation = Situation(6.0, 0.0, 10.0, {"MONSTER": 1.0}, 1.0, 0, orb_slots=slots, orbs=orbs)
+        capabilities, gaps = deck_capabilities(deck, (), situation, params)
+        self.assertFalse([g for g in gaps if "orb" in g])
+        return capabilities
+
+    def test_lightning_adds_damage_and_frost_adds_block(self):
+        base = self.capabilities([])
+        self.assertGreater(self.capabilities(["ZAP"])["frontload"], base["frontload"])
+        self.assertGreater(self.capabilities(["GLACIER"])["defense"], base["defense"] + 0.1)
+
+    def test_focus_raises_orb_values(self):
+        # Same size and energy: Defragment versus a 1-cost card with no damage.
+        zaps = self.capabilities(["ZAP", "ZAP", "DEFEND_DEFECT"])
+        focused = self.capabilities(["ZAP", "ZAP", "DEFRAGMENT"])
+        self.assertGreater(focused["frontload"], zaps["frontload"])
+
+    def test_a_character_without_slots_holds_one_orb(self):
+        self.assertGreater(
+            self.capabilities(["ZAP", "ZAP", "ZAP"], slots=3.0)["frontload"],
+            self.capabilities(["ZAP", "ZAP", "ZAP"], slots=0.0)["frontload"],
         )

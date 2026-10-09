@@ -66,6 +66,14 @@ class CommittedAssemblyFactsTests(unittest.TestCase):
         self.assertEqual(
             self.by_key["relics:CLOAK_CLASP"]["triage"]["category"], "baseline"
         )
+        # Entering a combat room can grant stars or change combat cards:
+        # those room hooks act inside the fight.
+        self.assertEqual(
+            self.by_key["relics:DIVINE_RIGHT"]["triage"]["category"], "baseline"
+        )
+        self.assertEqual(
+            self.by_key["relics:STONE_CRACKER"]["triage"]["category"], "baseline"
+        )
         # Reward-modifying relics always require a human review.
         self.assertEqual(
             self.by_key["relics:FROZEN_EGG"]["triage"]["category"], "needs_review"

@@ -1543,6 +1543,54 @@ class RelationalRepository:
         ]
         return event
 
+    def next_act_boss_ids(self, boss_identifiers: Iterable[str]) -> List[str]:
+        """Possible bosses of the act after the one these bosses belong to.
+
+        Acts sharing an index (alternative first acts) all count as the
+        current act; every act at the next index contributes its bosses.
+        """
+        identifiers = [str(i).strip().upper() for i in boss_identifiers if str(i).strip()]
+        if not identifiers:
+            return []
+        placeholders = ", ".join("?" for _ in identifiers)
+        with self.connect() as connection:
+            acts = connection.execute(
+                f"""
+                SELECT DISTINCT act_key FROM act_entity_memberships
+                WHERE relation_type = 'bosses' AND upper(target_external_id) IN ({placeholders})
+                """,
+                identifiers,
+            ).fetchall()
+            indexes = set()
+            for row in acts:
+                payload = connection.execute(
+                    "SELECT payload_json FROM catalog_entities WHERE entity_key = ?",
+                    (row["act_key"],),
+                ).fetchone()
+                if payload is not None:
+                    index = json.loads(payload["payload_json"]).get("index")
+                    if isinstance(index, int):
+                        indexes.add(index)
+            if len(indexes) != 1:
+                return []
+            following = next(iter(indexes)) + 1
+            bosses: List[str] = []
+            for row in connection.execute(
+                "SELECT entity_key, payload_json FROM catalog_entities WHERE entity_type = 'acts'"
+            ).fetchall():
+                if json.loads(row["payload_json"]).get("index") != following:
+                    continue
+                bosses.extend(
+                    r["target_external_id"] for r in connection.execute(
+                        """
+                        SELECT target_external_id FROM act_entity_memberships
+                        WHERE act_key = ? AND relation_type = 'bosses' ORDER BY ordinal
+                        """,
+                        (row["entity_key"],),
+                    ).fetchall()
+                )
+        return list(dict.fromkeys(bosses))
+
     def act_members(
         self,
         identifier: str,

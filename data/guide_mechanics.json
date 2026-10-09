@@ -35,7 +35,8 @@
     "notes": {
       "units": "frontload/aoe/scaling: damage per turn; defense: block per turn; cycle: share of deck seen per turn; energy: energy supply / energy demand",
       "needs": "derived per upcoming fight from real encounter-pool HP/attack facts; only the ratios below are Guide-owned parameters",
-      "energy": "energy limits how many drawn cards are played (a cap on every other dimension); its own weight is 0 so it is not counted twice"
+      "energy": "energy limits how many drawn cards are played (a cap on every other dimension); its own weight is 0 so it is not counted twice",
+      "orb_slots": "assembly: Defect.get_BaseOrbSlotCount = 3, CharacterModel default 0; OrbCmd.Channel adds 1 slot when a player with none channels"
     },
     "hand_size": 5,
     "base_energy": 3,
@@ -77,6 +78,9 @@
       ]
     },
     "surplus_slope": 0.25,
-    "satisfaction_cap": 3.0
+    "satisfaction_cap": 3.0,
+    "base_orb_slots": {
+      "DEFECT": 3
+    }
   }
 }

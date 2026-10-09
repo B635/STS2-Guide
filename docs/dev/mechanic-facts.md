@@ -146,3 +146,28 @@
   `own_previous_plays`（本场此前打出本牌的次数）。不在列表内的来源写 `amount_text` 并加 open_question。
 - 效果上的 `condition`：`target_has_power`（Vulnerable/Weak）、`exhaust_pile_at_least`、`lost_hp_this_turn`、`card_exhausted_this_turn`、`target_alive`。
 - 升级增加攻击次数：`hits_upgrade`。
+
+## 充能球与附魔（票 07 / 10 扩充）
+
+充能球（`orbs:<ID>`，如 `orbs:LIGHTNING_ORB`）：
+
+```json
+{
+  "status": "converted",
+  "passive": {"when": "turn_end", "effect": EFFECT, "focus": "add"},   // 被动：时机 + 效果；focus 写集中如何作用
+  "evoke": {"effect": EFFECT, "focus": "add"},                          // 激发效果
+  "mechanics": [ MECHANIC, ... ],                                        // 其他钩子（如进入时、能量相关）
+  "evidence": ["..."], "reviewed_by": "TASK-025 ticket 07"
+}
+```
+
+- `focus`：`"add"`（数值 + 集中层数）、`"none"`（不受集中影响）或写明的其他规则；数值以 IL 为准。
+- 随机目标、对所有敌人等用 EFFECT 的 `target`。
+
+附魔（`enchantments:<ID>`）：附在一张卡牌实例上，`mechanics` 用 MECHANIC 结构，
+效果作用于该牌时写 `"scope": "enchanted_card"`（如打出该牌时额外造成伤害、费用变化）；数值通常随附魔层数 `amount_per_stack`。
+
+充能球与附魔的附加字段：`state`（充能球自身累积的数值，如黑暗球的激发值、玻璃球递减的数值），
+`can_enchant`（可附魔的卡牌条件）、`adds_keywords` / `removes_keywords`（附魔增减关键词）；
+效果 `enchantment_amount`（附魔层数变化，`persist: "run"` 表示写回牌组）、`set_cost`（随机或固定改费）；
+修正 `start_position`（开局所在牌堆位置）；时机 `orb_passive_or_evoke`。以上暂不计分。

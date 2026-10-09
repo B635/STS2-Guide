@@ -92,7 +92,7 @@ _PUBLIC_PAYLOAD_FIELDS = {
         "is_weak",
         "tags",
     ),
-    "acts": ("id", "name", "num_rooms"),
+    "acts": ("id", "name", "index", "num_rooms"),
 }
 PROHIBITED_HISTORY_TABLES = (
     "run_states",

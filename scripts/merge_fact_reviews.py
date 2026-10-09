@@ -38,6 +38,7 @@ EFFECT_KINDS = SUPPORTED_EFFECTS | {
     "evoke_orb", "shuffle", "doom_kill", "kill_osty", "spread_debuffs", "add_replay",
     "end_turn", "gain_gold", "stun", "lose_max_hp",
     "remove_from_deck", "rest_site_option", "force_event", "kill_owner", "kill_target",
+    "enchantment_amount", "set_cost",
 }
 WHEN = {
     "combat_start", "turn_start", "turn_end", "card_played", "card_exhausted",
@@ -47,6 +48,7 @@ WHEN = {
     "power_applied", "power_applied_self", "creature_added", "on_chosen",
     "combat_end", "rest_site", "room_entered", "map_generated", "quest_complete",
     "stars_gained", "damage_dealt", "forge", "osty_hp_lost", "orb_evoked", "energy_spent", "power_removed",
+    "orb_passive_or_evoke",
 }
 MODIFIERS = {
     "hand_draw", "max_energy", "damage", "block", "energy_cost", "x_value",
@@ -59,14 +61,15 @@ MODIFIERS = {
     "poison_trigger_count", "dexterity", "focus", "negate_debuff", "hp_loss_negate",
     "weak_multiplier", "card_target", "orb_value",
     "damage_cap", "hp_loss_cap", "card_play_result_location", "star_cost",
-    "sovereign_blade_block", "add_keyword",
+    "sovereign_blade_block", "add_keyword", "start_position",
 }
 CATEGORIES = {"baseline", "trigger", "irrelevant"}
 REVIEW_FIELDS = {
     "status", "category", "cost", "card_type", "tags", "keywords", "effects",
     "mechanics", "unknowable", "evidence", "open_questions", "reviewed_by",
     "duration", "upgrade_keywords", "multiplayer_only", "cost_modifier", "audit",
-    "star_cost", "can_be_generated_in_combat", "card_type_text",
+    "star_cost", "can_be_generated_in_combat", "card_type_text", "passive", "evoke",
+    "state", "can_enchant", "adds_keywords", "removes_keywords",
 }
 
 

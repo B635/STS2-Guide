@@ -29903,6 +29903,1268 @@
   },
   {
    "audit": {
+    "by": "TASK-025 cross-review E1",
+    "verdict": "agree"
+   },
+   "category": "baseline",
+   "class": "Adroit",
+   "entity_key": "enchantments:ADROIT",
+   "evidence": [
+    "get_CanonicalVars: BlockVar(Decimal.Zero, ValueProp 8 Move); RecalculateValues 060039CE: Block.BaseValue = Amount -> block equals enchantment amount.",
+    "OnPlay 060039CD <OnPlay>d__6: CreatureCmd::GainBlock(Card.Owner.Creature, Block, cardPlay, false).",
+    "CardModel.OnPlayWrapper <OnPlayWrapper>d__339: per play iteration i < playCount: Hook.BeforeCardPlayed -> CardModel.OnPlay -> Enchantment.OnPlay -> Affliction.OnPlay -> CardPlayFinished -> Hook.AfterCardPlayed; playCount from GetEnchantedReplayCount = Enchantment.EnchantPlayCount(BaseReplayCount) before the loop -> fires once per play iteration, after the card's own effects.",
+    "No CanEnchant/CanEnchantCardType override: any card the base rules allow. Applied by relic Kifuda."
+   ],
+   "fingerprint": "74046c7720df25ee0977cbf2def1e70bb859d1fb355da8d3473e8a93bcebc4cb",
+   "hook_tokens": {
+    "OnPlay": "060039CD",
+    "RecalculateValues": "060039CE"
+   },
+   "hooks": [
+    "OnPlay",
+    "RecalculateValues"
+   ],
+   "mechanics": [
+    {
+     "effect": {
+      "amount_per_stack": 1,
+      "kind": "block"
+     },
+     "filter": {
+      "self": true
+     },
+     "scope": "enchanted_card",
+     "when": "card_played"
+    }
+   ],
+   "open_questions": [],
+   "reviewed_by": "TASK-025 ticket 10 enchantments",
+   "status": "converted",
+   "unknowable": []
+  },
+  {
+   "audit": {
+    "by": "TASK-025 cross-review E1",
+    "verdict": "agree"
+   },
+   "category": "irrelevant",
+   "class": "Clone",
+   "entity_key": "enchantments:CLONE",
+   "evidence": [
+    "Clone has only .ctor: no combat hooks, no vars; it is a marker.",
+    "Applied by relic PaelsGrowth (AfterObtained: CardSelectCmd.FromDeckForEnchantment -> CardCmd.Enchant<Clone>(card, 4)); PaelsGrowth.TryModifyRestSiteOptions adds CloneRestSiteOption.",
+    "CloneRestSiteOption.OnSelect <OnSelect>d__5 (read with a metadata IL scanner, the dumper cannot dump it): Owner.Deck.Cards.Where(c.Enchantment is Clone) -> for each RunState.CloneCard(card) -> CardPileCmd.Add(clone, PileType 6 Deck): rest-site option 'CLONE' adds a copy of every Clone-enchanted deck card.",
+    "Out-of-combat only: the copies appear in the observed deck, so no combat mechanic."
+   ],
+   "fingerprint": "bc5d925427f0182f79d26afa21d5fd1a3d7baf2da8d36647256d0c93cd8cd9dd",
+   "hook_tokens": {},
+   "hooks": [],
+   "mechanics": [],
+   "open_questions": [
+    "Whether RunState.CloneCard keeps the Clone enchantment on the copy (so later rest sites also copy the copies) was not read (ICardScope.CloneCard body not inspected).",
+    "Out-of-combat deck growth via a rest-site option has no vocabulary; recorded as irrelevant with evidence only."
+   ],
+   "reviewed_by": "TASK-025 ticket 10 enchantments",
+   "status": "converted",
+   "unknowable": []
+  },
+  {
+   "audit": {
+    "by": "TASK-025 cross-review E1",
+    "verdict": "agree"
+   },
+   "can_enchant": {
+    "card_type": [
+     "Attack"
+    ]
+   },
+   "category": "baseline",
+   "class": "Corrupted",
+   "entity_key": "enchantments:CORRUPTED",
+   "evidence": [
+    "CanEnchantCardType 060039D2: cardType == 1 (Attack).",
+    "EnchantDamageMultiplicative 060039D3: props.IsPoweredAttack ? new Decimal(15,0,0,false,1) = 1.5 : 1.",
+    "OnPlay 060039D4 <OnPlay>d__5: CreatureCmd::Damage(ctx, Card.Owner.Creature, 2, ValueProp 14 = Unblockable(2)|Unpowered(4)|Move(8), Card, cardPlay) -> owner takes 2 unblockable unpowered damage per play iteration.",
+    "Static field _damageAmount = 2 (.cctor); multiplier and self-damage are fixed, not scaled by Amount (no get_Amount use)."
+   ],
+   "fingerprint": "8c38fccae7ea4bc50711a9470134bbe2d13c937333a42901744d26e25f4066ee",
+   "hook_tokens": {
+    "CanEnchantCardType": "060039D2",
+    "EnchantDamageMultiplicative": "060039D3",
+    "OnPlay": "060039D4"
+   },
+   "hooks": [
+    "CanEnchantCardType",
+    "EnchantDamageMultiplicative",
+    "OnPlay"
+   ],
+   "mechanics": [
+    {
+     "filter": {
+      "powered_attack": true
+     },
+     "modifier": "damage",
+     "multiply": 1.5,
+     "scope": "enchanted_card"
+    },
+    {
+     "effect": {
+      "amount": 2,
+      "kind": "hp_loss",
+      "unblockable": true,
+      "upgrade": 0
+     },
+     "filter": {
+      "self": true
+     },
+     "scope": "enchanted_card",
+     "when": "card_played"
+    }
+   ],
+   "open_questions": [
+    "hp_loss written for CreatureCmd.Damage(Unblockable|Unpowered) on self; it is damage (could be reduced by e.g. Intangible/Buffer); field 'unblockable' is new."
+   ],
+   "reviewed_by": "TASK-025 ticket 10 enchantments",
+   "status": "converted",
+   "unknowable": []
+  },
+  {
+   "audit": {
+    "by": "TASK-025 cross-review E1",
+    "verdict": "agree"
+   },
+   "category": "baseline",
+   "class": "Glam",
+   "entity_key": "enchantments:GLAM",
+   "evidence": [
+    "get_CanonicalVars: DynamicVar('Times', 1).",
+    "EnchantPlayCount 060039DC: UsedThisCombat ? original : original + Times.IntValue (1).",
+    "AfterCardPlayed 060039DD: if !UsedThisCombat && cardPlay.Card == Card -> UsedThisCombat = true; Status = 1 (Disabled).",
+    "CardModel.OnPlayWrapper <OnPlayWrapper>d__339: per play iteration i < playCount: Hook.BeforeCardPlayed -> CardModel.OnPlay -> Enchantment.OnPlay -> Affliction.OnPlay -> CardPlayFinished -> Hook.AfterCardPlayed; playCount from GetEnchantedReplayCount = Enchantment.EnchantPlayCount(BaseReplayCount) before the loop -> the first play action of this card in combat resolves 2 times; later plays once.",
+    "per-combat state lives on the combat copy of the card; only Goopy writes to Card.DeckVersion, so other Status/flag changes do not carry to the next combat (EnchantmentModel base class is not dumpable; inferred from the DeckVersion pattern, same as GeneticAlgorithm/TheScythe facts)",
+    "Not scaled by Amount; no CanEnchant override. Applied by relics Glitter and SilkenTress."
+   ],
+   "fingerprint": "dd1475629b0af74627cf8e3b33d7cbe2edb323b435fff50fe113bbdad6563242",
+   "hook_tokens": {
+    "AfterCardPlayed": "060039DD",
+    "EnchantPlayCount": "060039DC"
+   },
+   "hooks": [
+    "AfterCardPlayed",
+    "EnchantPlayCount"
+   ],
+   "mechanics": [
+    {
+     "add": 1,
+     "applies_to": "first play of the enchanted card each combat",
+     "limit": "once_per_combat",
+     "modifier": "card_play_count",
+     "scope": "enchanted_card"
+    }
+   ],
+   "open_questions": [],
+   "reviewed_by": "TASK-025 ticket 10 enchantments",
+   "status": "converted",
+   "unknowable": []
+  },
+  {
+   "adds_keywords": [
+    "Exhaust"
+   ],
+   "audit": {
+    "by": "TASK-025 cross-review E1",
+    "verdict": "agree"
+   },
+   "can_enchant": {
+    "tag": [
+     "Defend"
+    ]
+   },
+   "category": "baseline",
+   "class": "Goopy",
+   "entity_key": "enchantments:GOOPY",
+   "evidence": [
+    "CanEnchant 060039E1: base.CanEnchant(card) && card.Tags.Contains(CardTag 2 Defend).",
+    "OnEnchant 060039E2: Card.AddKeyword(CardKeyword 1 Exhaust).",
+    "EnchantBlockAdditive 060039E4: returns Amount - 1.",
+    "AfterCardPlayed 060039E3: cardPlay.Card == Card -> Amount += 1; if Card.DeckVersion != null -> DeckVersion.Enchantment.Amount += 1 -> growth persists for the run.",
+    "Applied by PaelsClaw with amount 1 (CardCmd.Enchant<Goopy>(card, Decimal.One)) -> first play +0 block, then permanently +1 per play."
+   ],
+   "fingerprint": "7ee30e34a79c6982490bfd735e146aecba3fd03925cecf399b61c080ea632408",
+   "hook_tokens": {
+    "AfterCardPlayed": "060039E3",
+    "CanEnchant": "060039E1",
+    "EnchantBlockAdditive": "060039E4",
+    "OnEnchant": "060039E2"
+   },
+   "hooks": [
+    "AfterCardPlayed",
+    "CanEnchant",
+    "EnchantBlockAdditive",
+    "OnEnchant"
+   ],
+   "mechanics": [
+    {
+     "add": -1,
+     "add_per_stack": 1,
+     "modifier": "block",
+     "note": "block bonus = Amount - 1",
+     "scope": "enchanted_card"
+    },
+    {
+     "effect": {
+      "amount": 1,
+      "kind": "enchantment_amount",
+      "persist": "run"
+     },
+     "filter": {
+      "self": true
+     },
+     "scope": "enchanted_card",
+     "when": "card_played"
+    }
+   ],
+   "open_questions": [
+    "New effect kind 'enchantment_amount' with persist 'run' (permanent growth via DeckVersion); the card also gains Exhaust, so growth is normally once per combat.",
+    "Block modifier 'add': -1 together with 'add_per_stack': 1 (value = Amount - 1) is a new combination."
+   ],
+   "reviewed_by": "TASK-025 ticket 10 enchantments",
+   "status": "converted",
+   "unknowable": []
+  },
+  {
+   "audit": {
+    "by": "TASK-025 cross-review E1",
+    "verdict": "agree"
+   },
+   "can_enchant": {
+    "card_type": [
+     "Skill"
+    ]
+   },
+   "category": "baseline",
+   "class": "Imbued",
+   "entity_key": "enchantments:IMBUED",
+   "evidence": [
+    "CanEnchantCardType 060039E6: cardType == 2 (Skill).",
+    "get_ShouldStartAtBottomOfDrawPile: true -> card begins combat at the bottom of the draw pile.",
+    "AfterAutoPrePlayPhaseEntered 060039E9 <AfterAutoPrePlayPhaseEntered>d__5: player == Card.Owner && PlayerCombatState.TurnNumber <= 1 -> CardCmd::AutoPlay(ctx, Card, target null, AutoPlayType 1 Default, skipXCapture false, skipCardPileVisuals false).",
+    "AutoPlay does not spend energy (WhisperingEarring calls SpendResources separately before AutoPlay) -> free play on turn 1.",
+    "get_ShowAmount false: not scaled by Amount. Applied by relic ElectricShrymp."
+   ],
+   "fingerprint": "fb726722e907727253653502ae9dc616f446465423dfaf986c942c6162686459",
+   "hook_tokens": {
+    "AfterAutoPrePlayPhaseEntered": "060039E9",
+    "CanEnchantCardType": "060039E6"
+   },
+   "hooks": [
+    "AfterAutoPrePlayPhaseEntered",
+    "CanEnchantCardType"
+   ],
+   "mechanics": [
+    {
+     "effect": {
+      "card": "self",
+      "free": true,
+      "kind": "auto_play_card",
+      "position": "bottom",
+      "source": "draw_pile"
+     },
+     "scope": "enchanted_card",
+     "turns": [
+      1
+     ],
+     "when": "turn_start"
+    },
+    {
+     "modifier": "start_position",
+     "position": "bottom_of_draw_pile",
+     "scope": "enchanted_card"
+    }
+   ],
+   "open_questions": [
+    "New modifier 'start_position' (ShouldStartAtBottomOfDrawPile).",
+    "Hook is AfterAutoPrePlayPhaseEntered on turn 1 (written as turn_start turns [1]); the card is auto-played from wherever it is (normally bottom of draw pile)."
+   ],
+   "reviewed_by": "TASK-025 ticket 10 enchantments",
+   "status": "converted",
+   "unknowable": []
+  },
+  {
+   "audit": {
+    "by": "TASK-025 cross-review E1",
+    "verdict": "agree"
+   },
+   "category": "baseline",
+   "class": "Inky",
+   "entity_key": "enchantments:INKY",
+   "evidence": [
+    "get_CanonicalVars: PowerVar<WeakPower>(1); get_ShowAmount false -> fixed 1, not per stack.",
+    "OnPlay 060039EF <OnPlay>d__8: targets = Card.TargetType == 3 (AllEnemies) ? CombatState.HittableEnemies : [cardPlay.Target]; PowerCmd::Apply<WeakPower>(targets, Weak.BaseValue, Owner.Creature, Card, false).",
+    "No CanEnchant override. Applied by card BladeOfInk to Shivs (CardCmd.Enchant<Inky>(card, 1)).",
+    "CardModel.OnPlayWrapper <OnPlayWrapper>d__339: per play iteration i < playCount: Hook.BeforeCardPlayed -> CardModel.OnPlay -> Enchantment.OnPlay -> Affliction.OnPlay -> CardPlayFinished -> Hook.AfterCardPlayed; playCount from GetEnchantedReplayCount = Enchantment.EnchantPlayCount(BaseReplayCount) before the loop -> once per play iteration."
+   ],
+   "fingerprint": "a5b34ca912b3a51bc5c826ed9ec0f7d3180013d6870bb986cb090a6fabf01988",
+   "hook_tokens": {
+    "OnPlay": "060039EF"
+   },
+   "hooks": [
+    "OnPlay"
+   ],
+   "mechanics": [
+    {
+     "effect": {
+      "amount": 1,
+      "kind": "apply_power",
+      "power": "Weak",
+      "target": "enemy",
+      "target_rule": "card's target; all_enemies if the card's TargetType is AllEnemies",
+      "upgrade": 0
+     },
+     "filter": {
+      "self": true
+     },
+     "scope": "enchanted_card",
+     "when": "card_played"
+    }
+   ],
+   "open_questions": [
+    "For cards whose TargetType is not AnyEnemy/AllEnemies (e.g. Self, None), cardPlay.Target may be the player or null; behaviour not determined from IL."
+   ],
+   "reviewed_by": "TASK-025 ticket 10 enchantments",
+   "status": "converted",
+   "unknowable": []
+  },
+  {
+   "audit": {
+    "by": "TASK-025 cross-review E1",
+    "verdict": "agree"
+   },
+   "can_enchant": {
+    "card_type": [
+     "Attack"
+    ]
+   },
+   "category": "baseline",
+   "class": "Instinct",
+   "entity_key": "enchantments:INSTINCT",
+   "evidence": [
+    "CanEnchantCardType 060039F1: cardType == 1 (Attack).",
+    "EnchantDamageMultiplicative 060039F2: props.IsPoweredAttack ? new Decimal(2) : 1. Not scaled by Amount.",
+    "Applied by relic TriBoomerang."
+   ],
+   "fingerprint": "788089244c4ad6d2db73ba21795dae7cce9da48ed759d8d39880494c442bd786",
+   "hook_tokens": {
+    "CanEnchantCardType": "060039F1",
+    "EnchantDamageMultiplicative": "060039F2"
+   },
+   "hooks": [
+    "CanEnchantCardType",
+    "EnchantDamageMultiplicative"
+   ],
+   "mechanics": [
+    {
+     "filter": {
+      "powered_attack": true
+     },
+     "modifier": "damage",
+     "multiply": 2,
+     "scope": "enchanted_card"
+    }
+   ],
+   "open_questions": [],
+   "reviewed_by": "TASK-025 ticket 10 enchantments",
+   "status": "converted",
+   "unknowable": []
+  },
+  {
+   "audit": {
+    "by": "TASK-025 cross-review E1",
+    "verdict": "agree"
+   },
+   "can_enchant": {
+    "card_type": [
+     "Attack"
+    ]
+   },
+   "category": "baseline",
+   "class": "Momentum",
+   "entity_key": "enchantments:MOMENTUM",
+   "evidence": [
+    "CanEnchantCardType 060039F4: cardType == 1 (Attack).",
+    "OnPlay 060039F9: ExtraDamage += Amount; EnchantDamageAdditive 060039FA: props.IsPoweredAttack ? ExtraDamage : 0.",
+    "CardModel.OnPlayWrapper <OnPlayWrapper>d__339: per play iteration i < playCount: Hook.BeforeCardPlayed -> CardModel.OnPlay -> Enchantment.OnPlay -> Affliction.OnPlay -> CardPlayFinished -> Hook.AfterCardPlayed; playCount from GetEnchantedReplayCount = Enchantment.EnchantPlayCount(BaseReplayCount) before the loop -> enchantment OnPlay runs after the card's damage, so the first play gets +0 and each later play iteration +Amount more.",
+    "per-combat state lives on the combat copy of the card; only Goopy writes to Card.DeckVersion, so other Status/flag changes do not carry to the next combat (EnchantmentModel base class is not dumpable; inferred from the DeckVersion pattern, same as GeneticAlgorithm/TheScythe facts) -> resets each combat.",
+    "Applied by relic PunchDagger."
+   ],
+   "fingerprint": "703c393809fd88b61f66ae59842a760a26133ab587cc0d97021cb6f046dfe43b",
+   "hook_tokens": {
+    "CanEnchantCardType": "060039F4",
+    "EnchantDamageAdditive": "060039FA",
+    "OnPlay": "060039F9"
+   },
+   "hooks": [
+    "CanEnchantCardType",
+    "EnchantDamageAdditive",
+    "OnPlay"
+   ],
+   "mechanics": [
+    {
+     "add": 0,
+     "filter": {
+      "powered_attack": true
+     },
+     "modifier": "damage",
+     "scale": {
+      "factor_per_stack": 1,
+      "per": "own_previous_plays"
+     },
+     "scope": "enchanted_card"
+    }
+   ],
+   "open_questions": [
+    "scale 'factor_per_stack' (factor = enchantment Amount) is new; own_previous_plays here counts play iterations including replays."
+   ],
+   "reviewed_by": "TASK-025 ticket 10 enchantments",
+   "status": "converted",
+   "unknowable": []
+  },
+  {
+   "audit": {
+    "by": "TASK-025 cross-review E1",
+    "verdict": "agree"
+   },
+   "can_enchant": {
+    "gains_block": true
+   },
+   "category": "baseline",
+   "class": "Nimble",
+   "entity_key": "enchantments:NIMBLE",
+   "evidence": [
+    "CanEnchant 060039FD: base.CanEnchant(card) && card.GainsBlock.",
+    "EnchantBlockAdditive 060039FE: returns Amount.",
+    "Applied by relic FresnelLens."
+   ],
+   "fingerprint": "9597aab94a5d40d085564857decdb9c674ecfda9867402e8609f67ed027df15c",
+   "hook_tokens": {
+    "CanEnchant": "060039FD",
+    "EnchantBlockAdditive": "060039FE"
+   },
+   "hooks": [
+    "CanEnchant",
+    "EnchantBlockAdditive"
+   ],
+   "mechanics": [
+    {
+     "add_per_stack": 1,
+     "modifier": "block",
+     "scope": "enchanted_card"
+    }
+   ],
+   "open_questions": [],
+   "reviewed_by": "TASK-025 ticket 10 enchantments",
+   "status": "converted",
+   "unknowable": []
+  },
+  {
+   "audit": {
+    "by": "TASK-025 cross-review E1",
+    "verdict": "agree"
+   },
+   "category": "trigger",
+   "class": "PerfectFit",
+   "entity_key": "enchantments:PERFECT_FIT",
+   "evidence": [
+    "ModifyShuffleOrder 06003A01 (player, cards, isInitialShuffle): if isInitialShuffle return; if cards.Contains(Card) -> cards.Remove(Card); cards.Insert(0, Card).",
+    "Index 0 is the top of the draw pile (IAmInvincible checks Draw pile Cards.FirstOrDefault() == this for 'top').",
+    "Effect: whenever the discard pile is reshuffled into the draw pile, the enchanted card (if in it) is placed on top, so it is the next card drawn."
+   ],
+   "fingerprint": "52bd4a925fdd505a07431f598fbe75cb6c62f9c19cda2bece4f93e1847ec46a3",
+   "hook_tokens": {
+    "ModifyShuffleOrder": "06003A01"
+   },
+   "hooks": [
+    "ModifyShuffleOrder"
+   ],
+   "mechanics": [
+    {
+     "condition": {
+      "not_initial_shuffle": true
+     },
+     "effect": {
+      "card": "self",
+      "destination": "draw",
+      "kind": "move_card",
+      "position": "top"
+     },
+     "scope": "enchanted_card",
+     "when": "shuffle"
+    }
+   ],
+   "open_questions": [
+    "Condition 'not_initial_shuffle' is new vocabulary."
+   ],
+   "reviewed_by": "TASK-025 ticket 10 enchantments",
+   "status": "converted",
+   "unknowable": []
+  },
+  {
+   "adds_keywords": [
+    "Innate",
+    "Retain"
+   ],
+   "audit": {
+    "by": "TASK-025 cross-review E1",
+    "verdict": "agree"
+   },
+   "can_enchant": {
+    "card_type": [
+     "Attack",
+     "Skill"
+    ]
+   },
+   "category": "baseline",
+   "class": "RoyallyApproved",
+   "entity_key": "enchantments:ROYALLY_APPROVED",
+   "evidence": [
+    "CanEnchantCardType 06003A03: (uint)(cardType - 1) <= 1 -> Attack(1) or Skill(2).",
+    "OnEnchant 06003A05: Card.AddKeyword(3 Innate); Card.AddKeyword(5 Retain). Keywords are added to the card permanently when enchanted.",
+    "Applied by relic RoyalStamp."
+   ],
+   "fingerprint": "15fcbe1f5c3d386bbb47078e0d6aa5b10d0ea141f635f6508da35ecaaf8a216c",
+   "hook_tokens": {
+    "CanEnchantCardType": "06003A03",
+    "OnEnchant": "06003A05"
+   },
+   "hooks": [
+    "CanEnchantCardType",
+    "OnEnchant"
+   ],
+   "mechanics": [],
+   "open_questions": [
+    "Top-level 'adds_keywords' (permanent keywords added on enchant) and 'can_enchant' (application restriction) are new fields used across this batch."
+   ],
+   "reviewed_by": "TASK-025 ticket 10 enchantments",
+   "status": "converted",
+   "unknowable": []
+  },
+  {
+   "audit": {
+    "by": "TASK-025 cross-review E1",
+    "verdict": "agree"
+   },
+   "can_enchant": {
+    "card_type": [
+     "Attack"
+    ]
+   },
+   "category": "baseline",
+   "class": "Sharp",
+   "entity_key": "enchantments:SHARP",
+   "evidence": [
+    "CanEnchantCardType 06003A07: cardType == 1 (Attack).",
+    "EnchantDamageAdditive 06003A09: props.IsPoweredAttack ? Amount : 0 (per hit).",
+    "Applied by relic GnarledHammer."
+   ],
+   "fingerprint": "3489552d89a2c1b83673d46e30f00cbe8d54e5e804261f7c9caf25e3f888ffaa",
+   "hook_tokens": {
+    "CanEnchantCardType": "06003A07",
+    "EnchantDamageAdditive": "06003A09"
+   },
+   "hooks": [
+    "CanEnchantCardType",
+    "EnchantDamageAdditive"
+   ],
+   "mechanics": [
+    {
+     "add_per_stack": 1,
+     "filter": {
+      "powered_attack": true
+     },
+     "modifier": "damage",
+     "scope": "enchanted_card"
+    }
+   ],
+   "open_questions": [],
+   "reviewed_by": "TASK-025 ticket 10 enchantments",
+   "status": "converted",
+   "unknowable": []
+  },
+  {
+   "audit": {
+    "by": "TASK-025 cross-review E1",
+    "notes": "Auditor: the per-draw cost is uniform 0-3 (NextInt(4)), a known distribution already recorded as random_range [0,3]; under spec step 4 it is not unknowable. Developer resolved per IL: unknowable emptied.",
+    "verdict": "resolved"
+   },
+   "can_enchant": {
+    "not_keyword": [
+     "Unplayable"
+    ],
+    "x_cost": false
+   },
+   "category": "trigger",
+   "class": "Slither",
+   "entity_key": "enchantments:SLITHER",
+   "evidence": [
+    "CanEnchant 06003A0D: base.CanEnchant(card) && !Keywords.Contains(4 Unplayable) && !EnergyCost.CostsX.",
+    "AfterCardDrawn 06003A0E: card == Card && Card.Pile.Type == 2 (Hand) -> Card.EnergyCost.SetThisCombat(NextEnergyCost(), false).",
+    "NextEnergyCost: RunState.Rng.CombatEnergyCosts.NextInt(4) (parameter maxExclusive) -> uniform 0..3 (expected 1.5); TestEnergyCostOverride only in test mode.",
+    "Re-rolled every time the card is drawn."
+   ],
+   "fingerprint": "ab12fed05fbb8a5d2ed30b9015004980a7d846276bf87d0c57c5ce241b077011",
+   "hook_tokens": {
+    "AfterCardDrawn": "06003A0E",
+    "CanEnchant": "06003A0D"
+   },
+   "hooks": [
+    "AfterCardDrawn",
+    "CanEnchant"
+   ],
+   "mechanics": [
+    {
+     "effect": {
+      "duration": "combat",
+      "kind": "set_cost",
+      "random_range": [
+       0,
+       3
+      ]
+     },
+     "filter": {
+      "self": true
+     },
+     "scope": "enchanted_card",
+     "when": "card_drawn"
+    }
+   ],
+   "open_questions": [
+    "New effect 'set_cost' with 'random_range'."
+   ],
+   "reviewed_by": "TASK-025 ticket 10 enchantments",
+   "status": "converted",
+   "unknowable": []
+  },
+  {
+   "audit": {
+    "by": "TASK-025 cross-review E1",
+    "verdict": "agree"
+   },
+   "category": "trigger",
+   "class": "SlumberingEssence",
+   "entity_key": "enchantments:SLUMBERING_ESSENCE",
+   "evidence": [
+    "BeforeFlush 06003A11: player == Card.Owner && Card.Pile?.Type == 2 (Hand) -> Card.EnergyCost.AddUntilPlayed(-1, false).",
+    "Fires at end of turn before the hand is flushed: matters when the card is still in hand at end of turn (e.g. Retain); cost -1 per such turn until played.",
+    "Fixed -1, not scaled by Amount; no CanEnchant override."
+   ],
+   "fingerprint": "a00d96dfc024f646cd1ef2388546e9518a7cffa431bde77cb77d7e71c27777c4",
+   "hook_tokens": {
+    "BeforeFlush": "06003A11"
+   },
+   "hooks": [
+    "BeforeFlush"
+   ],
+   "mechanics": [
+    {
+     "condition": {
+      "card_in_pile": [
+       "hand"
+      ]
+     },
+     "effect": {
+      "amount": 1,
+      "duration": "until_played",
+      "kind": "cost_reduction",
+      "target": "this_card"
+     },
+     "scope": "enchanted_card",
+     "when": "turn_end"
+    }
+   ],
+   "open_questions": [],
+   "reviewed_by": "TASK-025 ticket 10 enchantments",
+   "status": "converted",
+   "unknowable": []
+  },
+  {
+   "audit": {
+    "by": "TASK-025 cross-review E1",
+    "verdict": "agree"
+   },
+   "can_enchant": {
+    "keyword": [
+     "Exhaust"
+    ]
+   },
+   "category": "baseline",
+   "class": "SoulsPower",
+   "entity_key": "enchantments:SOULS_POWER",
+   "evidence": [
+    "CanEnchant 06003A13: base.CanEnchant(card) && card.GetKeywordsWithSources(KeywordSources 2 Local).Contains(1 Exhaust) -> only cards with their own Exhaust keyword.",
+    "OnEnchant 06003A15: CardCmd::RemoveKeyword(Card, [1 Exhaust]) -> card loses Exhaust permanently."
+   ],
+   "fingerprint": "61c1c3577bfef00345489e7b82ebc43f629adc93cd0ff634989df63ccc39e98a",
+   "hook_tokens": {
+    "CanEnchant": "06003A13",
+    "OnEnchant": "06003A15"
+   },
+   "hooks": [
+    "CanEnchant",
+    "OnEnchant"
+   ],
+   "mechanics": [],
+   "open_questions": [
+    "Top-level 'removes_keywords' is new."
+   ],
+   "removes_keywords": [
+    "Exhaust"
+   ],
+   "reviewed_by": "TASK-025 ticket 10 enchantments",
+   "status": "converted",
+   "unknowable": []
+  },
+  {
+   "audit": {
+    "by": "TASK-025 cross-review E1",
+    "verdict": "agree"
+   },
+   "category": "baseline",
+   "class": "Sown",
+   "entity_key": "enchantments:SOWN",
+   "evidence": [
+    "OnPlay 06003A18 <OnPlay>d__2: if Status != 0 (Normal) return; Status = 1 (Disabled); PlayerCmd::GainEnergy(Amount, Card.Owner).",
+    "per-combat state lives on the combat copy of the card; only Goopy writes to Card.DeckVersion, so other Status/flag changes do not carry to the next combat (EnchantmentModel base class is not dumpable; inferred from the DeckVersion pattern, same as GeneticAlgorithm/TheScythe facts) -> once per combat.",
+    "No CanEnchant override."
+   ],
+   "fingerprint": "2ed6a20d87830ed3e6bcd7f56d7ea4e3a5214502b4075ae1647d1675a43c84b1",
+   "hook_tokens": {
+    "OnPlay": "06003A18"
+   },
+   "hooks": [
+    "OnPlay"
+   ],
+   "mechanics": [
+    {
+     "effect": {
+      "amount_per_stack": 1,
+      "kind": "energy"
+     },
+     "filter": {
+      "self": true
+     },
+     "limit": "once_per_combat",
+     "scope": "enchanted_card",
+     "when": "card_played"
+    }
+   ],
+   "open_questions": [],
+   "reviewed_by": "TASK-025 ticket 10 enchantments",
+   "status": "converted",
+   "unknowable": []
+  },
+  {
+   "audit": {
+    "by": "TASK-025 cross-review E1",
+    "verdict": "agree"
+   },
+   "can_enchant": {
+    "rarity": "Basic",
+    "tag_any": [
+     "Strike",
+     "Defend"
+    ]
+   },
+   "category": "baseline",
+   "class": "Spiral",
+   "entity_key": "enchantments:SPIRAL",
+   "evidence": [
+    "CanEnchant 06003A1A: base.CanEnchant(card) && card.Rarity == 1 (Basic) && (Tags contains 1 Strike || 2 Defend).",
+    "get_CanonicalVars: IntVar('Times', 1); EnchantPlayCount 06003A1D: original + Times.IntValue -> every play resolves twice. Not scaled by Amount."
+   ],
+   "fingerprint": "1e7100699b99a6dee98323d457af6355e2625ffadb05f112fdcfcb9b292567a5",
+   "hook_tokens": {
+    "CanEnchant": "06003A1A",
+    "EnchantPlayCount": "06003A1D"
+   },
+   "hooks": [
+    "CanEnchant",
+    "EnchantPlayCount"
+   ],
+   "mechanics": [
+    {
+     "add": 1,
+     "modifier": "card_play_count",
+     "scope": "enchanted_card"
+    }
+   ],
+   "open_questions": [],
+   "reviewed_by": "TASK-025 ticket 10 enchantments",
+   "status": "converted",
+   "unknowable": []
+  },
+  {
+   "adds_keywords": [
+    "Retain"
+   ],
+   "audit": {
+    "by": "TASK-025 cross-review E1",
+    "verdict": "agree"
+   },
+   "category": "baseline",
+   "class": "Steady",
+   "entity_key": "enchantments:STEADY",
+   "evidence": [
+    "OnEnchant 06003A20: Card.AddKeyword(5 Retain). No CanEnchant override."
+   ],
+   "fingerprint": "952e643252a9e032ca739f7407d10a49e06c5624f2fe36a2021238b6fad2336f",
+   "hook_tokens": {
+    "OnEnchant": "06003A20"
+   },
+   "hooks": [
+    "OnEnchant"
+   ],
+   "mechanics": [],
+   "open_questions": [],
+   "reviewed_by": "TASK-025 ticket 10 enchantments",
+   "status": "converted",
+   "unknowable": []
+  },
+  {
+   "audit": {
+    "by": "TASK-025 cross-review E1",
+    "verdict": "agree"
+   },
+   "category": "baseline",
+   "class": "Swift",
+   "entity_key": "enchantments:SWIFT",
+   "evidence": [
+    "OnPlay 06003A24 <OnPlay>d__4: if Status != 0 (Normal) return; Status = 1 (Disabled); CardPileCmd::Draw(ctx, Amount, Card.Owner, false).",
+    "per-combat state lives on the combat copy of the card; only Goopy writes to Card.DeckVersion, so other Status/flag changes do not carry to the next combat (EnchantmentModel base class is not dumpable; inferred from the DeckVersion pattern, same as GeneticAlgorithm/TheScythe facts) -> once per combat.",
+    "Applied by relics BeautifulBracelet and WingCharm; no CanEnchant override."
+   ],
+   "fingerprint": "c429c902194b0628962f1fadbc001a632563a3a2a6f18fb3f55b8c7652482e97",
+   "hook_tokens": {
+    "OnPlay": "06003A24"
+   },
+   "hooks": [
+    "OnPlay"
+   ],
+   "mechanics": [
+    {
+     "effect": {
+      "amount_per_stack": 1,
+      "kind": "draw"
+     },
+     "filter": {
+      "self": true
+     },
+     "limit": "once_per_combat",
+     "scope": "enchanted_card",
+     "when": "card_played"
+    }
+   ],
+   "open_questions": [],
+   "reviewed_by": "TASK-025 ticket 10 enchantments",
+   "status": "converted",
+   "unknowable": []
+  },
+  {
+   "adds_keywords": [
+    "Eternal"
+   ],
+   "audit": {
+    "by": "TASK-025 cross-review E1",
+    "verdict": "agree"
+   },
+   "category": "baseline",
+   "class": "TezcatarasEmber",
+   "entity_key": "enchantments:TEZCATARAS_EMBER",
+   "evidence": [
+    "get_CanonicalVars: DamageVar(3, ValueProp 8). EnchantDamageAdditive 06003A29: props.IsPoweredAttack ? Damage.BaseValue (3) : 0 -> fixed +3, not per stack.",
+    "OnEnchant 06003A28: Card.EnergyCost.UpgradeBy(-Card.EnergyCost.GetWithModifiers(0)) -> base cost reduced to 0 permanently; Card.AddKeyword(7 Eternal).",
+    "No CanEnchant override (damage bonus only matters for cards that deal powered attack damage). Applied by relic NutritiousSoup."
+   ],
+   "fingerprint": "50f006237708cbf9434c2c1e93fef9dd5d4a71e910ef412f69533e48d0efa264",
+   "hook_tokens": {
+    "EnchantDamageAdditive": "06003A29",
+    "OnEnchant": "06003A28"
+   },
+   "hooks": [
+    "EnchantDamageAdditive",
+    "OnEnchant"
+   ],
+   "mechanics": [
+    {
+     "add": 3,
+     "filter": {
+      "powered_attack": true
+     },
+     "modifier": "damage",
+     "scope": "enchanted_card"
+    },
+    {
+     "duration": "permanent",
+     "modifier": "energy_cost",
+     "scope": "enchanted_card",
+     "set": 0
+    }
+   ],
+   "open_questions": [
+    "energy_cost 'set': 0 with duration 'permanent' (base-cost change on enchant) is new; the effect of UpgradeBy on X-cost cards was not checked."
+   ],
+   "reviewed_by": "TASK-025 ticket 10 enchantments",
+   "status": "converted",
+   "unknowable": []
+  },
+  {
+   "audit": {
+    "by": "TASK-025 cross-review E1",
+    "verdict": "agree"
+   },
+   "can_enchant": {
+    "card_type": [
+     "Attack"
+    ]
+   },
+   "category": "baseline",
+   "class": "Vigorous",
+   "entity_key": "enchantments:VIGOROUS",
+   "evidence": [
+    "CanEnchantCardType 06003A2B: cardType == 1 (Attack).",
+    "EnchantDamageAdditive 06003A2D: Status != 0 -> 0; props.IsPoweredAttack ? Amount : 0.",
+    "AfterCardPlayed 06003A2E: cardPlay.Card == Card -> Status = 1 (Disabled).",
+    "CardModel.OnPlayWrapper <OnPlayWrapper>d__339: per play iteration i < playCount: Hook.BeforeCardPlayed -> CardModel.OnPlay -> Enchantment.OnPlay -> Affliction.OnPlay -> CardPlayFinished -> Hook.AfterCardPlayed; playCount from GetEnchantedReplayCount = Enchantment.EnchantPlayCount(BaseReplayCount) before the loop -> AfterCardPlayed fires after the first iteration, so replays of the same play get no bonus.",
+    "per-combat state lives on the combat copy of the card; only Goopy writes to Card.DeckVersion, so other Status/flag changes do not carry to the next combat (EnchantmentModel base class is not dumpable; inferred from the DeckVersion pattern, same as GeneticAlgorithm/TheScythe facts) -> once per combat."
+   ],
+   "fingerprint": "7a1e44f4b9b66216680d762144cd12afafece70025c8ed25ac721c6fad470bbb",
+   "hook_tokens": {
+    "AfterCardPlayed": "06003A2E",
+    "CanEnchantCardType": "06003A2B",
+    "EnchantDamageAdditive": "06003A2D"
+   },
+   "hooks": [
+    "AfterCardPlayed",
+    "CanEnchantCardType",
+    "EnchantDamageAdditive"
+   ],
+   "mechanics": [
+    {
+     "add_per_stack": 1,
+     "applies_to": "first play iteration of the enchanted card each combat",
+     "filter": {
+      "powered_attack": true
+     },
+     "limit": "once_per_combat",
+     "modifier": "damage",
+     "scope": "enchanted_card"
+    }
+   ],
+   "open_questions": [],
+   "reviewed_by": "TASK-025 ticket 10 enchantments",
+   "status": "converted",
+   "unknowable": []
+  },
+  {
+   "audit": {
+    "by": "TASK-025 cross-review O1",
+    "verdict": "agree"
+   },
+   "class": "DarkOrb",
+   "entity_key": "orbs:DARK_ORB",
+   "evidence": [
+    ".ctor: _evokeVal = new Decimal(6)",
+    "BeforeTurnEndOrbTrigger 06002C75 <BeforeTurnEndOrbTrigger>d__9: OrbModel::TriggerPassive(choiceContext, null)",
+    "OrbModel::TriggerPassive <TriggerPassive>d__74: triggerCount = Hook.ModifyOrbPassiveTriggerCount(combatState, this, 1) (e.g. relics:GOLD_PLATED_CABLES); Hook.AfterModifyingOrbPassiveTriggerCount; loop i < triggerCount: this.Passive(choiceContext, target); Cmd wait",
+    "get_PassiveVal: ModifyOrbValue(new Decimal(6)); get_EvokeVal: return _evokeVal (no ModifyOrbValue)",
+    "Passive 06002C76 (synchronous): target != null -> throw 'Dark orbs cannot target creatures.'; ActivatePassive; _evokeVal = _evokeVal + PassiveVal; NOrbManager.UpdateVisuals (UI only); Task.CompletedTask",
+    "Evoke 06002C77 <Evoke>d__11: CombatState.HittableEnemies.Count == 0 -> no damage; weakestEnemy = HittableEnemies.MinBy(CurrentHp); ActivateEvoke([weakestEnemy]); CreatureCmd.Damage(ctx, weakestEnemy, EvokeVal, ValueProp 4 (Unpowered), Owner.Creature)",
+    "OrbModel::ModifyOrbValue (read via orbs-il.ps1 metadata scan; base class not reachable by --dump): Hook.ModifyOrbValue(Owner.Creature.CombatState, this, value) -> chains AbstractModel::ModifyOrbValue over combat hook listeners; no floor in Hook/OrbModel itself (the 0 floor is in FocusPower.ModifyOrbValue: max(value + Amount, 0), reviewed powers:FOCUS)"
+   ],
+   "evoke": {
+    "effect": {
+     "amount": 6,
+     "amount_text": "stored value: starts at 6, +PassiveVal per passive trigger",
+     "kind": "damage",
+     "target": "lowest_hp_enemy",
+     "unpowered": true
+    },
+    "focus": "none_at_evoke"
+   },
+   "fingerprint": "04a2659334d2d20a2c76acbd5b3ba1d1abd49c05d91e1cb5ea9e9376ade3c6f7",
+   "hook_tokens": {
+    "BeforeTurnEndOrbTrigger": "06002C75",
+    "Evoke": "06002C77",
+    "Passive": "06002C76"
+   },
+   "hooks": [
+    "BeforeTurnEndOrbTrigger",
+    "Evoke",
+    "Passive"
+   ],
+   "mechanics": [],
+   "open_questions": [
+    "Extra field 'state' (accumulating evoke value) and passive effect kind 'orb_evoke_gain' are not in the vocabulary; evoke target 'lowest_hp_enemy' (MinBy CurrentHp among hittable enemies; tie order = enumeration order) is not a documented target.",
+    "Focus applies when the passive accumulates, not at evoke: evoke amount 6 is only the value of a freshly channeled Dark orb."
+   ],
+   "passive": {
+    "effect": {
+     "amount": 6,
+     "amount_text": "adds PassiveVal (6 + Focus, floored 0) to this orb's stored evoke value; no direct effect",
+     "kind": "orb_evoke_gain"
+    },
+    "focus": "add",
+    "focus_floor": 0,
+    "when": "turn_end"
+   },
+   "reviewed_by": "TASK-025 ticket 07 orbs",
+   "state": {
+    "evoke_value": {
+     "focus_at_evoke": false,
+     "initial": 6,
+     "on_passive": "+= PassiveVal (6 + Focus at trigger time, min 0)"
+    }
+   },
+   "status": "converted",
+   "unknowable": []
+  },
+  {
+   "audit": {
+    "by": "TASK-025 cross-review O1",
+    "verdict": "agree"
+   },
+   "class": "FrostOrb",
+   "entity_key": "orbs:FROST_ORB",
+   "evidence": [
+    "BeforeTurnEndOrbTrigger 06002C7D <BeforeTurnEndOrbTrigger>d__8: OrbModel::TriggerPassive(choiceContext, null)",
+    "OrbModel::TriggerPassive <TriggerPassive>d__74: triggerCount = Hook.ModifyOrbPassiveTriggerCount(combatState, this, 1) (e.g. relics:GOLD_PLATED_CABLES); Hook.AfterModifyingOrbPassiveTriggerCount; loop i < triggerCount: this.Passive(choiceContext, target); Cmd wait",
+    "get_PassiveVal: ModifyOrbValue(new Decimal(2)); get_EvokeVal: ModifyOrbValue(new Decimal(5))",
+    "Passive 06002C7E <Passive>d__9: target != null -> throw 'Frost orbs cannot target creatures.'; ActivatePassive; CreatureCmd.GainBlock(Owner.Creature, PassiveVal, ValueProp 4 (Unpowered), null, false); if Owner.Creature.HasPower<HibernatePower>: foreach player in CombatState.Players where player != Owner: GainBlock(player.Creature, PassiveVal, 4, null, false)",
+    "Evoke 06002C7F <Evoke>d__10: ActivateEvoke([Owner.Creature]); GainBlock(Owner.Creature, EvokeVal, 4, null, false); same HibernatePower branch with EvokeVal for every other player; returns Players.Select(Creature) or [Owner.Creature]",
+    "OrbModel::ModifyOrbValue (read via orbs-il.ps1 metadata scan; base class not reachable by --dump): Hook.ModifyOrbValue(Owner.Creature.CombatState, this, value) -> chains AbstractModel::ModifyOrbValue over combat hook listeners; no floor in Hook/OrbModel itself (the 0 floor is in FocusPower.ModifyOrbValue: max(value + Amount, 0), reviewed powers:FOCUS)"
+   ],
+   "evoke": {
+    "effect": {
+     "amount": 5,
+     "kind": "block",
+     "unpowered": true
+    },
+    "focus": "add",
+    "focus_floor": 0
+   },
+   "fingerprint": "14aaaf1679c502ccd0ac4ae3ad662aec3eb3b2bd50f2c2b13273f08f6a95348f",
+   "hook_tokens": {
+    "BeforeTurnEndOrbTrigger": "06002C7D",
+    "Evoke": "06002C7F",
+    "Passive": "06002C7E"
+   },
+   "hooks": [
+    "BeforeTurnEndOrbTrigger",
+    "Evoke",
+    "Passive"
+   ],
+   "mechanics": [
+    {
+     "condition": {
+      "owner_has_power": "Hibernate"
+     },
+     "effect": {
+      "amount_text": "every other player's creature also gains the same block (PassiveVal on passive, EvokeVal on evoke)",
+      "kind": "block",
+      "target": "other_players"
+     },
+     "multiplayer_only": true,
+     "when": "orb_passive_or_evoke"
+    }
+   ],
+   "open_questions": [
+    "Mechanic uses undocumented when 'orb_passive_or_evoke', condition 'owner_has_power', target 'other_players' and 'multiplayer_only'; it is the HibernatePower effect missing from powers:HIBERNATE (that fact's open question can be resolved: the check lives in FrostOrb). No effect in single player.",
+    "Block uses ValueProp.Unpowered ('unpowered' extra field): presumably Dexterity/Frail do not apply - the block calculation code was not inspected."
+   ],
+   "passive": {
+    "effect": {
+     "amount": 2,
+     "kind": "block",
+     "unpowered": true
+    },
+    "focus": "add",
+    "focus_floor": 0,
+    "when": "turn_end"
+   },
+   "reviewed_by": "TASK-025 ticket 07 orbs",
+   "status": "converted",
+   "unknowable": []
+  },
+  {
+   "audit": {
+    "by": "TASK-025 cross-review O1",
+    "verdict": "agree"
+   },
+   "class": "GlassOrb",
+   "entity_key": "orbs:GLASS_ORB",
+   "evidence": [
+    ".ctor: _passiveVal = new Decimal(4)",
+    "BeforeTurnEndOrbTrigger 06002C85 <BeforeTurnEndOrbTrigger>d__9: OrbModel::TriggerPassive(choiceContext, null)",
+    "OrbModel::TriggerPassive <TriggerPassive>d__74: triggerCount = Hook.ModifyOrbPassiveTriggerCount(combatState, this, 1) (e.g. relics:GOLD_PLATED_CABLES); Hook.AfterModifyingOrbPassiveTriggerCount; loop i < triggerCount: this.Passive(choiceContext, target); Cmd wait",
+    "get_PassiveVal: ModifyOrbValue(_passiveVal); get_EvokeVal: PassiveVal * new Decimal(2)",
+    "Passive 06002C86 <Passive>d__10 (target argument ignored): enemies = CombatState.HittableEnemies.Where(IsHittable).ToList(); v = PassiveVal; v <= 0 -> return; ActivatePassive; _passiveVal = Math.Max(0, _passiveVal - 1); CreatureCmd.Damage(ctx, enemies, v, ValueProp 4 (Unpowered), Owner.Creature)",
+    "Evoke 06002C87 <Evoke>d__11: enemies = HittableEnemies.Where(IsHittable).ToList(); EvokeVal <= 0 -> no damage; ActivateEvoke(enemies); CreatureCmd.Damage(ctx, enemies, EvokeVal, ValueProp 4, Owner.Creature)",
+    "OrbModel::ModifyOrbValue (read via orbs-il.ps1 metadata scan; base class not reachable by --dump): Hook.ModifyOrbValue(Owner.Creature.CombatState, this, value) -> chains AbstractModel::ModifyOrbValue over combat hook listeners; no floor in Hook/OrbModel itself (the 0 floor is in FocusPower.ModifyOrbValue: max(value + Amount, 0), reviewed powers:FOCUS)"
+   ],
+   "evoke": {
+    "effect": {
+     "amount": 8,
+     "amount_text": "EvokeVal = PassiveVal * 2 = (current stored value + Focus, min 0) * 2",
+     "kind": "damage",
+     "target": "all",
+     "unpowered": true
+    },
+    "focus": "add_then_double"
+   },
+   "fingerprint": "e80faad8271321b035120eafcd071b467f1c9c00a5355c8d2859f8b970bf1155",
+   "hook_tokens": {
+    "BeforeTurnEndOrbTrigger": "06002C85",
+    "Evoke": "06002C87",
+    "Passive": "06002C86"
+   },
+   "hooks": [
+    "BeforeTurnEndOrbTrigger",
+    "Evoke",
+    "Passive"
+   ],
+   "mechanics": [],
+   "open_questions": [
+    "Extra field 'state' (decaying passive value) and focus rule 'add_then_double' are not in the template; evoke amount 8 is only for a fresh orb with 0 Focus (it shrinks by 2 per passive trigger).",
+    "Decrement uses the stored base (not Focus-modified): with Focus F the n-th passive deals max(4 - (n-1) + F, 0) until the stored value reaches 0, after which it deals F every turn (no further decrement below 0); if 4-(n-1)+F <= 0 nothing fires."
+   ],
+   "passive": {
+    "effect": {
+     "amount": 4,
+     "amount_text": "PassiveVal = stored value (starts 4) + Focus, min 0; stored value then -1 (min 0)",
+     "kind": "damage",
+     "target": "all",
+     "unpowered": true
+    },
+    "focus": "add",
+    "focus_floor": 0,
+    "when": "turn_end"
+   },
+   "reviewed_by": "TASK-025 ticket 07 orbs",
+   "state": {
+    "passive_value": {
+     "initial": 4,
+     "on_passive": "-1 after dealing damage, floored at 0 (Math.Max(0, v - 1))",
+     "skip_when": "PassiveVal <= 0 -> passive does nothing and does not decrement"
+    }
+   },
+   "status": "converted",
+   "unknowable": []
+  },
+  {
+   "audit": {
+    "by": "TASK-025 cross-review O1",
+    "verdict": "agree"
+   },
+   "class": "LightningOrb",
+   "entity_key": "orbs:LIGHTNING_ORB",
+   "evidence": [
+    "BeforeTurnEndOrbTrigger 06002C8F <BeforeTurnEndOrbTrigger>d__12: OrbModel::TriggerPassive(choiceContext, null)",
+    "OrbModel::TriggerPassive <TriggerPassive>d__74: triggerCount = Hook.ModifyOrbPassiveTriggerCount(combatState, this, 1) (e.g. relics:GOLD_PLATED_CABLES); Hook.AfterModifyingOrbPassiveTriggerCount; loop i < triggerCount: this.Passive(choiceContext, target); Cmd wait",
+    "get_PassiveVal: ModifyOrbValue(new Decimal(3)); get_EvokeVal: ModifyOrbValue(new Decimal(8))",
+    "Passive 06002C90 <Passive>d__13: ActivatePassive; ApplyLightningDamage(PassiveVal, target, ctx, isEvoke=false)",
+    "Evoke 06002C91 <Evoke>d__14: ApplyLightningDamage(EvokeVal, null, ctx, isEvoke=true)",
+    "<ApplyLightningDamage>d__15: opponents = CombatState.GetOpponentsOf(Owner.Creature).Where(IsHittable).ToList(); none -> no damage; targets = target != null ? [target] : [Rng.CombatTargets.NextItem(opponents)]; isEvoke -> ActivateEvoke(targets); CreatureCmd.Damage(ctx, targets, value, ValueProp 4 (Unpowered), Owner.Creature)",
+    "--enum ValueProp: 2 Unblockable, 4 Unpowered, 8 Move, 16 SkipHurtAnim",
+    "OrbModel::ModifyOrbValue (read via orbs-il.ps1 metadata scan; base class not reachable by --dump): Hook.ModifyOrbValue(Owner.Creature.CombatState, this, value) -> chains AbstractModel::ModifyOrbValue over combat hook listeners; no floor in Hook/OrbModel itself (the 0 floor is in FocusPower.ModifyOrbValue: max(value + Amount, 0), reviewed powers:FOCUS)"
+   ],
+   "evoke": {
+    "effect": {
+     "amount": 8,
+     "kind": "damage",
+     "target": "random",
+     "unpowered": true
+    },
+    "focus": "add",
+    "focus_floor": 0
+   },
+   "fingerprint": "b0bdd7fdd3d56a62aa56ab797d944b5e8c86a269c97e70f33f904d9c97ef90ad",
+   "hook_tokens": {
+    "BeforeTurnEndOrbTrigger": "06002C8F",
+    "Evoke": "06002C91",
+    "Passive": "06002C90"
+   },
+   "hooks": [
+    "BeforeTurnEndOrbTrigger",
+    "Evoke",
+    "Passive"
+   ],
+   "mechanics": [],
+   "open_questions": [
+    "Extra fields 'unpowered' (ValueProp.Unpowered: Strength/Vulnerable-style damage modifiers presumably not applied; same tag as powers:THUNDER) and 'focus_floor' (0 floor comes from FocusPower) are not in the orb fact template.",
+    "Passive target: random hittable enemy when triggered at turn end (target null); a non-null target passed by another effect is honored instead."
+   ],
+   "passive": {
+    "effect": {
+     "amount": 3,
+     "kind": "damage",
+     "target": "random",
+     "unpowered": true
+    },
+    "focus": "add",
+    "focus_floor": 0,
+    "when": "turn_end"
+   },
+   "reviewed_by": "TASK-025 ticket 07 orbs",
+   "status": "converted",
+   "unknowable": []
+  },
+  {
+   "audit": {
+    "by": "TASK-025 cross-review O1",
+    "verdict": "agree"
+   },
+   "class": "PlasmaOrb",
+   "entity_key": "orbs:PLASMA_ORB",
+   "evidence": [
+    "AfterTurnStartOrbTrigger 06002C98 <AfterTurnStartOrbTrigger>d__8: OrbModel::TriggerPassive(choiceContext, null)",
+    "OrbModel::TriggerPassive <TriggerPassive>d__74: triggerCount = Hook.ModifyOrbPassiveTriggerCount(combatState, this, 1) (e.g. relics:GOLD_PLATED_CABLES); Hook.AfterModifyingOrbPassiveTriggerCount; loop i < triggerCount: this.Passive(choiceContext, target); Cmd wait",
+    "get_PassiveVal: Decimal.One; get_EvokeVal: new Decimal(2); neither calls ModifyOrbValue -> Focus has no effect",
+    "Passive 06002C99 <Passive>d__9: target != null -> throw 'Plasma orbs cannot target creatures.'; ActivatePassive; PlayerCmd.GainEnergy(PassiveVal, Owner)",
+    "Evoke 06002C9A <Evoke>d__10: ActivateEvoke([Owner.Creature]); PlayerCmd.GainEnergy(EvokeVal, Owner)"
+   ],
+   "evoke": {
+    "effect": {
+     "amount": 2,
+     "kind": "energy"
+    },
+    "focus": "none"
+   },
+   "fingerprint": "a0a028299d1d9cb06082a3aa691f2f359194d0d43385d6764f6119a5627b6a14",
+   "hook_tokens": {
+    "AfterTurnStartOrbTrigger": "06002C98",
+    "Evoke": "06002C9A",
+    "Passive": "06002C99"
+   },
+   "hooks": [
+    "AfterTurnStartOrbTrigger",
+    "Evoke",
+    "Passive"
+   ],
+   "mechanics": [],
+   "open_questions": [],
+   "passive": {
+    "effect": {
+     "amount": 1,
+     "kind": "energy"
+    },
+    "focus": "none",
+    "when": "turn_start"
+   },
+   "reviewed_by": "TASK-025 ticket 07 orbs",
+   "status": "converted",
+   "unknowable": []
+  },
+  {
+   "audit": {
     "by": "TASK-025 cross-review P1b",
     "verdict": "agree"
    },
@@ -42753,15 +44015,16 @@
   },
   {
    "audit": {
-    "by": "structural rule (tests/test_assembly_facts.py)",
+    "by": "TASK-025 cross-review O1",
     "verdict": "agree"
    },
-   "category": "irrelevant",
+   "category": "baseline",
    "class": "DivineRight",
    "entity_key": "relics:DIVINE_RIGHT",
    "evidence": [
-    "structural review: only out-of-combat hooks AfterRoomEntered 06001D87",
-    "no combat command is called from a room-entry hook; pickup changes are already in the observed deck"
+    "AfterRoomEntered 06001D87 (<AfterRoomEntered>d__4::MoveNext): room isinst CombatRoom, else leave; PlayerCmd::GainStars(DynamicVars.Stars.BaseValue, Owner)",
+    "get_CanonicalVars: StarsVar 3",
+    "Previously triaged irrelevant: the structural rule missed PlayerCmd::GainStars (fixed in COMBAT_COMMAND_PATTERN)"
    ],
    "fingerprint": "b2d6ab3c3b651489aa2cdd80c3144783aaacc6bd225fc829af523a2e069030e3",
    "hook_tokens": {
@@ -42770,11 +44033,19 @@
    "hooks": [
     "AfterRoomEntered"
    ],
-   "mechanics": [],
-   "reviewed_by": "TASK-025 ticket 04 (structural)",
+   "mechanics": [
+    {
+     "effect": {
+      "amount": 3,
+      "kind": "gain_stars"
+     },
+     "when": "combat_start"
+    }
+   ],
+   "reviewed_by": "TASK-025 ticket 04 (re-review after triage fix)",
    "status": "converted",
    "triage": {
-    "category": "irrelevant",
+    "category": "baseline",
     "hook_groups": {
      "baseline": [],
      "reward": [],
@@ -51584,15 +52855,17 @@
   },
   {
    "audit": {
-    "by": "structural rule (tests/test_assembly_facts.py)",
+    "by": "TASK-025 cross-review O1",
     "verdict": "agree"
    },
-   "category": "irrelevant",
+   "category": "baseline",
    "class": "StoneCracker",
    "entity_key": "relics:STONE_CRACKER",
    "evidence": [
-    "structural review: only out-of-combat hooks AfterRoomEntered 06002279",
-    "no combat command is called from a room-entry hook; pickup changes are already in the observed deck"
+    "AfterRoomEntered (<AfterRoomEntered>d__4::MoveNext): room isinst CombatRoom, else leave; Flash; GetPile(PileType 1 = Draw).Cards.Where(IsUpgradable) StableShuffle(CombatCardSelection rng).Take(DynamicVars.Cards.IntValue); CardCmd::Upgrade each",
+    "get_CanonicalVars: CardsVar 2",
+    "Combat card instances are upgraded for this fight only (draw pile at combat start)",
+    "Previously triaged irrelevant: the structural rule missed CardCmd:: (fixed in COMBAT_COMMAND_PATTERN)"
    ],
    "fingerprint": "f95745b21881e49c9b88db224125ff6646babec47eea440f232777f54c8bb623",
    "hook_tokens": {
@@ -51601,11 +52874,24 @@
    "hooks": [
     "AfterRoomEntered"
    ],
-   "mechanics": [],
-   "reviewed_by": "TASK-025 ticket 04 (structural)",
+   "mechanics": [
+    {
+     "effect": {
+      "choice": "random",
+      "count": 2,
+      "filter": {
+       "upgradable": true
+      },
+      "kind": "upgrade_cards",
+      "scope": "draw"
+     },
+     "when": "combat_start"
+    }
+   ],
+   "reviewed_by": "TASK-025 ticket 04 (re-review after triage fix)",
    "status": "converted",
    "triage": {
-    "category": "irrelevant",
+    "category": "baseline",
     "hook_groups": {
      "baseline": [],
      "reward": [],

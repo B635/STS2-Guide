@@ -26,6 +26,7 @@ from typing import Dict, List, Mapping, Optional, Sequence
 
 from advisor.boss_context import build_boss_preparation
 from advisor.deck_mechanics import (
+    ORB_TYPES,
     CardProfile,
     RelicProfile,
     Situation,
@@ -114,9 +115,11 @@ def _weighted(rows: Sequence[tuple[float, float]]) -> float:
     return sum(value * weight for value, weight in rows) / total if total else 0.0
 
 
-def _reachable_fight_share(world_map: WorldMap) -> Dict[str, float]:
-    """Expected count of each fight kind over all paths from the next nodes
-    to a boss, each path equally likely (the no-recommendation fallback)."""
+def _reachable_fight_share(
+    world_map: WorldMap, starts: Optional[Sequence[str]] = None,
+) -> Dict[str, float]:
+    """Expected count of each fight kind over all paths from ``starts`` (the
+    next nodes by default) to a boss, each path equally likely."""
 
     by_id = {node.node_id: node for node in world_map.nodes}
     boss_ids = set(world_map.boss_node_ids)
@@ -133,7 +136,10 @@ def _reachable_fight_share(world_map: WorldMap) -> Dict[str, float]:
                 to_boss[node_id] = sum(paths_to_boss(child) for child in node.edges)
         return to_boss[node_id]
 
-    starts = [n for n in world_map.available_next_node_ids if paths_to_boss(n) > 0]
+    starts = [
+        n for n in (world_map.available_next_node_ids if starts is None else starts)
+        if paths_to_boss(n) > 0
+    ]
     total = sum(to_boss[n] for n in starts)
     if not total:
         return {}
@@ -199,6 +205,18 @@ def compute_needs(
     world = request.world
     mix, gaps = _fight_mix(route_policy, request)
     boss_ids = world.map.boss_encounter_ids if world.map else ()
+    if not mix and world.map and world.map.nodes and not world.map.available_next_node_ids:
+        # Reward after the act's boss: the next act's map is not generated
+        # yet. Its encounter pools and possible bosses are catalog facts; the
+        # fight mix is taken from the act map just finished (same structure).
+        next_bosses = repository.next_act_boss_ids(boss_ids)
+        first_row = min(node.row for node in world.map.nodes)
+        mix = _reachable_fight_share(
+            world.map, [n.node_id for n in world.map.nodes if n.row == first_row]
+        )
+        if next_bosses and mix:
+            boss_ids = next_bosses
+            gaps = ("next_act_needs_from_pools", "next_act_fight_mix_from_finished_map")
     pools = repository.encounter_pool_expectations(boss_ids, ascension=world.ascension)
     if not pools or not mix:
         # Without the act's encounter pools and the fights ahead there is no
@@ -451,6 +469,14 @@ class DeckFitnessPolicy:
             potion_count=(
                 len(state["potions"]) if isinstance(state.get("potions"), list) else None
             ),
+            orb_slots=float((params.get("base_orb_slots") or {}).get(
+                str(request.world.character or "").upper(), 0.0
+            )),
+            orbs={
+                orb: fact for orb in ORB_TYPES.values()
+                if (fact := self.repository.find_assembly_fact("orbs", orb)) is not None
+                and fact.get("status") == "converted"
+            },
         )
 
         def evaluate(cards: List[Optional[CardProfile]]) -> Fitness:

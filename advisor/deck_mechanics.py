@@ -20,7 +20,7 @@ an ignored restriction would credit cards it does not apply to.
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Dict, Iterable, List, Mapping, Optional, Sequence
 
 from storage.assembly_facts import class_to_entity_id
@@ -30,13 +30,17 @@ FEEDBACK_PASSES = 3
 POISSON_TERMS = 12
 SUPPORTED_EFFECTS = frozenset({
     "damage", "block", "draw", "energy", "apply_power", "hp_loss", "heal",
-    "exhaust_self", "exhaust_other", "discard",
+    "exhaust_self", "exhaust_other", "discard", "gain_stars",
+    "channel_orb", "evoke_orb", "orb_slots", "orb_passive",
 })
-SELF_POWERS = {"Strength": "strength", "Dexterity": "dexterity", "Vigor": "vigor"}
+SELF_POWERS = {"Strength": "strength", "Dexterity": "dexterity", "Vigor": "vigor", "Focus": "focus"}
+# Orb names on effects -> orb fact ids (orbs:<ID>).
+ORB_TYPES = {"Lightning": "LIGHTNING_ORB", "Frost": "FROST_ORB", "Dark": "DARK_ORB",
+             "Plasma": "PLASMA_ORB", "Glass": "GLASS_ORB"}
 ENEMY_POWERS = {"Vulnerable": "vulnerable", "Weak": "weak", "Poison": "poison"}
 DAMAGE_TARGETS = frozenset({"single", "all", "random"})
 EFFECT_KEYS = frozenset({
-    "kind", "amount", "upgrade", "hits", "target", "power", "count", "choice", "per_x",
+    "kind", "amount", "upgrade", "hits", "target", "power", "count", "choice", "per_x", "orb", "scope",
     # Power facts scale an effect by the stacks applied; ``unpowered`` only
     # says Strength/Dexterity do not apply, which the engine never adds to
     # mechanic effects anyway.
@@ -59,6 +63,9 @@ EFFECT_CONDITIONS = frozenset({
 })
 NUMERIC_EFFECT_KEYS = ("amount", "upgrade", "hits", "count", "amount_per_stack", "hits_upgrade")
 POWER_DURATIONS = frozenset({"combat", "this_turn", "turns_decrement"})
+# One-shot powers that fire once at the owner's next turn start.
+NEXT_TURN_MARKS = frozenset({"next_own_turn", "next own turn only"})
+NEXT_TURN_DROP = ("turns", "limit", "timing", "turns_relative_to")
 SUPPORTED_WHEN = frozenset({
     "combat_start", "turn_start", "turn_end", "card_played", "card_exhausted",
     "card_discarded", "shuffle", "damage_received", "enemy_died", "block_gained",
@@ -72,6 +79,9 @@ SUPPORTED_CONDITIONS = frozenset({
 MECHANIC_KEYS = frozenset({
     "when", "filter", "every", "counter", "limit", "condition", "effect",
     "turns", "every_turns", "turns_from",
+    # Order within a turn (before/after the hand draw, before/after the card
+    # resolves); per-turn expectations do not depend on it.
+    "timing",
 })
 SCHEDULE_KEYS = frozenset({"turns", "every_turns", "turns_from"})
 # Fields each supported modifier understands; anything else is unsupported.
@@ -85,11 +95,24 @@ MODIFIER_FIELDS = {
     "no_draw_during_turn": set(),
     "keep_block": {"max"},
     "strength": {"add"},  # temporary Strength on the owner
+    "focus": {"add"},     # temporary Focus on the owner
     "card_added_to_deck": {"filter", "upgrade"},
 }
 CARD_FILTER_KEYS = frozenset({"card_type", "tag", "min_cost", "upgraded", "x_cost"})
 COUNTERS = frozenset({None, "turn", "combat", "run"})
 LIMITS = frozenset({None, "once_per_turn", "once_per_combat"})
+# Generated cards: a named card sent to a pile. Pools, chosen copies and
+# dynamic counts stay gaps until their distribution is modeled.
+ADD_CARD_KEYS = frozenset({
+    "kind", "card", "count", "count_upgrade", "destination", "free", "position",
+    "copy_of_self", "upgraded_if_self_upgraded", "upgraded_if_this_upgraded",
+    "upgraded_generated",
+})
+ADD_CARD_DESTINATIONS = frozenset({"hand", "draw", "discard"})
+# Choosing cards from a pile into the hand: at least worth drawing as many.
+MOVE_TO_HAND_KEYS = frozenset({
+    "kind", "choice", "count", "count_upgrade", "destination", "to", "from", "source", "position",
+})
 
 
 @dataclass(frozen=True)
@@ -100,6 +123,15 @@ class PowerUse:
     duration: str                   # combat | this_turn | turns_decrement
     stacks: float
     mechanics: tuple
+
+
+@dataclass(frozen=True)
+class Generated:
+    """Copies of a named card one play of the source card creates."""
+
+    profile: "CardProfile"
+    count: float
+    destination: str                # hand | draw | discard
 
 
 @dataclass(frozen=True)
@@ -116,6 +148,8 @@ class CardProfile:
     effects: tuple
     powers: tuple = ()
     ethereal: bool = False
+    generates: tuple = ()           # Generated
+    star_cost: Optional[float] = None
 
     @property
     def once_per_fight(self) -> bool:
@@ -140,6 +174,8 @@ class Situation:
     fight_mix: Mapping[str, float]
     hp_ratio: float
     potion_count: Optional[int]
+    orb_slots: float = 0.0            # character base slots (0: one is added on first channel)
+    orbs: Mapping[str, Mapping] = field(default_factory=dict)   # reviewed orb facts by ORB_TYPES id
 
 
 @dataclass
@@ -150,6 +186,7 @@ class _Totals:
     block: float = 0.0
     draw: float = 0.0
     energy: float = 0.0
+    stars: float = 0.0
     heal: float = 0.0
     hp_loss: float = 0.0
     strength_flat: float = 0.0
@@ -167,6 +204,15 @@ class _Totals:
     block_events: float = 0.0
     self_damage_events: float = 0.0
     temp_strength: float = 0.0
+    focus_flat: float = 0.0
+    focus_rate: float = 0.0
+    channels: Dict[str, float] = field(default_factory=dict)
+    orb_passives: Dict[str, float] = field(default_factory=dict)
+    evokes: float = 0.0
+    slot_gain: float = 0.0
+    orb_single: float = 0.0
+    orb_all: float = 0.0
+    orb_random: float = 0.0
     gaps: List[str] = field(default_factory=list)
 
 
@@ -178,7 +224,9 @@ def effect_unsupported(effect: object) -> Optional[str]:
     kind = effect.get("kind")
     if kind not in SUPPORTED_EFFECTS:
         return f"effect:{kind}"
-    extra = set(effect) - EFFECT_KEYS
+    # ``*_text`` keys keep the reviewer's wording next to the structured
+    # base case; a value given only as text stays non-numeric and is rejected.
+    extra = {key for key in set(effect) - EFFECT_KEYS if not key.endswith("_text")}
     if extra:
         return f"effect_key:{sorted(extra)[0]}"
     for key in NUMERIC_EFFECT_KEYS:
@@ -199,6 +247,15 @@ def effect_unsupported(effect: object) -> Optional[str]:
         return f"effect_target:{effect.get('target')}"
     if kind in {"exhaust_other", "discard"} and effect.get("choice") not in {None, "random", "choose"}:
         return f"effect_choice:{effect.get('choice')}"
+    if kind in {"channel_orb", "orb_passive"}:
+        if effect.get("orb") not in ORB_TYPES:
+            return f"orb:{effect.get('orb')}"
+        if kind == "channel_orb" and effect.get("target") not in {None, "self"}:
+            return f"orb_target:{effect.get('target')}"
+        if kind == "orb_passive" and effect.get("scope") != "all_of_type":
+            return f"orb_scope:{effect.get('scope')}"
+    if kind == "evoke_orb" and (effect.get("orb") != "next" or not isinstance(effect.get("count"), (int, float))):
+        return "evoke_orb:unsupported"
     if kind == "apply_power":
         power, target = effect.get("power"), effect.get("target")
         if not ((target == "self" and power in SELF_POWERS)
@@ -222,6 +279,21 @@ def _resolve_stacks(mechanic: Mapping, stacks: float) -> dict:
     return resolved
 
 
+def _next_turn_once(mechanic: Mapping) -> Optional[dict]:
+    """A mechanic that fires once at the owner's next turn start, as the same
+    mechanic firing on the turn the card is played (one turn early)."""
+
+    turns, limit = mechanic.get("turns"), mechanic.get("limit")
+    next_turn = isinstance(turns, str) and turns in NEXT_TURN_MARKS
+    if not (next_turn or (isinstance(limit, str) and limit in {"once", "once_per_combat"})):
+        return None
+    if mechanic.get("when") == "turn_start" or (
+        mechanic.get("modifier") in {"hand_draw", "max_energy"} and next_turn
+    ):
+        return {k: v for k, v in mechanic.items() if k not in NEXT_TURN_DROP}
+    return None
+
+
 def power_use(
     repository: RelationalRepository,
     power: str,
@@ -234,11 +306,17 @@ def power_use(
     if fact is None or fact.get("status") != "converted":
         return None, (f"power_fact_missing:{power_id}",)
     duration = (fact.get("duration") or {}).get("kind")
-    if duration not in POWER_DURATIONS:
+    next_turn = duration == "until_triggered" and all(
+        _next_turn_once(m) is not None for m in fact.get("mechanics") or ()
+    ) and bool(fact.get("mechanics"))
+    if next_turn:
+        # Active once, on the turn after each play: weighted like "this turn".
+        duration = "this_turn"
+    elif duration not in POWER_DURATIONS:
         return None, (f"power_duration_unsupported:{power_id}:{duration}",)
     mechanics, gaps = [], []
     for raw in fact.get("mechanics") or ():
-        mechanic = _resolve_stacks(raw, stacks)
+        mechanic = _resolve_stacks(_next_turn_once(raw) if next_turn else raw, stacks)
         reason = unsupported_reason(mechanic)
         if reason:
             gaps.append(f"power_mechanic_unsupported:{power_id}:{reason}")
@@ -312,10 +390,71 @@ def _amount(effect: Mapping, upgraded: bool) -> float:
     return value
 
 
+def _move_to_hand(effect: Mapping, upgraded: bool) -> Optional[dict]:
+    """A chosen move from the draw or discard pile into the hand, as a draw.
+
+    The choice makes it worth at least a random draw of the same count, so
+    this is a lower bound. Moves onto the draw pile, of the card itself, or
+    of filtered/unbounded sets are not converted.
+    """
+
+    if set(k for k in effect if not k.endswith("_text")) - MOVE_TO_HAND_KEYS:
+        return None
+    destination = effect.get("destination") or effect.get("to")
+    origin = effect.get("from") or effect.get("source")
+    count = effect.get("count")
+    if destination != "hand" or origin not in {"draw", "discard"}:
+        return None
+    if effect.get("choice") not in {None, "choose"}:
+        return None
+    if not isinstance(count, (int, float)) or isinstance(count, bool):
+        return None
+    amount = float(count) + (float(effect.get("count_upgrade") or 0.0) if upgraded else 0.0)
+    return {"kind": "draw", "amount": amount}
+
+
+def _generated(
+    repository: RelationalRepository,
+    effect: Mapping,
+    upgraded: bool,
+    card_id: str,
+    depth: int,
+) -> tuple[Optional[Generated], tuple[str, ...]]:
+    """Resolve one ``add_card`` effect to the card it creates."""
+
+    extra = {key for key in set(effect) - ADD_CARD_KEYS if not key.endswith("_text")}
+    if extra:
+        return None, (f"card_effect_unsupported:{card_id}:add_card:{sorted(extra)[0]}",)
+    target = effect.get("card")
+    count = effect.get("count")
+    if not target or not isinstance(count, (int, float)) or isinstance(count, bool):
+        return None, (f"card_effect_unsupported:{card_id}:add_card:unnamed_or_dynamic",)
+    if effect.get("destination") not in ADD_CARD_DESTINATIONS:
+        return None, (f"card_effect_unsupported:{card_id}:add_card:destination",)
+    if depth > 0:
+        # A generated card that generates again (e.g. Anger's copies) is
+        # followed one level only.
+        return None, (f"card_effect_unsupported:{card_id}:add_card:generated_chain_truncated",)
+    follows_upgrade = any(effect.get(k) for k in (
+        "upgraded_if_self_upgraded", "upgraded_if_this_upgraded", "copy_of_self",
+    ))
+    upgrade = 1 if effect.get("upgraded_generated") or (follows_upgrade and upgraded) else 0
+    profile, gaps = card_profile(repository, str(target).upper(), upgrade, _depth=depth + 1)
+    if profile is None:
+        return None, (f"generated_card_fact_missing:{card_id}:{target}", *gaps)
+    if effect.get("free") in (True, "this_turn"):
+        profile = replace(profile, cost=0.0) if profile.cost is not None else profile
+    amount = float(count) + (float(effect.get("count_upgrade") or 0.0) if upgraded else 0.0)
+    return Generated(profile, amount, str(effect["destination"])), tuple(
+        f"generated:{card_id}:{gap}" for gap in gaps
+    )
+
+
 def card_profile(
     repository: RelationalRepository,
     card_id: str,
     upgrades: int,
+    _depth: int = 0,
 ) -> tuple[Optional[CardProfile], tuple[str, ...]]:
     """Resolve one card instance.
 
@@ -330,8 +469,19 @@ def card_profile(
     if upgrades > 1:
         return None, (f"card_upgrade_count_unmodeled:{card_id}",)
     upgraded = upgrades == 1
-    effects, powers, gaps = [], [], []
+    effects, powers, generates, gaps = [], [], [], []
     for effect in fact.get("effects") or ():
+        if isinstance(effect, Mapping) and effect.get("kind") == "move_card":
+            moved = _move_to_hand(effect, upgraded)
+            if moved is not None:
+                effects.append(moved)
+                continue
+        if isinstance(effect, Mapping) and effect.get("kind") == "add_card":
+            generated, generated_gaps = _generated(repository, effect, upgraded, card_id, _depth)
+            gaps.extend(generated_gaps)
+            if generated is not None:
+                generates.append(generated)
+            continue
         power = effect.get("power")
         if (
             effect.get("kind") == "apply_power" and effect.get("target") == "self"
@@ -347,6 +497,8 @@ def card_profile(
             gaps.append(f"card_effect_unsupported:{card_id}:{reason}")
             continue
         resolved = {**effect, "amount": _amount(effect, upgraded)}
+        if effect.get("kind") == "evoke_orb" and upgraded:
+            resolved["count"] = float(effect.get("count") or 0.0) + float(effect.get("upgrade") or 0.0)
         if upgraded and "scale" in effect:
             scale = dict(effect["scale"])
             scale["factor"] = float(scale.get("factor") or 0.0) + float(scale.get("factor_upgrade") or 0.0)
@@ -358,6 +510,14 @@ def card_profile(
     for field_name in ("mechanics", "cost_modifier"):
         if fact.get(field_name):
             gaps.append(f"card_effect_unsupported:{card_id}:{field_name}")
+    raw_stars = fact.get("star_cost")
+    if raw_stars == "X":
+        gaps.append(f"card_effect_unsupported:{card_id}:star_cost:X")
+        star_cost = None
+    elif isinstance(raw_stars, dict):
+        star_cost = float(raw_stars.get("upgraded" if upgraded else "base") or 0.0)
+    else:
+        star_cost = None
     raw_cost = fact.get("cost")
     # X-cost cards record their cost as "X" rather than a base/upgraded pair.
     cost = raw_cost if not isinstance(raw_cost, dict) else raw_cost.get("upgraded" if upgraded else "base")
@@ -373,6 +533,8 @@ def card_profile(
         ethereal="Ethereal" in keywords,
         effects=tuple(effects),
         powers=tuple(powers),
+        generates=tuple(generates),
+        star_cost=star_cost,
     ), tuple(dict.fromkeys(gaps))  # a card may repeat one unsupported effect
 
 
@@ -466,6 +628,11 @@ class _Engine:
     ):
         self.known = [card for card in cards if card is not None]
         self.size = max(1, len(cards))
+        # Generated cards are extra card instances whose play rate follows
+        # their source's plays (previous pass); kept stable for ``id`` keys.
+        self.sources = [(c, g) for c in self.known for g in c.generates]
+        self.virtual = list({id(g.profile): g.profile for _, g in self.sources}.values())
+        self.cards = [*self.known, *self.virtual]
         self.situation = situation
         self.params = params
         # (mechanic, weight): relics always apply; powers by how much of the
@@ -484,7 +651,7 @@ class _Engine:
         turns = self.situation.fight_turns
         first_turn = min(turns, (self.size / max(drawn, 1e-9) + 1.0) / 2.0)
         weighted = list(self.relic_mechanics)
-        for card in self.known:
+        for card in self.cards:
             for use in card.powers:
                 rate = plays[id(card)]
                 if use.duration == "this_turn":
@@ -550,8 +717,9 @@ class _Engine:
 
     def run(self) -> tuple[Dict[str, float], tuple[str, ...]]:
         params, turns = self.params, self.situation.fight_turns
-        extra_draw = extra_energy = block_estimate = 0.0
+        extra_draw = extra_energy = block_estimate = star_supply = 0.0
         previous = _Totals()
+        previous_plays: Dict[int, float] = {}
         for _ in range(FEEDBACK_PASSES):
             totals = _Totals()
             hand = float(params["hand_size"]) + self._modifier_total("hand_draw")
@@ -562,16 +730,33 @@ class _Engine:
                  if m["modifier"] == "cards_per_turn_limit" and w >= 1.0),
                 default=None,
             )
-            drawn = min(float(self.size), hand + (0.0 if no_draw else extra_draw))
-            per_turn = min(1.0, drawn / self.size)
+            elapsed = max(0.0, turns - 1.0) / 2.0
+            # Copies sent to a pile stay for the rest of the fight: on average
+            # half built up, they dilute every other card's draws.
+            piled = sum(
+                previous_plays.get(id(c), 0.0) * g.count * elapsed
+                for c, g in self.sources if g.destination != "hand"
+            )
+            size = self.size + piled
+            drawn = min(size, hand + (0.0 if no_draw else extra_draw))
+            per_turn = min(1.0, drawn / size)
             supply = base_energy + extra_energy
             rates = {
                 id(c): min(per_turn, 1.0 / turns) if c.once_per_fight else per_turn
                 for c in self.known
             }
-            demand = sum(rates[id(c)] * cost for c in self.known if (cost := self._cost(c)) is not None)
+            for card in self.virtual:
+                rates[id(card)] = 0.0
+            for source, g in self.sources:
+                created = previous_plays.get(id(source), 0.0) * g.count
+                if g.destination == "hand":
+                    rates[id(g.profile)] += created
+                else:
+                    held = created * elapsed * per_turn
+                    rates[id(g.profile)] += min(created, held) if g.profile.once_per_fight else held
+            demand = sum(rates[id(c)] * cost for c in self.cards if (cost := self._cost(c)) is not None)
             playable = min(1.0, supply / demand) if demand > 0 else 1.0
-            x_rate = sum(rates[id(c)] for c in self.known if c.x_cost)
+            x_rate = sum(rates[id(c)] for c in self.cards if c.x_cost)
             # X cards spend what the other plays leave, shared between them.
             x_value = max(0.0, supply - demand) / max(1.0, x_rate) if x_rate else 0.0
             plays = {
@@ -579,29 +764,40 @@ class _Engine:
                     rates[id(c)] * (1.0 if c.x_cost else playable)
                     if c.x_cost or self._cost(c) is not None else 0.0
                 )
-                for c in self.known
+                for c in self.cards
             }
+            # Stars carry over between turns (PlayerCombatState keeps them;
+            # only death resets them): star cards share the fight's stars.
+            star_demand = sum(plays[id(c)] * c.star_cost for c in self.cards if c.star_cost)
+            if star_demand > 0:
+                star_playable = min(1.0, star_supply / star_demand)
+                for c in self.cards:
+                    if c.star_cost:
+                        plays[id(c)] *= star_playable
             played = sum(plays.values())
             if play_limit is not None and played > play_limit:
                 scale = play_limit / played
                 plays = {k: v * scale for k, v in plays.items()}
                 played = play_limit
             totals.ethereal_exhausts = sum(
-                max(0.0, rates[id(c)] - plays[id(c)]) for c in self.known if c.ethereal
+                max(0.0, rates[id(c)] - plays[id(c)]) for c in self.cards if c.ethereal
             )
             self._estimate(previous, plays, drawn)
-            for card in self.known:
+            for card in self.cards:
                 for effect in card.effects:
                     resolved, chance = self._resolve(effect, card, plays[id(card)])
                     self._apply(totals, resolved, plays[id(card)] * chance, x_value if card.x_cost else None)
             self._apply_damage_modifiers(totals, plays, x_value)
             self._apply_block_modifiers(totals, plays)
             self._apply_events(totals, plays, drawn, played, block_estimate, x_value)
+            self._apply_orbs(totals)
             extra_draw, extra_energy, block_estimate = totals.draw, totals.energy, totals.block
+            star_supply = totals.stars
             previous = totals
+            previous_plays = plays
             self._activate(plays, drawn)
         return (
-            self._capabilities(totals, drawn, supply, demand, plays),
+            self._capabilities(totals, drawn, size, supply, demand, plays),
             tuple(dict.fromkeys(totals.gaps)),
         )
 
@@ -614,7 +810,7 @@ class _Engine:
 
         turns = self.situation.fight_turns
         elapsed = max(0.0, turns - 1.0) / 2.0
-        exhausts = previous.exhausts + sum(plays[id(c)] for c in self.known if c.exhausts_self)
+        exhausts = previous.exhausts + sum(plays[id(c)] for c in self.cards if c.exhausts_self)
         known = max(1, len(self.known))
         attacks = sum(1 for c in self.known if c.card_type == "Attack") / known
         hand = max(0.0, drawn - 1.0) / 2.0  # other cards still in hand at a random play
@@ -709,6 +905,18 @@ class _Engine:
             hits = float(effect.get("hits") or 1)
             target = effect.get("target") or "single"
             setattr(totals, target, getattr(totals, target) + amount * hits * times)
+        elif kind == "gain_stars":
+            totals.stars += amount * times
+        elif kind == "channel_orb":
+            orb = ORB_TYPES[effect["orb"]]
+            totals.channels[orb] = totals.channels.get(orb, 0.0) + amount * times
+        elif kind == "orb_passive":
+            orb = ORB_TYPES[effect["orb"]]
+            totals.orb_passives[orb] = totals.orb_passives.get(orb, 0.0) + amount * times
+        elif kind == "evoke_orb":
+            totals.evokes += float(effect.get("count") or 0.0) * times
+        elif kind == "orb_slots":
+            totals.slot_gain += amount * times
         elif kind in {"block", "draw", "energy", "heal", "hp_loss"}:
             setattr(totals, kind, getattr(totals, kind) + amount * times)
             if kind == "block":
@@ -741,7 +949,7 @@ class _Engine:
         turns = self.situation.fight_turns
         for modifier, weight in ((m, w) for m, w in self.modifiers if m["modifier"] == "damage"):
             share = _schedule(modifier, turns)[0] * weight
-            for card in self.known:
+            for card in self.cards:
                 if not self._matches(card, modifier.get("filter"), x_value):
                     continue
                 for effect in card.effects:
@@ -762,7 +970,7 @@ class _Engine:
         for modifier, weight in ((m, w) for m, w in self.modifiers if m["modifier"] == "block"):
             factor = (float(modifier.get("multiply") or 1.0) - 1.0) * weight
             matching = [
-                (card, effect) for card in self.known
+                (card, effect) for card in self.cards
                 if self._matches(card, modifier.get("filter"), None)
                 for effect in card.effects if effect.get("kind") == "block"
             ]
@@ -776,7 +984,7 @@ class _Engine:
 
     def _block_plays(self, plays: Mapping[int, float]) -> float:
         return sum(
-            plays[id(c)] for c in self.known
+            plays[id(c)] for c in self.cards
             if any(e.get("kind") == "block" for e in c.effects)
         )
 
@@ -788,11 +996,11 @@ class _Engine:
         when = mechanic["when"]
         if when == "card_played":
             return sum(
-                plays[id(c)] for c in self.known
+                plays[id(c)] for c in self.cards
                 if self._matches(c, mechanic.get("filter"), x_value)
             )
         if when == "card_exhausted":
-            own = totals.exhausts + sum(plays[id(c)] for c in self.known if c.exhausts_self)
+            own = totals.exhausts + sum(plays[id(c)] for c in self.cards if c.exhausts_self)
             ethereal = (mechanic.get("condition") or {}).get("caused_by_ethereal")
             if ethereal is True:
                 return totals.ethereal_exhausts
@@ -833,7 +1041,7 @@ class _Engine:
             elif key == "hp_ratio_at_most":
                 probability *= 1.0 if self.situation.hp_ratio <= float(value) else 0.0
             elif key == "no_card_type_played_this_turn":
-                rate = sum(plays[id(c)] for c in self.known if c.card_type == value)
+                rate = sum(plays[id(c)] for c in self.cards if c.card_type == value)
                 probability *= math.exp(-rate)
             elif key == "cards_played_this_turn_at_most":
                 probability *= 1.0 - _poisson_at_least(played, int(value) + 1)
@@ -869,8 +1077,88 @@ class _Engine:
             else:
                 self._apply(totals, effect, times, None)
 
+    def _focus(self, totals: _Totals) -> float:
+        growth = max(0.0, self.situation.fight_turns - 1.0) / 2.0
+        temporary = sum(
+            float(m.get("add") or 0.0) * w for m, w in self.modifiers if m["modifier"] == "focus"
+        )
+        return totals.focus_flat + totals.focus_rate * growth + temporary
+
+    def _apply_orbs(self, totals: _Totals) -> None:
+        """Channeled orbs over a fight (OrbCmd.Channel, OrbModel facts).
+
+        Orbs fill the slots at the channel rate; each held orb triggers its
+        passive once per turn; channeling into full slots evokes the oldest,
+        plus explicit evokes while an orb is held. Values come from the
+        reviewed orb facts, Focus added where the fact says so (floor 0).
+        """
+
+        channel = sum(totals.channels.values())
+        if channel <= 0:
+            return
+        turns = self.situation.fight_turns
+        elapsed = max(0.0, turns - 1.0) / 2.0
+        base = self.situation.orb_slots or 1.0  # OrbCmd.Channel adds 1 slot when there are none
+        slots = max(0.0, base + totals.slot_gain * elapsed)
+        if slots <= 0:
+            return
+        # Average orbs held: min(slots, channel * t) over the fight.
+        if channel * turns <= slots:
+            held = channel * turns / 2.0
+        else:
+            full_at = slots / channel
+            held = (slots * full_at / 2.0 + slots * (turns - full_at)) / turns
+        evokes = max(0.0, channel * turns - slots) / turns + totals.evokes * min(1.0, held)
+        # Passives before an orb is evicted (Dark grows, Glass decays).
+        age = min(turns, slots / channel)
+        focus = self._focus(totals)
+        for orb, rate in totals.channels.items():
+            fact = self.situation.orbs.get(orb)
+            if not fact:
+                totals.gaps.append(f"orb_fact_missing:{orb}")
+                continue
+            share = rate / channel
+            passives = held * share * (1.0 + totals.orb_passives.get(orb, 0.0))
+            self._orb_effect(totals, fact, "passive", passives, focus, age)
+            self._orb_effect(totals, fact, "evoke", evokes * share, focus, age)
+
+    def _orb_effect(
+        self, totals: _Totals, fact: Mapping, part: str, times: float, focus: float, age: float,
+    ) -> None:
+        spec = fact.get(part) or {}
+        effect = spec.get("effect") or {}
+        state = fact.get("state") or {}
+        base = float(effect.get("amount") or 0.0)
+        adds_focus = str(spec.get("focus") or "").startswith("add")
+        value = max(0.0, base + focus) if adds_focus else base
+        passive_value = max(0.0, float((fact.get("passive") or {}).get("effect", {}).get("amount") or 0.0) + focus)
+        if "evoke_value" in state:
+            # Dark-like: passive feeds the stored evoke value, evoke deals it.
+            if part == "passive":
+                return
+            value = float(state["evoke_value"].get("initial") or base) + age * passive_value
+        elif "passive_value" in state:
+            # Glass-like: the stored value drops by one per passive (floor 0).
+            initial = float(state["passive_value"].get("initial") or base)
+            steps = max(1, int(round(age)))
+            if part == "passive":
+                value = sum(max(0.0, initial - i + focus) for i in range(steps)) / steps
+            else:
+                value = 2.0 * max(0.0, initial - steps + focus)
+        kind = effect.get("kind")
+        if kind == "damage":
+            target = {"all": "all", "random": "random"}.get(effect.get("target"), "single")
+            setattr(totals, f"orb_{target}", getattr(totals, f"orb_{target}") + value * times)
+        elif kind == "block":
+            totals.block += value * times
+            totals.block_events += times
+        elif kind == "energy":
+            totals.energy += value * times
+        elif kind not in {None, "orb_evoke_gain"}:
+            totals.gaps.append(f"orb_effect_unsupported:{kind}")
+
     def _capabilities(
-        self, totals: _Totals, drawn: float, supply: float, demand: float,
+        self, totals: _Totals, drawn: float, size: float, supply: float, demand: float,
         plays: Mapping[int, float],
     ) -> Dict[str, float]:
         situation, params = self.situation, self.params
@@ -878,7 +1166,7 @@ class _Engine:
         amplify = 1.0 + float(params["vulnerable_damage_bonus"]) * min(1.0, totals.vulnerable)
         attack_hits = sum(
             plays[id(c)] * float(e.get("hits") or 1)
-            for c in self.known for e in c.effects if e.get("kind") == "damage"
+            for c in self.cards for e in c.effects if e.get("kind") == "damage"
         )
         # Strength or Dexterity gained during a fight is on average half built up.
         growth = max(0.0, turns - 1.0) / 2.0
@@ -894,11 +1182,13 @@ class _Engine:
                 cap = m.get("max")
                 kept_block += w * (min(surplus, float(cap)) if cap else surplus)
         return {
+            # Orb damage is unpowered: no Strength or Vulnerable amplification.
             "frontload": (
                 totals.single + totals.all + totals.random + vigor
                 + (totals.strength_flat + temp_strength) * attack_hits
-            ) * amplify + totals.poison_single + totals.poison_all,
-            "aoe": (totals.all + totals.poison_all) * situation.extra_enemies,
+            ) * amplify + totals.poison_single + totals.poison_all
+            + totals.orb_single + totals.orb_all + totals.orb_random,
+            "aoe": (totals.all + totals.poison_all + totals.orb_all) * situation.extra_enemies,
             "defense": (
                 totals.block + kept_block + totals.heal - totals.hp_loss
                 + (totals.dexterity_flat + totals.dexterity_rate * growth) * self._block_plays(plays)
@@ -906,7 +1196,7 @@ class _Engine:
                 * min(1.0, totals.weak)
             ),
             "scaling": totals.strength_rate * growth * attack_hits * amplify,
-            "cycle": drawn / self.size,
+            "cycle": drawn / size,
             "energy": supply / demand if demand > 0 else float(params["satisfaction_cap"]),
         }
 
