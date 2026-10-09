@@ -263,7 +263,7 @@ class RelicMechanicTests(unittest.TestCase):
         "relics:SNECKO_SKULL": {"status": "unreviewed"},
         # A mechanic the engine cannot convert must be disclosed, not guessed.
         "relics:CRACKED_CORE": {"category": "baseline", "mechanics": [
-            {"when": "combat_start", "effect": {"kind": "summon", "amount": 1}},
+            {"when": "combat_start", "effect": {"kind": "forge", "amount": 1}},
         ]},
     }
 
@@ -325,7 +325,7 @@ class RelicMechanicTests(unittest.TestCase):
 
     def test_unsupported_relic_mechanics_are_disclosed(self):
         _, result = self.gain("DEFEND_IRONCLAD", ("CRACKED_CORE",))
-        self.assertIn("relic_mechanic_unsupported:CRACKED_CORE:effect:summon", result.data_gaps)
+        self.assertIn("relic_mechanic_unsupported:CRACKED_CORE:effect:forge", result.data_gaps)
         defend = next(r for r in result.candidates if r.candidate_id == "0:DEFEND_IRONCLAD")
         self.assertEqual(defend.factors[0]["code"], "unmodeled_relics")
 
@@ -604,3 +604,95 @@ class CostRuleTests(unittest.TestCase):
         prepared, _ = card_profile(self.repository, "PREPARED", 1)
         discard = next(e for e in prepared.effects if e["kind"] == "discard")
         self.assertEqual(discard["count"], 2.0)
+
+
+class OstyAndDoomTests(unittest.TestCase):
+    """Summoned Osty soaks unblocked attacks and attacks only while alive."""
+
+    @classmethod
+    def setUpClass(cls):
+        DeckFitnessPolicyTests.setUpClass()
+        cls.repository = DeckFitnessPolicyTests.repository
+
+    @classmethod
+    def tearDownClass(cls):
+        DeckFitnessPolicyTests.tearDownClass()
+
+    def capabilities(self, extra, relics=()):
+        from advisor.deck_fitness import PARAMETERS_KEY
+        from advisor.deck_mechanics import Situation, card_profile, deck_capabilities, relic_profile
+
+        params = self.repository.mechanic_constant(PARAMETERS_KEY)
+        deck = [card_profile(self.repository, cid, 0)[0]
+                for cid in ["STRIKE_NECROBINDER"] * 4 + ["DEFEND_NECROBINDER"] * 4 + extra]
+        relic_profiles = [relic_profile(self.repository, r)[0] for r in relics]
+        situation = Situation(6.0, 0.0, 14.0, {"MONSTER": 1.0}, 1.0, 0)
+        return deck_capabilities(deck, relic_profiles, situation, params)[0]
+
+    def test_summoned_osty_takes_unblocked_attack_damage(self):
+        # Summoning 5 HP soaks about as much as 5 block for the same energy.
+        self.assertGreater(self.capabilities(["BODYGUARD"])["defense"], self.capabilities(["STRIKE_NECROBINDER"])["defense"])
+        self.assertAlmostEqual(
+            self.capabilities(["BODYGUARD"])["defense"], self.capabilities(["DEFEND_NECROBINDER"])["defense"], places=6
+        )
+
+    def test_osty_attacks_need_a_summoned_osty(self):
+        without = self.capabilities(["POKE", "POKE"])
+        with_osty = self.capabilities(["POKE", "POKE"], relics=("BOUND_PHYLACTERY",))
+        self.assertGreater(with_osty["frontload"], without["frontload"])
+
+    def test_doom_stands_in_for_damage(self):
+        self.assertGreater(self.capabilities(["SCOURGE"])["frontload"], self.capabilities(["DEFEND_NECROBINDER"])["frontload"])
+
+
+class SlyTests(unittest.TestCase):
+    """A Sly card discarded by an effect is played for free."""
+
+    @classmethod
+    def setUpClass(cls):
+        DeckFitnessPolicyTests.setUpClass()
+        cls.repository = DeckFitnessPolicyTests.repository
+
+    @classmethod
+    def tearDownClass(cls):
+        DeckFitnessPolicyTests.tearDownClass()
+
+    def frontload(self, extra):
+        from advisor.deck_fitness import PARAMETERS_KEY
+        from advisor.deck_mechanics import Situation, card_profile, deck_capabilities
+
+        params = self.repository.mechanic_constant(PARAMETERS_KEY)
+        deck = [card_profile(self.repository, cid, 0)[0]
+                for cid in ["STRIKE_SILENT"] * 5 + ["DEFEND_SILENT"] * 5 + extra]
+        return deck_capabilities(deck, (), Situation(6.0, 0.0, 10.0, {"MONSTER": 1.0}, 1.0, 0), params)[0]["frontload"]
+
+    def test_discard_effects_raise_the_value_of_sly_cards(self):
+        sly_gain_without = self.frontload(["RICOCHET"]) - self.frontload([])
+        sly_gain_with = self.frontload(["PREPARED", "RICOCHET"]) - self.frontload(["PREPARED"])
+        self.assertGreater(sly_gain_with, sly_gain_without)
+
+
+class EnemyStrengthTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        DeckFitnessPolicyTests.setUpClass()
+        cls.repository = DeckFitnessPolicyTests.repository
+
+    @classmethod
+    def tearDownClass(cls):
+        DeckFitnessPolicyTests.tearDownClass()
+
+    def test_temporary_strength_loss_reduces_incoming_damage(self):
+        from advisor.deck_fitness import PARAMETERS_KEY
+        from advisor.deck_mechanics import Situation, card_profile, deck_capabilities
+
+        wail, gaps = card_profile(self.repository, "PIERCING_WAIL", 0)
+        self.assertEqual(gaps, ())
+        self.assertEqual(wail.effects[0]["kind"], "enemy_strength_down")
+        self.assertEqual(wail.effects[0]["lasting"], "turn")
+        params = self.repository.mechanic_constant(PARAMETERS_KEY)
+        strike, _ = card_profile(self.repository, "STRIKE_SILENT", 0)
+        situation = Situation(6.0, 1.0, 12.0, {"MONSTER": 1.0}, 1.0, 0)
+        with_wail, _ = deck_capabilities([strike] * 6 + [wail], (), situation, params)
+        without, _ = deck_capabilities([strike] * 7, (), situation, params)
+        self.assertGreater(with_wail["defense"], without["defense"])
