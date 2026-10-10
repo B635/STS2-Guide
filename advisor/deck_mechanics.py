@@ -39,7 +39,7 @@ SELF_POWERS = {"Strength": "strength", "Dexterity": "dexterity", "Vigor": "vigor
 ORB_TYPES = {"Lightning": "LIGHTNING_ORB", "Frost": "FROST_ORB", "Dark": "DARK_ORB",
              "Plasma": "PLASMA_ORB", "Glass": "GLASS_ORB"}
 ENEMY_POWERS = {"Vulnerable": "vulnerable", "Weak": "weak", "Poison": "poison", "Doom": "doom"}
-DAMAGE_TARGETS = frozenset({"single", "all", "random"})
+DAMAGE_TARGETS = frozenset({"single", "all", "random", "attacker"})
 EFFECT_KEYS = frozenset({
     "kind", "amount", "upgrade", "hits", "target", "power", "count", "choice", "per_x", "orb", "scope",
     # Osty attacks: dealt by the pet (``source: osty``), only while it lives.
@@ -63,6 +63,14 @@ SCALE_SOURCES = frozenset({
     "exhaust_pile", "block", "enemy_vulnerable", "strength", "strike_cards",
     "hand_size", "hp_loss_events", "non_attack_in_hand", "attack_draw_chain",
     "own_previous_plays", "condition", "osty_current_hp", "osty_max_hp",
+    # Estimated from the previous pass and the deck (see ``_estimate``).
+    "orb_count", "distinct_orb_types", "ethereal_cards_played_this_combat",
+    "stars_gained_this_turn", "cards_drawn_this_turn_outside_hand_draw", "target_doom",
+    "target_doom_div_10", "status_cards_in_combat", "discard_pile",
+    "cards_generated_this_combat", "prior_hits_on_target_this_turn",
+    # Per card (see ``_resolve``).
+    "attacks_played_this_turn", "skills_played_this_turn", "osty_attacks_this_turn",
+    "other_osty_attack_cards", "times_drawn_this_combat", "star_cost_cards", "x_value",
 })
 EFFECT_CONDITIONS = frozenset({
     "target_has_power", "exhaust_pile_at_least", "lost_hp_this_turn",
@@ -76,13 +84,15 @@ NEXT_TURN_DROP = ("turns", "limit", "timing", "turns_relative_to")
 SUPPORTED_WHEN = frozenset({
     "combat_start", "turn_start", "turn_end", "card_played", "card_exhausted",
     "card_discarded", "shuffle", "damage_received", "enemy_died", "block_gained",
-    "card_drawn",
+    "card_drawn", "damage_dealt",
 })
 SUPPORTED_CONDITIONS = frozenset({
     "no_block", "per_card_in_hand", "hand_empty", "block_at_least",
     "hp_ratio_at_most", "no_card_type_played_this_turn",
     "cards_played_this_turn_at_most", "no_potions", "turn_at_least",
     "unblocked_damage", "during_own_turn", "caused_by_ethereal", "block_gained_above",
+    # Always true for an attack that has a dealer.
+    "has_dealer", "attacker_exists",
 })
 MECHANIC_KEYS = frozenset({
     "when", "filter", "every", "counter", "limit", "condition", "effect",
@@ -104,9 +114,14 @@ MODIFIER_FIELDS = {
     "keep_block": {"max"},
     "strength": {"add"},  # temporary Strength on the owner
     "focus": {"add"},     # temporary Focus on the owner
+    # Extra free plays: ``uses`` matching plays per turn, or every match.
+    "card_play_count": {"add", "filter", "uses", "counter", "applies_to"},
+    "hp_loss_negate": {"uses"},
     "card_added_to_deck": {"filter", "upgrade"},
 }
-CARD_FILTER_KEYS = frozenset({"card_type", "tag", "min_cost", "upgraded", "x_cost", "owner_card"})
+CARD_FILTER_KEYS = frozenset({"card_type", "tag", "min_cost", "upgraded", "x_cost", "owner_card", "card"})
+# Filters on an attack: the hit that is dealt or received.
+ATTACK_FILTER_KEYS = frozenset({"powered_attack", "powered_attack_or_card", "dealer"})
 COUNTERS = frozenset({None, "turn", "combat", "run"})
 LIMITS = frozenset({None, "once_per_turn", "once_per_combat"})
 # Generated cards: a named card sent to a pile. Pools, chosen copies and
@@ -237,6 +252,8 @@ class _Totals:
     forged: float = 0.0            # Sovereign Blade damage forged per turn
     generated: Dict[int, float] = field(default_factory=dict)   # mechanic-made copies per turn
     forge_events: float = 0.0
+    orbs_held: float = 0.0
+    orb_kinds: float = 0.0
     weaken_rate: float = 0.0       # permanent enemy Strength loss gained per turn
     gaps: List[str] = field(default_factory=list)
 
@@ -285,10 +302,14 @@ def effect_unsupported(effect: object) -> Optional[str]:
         return f"effect_source:{effect.get('source')}"
     if kind == "summon" and effect.get("target") not in {None, "self"}:
         return f"summon_target:{effect.get('target')}"
-    if kind == "evoke_orb" and (effect.get("orb") != "next" or not isinstance(effect.get("count"), (int, float))):
+    if kind == "evoke_orb" and (effect.get("orb") != "next" or not (
+        isinstance(effect.get("count"), (int, float)) or effect.get("count_scale")
+    )):
         return "evoke_orb:unsupported"
     if kind == "apply_power":
         power, target = effect.get("power"), effect.get("target")
+        if target in {"damaged_creature", "damaged enemy"}:
+            target = "enemy"
         if not ((target == "self" and power in SELF_POWERS)
                 or (target in {"enemy", "all_enemies"} and power in ENEMY_POWERS)):
             return f"power:{power}:{target}"
@@ -333,6 +354,9 @@ def _resolve_stacks(mechanic: Mapping, stacks: float) -> dict:
     for key in ("amount_per_stack", "add_per_stack"):
         if key in resolved:
             resolved["add"] = float(resolved.pop(key)) * stacks
+    for key in ("limit_per_stack", "count_per_stack"):
+        if key in resolved and resolved.get("modifier") in {"card_play_count", "hp_loss_negate"}:
+            resolved["uses"] = float(resolved.pop(key)) * stacks
     return resolved
 
 
@@ -366,9 +390,14 @@ def power_use(
     next_turn = duration == "until_triggered" and all(
         _next_turn_once(m) is not None for m in fact.get("mechanics") or ()
     ) and bool(fact.get("mechanics"))
+    consumable = duration == "until_triggered" and bool(fact.get("mechanics")) and all(
+        m.get("modifier") == "hp_loss_negate" for m in fact.get("mechanics") or ()
+    )
     if next_turn:
         # Active once, on the turn after each play: weighted like "this turn".
         duration = "this_turn"
+    elif consumable:
+        duration = "combat"  # held until its uses are spent
     elif duration not in POWER_DURATIONS:
         return None, (f"power_duration_unsupported:{power_id}:{duration}",)
     mechanics, gaps = [], []
@@ -384,12 +413,20 @@ def power_use(
     return PowerUse(power_id, duration, stacks, tuple(mechanics)), tuple(gaps)
 
 
-def _filter_unsupported(flt: object, card_filter_allowed: bool) -> Optional[str]:
+def _filter_unsupported(
+    flt: object, card_filter_allowed: bool, attack_filter_allowed: bool = False,
+) -> Optional[str]:
     if flt is None:
         return None
     if not isinstance(flt, Mapping):
         return "filter:invalid"
     allowed = (CARD_FILTER_KEYS if card_filter_allowed else frozenset()) | {"fight_kind"}
+    if attack_filter_allowed:
+        allowed = allowed | ATTACK_FILTER_KEYS
+        if flt.get("dealer") not in {None, "owner", "owner_or_owner_pet"}:
+            return f"filter:dealer:{flt.get('dealer')}"
+        if flt.get("powered_attack") is False:
+            return "filter:powered_attack"
     for key, value in flt.items():
         if key not in allowed:
             return f"filter:{key}"
@@ -431,7 +468,10 @@ def unsupported_reason(mechanic: Mapping) -> Optional[str]:
     when = mechanic.get("when")
     if when not in SUPPORTED_WHEN:
         return str(when)
-    reason = _filter_unsupported(mechanic.get("filter"), when in {"card_played", "card_drawn"})
+    reason = _filter_unsupported(
+        mechanic.get("filter"), when in {"card_played", "card_drawn"},
+        when in {"damage_dealt", "damage_received"},
+    )
     if reason:
         return reason
     if mechanic.get("counter") not in COUNTERS:
@@ -692,6 +732,19 @@ def relic_profile(
     for mechanic in fact.get("mechanics") or ():
         mechanic, generated_gaps = _mechanic_cards(repository, mechanic)
         gaps.extend(generated_gaps)
+        effect = mechanic.get("effect") or {}
+        if (
+            mechanic.get("when") == "combat_start" and set(mechanic) <= {"when", "effect"}
+            and effect.get("kind") == "apply_power" and effect.get("target") == "self"
+            and effect.get("power") not in SELF_POWERS
+        ):
+            # A power held from the start of every fight (e.g. Bronze Scales'
+            # Thorns): its own mechanics apply for the whole combat.
+            use, use_gaps = power_use(repository, str(effect["power"]), float(effect.get("amount") or 0.0))
+            if use is not None and use.duration == "combat":
+                supported.extend(use.mechanics)
+                gaps.extend(use_gaps)
+                continue
         reason = unsupported_reason(mechanic)
         if reason:
             gaps.append(f"relic_mechanic_unsupported:{relic_id}:{reason}")
@@ -906,6 +959,8 @@ class _Engine:
             return False  # another player's card: never in a single-player deck
         if "card_type" in flt and card.card_type != flt["card_type"]:
             return False
+        if "card" in flt and card.card_id != str(flt["card"]).upper():
+            return False
         if "tag" in flt and flt["tag"] not in card.tags:
             return False
         if flt.get("upgraded") and not card.upgraded:
@@ -997,6 +1052,18 @@ class _Engine:
                 for c in self.cards:
                     if c.star_cost:
                         plays[id(c)] *= star_playable
+            # Replays (Burst, Echo Form...): extra plays that cost nothing,
+            # shared between the matching cards in proportion to their plays.
+            for modifier, weight in ((m, w) for m, w in self.modifiers if m["modifier"] == "card_play_count"):
+                matching = [c for c in self.cards if self._matches(c, modifier.get("filter"), x_value)]
+                base_plays = sum(plays[id(c)] for c in matching)
+                if base_plays <= 0:
+                    continue
+                add = float(modifier.get("add") or 0.0) * weight
+                uses = modifier.get("uses")
+                factor = add if uses is None else add * min(1.0, float(uses) / base_plays)
+                for c in set(matching):
+                    plays[id(c)] *= 1.0 + factor
             # Sly (CardCmd.Discard -> DiscardAndDraw): a Sly card discarded by
             # an effect is played for free. A chosen discard takes a Sly card
             # in hand when there is one; a random one hits a copy 1/size of the
@@ -1056,7 +1123,33 @@ class _Engine:
         revive = 1.0 - math.exp(-previous.summon_events)
         death = min(1.0, hit + previous.osty_kills)
         alive = revive / (revive + death) if revive + death > 0 else (1.0 if previous.summoned > 0 else 0.0)
+        last = self.last_plays
+        doom = (previous.doom_single + previous.doom_all) * max(1.0, elapsed)
+        generated = sum(last.get(id(c), 0.0) * g.count for c, g in self.sources) + sum(
+            previous.generated.values()
+        )
         self.estimates = {
+            "orb_count": previous.orbs_held,
+            "distinct_orb_types": previous.orb_kinds,
+            "ethereal_cards_played_this_combat": sum(
+                last.get(id(c), 0.0) for c in self.cards if c.ethereal
+            ) * elapsed,
+            "stars_gained_this_turn": previous.stars,
+            "cards_drawn_this_turn_outside_hand_draw": previous.draw,
+            "target_doom": doom,
+            "target_doom_div_10": float(int(doom // 10)),
+            "status_cards_in_combat": float(sum(1 for c in self.known if c.card_type == "Status"))
+            + sum(
+                last.get(id(c), 0.0) * g.count * elapsed
+                for c, g in self.sources if g.profile.card_type == "Status"
+            ),
+            # Half the cards outside the hand sit in the discard pile on average.
+            "discard_pile": max(0.0, self.size - drawn) / 2.0,
+            "cards_generated_this_combat": generated * elapsed,
+            "prior_hits_on_target_this_turn": sum(
+                last.get(id(c), 0.0) * self._hits(e)
+                for c in self.cards for e in c.effects if e.get("kind") == "damage"
+            ) / 2.0,
             "osty_alive": alive,
             "osty_current_hp": alive * previous.summoned * max(1.0, elapsed),
             "osty_max_hp": previous.summoned * max(1.0, elapsed),
@@ -1103,6 +1196,20 @@ class _Engine:
         estimates = dict(self.estimates)
         # Plays of this card earlier in the same fight, on average.
         estimates["own_previous_plays"] = max(0.0, rate * self.situation.fight_turns - 1.0) / 2.0
+        last = self.last_plays
+        others = [c for c in self.cards if c is not card]
+        # A card counting this turn's plays is played after the rest.
+        estimates["attacks_played_this_turn"] = sum(last.get(id(c), 0.0) for c in others if c.card_type == "Attack")
+        estimates["skills_played_this_turn"] = sum(last.get(id(c), 0.0) for c in others if c.card_type == "Skill")
+        estimates["osty_attacks_this_turn"] = estimates.get("osty_alive", 0.0) * sum(
+            last.get(id(c), 0.0) for c in others if "OstyAttack" in c.tags
+        )
+        estimates["other_osty_attack_cards"] = float(sum(
+            1 for c in self.known if c is not card and "OstyAttack" in c.tags
+        ))
+        estimates["times_drawn_this_combat"] = self.rates.get(id(card), rate) * self.situation.fight_turns / 2.0
+        estimates["star_cost_cards"] = float(sum(1 for c in self.known if c.star_cost is not None))
+        estimates["x_value"] = self.x_value
         scale = effect.get("scale")
         if scale:
             value = estimates[scale["per"]]
@@ -1119,7 +1226,10 @@ class _Engine:
                 resolved["hits"] = base + estimates[hits_scale["per"]]
         count_scale = effect.get("count_scale")
         if count_scale:
-            resolved["count"] = estimates[count_scale["per"]]
+            base = float(count_scale.get("base") or 0.0) + (
+                float(count_scale.get("base_upgrade") or 0.0) if card.upgraded else 0.0
+            )
+            resolved["count"] = base + estimates[count_scale["per"]]
         return resolved, self._condition_chance(effect.get("condition") or {})
 
     def _apply(
@@ -1151,6 +1261,8 @@ class _Engine:
         if kind == "damage":
             hits = self._hits(effect)
             target = effect.get("target") or "single"
+            if target == "attacker":
+                target = "single"
             if effect.get("source") == "osty":
                 target = f"osty_{target}"
             setattr(totals, target, getattr(totals, target) + amount * hits * times)
@@ -1201,6 +1313,8 @@ class _Engine:
                 totals.chosen_discards += float(effect.get("count") or 1) * times
         elif kind == "apply_power":
             power, target = effect["power"], effect["target"]
+            if target in {"damaged_creature", "damaged enemy"}:
+                target = "enemy"
             if target == "self":
                 name = SELF_POWERS[power]
                 if name == "vigor":
@@ -1296,6 +1410,22 @@ class _Engine:
             return totals.discards
         if when == "shuffle":
             return drawn / self.size
+        if when == "damage_dealt":
+            # Powered attack hits the owner (and its pet) lands per turn.
+            hits = sum(
+                plays[id(c)] * self._hits(e)
+                for c in self.cards for e in c.effects
+                if e.get("kind") == "damage" and (
+                    e.get("source") != "osty" or (mechanic.get("filter") or {}).get("dealer") == "owner_or_owner_pet"
+                )
+            )
+            return hits
+        if when == "damage_received" and (
+            (mechanic.get("filter") or {}).get("powered_attack")
+            or "powered_attack_or_card" in (mechanic.get("filter") or {})
+        ):
+            # Enemy attacks aimed at the owner, blocked or not: one per enemy.
+            return 1.0 + situation.extra_enemies
         if when == "damage_received" and (mechanic.get("condition") or {}).get("during_own_turn"):
             # HP lost during the owner's own turn comes from its own cards.
             return totals.self_damage_events
@@ -1396,6 +1526,8 @@ class _Engine:
         else:
             full_at = slots / channel
             held = (slots * full_at / 2.0 + slots * (turns - full_at)) / turns
+        totals.orbs_held = held
+        totals.orb_kinds = min(slots, float(sum(1 for rate in totals.channels.values() if rate > 0)))
         evokes = max(0.0, channel * turns - slots) / turns + totals.evokes * min(1.0, held)
         # Passives before an orb is evicted (Dark grows, Glass decays).
         age = min(turns, slots / channel)
@@ -1488,6 +1620,11 @@ class _Engine:
                 # Die For You: Osty takes the unblocked attack damage, up to
                 # the HP summoned for it.
                 + min(totals.summoned, max(0.0, incoming - totals.block))
+                # Buffer: each use negates one hit's unblocked damage.
+                + max(0.0, incoming - totals.block) * min(turns, sum(
+                    float(m.get("uses") or 0.0) * w for m, w in self.modifiers
+                    if m["modifier"] == "hp_loss_negate"
+                )) / turns
                 # Enemy Strength lost: less attack damage, never below none.
                 + min(incoming, totals.weaken_turn + totals.weaken_rate * growth)
                 + (totals.dexterity_flat + totals.dexterity_rate * growth) * self._block_plays(plays)

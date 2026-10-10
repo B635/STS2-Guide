@@ -851,3 +851,93 @@ class MechanicGeneratedCardTests(unittest.TestCase):
         with_dazed = deck_capabilities(deck, [antler], situation, params)[0]
         without = deck_capabilities(deck, [without_dazed], situation, params)[0]
         self.assertLess(with_dazed["frontload"], without["frontload"])
+
+
+class ScaleSourceTests(unittest.TestCase):
+    """Amounts that scale with turn or fight state estimated by the engine."""
+
+    @classmethod
+    def setUpClass(cls):
+        DeckFitnessPolicyTests.setUpClass()
+        cls.repository = DeckFitnessPolicyTests.repository
+
+    @classmethod
+    def tearDownClass(cls):
+        DeckFitnessPolicyTests.tearDownClass()
+
+    def frontload(self, ids, slots=0.0):
+        from advisor.deck_fitness import PARAMETERS_KEY
+        from advisor.deck_mechanics import ORB_TYPES, Situation, card_profile, deck_capabilities
+
+        params = self.repository.mechanic_constant(PARAMETERS_KEY)
+        profiles = []
+        for cid in ids:
+            profile, gaps = card_profile(self.repository, cid, 0)
+            self.assertEqual(gaps, (), cid)
+            profiles.append(profile)
+        orbs = {orb: self.repository.find_assembly_fact("orbs", orb) for orb in ORB_TYPES.values()}
+        situation = Situation(6.0, 0.0, 10.0, {"MONSTER": 1.0}, 1.0, 0, orb_slots=slots, orbs=orbs)
+        return deck_capabilities(profiles, (), situation, params)[0]["frontload"]
+
+    def test_finisher_hits_once_per_other_attack_played(self):
+        many = self.frontload(["FINISHER"] + ["STRIKE_SILENT"] * 4 + ["DEFEND_SILENT"] * 2)
+        few = self.frontload(["FINISHER"] + ["STRIKE_SILENT"] * 1 + ["DEFEND_SILENT"] * 5)
+        self.assertGreater(
+            many - self.frontload(["DEFEND_SILENT"] + ["STRIKE_SILENT"] * 4 + ["DEFEND_SILENT"] * 2),
+            few - self.frontload(["DEFEND_SILENT"] + ["STRIKE_SILENT"] * 1 + ["DEFEND_SILENT"] * 5),
+        )
+
+    def test_barrage_hits_once_per_orb_held(self):
+        with_orbs = self.frontload(["BARRAGE", "ZAP", "ZAP", "STRIKE_DEFECT"], slots=3.0)
+        without = self.frontload(["BARRAGE", "DEFEND_DEFECT", "DEFEND_DEFECT", "STRIKE_DEFECT"], slots=3.0)
+        zaps = self.frontload(["DEFEND_DEFECT", "ZAP", "ZAP", "STRIKE_DEFECT"], slots=3.0)
+        plain = self.frontload(["DEFEND_DEFECT", "DEFEND_DEFECT", "DEFEND_DEFECT", "STRIKE_DEFECT"], slots=3.0)
+        self.assertGreater(with_orbs - zaps, without - plain)
+
+
+class GapRoundTwoTests(unittest.TestCase):
+    """Retaliation, hit triggers, replays, Buffer, relic-held powers."""
+
+    @classmethod
+    def setUpClass(cls):
+        DeckFitnessPolicyTests.setUpClass()
+        cls.repository = DeckFitnessPolicyTests.repository
+
+    @classmethod
+    def tearDownClass(cls):
+        DeckFitnessPolicyTests.tearDownClass()
+
+    def capabilities(self, ids, relics=()):
+        from advisor.deck_fitness import PARAMETERS_KEY
+        from advisor.deck_mechanics import Situation, card_profile, deck_capabilities, relic_profile
+
+        params = self.repository.mechanic_constant(PARAMETERS_KEY)
+        deck = [card_profile(self.repository, cid, 0)[0] for cid in ids]
+        profiles = []
+        for relic in relics:
+            profile, gaps = relic_profile(self.repository, relic)
+            self.assertEqual(gaps, (), relic)
+            profiles.append(profile)
+        return deck_capabilities(deck, profiles, Situation(6.0, 1.0, 12.0, {"MONSTER": 1.0}, 1.0, 0), params)[0]
+
+    def test_thorns_from_a_relic_hits_every_attacker(self):
+        deck = ["STRIKE_IRONCLAD"] * 5 + ["DEFEND_IRONCLAD"] * 5
+        self.assertGreater(
+            self.capabilities(deck, ["BRONZE_SCALES"])["frontload"], self.capabilities(deck)["frontload"]
+        )
+
+    def test_replays_cost_no_energy(self):
+        from advisor.deck_mechanics import power_use
+
+        burst, gaps = power_use(self.repository, "Burst", 1)
+        self.assertEqual(gaps, ())
+        self.assertEqual(burst.mechanics[0]["uses"], 1.0)
+        echo, gaps = power_use(self.repository, "EchoForm", 1)
+        self.assertEqual((echo.duration, gaps), ("combat", ()))
+
+    def test_buffer_is_held_until_spent(self):
+        from advisor.deck_mechanics import power_use
+
+        buffer, gaps = power_use(self.repository, "Buffer", 2)
+        self.assertEqual((buffer.duration, gaps), ("combat", ()))
+        self.assertEqual(buffer.mechanics, ({"modifier": "hp_loss_negate", "uses": 2.0},))
