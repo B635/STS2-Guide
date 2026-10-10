@@ -32,7 +32,7 @@ SUPPORTED_EFFECTS = frozenset({
     "damage", "block", "draw", "energy", "apply_power", "hp_loss", "heal",
     "exhaust_self", "exhaust_other", "discard", "gain_stars",
     "channel_orb", "evoke_orb", "orb_slots", "orb_passive", "summon", "kill_osty",
-    "doom_kill", "enemy_strength_down",
+    "doom_kill", "enemy_strength_down", "forge", "generate",
 })
 SELF_POWERS = {"Strength": "strength", "Dexterity": "dexterity", "Vigor": "vigor", "Focus": "focus"}
 # Orb names on effects -> orb fact ids (orbs:<ID>).
@@ -49,7 +49,9 @@ EFFECT_KEYS = frozenset({
     # Power facts scale an effect by the stacks applied; ``unpowered`` only
     # says Strength/Dexterity do not apply, which the engine never adds to
     # mechanic effects anyway.
-    "amount_per_stack", "unpowered", "hits_upgrade",
+    "amount_per_stack", "unpowered", "hits_upgrade", "hits_x",
+    # generate: a named card a relic/power mechanic creates (resolved profile).
+    "profile", "destination",
     # State-dependent amounts (see ``_Engine._resolve``); *_text keeps the
     # reviewer's wording of the same rule.
     "scale", "hits_scale", "count_scale", "condition", "amount_text", "hits_text",
@@ -74,6 +76,7 @@ NEXT_TURN_DROP = ("turns", "limit", "timing", "turns_relative_to")
 SUPPORTED_WHEN = frozenset({
     "combat_start", "turn_start", "turn_end", "card_played", "card_exhausted",
     "card_discarded", "shuffle", "damage_received", "enemy_died", "block_gained",
+    "card_drawn",
 })
 SUPPORTED_CONDITIONS = frozenset({
     "no_block", "per_card_in_hand", "hand_empty", "block_at_least",
@@ -103,7 +106,7 @@ MODIFIER_FIELDS = {
     "focus": {"add"},     # temporary Focus on the owner
     "card_added_to_deck": {"filter", "upgrade"},
 }
-CARD_FILTER_KEYS = frozenset({"card_type", "tag", "min_cost", "upgraded", "x_cost"})
+CARD_FILTER_KEYS = frozenset({"card_type", "tag", "min_cost", "upgraded", "x_cost", "owner_card"})
 COUNTERS = frozenset({None, "turn", "combat", "run"})
 LIMITS = frozenset({None, "once_per_turn", "once_per_combat"})
 # Generated cards: a named card sent to a pile. Pools, chosen copies and
@@ -183,6 +186,7 @@ class Situation:
     potion_count: Optional[int]
     orb_slots: float = 0.0            # character base slots (0: one is added on first channel)
     orbs: Mapping[str, Mapping] = field(default_factory=dict)   # reviewed orb facts by ORB_TYPES id
+    sovereign_blade: Optional["CardProfile"] = None   # the card a first forge creates
 
 
 @dataclass
@@ -230,6 +234,9 @@ class _Totals:
     doom_single: float = 0.0
     doom_all: float = 0.0
     weaken_turn: float = 0.0       # enemy attack instances softened this turn
+    forged: float = 0.0            # Sovereign Blade damage forged per turn
+    generated: Dict[int, float] = field(default_factory=dict)   # mechanic-made copies per turn
+    forge_events: float = 0.0
     weaken_rate: float = 0.0       # permanent enemy Strength loss gained per turn
     gaps: List[str] = field(default_factory=list)
 
@@ -249,6 +256,8 @@ def effect_unsupported(effect: object) -> Optional[str]:
         return f"effect_key:{sorted(extra)[0]}"
     for key in NUMERIC_EFFECT_KEYS:
         value = effect.get(key)
+        if key == "hits" and value == "X" and effect.get("per_x"):
+            continue  # one hit per energy spent (Whirlwind, Skewer)
         if value is not None and (isinstance(value, bool) or not isinstance(value, (int, float))):
             return f"effect_value:{key}"
     for key in ("scale", "hits_scale", "count_scale"):
@@ -284,6 +293,32 @@ def effect_unsupported(effect: object) -> Optional[str]:
                 or (target in {"enemy", "all_enemies"} and power in ENEMY_POWERS)):
             return f"power:{power}:{target}"
     return None
+
+
+def _mechanic_cards(repository: RelationalRepository, mechanic: Mapping) -> tuple[dict, tuple]:
+    """Resolve a mechanic's ``add_card`` of a named card to a ``generate``
+    effect carrying the card's profile; pools and copies stay unsupported."""
+
+    effect = mechanic.get("effect") if isinstance(mechanic, Mapping) else None
+    if not isinstance(effect, Mapping) or effect.get("kind") != "add_card":
+        return dict(mechanic), ()
+    name = effect.get("card")
+    extra = {k for k in effect if not k.endswith("_text")} - {
+        "kind", "card", "count", "count_per_stack", "amount_per_stack", "destination", "free", "position",
+    }
+    if not name or extra or str(name).lower().startswith("copy") or effect.get("destination") not in ADD_CARD_DESTINATIONS:
+        return dict(mechanic), ()
+    card_id = class_to_entity_id(str(name)) if not str(name).isupper() else str(name)
+    profile, gaps = card_profile(repository, card_id, 0, _depth=1)
+    if profile is None:
+        return dict(mechanic), (f"generated_card_fact_missing:{card_id}",)
+    if effect.get("free") in (True, "this_turn") and profile.cost is not None:
+        profile = replace(profile, cost=0.0)
+    generated = {"kind": "generate", "profile": profile, "destination": effect["destination"]}
+    for key in ("count", "count_per_stack", "amount_per_stack"):
+        if key in effect:
+            generated["amount_per_stack" if key != "count" else "amount"] = effect[key]
+    return {**mechanic, "effect": generated}, tuple(f"generated:{card_id}:{g}" for g in gaps)
 
 
 def _resolve_stacks(mechanic: Mapping, stacks: float) -> dict:
@@ -338,6 +373,8 @@ def power_use(
         return None, (f"power_duration_unsupported:{power_id}:{duration}",)
     mechanics, gaps = [], []
     for raw in fact.get("mechanics") or ():
+        raw, generated_gaps = _mechanic_cards(repository, raw)
+        gaps.extend(generated_gaps)
         mechanic = _resolve_stacks(_next_turn_once(raw) if next_turn else raw, stacks)
         reason = unsupported_reason(mechanic)
         if reason:
@@ -369,6 +406,8 @@ def unsupported_reason(mechanic: Mapping) -> Optional[str]:
         if name not in MODIFIER_FIELDS:
             return str(name)
         extra = set(mechanic) - MODIFIER_FIELDS[name] - {"modifier"}
+        if mechanic.get("applies_to") == "self":
+            extra.discard("applies_to")  # the power's owner, the player
         if extra:
             return f"key:{sorted(extra)[0]}"
         card_filter = name not in {"hand_draw", "max_energy"}
@@ -392,7 +431,7 @@ def unsupported_reason(mechanic: Mapping) -> Optional[str]:
     when = mechanic.get("when")
     if when not in SUPPORTED_WHEN:
         return str(when)
-    reason = _filter_unsupported(mechanic.get("filter"), when == "card_played")
+    reason = _filter_unsupported(mechanic.get("filter"), when in {"card_played", "card_drawn"})
     if reason:
         return reason
     if mechanic.get("counter") not in COUNTERS:
@@ -588,6 +627,11 @@ def card_profile(
             gaps.append(f"card_effect_unsupported:{card_id}:{reason}")
             continue
         resolved = {**effect, "amount": _amount(effect, upgraded)}
+        if effect.get("hits") == "X":
+            # X counts hits, not damage: the engine sets hits to the X spent.
+            resolved.pop("per_x", None)
+            resolved["hits"] = 1.0
+            resolved["hits_x"] = True
         if "count_upgrade" in effect:
             resolved.pop("count_upgrade")
             if upgraded and isinstance(effect.get("count"), (int, float)):
@@ -646,6 +690,8 @@ def relic_profile(
         return None, (f"relic_fact_missing:{relic_id}",)
     supported, gaps = [], []
     for mechanic in fact.get("mechanics") or ():
+        mechanic, generated_gaps = _mechanic_cards(repository, mechanic)
+        gaps.extend(generated_gaps)
         reason = unsupported_reason(mechanic)
         if reason:
             gaps.append(f"relic_mechanic_unsupported:{relic_id}:{reason}")
@@ -734,6 +780,26 @@ class _Engine:
         # their source's plays (previous pass); kept stable for ``id`` keys.
         self.sources = [(c, g) for c in self.known for g in c.generates]
         self.virtual = list({id(g.profile): g.profile for _, g in self.sources}.values())
+        # ForgeCmd: with no Sovereign Blade in combat the first forge creates
+        # one in hand; it has Retain, so once made it is there every turn.
+        blade = situation.sovereign_blade
+        self.blade = blade if blade is not None and not any(
+            c.card_id == blade.card_id for c in self.known
+        ) else None
+        if self.blade is not None:
+            self.virtual.append(self.blade)
+        self.forge_bonus = 0.0
+        self.mechanic_made: Dict[int, tuple] = {}
+        mechanic_sources = [m for relic in relics for m in relic.mechanics] + [
+            m for card in self.known for use in card.powers for m in use.mechanics
+        ]
+        for mechanic in mechanic_sources:
+            effect = mechanic.get("effect") or {}
+            if effect.get("kind") == "generate":
+                profile = effect["profile"]
+                if id(profile) not in self.mechanic_made:
+                    self.mechanic_made[id(profile)] = (profile, effect["destination"])
+                    self.virtual.append(profile)
         self.cards = [*self.known, *self.virtual]
         self.situation = situation
         self.params = params
@@ -742,6 +808,7 @@ class _Engine:
         self.relic_mechanics = [(m, 1.0) for relic in relics for m in relic.mechanics]
         self.estimates: Dict[str, float] = {}
         self.rates: Dict[int, float] = {}
+        self.x_value = 0.0
         self._cost_cache: Dict[int, Optional[float]] = {}
         self.last_plays: Dict[int, float] = {}
         self._set_mechanics(self.relic_mechanics)
@@ -835,6 +902,8 @@ class _Engine:
     def _matches(self, card: CardProfile, flt: Optional[Mapping], x_value: Optional[float]) -> bool:
         if not flt:
             return True
+        if flt.get("owner_card") is False:
+            return False  # another player's card: never in a single-player deck
         if "card_type" in flt and card.card_type != flt["card_type"]:
             return False
         if "tag" in flt and flt["tag"] not in card.tags:
@@ -873,6 +942,9 @@ class _Engine:
             piled = sum(
                 previous_plays.get(id(c), 0.0) * g.count * elapsed
                 for c, g in self.sources if g.destination != "hand"
+            ) + sum(
+                previous.generated.get(key, 0.0) * elapsed
+                for key, (_, destination) in self.mechanic_made.items() if destination != "hand"
             )
             size = self.size + piled
             drawn = min(size, hand + (0.0 if no_draw else extra_draw))
@@ -884,8 +956,19 @@ class _Engine:
             }
             for card in self.virtual:
                 rates[id(card)] = 0.0
+            if self.blade is not None and previous.forge_events > 0:
+                # Chance a forge has happened by a random turn of the fight.
+                rates[id(self.blade)] = 1.0 - math.exp(-previous.forge_events * max(1.0, elapsed))
+            self.forge_bonus = previous.forged * max(1.0, elapsed)
             self.rates = rates
             self._cost_cache = {}
+            for key, (profile, destination) in self.mechanic_made.items():
+                created = previous.generated.get(key, 0.0)
+                if destination == "hand":
+                    rates[key] += created
+                else:
+                    held = created * elapsed * per_turn
+                    rates[key] += min(created, held) if profile.once_per_fight else held
             for source, g in self.sources:
                 created = previous_plays.get(id(source), 0.0) * g.count
                 if g.destination == "hand":
@@ -898,6 +981,7 @@ class _Engine:
             x_rate = sum(rates[id(c)] for c in self.cards if c.x_cost)
             # X cards spend what the other plays leave, shared between them.
             x_value = max(0.0, supply - demand) / max(1.0, x_rate) if x_rate else 0.0
+            self.x_value = x_value
             plays = {
                 id(c): (
                     rates[id(c)] * (1.0 if c.x_cost else playable)
@@ -1014,6 +1098,8 @@ class _Engine:
         """
 
         resolved = dict(effect)
+        if card.card_id == "SOVEREIGN_BLADE" and effect.get("kind") == "damage":
+            resolved["amount"] = float(effect.get("amount") or 0.0) + self.forge_bonus
         estimates = dict(self.estimates)
         # Plays of this card earlier in the same fight, on average.
         estimates["own_previous_plays"] = max(0.0, rate * self.situation.fight_turns - 1.0) / 2.0
@@ -1063,7 +1149,7 @@ class _Engine:
             return
         turns = self.situation.fight_turns
         if kind == "damage":
-            hits = float(effect.get("hits") or 1)
+            hits = self._hits(effect)
             target = effect.get("target") or "single"
             if effect.get("source") == "osty":
                 target = f"osty_{target}"
@@ -1073,6 +1159,12 @@ class _Engine:
             totals.summon_events += times
         elif kind == "kill_osty":
             totals.osty_kills += times
+        elif kind == "generate":
+            key = id(effect["profile"])
+            totals.generated[key] = totals.generated.get(key, 0.0) + amount * times
+        elif kind == "forge":
+            totals.forged += amount * times
+            totals.forge_events += times
         elif kind == "enemy_strength_down":
             # One attack per affected enemy per turn (multi-hit attacks would
             # lose more: a conservative count).
@@ -1142,7 +1234,7 @@ class _Engine:
                 for effect in card.effects:
                     if effect.get("kind") != "damage":
                         continue
-                    hits = float(effect.get("hits") or 1)
+                    hits = self._hits(effect)
                     base = float(effect.get("amount") or 0.0)
                     if card.x_cost and effect.get("per_x"):
                         base *= x_value
@@ -1196,6 +1288,10 @@ class _Engine:
             return own + totals.ethereal_exhausts
         if when == "block_gained":
             return totals.block_events
+        if when == "card_drawn":
+            # Every drawn card is the owner's; the filter keeps the deck share.
+            matching = sum(1 for c in self.known if self._matches(c, mechanic.get("filter"), x_value))
+            return drawn * matching / self.size
         if when == "card_discarded":
             return totals.discards
         if when == "shuffle":
@@ -1263,6 +1359,11 @@ class _Engine:
                 self._apply(totals, effect, times, None, persist_share=persist * share)
             else:
                 self._apply(totals, effect, times, None)
+
+    def _hits(self, effect: Mapping) -> float:
+        if effect.get("hits_x"):
+            return self.x_value
+        return float(effect.get("hits") or 1)
 
     def _focus(self, totals: _Totals) -> float:
         growth = max(0.0, self.situation.fight_turns - 1.0) / 2.0
@@ -1352,7 +1453,7 @@ class _Engine:
         turns = situation.fight_turns
         amplify = 1.0 + float(params["vulnerable_damage_bonus"]) * min(1.0, totals.vulnerable)
         attack_hits = sum(
-            plays[id(c)] * float(e.get("hits") or 1)
+            plays[id(c)] * self._hits(e)
             for c in self.cards for e in c.effects if e.get("kind") == "damage"
         )
         # Strength or Dexterity gained during a fight is on average half built up.

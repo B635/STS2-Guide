@@ -263,7 +263,7 @@ class RelicMechanicTests(unittest.TestCase):
         "relics:SNECKO_SKULL": {"status": "unreviewed"},
         # A mechanic the engine cannot convert must be disclosed, not guessed.
         "relics:CRACKED_CORE": {"category": "baseline", "mechanics": [
-            {"when": "combat_start", "effect": {"kind": "forge", "amount": 1}},
+            {"when": "combat_start", "effect": {"kind": "test_only_unmodeled", "amount": 1}},
         ]},
     }
 
@@ -325,7 +325,7 @@ class RelicMechanicTests(unittest.TestCase):
 
     def test_unsupported_relic_mechanics_are_disclosed(self):
         _, result = self.gain("DEFEND_IRONCLAD", ("CRACKED_CORE",))
-        self.assertIn("relic_mechanic_unsupported:CRACKED_CORE:effect:forge", result.data_gaps)
+        self.assertIn("relic_mechanic_unsupported:CRACKED_CORE:effect:test_only_unmodeled", result.data_gaps)
         defend = next(r for r in result.candidates if r.candidate_id == "0:DEFEND_IRONCLAD")
         self.assertEqual(defend.factors[0]["code"], "unmodeled_relics")
 
@@ -729,3 +729,125 @@ class LookaheadAndSynergyTests(unittest.TestCase):
         self.assertEqual(len(notes), 1)
         self.assertEqual(notes[0]["delta"], 0.0)
         self.assertNotIn("STRIKE_SILENT", notes[0]["message"])
+
+
+class GapRoundOneTests(unittest.TestCase):
+    """X-hit attacks, applies_to notes and card_drawn triggers."""
+
+    @classmethod
+    def setUpClass(cls):
+        DeckFitnessPolicyTests.setUpClass()
+        cls.repository = DeckFitnessPolicyTests.repository
+
+    @classmethod
+    def tearDownClass(cls):
+        DeckFitnessPolicyTests.tearDownClass()
+
+    def run_deck(self, ids):
+        from advisor.deck_fitness import PARAMETERS_KEY
+        from advisor.deck_mechanics import Situation, card_profile, deck_capabilities
+
+        params = self.repository.mechanic_constant(PARAMETERS_KEY)
+        deck = [card_profile(self.repository, cid, 0)[0] for cid in ids]
+        return deck_capabilities(deck, (), Situation(6.0, 1.0, 10.0, {"MONSTER": 1.0}, 1.0, 0), params)
+
+    def test_whirlwind_hits_once_per_energy_and_each_hit_takes_strength(self):
+        from advisor.deck_mechanics import card_profile
+
+        whirlwind, gaps = card_profile(self.repository, "WHIRLWIND", 0)
+        self.assertEqual(gaps, ())
+        base, _ = self.run_deck(["WHIRLWIND", "DEFEND_IRONCLAD", "DEFEND_IRONCLAD"])
+        self.assertGreater(base["aoe"], 0.0)
+
+    def test_self_applied_temporary_focus_is_supported(self):
+        from advisor.deck_mechanics import power_use
+
+        hotfix, gaps = power_use(self.repository, "Hotfix", 2)
+        self.assertEqual(gaps, ())
+        self.assertEqual(hotfix.mechanics[0]["modifier"], "focus")
+
+    def test_card_drawn_triggers_follow_the_drawn_share(self):
+        from advisor.deck_mechanics import unsupported_reason
+
+        self.assertIsNone(unsupported_reason({
+            "when": "card_drawn", "filter": {"card_type": "Status"},
+            "effect": {"kind": "draw", "amount": 1}, "limit": "once_per_turn",
+        }))
+
+
+class ForgeTests(unittest.TestCase):
+    """ForgeCmd: the first forge creates a Retain Sovereign Blade in hand."""
+
+    @classmethod
+    def setUpClass(cls):
+        DeckFitnessPolicyTests.setUpClass()
+        cls.repository = DeckFitnessPolicyTests.repository
+
+    @classmethod
+    def tearDownClass(cls):
+        DeckFitnessPolicyTests.tearDownClass()
+
+    def frontload(self, extra, blade=True):
+        from advisor.deck_fitness import PARAMETERS_KEY
+        from advisor.deck_mechanics import Situation, card_profile, deck_capabilities
+
+        params = self.repository.mechanic_constant(PARAMETERS_KEY)
+        deck = [card_profile(self.repository, cid, 0)[0]
+                for cid in ["STRIKE_REGENT"] * 4 + ["DEFEND_REGENT"] * 4 + extra]
+        situation = Situation(
+            6.0, 0.0, 10.0, {"MONSTER": 1.0}, 1.0, 0,
+            sovereign_blade=card_profile(self.repository, "SOVEREIGN_BLADE", 0)[0] if blade else None,
+        )
+        return deck_capabilities(deck, (), situation, params)[0]["frontload"]
+
+    def test_forging_creates_and_powers_a_blade(self):
+        with_forge = self.frontload(["REFINE_BLADE"])
+        self.assertGreater(with_forge, self.frontload(["DEFEND_REGENT"]))
+        # Without the blade's facts the forge has nothing to power.
+        self.assertGreater(with_forge, self.frontload(["REFINE_BLADE"], blade=False))
+
+
+class MechanicGeneratedCardTests(unittest.TestCase):
+    """Relics/powers that create named cards."""
+
+    @classmethod
+    def setUpClass(cls):
+        DeckFitnessPolicyTests.setUpClass()
+        cls.repository = DeckFitnessPolicyTests.repository
+
+    @classmethod
+    def tearDownClass(cls):
+        DeckFitnessPolicyTests.tearDownClass()
+
+    def capabilities(self, relics):
+        from advisor.deck_fitness import PARAMETERS_KEY
+        from advisor.deck_mechanics import Situation, card_profile, deck_capabilities, relic_profile
+
+        params = self.repository.mechanic_constant(PARAMETERS_KEY)
+        deck = [card_profile(self.repository, cid, 0)[0] for cid in ["STRIKE_SILENT"] * 5 + ["DEFEND_SILENT"] * 5]
+        profiles = [relic_profile(self.repository, r)[0] for r in relics]
+        return deck_capabilities(deck, profiles, Situation(6.0, 0.0, 10.0, {"MONSTER": 1.0}, 1.0, 0), params)[0]
+
+    def test_shivs_from_a_relic_add_damage(self):
+        self.assertGreater(self.capabilities(["NINJA_SCROLL"])["frontload"], self.capabilities([])["frontload"])
+
+    def test_status_cards_from_a_relic_dilute_the_deck(self):
+        # Blessed Antler shuffles Dazed into the draw pile every turn.
+        from advisor.deck_mechanics import relic_profile
+
+        antler, gaps = relic_profile(self.repository, "BLESSED_ANTLER")
+        self.assertEqual(gaps, ())
+        energy_only = {"relic_id": "X", "category": "baseline", "mechanics": tuple(
+            m for m in antler.mechanics if "modifier" in m
+        )}
+        import dataclasses
+        without_dazed = dataclasses.replace(antler, mechanics=energy_only["mechanics"])
+        from advisor.deck_fitness import PARAMETERS_KEY
+        from advisor.deck_mechanics import Situation, card_profile, deck_capabilities
+
+        params = self.repository.mechanic_constant(PARAMETERS_KEY)
+        deck = [card_profile(self.repository, cid, 0)[0] for cid in ["STRIKE_SILENT"] * 5 + ["DEFEND_SILENT"] * 5]
+        situation = Situation(6.0, 0.0, 10.0, {"MONSTER": 1.0}, 1.0, 0)
+        with_dazed = deck_capabilities(deck, [antler], situation, params)[0]
+        without = deck_capabilities(deck, [without_dazed], situation, params)[0]
+        self.assertLess(with_dazed["frontload"], without["frontload"])

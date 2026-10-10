@@ -653,6 +653,7 @@ class DeckFitnessPolicy:
                 str(request.world.character or "").upper(), 0.0
             )),
             orbs=self._orb_facts(),
+            sovereign_blade=self._card("SOVEREIGN_BLADE", 0)[0],
         )
 
         def evaluate(cards: List[Optional[CardProfile]]) -> Fitness:
