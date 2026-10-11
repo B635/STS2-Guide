@@ -70,6 +70,7 @@ REVIEW_FIELDS = {
     "duration", "upgrade_keywords", "multiplayer_only", "cost_modifier", "audit",
     "star_cost", "can_be_generated_in_combat", "card_type_text", "passive", "evoke",
     "state", "can_enchant", "adds_keywords", "removes_keywords",
+    "hp", "innate", "moves", "pattern", "room_type", "is_weak", "variants",
 }
 
 
@@ -120,6 +121,47 @@ def codex_conflicts(entry: dict, catalog: dict) -> list[str]:
     return [f"{key}: {c}" for c in conflicts]
 
 
+def _monster_problems(entry: dict, key: str) -> list[str]:
+    problems: list[str] = []
+    hp = entry.get("hp") or {}
+    if not all(isinstance(hp.get(k), (int, float)) for k in ("min", "max")):
+        problems.append(f"{key}: hp.min and hp.max must be numbers")
+    moves = {}
+    for i, move in enumerate(entry.get("moves") or ()):
+        if not move.get("id") or not isinstance(move.get("effects"), list):
+            problems.append(f"{key} moves[{i}]: needs id and effects")
+            continue
+        moves[move["id"]] = move
+        for j, effect in enumerate(move["effects"]):
+            if not isinstance(effect, dict) or not effect.get("kind"):
+                problems.append(f"{key} moves[{i}].effects[{j}]: needs kind")
+            elif effect["kind"] == "damage" and not (
+                isinstance(effect.get("amount"), (int, float)) or effect.get("amount_text") or effect.get("amount_from")
+            ):
+                problems.append(f"{key} moves[{i}].effects[{j}]: damage needs amount")
+    pattern = entry.get("pattern") or {}
+    states = {s.get("id"): s for s in pattern.get("states") or () if isinstance(s, dict)}
+    for state_id, state in states.items():
+        kind = state.get("type")
+        if kind == "move":
+            if state.get("move") not in moves:
+                problems.append(f"{key} state {state_id}: unknown move {state.get('move')!r}")
+            if state.get("next") is not None and state["next"] not in states:
+                problems.append(f"{key} state {state_id}: unknown next {state['next']!r}")
+        elif kind in {"random", "conditional"}:
+            for branch in state.get("branches") or ():
+                if branch.get("to") not in states:
+                    problems.append(f"{key} state {state_id}: unknown branch target {branch.get('to')!r}")
+        else:
+            problems.append(f"{key} state {state_id}: unknown type {kind!r}")
+    if pattern.get("initial") is not None and pattern["initial"] not in states:
+        problems.append(f"{key}: pattern.initial {pattern['initial']!r} is not a state")
+    for item in entry.get("unknowable") or ():
+        if not item.get("what") or not item.get("reason"):
+            problems.append(f"{key}: unknowable items need what and reason")
+    return problems
+
+
 def validate_entry(entry: dict, index: dict, facts_by_key: dict) -> list[str]:
     key = entry.get("entity_key")
     problems: list[str] = []
@@ -138,6 +180,21 @@ def validate_entry(entry: dict, index: dict, facts_by_key: dict) -> list[str]:
     entity_type = key.split(":", 1)[0]
     if entity_type == "relics" and entry.get("category") not in CATEGORIES:
         problems.append(f"{key}: relic category must be one of {sorted(CATEGORIES)}")
+    if entity_type == "encounters":
+        variants = entry.get("variants") or []
+        if not variants and entry.get("status") == "converted":
+            problems.append(f"{key}: variants are required")
+        for i, variant in enumerate(variants):
+            if not isinstance(variant.get("weight"), (int, float)):
+                problems.append(f"{key} variants[{i}]: weight must be a number")
+            for j, spawn in enumerate(variant.get("spawns") or ()):
+                if f"monsters:{spawn.get('monster')}" not in facts_by_key:
+                    problems.append(f"{key} variants[{i}].spawns[{j}]: unknown monster {spawn.get('monster')!r}")
+        return problems
+    if entity_type == "monsters":
+        # Monster hooks are descriptive; what is computed (moves, pattern) is
+        # checked for structure instead of the player-side vocabulary.
+        return problems + _monster_problems(entry, key)
     for i, effect in enumerate(entry.get("effects") or ()):
         problems.extend(_effect_problems(effect, f"{key} effects[{i}]"))
     for i, mechanic in enumerate(entry.get("mechanics") or ()):

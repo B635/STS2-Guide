@@ -29,7 +29,8 @@ DEFAULT_FACTS_PATH = ROOT_DIR / "data" / "assembly" / "facts.json"
 
 KIND_TO_ENTITY_TYPE = {
     "card": "cards", "relic": "relics", "power": "powers",
-    "orb": "orbs", "enchantment": "enchantments",
+    "orb": "orbs", "enchantment": "enchantments", "monster": "monsters",
+    "encounter": "encounters",
 }
 
 # Review states. Only reviewed states can be valid.
@@ -283,8 +284,8 @@ def load_facts(path: Path | str = DEFAULT_FACTS_PATH) -> dict:
 
 
 def catalog_keys(knowledge_path: Path | str) -> list[str]:
-    """Catalog entity keys (cards, relics, powers, orbs, enchantments) that
-    must each have one fact."""
+    """Catalog entity keys (cards, relics, powers, orbs, enchantments,
+    monsters, encounters) that must each have one fact."""
 
     knowledge = _read_json(Path(knowledge_path), "catalog")
     return [
@@ -298,11 +299,14 @@ def extract_index(extract: Mapping) -> Dict[str, dict]:
     """Index extract entries by catalog entity key."""
 
     index: Dict[str, dict] = {}
-    for entry in extract["types"]:
-        kind = entry.get("kind")
-        if kind not in KIND_TO_ENTITY_TYPE or entry.get("abstract"):
-            continue
-        index[entity_key(kind, entry["class"])] = entry
+    # Concrete classes first; an abstract base only fills a key no concrete
+    # class has (the catalog lists a few bases, e.g. DecimillipedeSegment).
+    for abstract in (False, True):
+        for entry in extract["types"]:
+            kind = entry.get("kind")
+            if kind not in KIND_TO_ENTITY_TYPE or bool(entry.get("abstract")) != abstract:
+                continue
+            index.setdefault(entity_key(kind, entry["class"]), entry)
     return index
 
 

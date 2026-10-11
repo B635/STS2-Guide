@@ -36,6 +36,8 @@ var targets = new Dictionary<string, string>
     ["MegaCrit.Sts2.Core.Models.Powers"] = "power",
     ["MegaCrit.Sts2.Core.Models.Orbs"] = "orb",
     ["MegaCrit.Sts2.Core.Models.Enchantments"] = "enchantment",
+    ["MegaCrit.Sts2.Core.Models.Monsters"] = "monster",
+    ["MegaCrit.Sts2.Core.Models.Encounters"] = "encounter",
 };
 
 var assemblyPath = Path.GetFullPath(args[0]);

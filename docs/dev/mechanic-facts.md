@@ -171,3 +171,63 @@
 `can_enchant`（可附魔的卡牌条件）、`adds_keywords` / `removes_keywords`（附魔增减关键词）；
 效果 `enchantment_amount`（附魔层数变化，`persist: "run"` 表示写回牌组）、`set_cost`（随机或固定改费）；
 修正 `start_position`（开局所在牌堆位置）；时机 `orb_passive_or_evoke`。以上暂不计分。
+
+## 怪物（2026-10-10，用户决定）
+
+怪物事实（`monsters:<ID>`）用于计算局面需求：每回合受到多少伤害、几段、怪物给玩家塞什么牌和减益。
+全部以 IL 为准；目录中的招式与模式（Spire Codex）只用于交叉核对。
+
+```json
+{
+  "status": "converted",
+  "hp": {"min": 42, "max": 46, "min_ascension": 44, "max_ascension": 48, "ascension_level": 8},
+  "innate": [ EFFECT, ... ],                    // 进场时自带的能力等（如 Artifact 3）
+  "moves": [
+    {"id": "SLICE", "intents": ["Attack", "Defend"],
+     "effects": [ {"kind": "damage", "amount": 6, "amount_ascension": 7, "ascension_level": 9, "hits": 1, "target": "player"},
+                  {"kind": "block", "amount": 5, "target": "self"} ]}
+  ],
+  "pattern": {
+    "initial": "INIT",
+    "states": [
+      {"id": "BUTT_MOVE", "type": "move", "move": "BUTT", "next": "SLICE_MOVE"},
+      {"id": "RAND", "type": "random", "branches": [{"to": "A_MOVE", "weight": 1, "max_repeat": 1, "cooldown": null}]},
+      {"id": "INIT", "type": "conditional", "branches": [{"to": "BUTT_MOVE", "condition": "IsAlone", "default": false}]}
+    ]
+  },
+  "mechanics": [ MECHANIC, ... ],               // 其他钩子：死亡时、受伤时、回合开始等
+  "unknowable": [], "evidence": ["..."], "open_questions": [], "reviewed_by": "..."
+}
+```
+
+- 数值来自取值方法（如 `get_ButtDamage`）；`AscensionHelper.GetValueIfAscension(level, a, b)` 在有该进阶时返回 **a**（第一个数是进阶值），
+  否则返回 b（已核对 `AscensionHelper` 的 IL：`HasAscension` 为真取 `ldarg.1`）。两组值都要记：`amount` 写基础值 b，
+  `amount_ascension` 写进阶值 a，并写 `ascension_level`。多段攻击写 `hits`。
+- EFFECT 的 `target`：`player`（对玩家）、`self`、`all_allies`（所有怪物）、`random_ally` 等；
+  给玩家的减益写 `apply_power` + `target: "player"`；塞牌写 `add_card`（`card`、`count`、`destination`）。
+- `intents` 按意图类名去掉 `Intent`（`SingleAttack`、`MultiAttack`、`Defend`、`Buff`、`Debuff`、`Status`…）。
+- `pattern.states` 照状态机原样记录：`move`（`next` 为后续状态）、`random`（各分支 `weight`、连续上限 `max_repeat`、冷却 `cooldown`）、
+  `conditional`（各分支的 `condition` 原文；在普通单人战斗第一次到达时会走的分支标 `"default": true`，判断依据写进 evidence）。
+- 取决于玩家行为或随机数的条件不要猜，写清条件；真正无法得知的进 `unknowable`。
+
+## 遭遇（2026-10-11）
+
+遭遇事实（`encounters:<ID>`）记录一场战斗实际生成哪些怪物，用来把怪物的每回合期望组合成局面需求。
+
+```json
+{
+  "status": "converted",
+  "room_type": "Monster",                      // RoomType 枚举名：Monster / Elite / Boss
+  "is_weak": true,                              // 前几场的弱遭遇（get_IsWeak 或同义属性），没有就写 false
+  "variants": [                                 // 固定阵容只有一项；随机阵容每种一项并给出概率
+    {"weight": 1.0,
+     "spawns": [ {"monster": "CHOMPER", "slot": null, "set": {}, "initial_state": "CLAMP_MOVE"},
+                 {"monster": "CHOMPER", "slot": null, "set": {"ScreamFirst": true}, "initial_state": "SCREECH_MOVE"} ]}
+  ],
+  "evidence": ["GenerateMonsters ..."], "open_questions": [], "reviewed_by": "..."
+}
+```
+
+- `spawns` 一只怪一项，同种怪出现几次就写几项；`monster` 用怪物事实的 ID。
+- `set`：遭遇在生成时对怪物设置的字段（如 `ScreamFirst`、`StartsWithDance`）；能由此确定开场状态时写 `initial_state`（怪物事实里的状态 ID）。
+- 阵容由随机数决定时，逐一列出可能的阵容与权重（从 `GenerateMonsters` 的 IL 读出，不要估）。无法穷举时写入 `unknowable`。
