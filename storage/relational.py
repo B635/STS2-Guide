@@ -1543,6 +1543,50 @@ class RelationalRepository:
         ]
         return event
 
+    def _act_keys_of_bosses(self, connection, boss_identifiers: Iterable[str]) -> List[str]:
+        identifiers = [str(i).strip().upper() for i in boss_identifiers if str(i).strip()]
+        if not identifiers:
+            return []
+        placeholders = ", ".join("?" for _ in identifiers)
+        return [row["act_key"] for row in connection.execute(
+            f"""
+            SELECT DISTINCT act_key FROM act_entity_memberships
+            WHERE relation_type = 'bosses' AND upper(target_external_id) IN ({placeholders})
+            """,
+            identifiers,
+        ).fetchall()]
+
+    def act_encounter_ids(self, boss_identifiers: Iterable[str]) -> List[str]:
+        """Encounters of the act(s) these bosses belong to."""
+
+        with self.connect() as connection:
+            keys = self._act_keys_of_bosses(connection, boss_identifiers)
+            ids: List[str] = []
+            for key in keys:
+                ids.extend(str(row["target_external_id"]).upper() for row in connection.execute(
+                    """
+                    SELECT target_external_id FROM act_entity_memberships
+                    WHERE act_key = ? AND relation_type = 'encounters' ORDER BY ordinal
+                    """,
+                    (key,),
+                ).fetchall())
+        return list(dict.fromkeys(ids))
+
+    def act_index(self, boss_identifiers: Iterable[str]) -> Optional[int]:
+        """Index of the act these bosses belong to (0 for the first act)."""
+
+        with self.connect() as connection:
+            indexes = set()
+            for key in self._act_keys_of_bosses(connection, boss_identifiers):
+                payload = connection.execute(
+                    "SELECT payload_json FROM catalog_entities WHERE entity_key = ?", (key,),
+                ).fetchone()
+                if payload is not None:
+                    index = json.loads(payload["payload_json"]).get("index")
+                    if isinstance(index, int):
+                        indexes.add(index)
+        return next(iter(indexes)) if len(indexes) == 1 else None
+
     def card_reward_pool(self, character: str) -> List[tuple]:
         """(card id, rarity) of a character's common, uncommon and rare cards."""
 

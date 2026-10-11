@@ -202,6 +202,11 @@ class Situation:
     orb_slots: float = 0.0            # character base slots (0: one is added on first channel)
     orbs: Mapping[str, Mapping] = field(default_factory=dict)   # reviewed orb facts by ORB_TYPES id
     sovereign_blade: Optional["CardProfile"] = None   # the card a first forge creates
+    # From encounter/monster facts; None/0 when they are not available.
+    enemy_hits: Optional[float] = None    # attack hits aimed at the player per turn
+    player_weak: float = 0.0              # share of turns the player is Weak
+    player_frail: float = 0.0             # share of turns the player is Frail
+    status_cards: float = 0.0             # cards enemies add to the player's piles per turn
 
 
 @dataclass
@@ -862,6 +867,12 @@ class _Engine:
         self.estimates: Dict[str, float] = {}
         self.rates: Dict[int, float] = {}
         self.x_value = 0.0
+        self.play_totals: Dict[str, float] = {"Attack": 0.0, "Skill": 0.0, "OstyAttack": 0.0}
+        self.known_set = {id(c) for c in self.known}
+        self.deck_counts = {
+            "OstyAttack": float(sum(1 for c in self.known if "OstyAttack" in c.tags)),
+            "star_cost": float(sum(1 for c in self.known if c.star_cost is not None)),
+        }
         self._cost_cache: Dict[int, Optional[float]] = {}
         self.last_plays: Dict[int, float] = {}
         self._set_mechanics(self.relic_mechanics)
@@ -1000,7 +1011,7 @@ class _Engine:
             ) + sum(
                 previous.generated.get(key, 0.0) * elapsed
                 for key, (_, destination) in self.mechanic_made.items() if destination != "hand"
-            )
+            ) + self.situation.status_cards * elapsed
             size = self.size + piled
             drawn = min(size, hand + (0.0 if no_draw else extra_draw))
             per_turn = min(1.0, drawn / size)
@@ -1124,6 +1135,12 @@ class _Engine:
         death = min(1.0, hit + previous.osty_kills)
         alive = revive / (revive + death) if revive + death > 0 else (1.0 if previous.summoned > 0 else 0.0)
         last = self.last_plays
+        # Per-type play totals of the previous pass, shared by every card.
+        self.play_totals = {
+            "Attack": sum(last.get(id(c), 0.0) for c in self.cards if c.card_type == "Attack"),
+            "Skill": sum(last.get(id(c), 0.0) for c in self.cards if c.card_type == "Skill"),
+            "OstyAttack": sum(last.get(id(c), 0.0) for c in self.cards if "OstyAttack" in c.tags),
+        }
         doom = (previous.doom_single + previous.doom_all) * max(1.0, elapsed)
         generated = sum(last.get(id(c), 0.0) * g.count for c, g in self.sources) + sum(
             previous.generated.values()
@@ -1190,25 +1207,31 @@ class _Engine:
         Returns the resolved effect and the chance its condition holds.
         """
 
+        if (
+            "scale" not in effect and "hits_scale" not in effect and "count_scale" not in effect
+            and not effect.get("condition") and card.card_id != "SOVEREIGN_BLADE"
+        ):
+            return effect, 1.0  # nothing depends on the fight's state
         resolved = dict(effect)
         if card.card_id == "SOVEREIGN_BLADE" and effect.get("kind") == "damage":
             resolved["amount"] = float(effect.get("amount") or 0.0) + self.forge_bonus
         estimates = dict(self.estimates)
         # Plays of this card earlier in the same fight, on average.
         estimates["own_previous_plays"] = max(0.0, rate * self.situation.fight_turns - 1.0) / 2.0
-        last = self.last_plays
-        others = [c for c in self.cards if c is not card]
-        # A card counting this turn's plays is played after the rest.
-        estimates["attacks_played_this_turn"] = sum(last.get(id(c), 0.0) for c in others if c.card_type == "Attack")
-        estimates["skills_played_this_turn"] = sum(last.get(id(c), 0.0) for c in others if c.card_type == "Skill")
-        estimates["osty_attacks_this_turn"] = estimates.get("osty_alive", 0.0) * sum(
-            last.get(id(c), 0.0) for c in others if "OstyAttack" in c.tags
+        # A card counting this turn's plays is played after the rest: the
+        # pass totals (``_estimate``) minus this card's own share.
+        own = self.last_plays.get(id(card), 0.0)
+        osty = "OstyAttack" in card.tags
+        estimates["attacks_played_this_turn"] = self.play_totals["Attack"] - (own if card.card_type == "Attack" else 0.0)
+        estimates["skills_played_this_turn"] = self.play_totals["Skill"] - (own if card.card_type == "Skill" else 0.0)
+        estimates["osty_attacks_this_turn"] = estimates.get("osty_alive", 0.0) * (
+            self.play_totals["OstyAttack"] - (own if osty else 0.0)
         )
-        estimates["other_osty_attack_cards"] = float(sum(
-            1 for c in self.known if c is not card and "OstyAttack" in c.tags
-        ))
+        estimates["other_osty_attack_cards"] = self.deck_counts["OstyAttack"] - (
+            1.0 if osty and id(card) in self.known_set else 0.0
+        )
         estimates["times_drawn_this_combat"] = self.rates.get(id(card), rate) * self.situation.fight_turns / 2.0
-        estimates["star_cost_cards"] = float(sum(1 for c in self.known if c.star_cost is not None))
+        estimates["star_cost_cards"] = self.deck_counts["star_cost"]
         estimates["x_value"] = self.x_value
         scale = effect.get("scale")
         if scale:
@@ -1280,7 +1303,8 @@ class _Engine:
         elif kind == "enemy_strength_down":
             # One attack per affected enemy per turn (multi-hit attacks would
             # lose more: a conservative count).
-            enemies = 1.0 + self.situation.extra_enemies if effect.get("target") == "all_enemies" else 1.0
+            total = self._enemy_hits()
+            enemies = total if effect.get("target") == "all_enemies" else total / (1.0 + self.situation.extra_enemies)
             if effect.get("lasting") == "combat":
                 totals.weaken_rate += amount * enemies * times
             else:
@@ -1424,8 +1448,8 @@ class _Engine:
             (mechanic.get("filter") or {}).get("powered_attack")
             or "powered_attack_or_card" in (mechanic.get("filter") or {})
         ):
-            # Enemy attacks aimed at the owner, blocked or not: one per enemy.
-            return 1.0 + situation.extra_enemies
+            # Enemy attack hits aimed at the owner, blocked or not.
+            return self._enemy_hits()
         if when == "damage_received" and (mechanic.get("condition") or {}).get("during_own_turn"):
             # HP lost during the owner's own turn comes from its own cards.
             return totals.self_damage_events
@@ -1489,6 +1513,13 @@ class _Engine:
                 self._apply(totals, effect, times, None, persist_share=persist * share)
             else:
                 self._apply(totals, effect, times, None)
+
+    def _enemy_hits(self) -> float:
+        """Attack hits the enemies aim at the player per turn: from the
+        encounter facts, else one per enemy."""
+
+        hits = self.situation.enemy_hits
+        return float(hits) if hits is not None else 1.0 + self.situation.extra_enemies
 
     def _hits(self, effect: Mapping) -> float:
         if effect.get("hits_x"):
@@ -1606,7 +1637,8 @@ class _Engine:
             "frontload": (
                 totals.single + totals.all + totals.random + vigor
                 + (totals.strength_flat + temp_strength) * attack_hits
-            ) * amplify + totals.poison_single + totals.poison_all
+            ) * amplify * (1.0 - float(params["weak_damage_reduction"]) * situation.player_weak)
+            + totals.poison_single + totals.poison_all
             + totals.orb_single + totals.orb_all + totals.orb_random
             # Osty attacks are powered (Vulnerable applies) but use Osty's
             # Strength, not the player's; Doom stands in for damage.
@@ -1616,7 +1648,8 @@ class _Engine:
                 totals.all + totals.poison_all + totals.orb_all + totals.osty_all + totals.doom_all
             ) * situation.extra_enemies,
             "defense": (
-                totals.block + kept_block + totals.heal - totals.hp_loss
+                totals.block * (1.0 - float(params.get("frail_block_reduction", 0.25)) * situation.player_frail)
+                + kept_block + totals.heal - totals.hp_loss
                 # Die For You: Osty takes the unblocked attack damage, up to
                 # the HP summoned for it.
                 + min(totals.summoned, max(0.0, incoming - totals.block))

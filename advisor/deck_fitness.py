@@ -20,6 +20,7 @@ No community prior is used. Unknown facts contribute nothing and are reported.
 from __future__ import annotations
 
 import hashlib
+import json
 import math
 import random
 import re
@@ -28,6 +29,8 @@ from types import MappingProxyType
 from typing import Dict, List, Mapping, Optional, Sequence
 
 from advisor.boss_context import build_boss_preparation
+from advisor.encounter_turns import encounter_turns
+from advisor.monster_turns import mean
 from advisor.deck_mechanics import (
     ORB_TYPES,
     CardProfile,
@@ -91,6 +94,11 @@ class Needs:
     fight_mix: Mapping[str, float]
     gaps: tuple[str, ...] = ()
     fight_sequence: tuple[str, ...] = ()   # remaining fights of the act, in route order
+    # From encounter/monster facts (defaults: one hit per enemy, nothing else).
+    enemy_hits: Optional[float] = None     # attack hits aimed at the player per turn
+    player_weak: float = 0.0               # share of turns the player is Weak / Frail
+    player_frail: float = 0.0
+    status_cards: float = 0.0              # cards pushed into the player's piles per turn
 
 
 @dataclass(frozen=True)
@@ -212,6 +220,99 @@ def _fight_mix(
     return share, gaps, ()
 
 
+STAT_KEYS = ("hp", "enemies", "attack", "hits", "weak", "frail", "vulnerable", "cards")
+
+
+def _encounter_stats(
+    repository: RelationalRepository, encounter_ids: Sequence[str], turns: int, ascension: int,
+) -> Optional[Dict[str, float]]:
+    """Mean per-turn pressure over the reviewed encounters of one pool."""
+
+    def monster_fact(monster_id: str) -> Optional[Mapping]:
+        fact = repository.find_assembly_fact("monsters", monster_id)
+        return fact if fact is not None and fact.get("status") == "converted" else None
+
+    rows = []
+    for encounter_id in encounter_ids:
+        fact = repository.find_assembly_fact("encounters", encounter_id)
+        if fact is None or fact.get("status") != "converted":
+            continue
+        walked = encounter_turns(fact, monster_fact, turns, ascension)
+        if walked is None or any(g.startswith("monster_fact_missing") for g in walked.gaps):
+            continue
+        rows.append({
+            "hp": walked.hp,
+            "enemies": walked.enemies,
+            "attack": mean(walked.attack),
+            "hits": mean(walked.hits),
+            # A debuff stack lasts about a turn: uptime is capped at every turn.
+            "weak": mean([min(1.0, v) for v in walked.debuffs["Weak"]]),
+            "frail": mean([min(1.0, v) for v in walked.debuffs["Frail"]]),
+            "vulnerable": mean([min(1.0, v) for v in walked.debuffs["Vulnerable"]]),
+            "cards": mean(walked.cards),
+        })
+    if not rows:
+        return None
+    return {key: sum(row[key] for row in rows) / len(rows) for key in STAT_KEYS}
+
+
+def _fact_pools(
+    repository: RelationalRepository, boss_ids: Sequence[str], params: Mapping, ascension: int,
+) -> Dict[str, Dict[str, float]]:
+    """Per pool (MONSTER, MONSTER_WEAK, ELITE, BOSS) stats from the facts,
+    cached on the repository: facts are fixed for one release database."""
+
+    cache = repository.__dict__.setdefault("_fact_pool_cache", {})
+    key = (tuple(boss_ids), int(ascension), json.dumps(params["fight_turns"], sort_keys=True))
+    if key in cache:
+        return cache[key]
+    groups: Dict[str, List[str]] = {"MONSTER": [], "MONSTER_WEAK": [], "ELITE": [], "BOSS": list(boss_ids)}
+    bosses = {str(b).upper() for b in boss_ids}
+    for encounter_id in repository.act_encounter_ids(boss_ids):
+        fact = repository.find_assembly_fact("encounters", encounter_id)
+        if fact is None or fact.get("status") != "converted" or encounter_id.upper() in bosses:
+            continue
+        room = str(fact.get("room_type") or "").upper()
+        if room == "ELITE":
+            groups["ELITE"].append(encounter_id)
+        elif room == "MONSTER":
+            groups["MONSTER_WEAK" if fact.get("is_weak") else "MONSTER"].append(encounter_id)
+    pools: Dict[str, Dict[str, float]] = {}
+    for group, ids in groups.items():
+        kind = "MONSTER" if group == "MONSTER_WEAK" else group
+        stats = _encounter_stats(repository, ids, int(round(float(params["fight_turns"][kind]))), ascension)
+        if stats is not None:
+            pools[group] = stats
+    cache[key] = pools
+    return pools
+
+
+def _monster_fights_done(world_map: WorldMap) -> float:
+    """Expected normal fights already fought this act: the mean number of
+    MONSTER nodes over all paths from the first row to the current node."""
+
+    by_id = {node.node_id: node for node in world_map.nodes}
+    current = world_map.origin_node_id
+    if current not in by_id:
+        return 0.0
+    paths: Dict[str, float] = {}
+    fights: Dict[str, float] = {}
+    first_row = min(node.row for node in world_map.nodes)
+    for node in sorted(world_map.nodes, key=lambda n: n.row):
+        if node.row == first_row:
+            paths.setdefault(node.node_id, 1.0)
+            fights.setdefault(node.node_id, 0.0)
+        count = paths.get(node.node_id, 0.0)
+        if not count:
+            continue
+        own = fights.get(node.node_id, 0.0) + (count if str(node.kind).upper() == "MONSTER" else 0.0)
+        fights[node.node_id] = own
+        for child in node.edges:
+            paths[child] = paths.get(child, 0.0) + count
+            fights[child] = fights.get(child, 0.0) + own
+    return fights.get(current, 0.0) / paths[current] if paths.get(current) else 0.0
+
+
 def compute_needs(
     repository: RelationalRepository,
     route_policy: RoutePolicy,
@@ -235,39 +336,72 @@ def compute_needs(
             boss_ids = next_bosses
             gaps = ("next_act_needs_from_pools", "next_act_fight_mix_from_finished_map")
     pools = repository.encounter_pool_expectations(boss_ids, ascension=world.ascension)
-    if not pools or not mix:
+    fact_pools = _fact_pools(repository, boss_ids, params, int(world.ascension or 0)) if boss_ids else {}
+    if not (pools or fact_pools) or not mix:
         # Without the act's encounter pools and the fights ahead there is no
         # factual need to compare against; nothing may be scored.
         return Needs({}, {}, 0.0, 0.0, 0.0, mix,
                      tuple(dict.fromkeys((*gaps, "situation_needs_unavailable"))))
-    gaps = [*gaps, *(f"encounter_pool_missing:{k}" for k in mix if k not in pools)]
+    gaps = [*gaps, *(
+        f"encounter_pool_missing:{k}" for k in mix if k not in pools and k not in fact_pools
+    )]
     boss = build_boss_preparation(repository, boss_ids, ascension=world.ascension)
     gaps.extend(boss.data_gaps)
 
     hp_ratio = world.hp / world.max_hp if world.hp is not None and world.max_hp else 1.0
     rows: Dict[str, List[tuple[float, float]]] = {}
+    # The act's first normal fights come from its weak pool
+    # (ActModel.NumberOfWeakEncounters); the rest from the regular pool.
+    weak_total = float((params.get("weak_encounters_by_act_index") or {}).get(
+        str(repository.act_index(boss_ids)), 0.0
+    ))
+    done = _monster_fights_done(world.map) if world.map and world.map.nodes and "next_act_needs_from_pools" not in gaps else 0.0
+    weak_left = max(0.0, weak_total - done)
+    parts: List[tuple[str, str, float]] = []
     for kind, count in mix.items():
-        pool = pools.get(kind)
-        if pool is None:
+        if kind == "MONSTER" and "MONSTER_WEAK" in fact_pools:
+            weak = min(float(count), weak_left)
+            parts.append(("MONSTER", "MONSTER_WEAK", weak))
+            parts.append(("MONSTER", "MONSTER", float(count) - weak))
+        else:
+            parts.append((kind, kind, float(count)))
+    vulnerable_bonus = float(params["vulnerable_damage_bonus"])
+    for kind, group, count in parts:
+        if count <= 0:
             continue
-        hp = float(pool["average_hp"])
-        enemies = max(1.0, float(pool["average_enemy_count"]))
-        if kind == "BOSS" and boss.encounters:
-            # The act's boss is a known fact: use its exact HP and size. Attack
-            # keeps the pool mean so every fight uses the same statistic.
-            hp = sum(row.total_hp for row in boss.encounters) / len(boss.encounters)
-            enemies = sum(row.member_count for row in boss.encounters) / len(boss.encounters)
+        stats = fact_pools.get(group)
+        pool = pools.get(kind)
+        if stats is not None:
+            hp, enemies = stats["hp"], max(1.0, stats["enemies"])
+            # Vulnerable on the player raises the attack damage taken.
+            attack = stats["attack"] * (1.0 + vulnerable_bonus * stats["vulnerable"])
+            hits, weak_share, frail_share, cards = stats["hits"], stats["weak"], stats["frail"], stats["cards"]
+        elif pool is not None:
+            gaps.append(f"encounter_facts_missing:{group}")
+            hp = float(pool["average_hp"])
+            enemies = max(1.0, float(pool["average_enemy_count"]))
+            if kind == "BOSS" and boss.encounters:
+                hp = sum(row.total_hp for row in boss.encounters) / len(boss.encounters)
+                enemies = sum(row.member_count for row in boss.encounters) / len(boss.encounters)
+            attack = float(pool["average_attack"])
+            hits, weak_share, frail_share, cards = enemies, 0.0, 0.0, 0.0
+        else:
+            continue
         turns = float(params["fight_turns"][kind])
         weight = count * float(params["fight_importance"][kind])
         damage = hp / turns
         for key, value in (
             ("frontload", damage),
             ("aoe", damage * (enemies - 1.0) / enemies),
-            ("defense", float(pool["average_attack"]) * float(params["block_share"])),
+            ("defense", attack * float(params["block_share"])),
             ("scaling", damage * max(0.0, turns - float(params["scaling_onset_turns"])) / turns),
             ("turns", turns),
             ("extra", enemies - 1.0),
-            ("attack", float(pool["average_attack"])),
+            ("attack", attack),
+            ("hits", hits),
+            ("weak", weak_share),
+            ("frail", frail_share),
+            ("cards", cards),
         ):
             rows.setdefault(key, []).append((value, weight))
 
@@ -298,6 +432,10 @@ def compute_needs(
         incoming_attack=_weighted(rows["attack"]),
         fight_mix=mix,
         gaps=tuple(dict.fromkeys(gaps)),
+        enemy_hits=_weighted(rows["hits"]),
+        player_weak=_weighted(rows["weak"]),
+        player_frail=_weighted(rows["frail"]),
+        status_cards=_weighted(rows["cards"]),
     )
 
 
@@ -653,6 +791,10 @@ class DeckFitnessPolicy:
                 str(request.world.character or "").upper(), 0.0
             )),
             orbs=self._orb_facts(),
+            enemy_hits=needs.enemy_hits,
+            player_weak=needs.player_weak,
+            player_frail=needs.player_frail,
+            status_cards=needs.status_cards,
             sovereign_blade=self._card("SOVEREIGN_BLADE", 0)[0],
         )
 

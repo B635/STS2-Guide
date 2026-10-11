@@ -36,7 +36,8 @@
       "units": "frontload/aoe/scaling: damage per turn; defense: block per turn; cycle: extra cards drawn per turn beyond the base hand (deck size acts through every card's draw rate, not here); energy: energy supply / energy demand",
       "needs": "derived per upcoming fight from real encounter-pool HP/attack facts; only the ratios below are Guide-owned parameters",
       "energy": "energy limits how many drawn cards are played (a cap on every other dimension); its own weight is 0 so it is not counted twice",
-      "orb_slots": "assembly: Defect.get_BaseOrbSlotCount = 3, CharacterModel default 0; OrbCmd.Channel adds 1 slot when a player with none channels"
+      "orb_slots": "assembly: Defect.get_BaseOrbSlotCount = 3, CharacterModel default 0; OrbCmd.Channel adds 1 slot when a player with none channels",
+      "encounters": "needs come from encounter and monster facts: real line-ups, per-turn attack and hits walked from each monster's move state machine; ActModel.NumberOfWeakEncounters is 3 for Overgrowth/Underdocks and 2 for Hive/Glory (the act's first normal fights use its weak pool); Frail multiplies card block by 0.75 (powers:FRAIL)"
     },
     "hand_size": 5,
     "base_energy": 3,
@@ -124,6 +125,12 @@
     "synergy_notes": {
       "min_gain": 0.3,
       "max_cards": 2
-    }
+    },
+    "weak_encounters_by_act_index": {
+      "0": 3,
+      "1": 2,
+      "2": 2
+    },
+    "frail_block_reduction": 0.25
   }
 }

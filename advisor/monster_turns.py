@@ -153,7 +153,18 @@ def monster_turns(
         _value(e, "amount", ascension) or 0.0 for e in fact.get("innate") or ()
         if e.get("kind") == "apply_power" and e.get("power") == "Strength" and e.get("target") == "self"
     )
-    for walk in range(max(1, walks)):
+    # A machine with no random state and no undetermined branch always
+    # walks the same way: once is exact.
+    states = (fact.get("pattern") or {}).get("states") or ()
+    fixed = not any(
+        s.get("type") == "random" or (
+            s.get("type") == "conditional"
+            and not any(b.get("default") is True for b in s.get("branches") or ())
+        )
+        for s in states if isinstance(s, Mapping)
+    )
+    walks = 1 if fixed else max(1, walks)
+    for walk in range(walks):
         walker = _Walker(fact, ascension, random.Random(seed * 1009 + walk), gaps, initial_state)
         strength = strength_start
         for turn in range(turns):

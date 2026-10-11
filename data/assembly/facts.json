@@ -30865,8 +30865,18 @@
    "unknowable": []
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "AeonglassBoss",
    "entity_key": "encounters:AEONGLASS_BOSS",
+   "evidence": [
+    "GenerateMonsters ModelDb::Monster<Aeonglass>: single ToMutable() wrapped in ReadOnlySingleElementList, slot ldnull; no setter calls, no RNG",
+    "get_RoomType: ldc.i4.3 = RoomType.Boss (--enum RoomType)",
+    "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
+    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+   ],
    "fingerprint": "4ac6f16781756971a5e83db9dfcb3d29f4e594311d8317ab97cdd237ebd416a7",
    "hook_tokens": {
     "GenerateMonsters": "06003776",
@@ -30878,11 +30888,41 @@
     "GetCameraOffset",
     "GetCameraScaling"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Boss",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "AEONGLASS",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "AxebotsNormal",
    "entity_key": "encounters:AXEBOTS_NORMAL",
+   "evidence": [
+    "GenerateMonsters ModelDb::Monster<Axebot>: single ToMutable() wrapped in ReadOnlySingleElementList, slot ldstr \"front\"; no setter calls, no RNG",
+    "get_Slots: single element \"front\"; despite the plural class name GenerateMonsters creates exactly one Axebot (Axebot.AfterAddedToRoom applies StockPower on the monster side, see monsters:AXEBOT initial_condition)",
+    "No setter such as set_StockAmount is called here; initial_state left null because the encounter sets nothing",
+    "get_RoomType: ldc.i4.1 = RoomType.Monster (--enum RoomType)",
+    "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
+    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+   ],
    "fingerprint": "885a804026079793cfff5a8bd0aec02ac32457d692881003430097d35ce22247",
    "hook_tokens": {
     "GenerateMonsters": "0600377C"
@@ -30890,11 +30930,39 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "AXEBOT",
+       "set": {},
+       "slot": "front"
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "BattlewornDummyEventEncounter",
    "entity_key": "encounters:BATTLEWORN_DUMMY_EVENT_ENCOUNTER",
+   "evidence": [
+    "GenerateMonsters: not defined in this class; EncounterModel::GenerateMonsters and EncounterModel::get_RoomType are dumped without a body (abstract)",
+    "BattlewornDummyEventV1Encounter/V2/V3 .ctor call BattlewornDummyEventEncounter::.ctor (subclasses)",
+    "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
+    "catalog cross-check: catalog gives room_type Monster and monsters null; the room type cannot be read from this class (the three subclasses each return RoomType 1 = Monster)"
+   ],
    "fingerprint": "5a70a175f30e23d6e5367ade2b835062c48e4075cb889acbfad6e16d016fdbc0",
    "hook_tokens": {
     "LoadCustomState": "06003781",
@@ -30904,11 +30972,35 @@
     "LoadCustomState",
     "SaveCustomState"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [
+    "BattlewornDummyEventEncounter is an abstract base class (no GenerateMonsters / get_RoomType of its own); should encounters:BATTLEWORN_DUMMY_EVENT_ENCOUNTER be dropped from the encounter list, since only the V1/V2/V3 subclasses are real fights?"
+   ],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": null,
+   "status": "unknowable",
+   "unknowable": [
+    {
+     "reason": "The class defines neither get_RoomType nor GenerateMonsters nor get_AllPossibleMonsters (its only members are RanOutOfTime, SaveCustomState, LoadCustomState and .ctor). Those members have no body in EncounterModel (abstract), so this is the abstract base of BattlewornDummyEventV1/V2/V3Encounter and never spawns monsters itself; the real line-ups are in the three subclasses.",
+     "what": "room_type and line-up"
+    }
+   ],
+   "variants": []
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "BattlewornDummyEventV1Encounter",
    "entity_key": "encounters:BATTLEWORN_DUMMY_EVENT_V1_ENCOUNTER",
+   "evidence": [
+    "GenerateMonsters ModelDb::Monster<BattleFriendV1>: single ToMutable() wrapped in ReadOnlySingleElementList, slot ldnull; no setter calls, no RNG",
+    ".ctor calls BattlewornDummyEventEncounter::.ctor (derives from the shared dummy-event base)",
+    "get_RoomType: ldc.i4.1 = RoomType.Monster (--enum RoomType)",
+    "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
+    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+   ],
    "fingerprint": "fa6fb6f33947eb9e67ad1125bfcf41f2949d0481a7fd1d4dcf3e4aea798e1e75",
    "hook_tokens": {
     "GenerateMonsters": "06003786"
@@ -30916,11 +31008,40 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "BATTLE_FRIEND_V1",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "BattlewornDummyEventV2Encounter",
    "entity_key": "encounters:BATTLEWORN_DUMMY_EVENT_V2_ENCOUNTER",
+   "evidence": [
+    "GenerateMonsters ModelDb::Monster<BattleFriendV2>: single ToMutable() wrapped in ReadOnlySingleElementList, slot ldnull; no setter calls, no RNG",
+    ".ctor calls BattlewornDummyEventEncounter::.ctor (derives from the shared dummy-event base)",
+    "get_RoomType: ldc.i4.1 = RoomType.Monster (--enum RoomType)",
+    "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
+    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+   ],
    "fingerprint": "39540415730dd7391f89eaaadfcf62f008c1cd59821b2c83576e4c6c9e82cf0d",
    "hook_tokens": {
     "GenerateMonsters": "0600378B"
@@ -30928,11 +31049,40 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "BATTLE_FRIEND_V2",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "BattlewornDummyEventV3Encounter",
    "entity_key": "encounters:BATTLEWORN_DUMMY_EVENT_V3_ENCOUNTER",
+   "evidence": [
+    "GenerateMonsters ModelDb::Monster<BattleFriendV3>: single ToMutable() wrapped in ReadOnlySingleElementList, slot ldnull; no setter calls, no RNG",
+    ".ctor calls BattlewornDummyEventEncounter::.ctor (derives from the shared dummy-event base)",
+    "get_RoomType: ldc.i4.1 = RoomType.Monster (--enum RoomType)",
+    "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
+    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+   ],
    "fingerprint": "e117040073248cc19c27fc05099ae64647cf5e3e6fbf387f86beaa89a6cb250f",
    "hook_tokens": {
     "GenerateMonsters": "06003790"
@@ -30940,11 +31090,43 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "BATTLE_FRIEND_V3",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "BowlbugsNormal",
    "entity_key": "encounters:BOWLBUGS_NORMAL",
+   "evidence": [
+    "GenerateMonsters ModelDb::Monster<BowlbugRock>: first list element, slot _slotNames[0] = \"first\" (.cctor: _slotNames = [\"first\",\"middle\",\"last\"])",
+    "GenerateMonsters Rng::NextItem<MonsterModel>: loop i = 0..1 (ldc.i4.2; blt); each pass filters _workerValidCounts.Keys with lambda b__0 `currentWorkers.Count(x == r) < _workerValidCounts[r]`, picks one with get_Rng().NextItem, adds it to currentWorkers and to the result with slot _slotNames[i+1]",
+    ".cctor: _workerValidCounts = {BowlbugEgg:1, BowlbugSilk:1, BowlbugNectar:1}, so the two workers are drawn without replacement: first pick 1/3, second pick 1/2 -> 6 ordered line-ups at 1/6 each",
+    "Rng::NextItem<T>(items) = ElementAt(NextInt(0, Count)) and Rng::NextInt(n) = MegaRandom::Next(n): one uniform index draw, so each candidate is equally likely (uniformity of MegaRandom::NextInner is assumed, not derived)",
+    "get_Tags: EncounterTag 7 = Workers",
+    "get_RoomType: ldc.i4.1 = RoomType.Monster (--enum RoomType)",
+    "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
+    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+   ],
    "fingerprint": "01042749a519bc8724e0b66ac90496922a191d48bc53196871a122bcdb408795",
    "hook_tokens": {
     "GenerateMonsters": "06003796"
@@ -30952,11 +31134,169 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "BOWLBUG_ROCK",
+       "set": {},
+       "slot": "first"
+      },
+      {
+       "initial_state": null,
+       "monster": "BOWLBUG_EGG",
+       "set": {},
+       "slot": "middle"
+      },
+      {
+       "initial_state": null,
+       "monster": "BOWLBUG_SILK",
+       "set": {},
+       "slot": "last"
+      }
+     ],
+     "weight": 0.16666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "BOWLBUG_ROCK",
+       "set": {},
+       "slot": "first"
+      },
+      {
+       "initial_state": null,
+       "monster": "BOWLBUG_EGG",
+       "set": {},
+       "slot": "middle"
+      },
+      {
+       "initial_state": null,
+       "monster": "BOWLBUG_NECTAR",
+       "set": {},
+       "slot": "last"
+      }
+     ],
+     "weight": 0.16666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "BOWLBUG_ROCK",
+       "set": {},
+       "slot": "first"
+      },
+      {
+       "initial_state": null,
+       "monster": "BOWLBUG_SILK",
+       "set": {},
+       "slot": "middle"
+      },
+      {
+       "initial_state": null,
+       "monster": "BOWLBUG_EGG",
+       "set": {},
+       "slot": "last"
+      }
+     ],
+     "weight": 0.16666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "BOWLBUG_ROCK",
+       "set": {},
+       "slot": "first"
+      },
+      {
+       "initial_state": null,
+       "monster": "BOWLBUG_SILK",
+       "set": {},
+       "slot": "middle"
+      },
+      {
+       "initial_state": null,
+       "monster": "BOWLBUG_NECTAR",
+       "set": {},
+       "slot": "last"
+      }
+     ],
+     "weight": 0.16666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "BOWLBUG_ROCK",
+       "set": {},
+       "slot": "first"
+      },
+      {
+       "initial_state": null,
+       "monster": "BOWLBUG_NECTAR",
+       "set": {},
+       "slot": "middle"
+      },
+      {
+       "initial_state": null,
+       "monster": "BOWLBUG_EGG",
+       "set": {},
+       "slot": "last"
+      }
+     ],
+     "weight": 0.16666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "BOWLBUG_ROCK",
+       "set": {},
+       "slot": "first"
+      },
+      {
+       "initial_state": null,
+       "monster": "BOWLBUG_NECTAR",
+       "set": {},
+       "slot": "middle"
+      },
+      {
+       "initial_state": null,
+       "monster": "BOWLBUG_SILK",
+       "set": {},
+       "slot": "last"
+      }
+     ],
+     "weight": 0.16666666666666666
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "BowlbugsWeak",
    "entity_key": "encounters:BOWLBUGS_WEAK",
+   "evidence": [
+    "GenerateMonsters ModelDb::Monster<BowlbugRock>: array[0], slot \"odd\"",
+    "GenerateMonsters Rng::NextItem<MonsterModel>: array[1] = get_Rng().NextItem(get_Bugs()), slot \"even\"; get_Bugs = [BowlbugEgg, BowlbugNectar] (no BowlbugSilk) -> 2 line-ups at 1/2 each",
+    "Rng::NextItem<T>(items) = ElementAt(NextInt(0, Count)) and Rng::NextInt(n) = MegaRandom::Next(n): one uniform index draw, so each candidate is equally likely (uniformity of MegaRandom::NextInner is assumed, not derived)",
+    "get_Tags: EncounterTag 7 = Workers",
+    "get_RoomType: ldc.i4.1 = RoomType.Monster (--enum RoomType)",
+    "get_IsWeak: overridden, `ldc.i4.1; ret` (true)",
+    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+   ],
    "fingerprint": "1a655a1a06c7ce8689182e1c2c97fcf4432cd3bd0bb286991ead68d963473611",
    "hook_tokens": {
     "GenerateMonsters": "0600379E"
@@ -30964,11 +31304,62 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": true,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "BOWLBUG_ROCK",
+       "set": {},
+       "slot": "odd"
+      },
+      {
+       "initial_state": null,
+       "monster": "BOWLBUG_EGG",
+       "set": {},
+       "slot": "even"
+      }
+     ],
+     "weight": 0.5
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "BOWLBUG_ROCK",
+       "set": {},
+       "slot": "odd"
+      },
+      {
+       "initial_state": null,
+       "monster": "BOWLBUG_NECTAR",
+       "set": {},
+       "slot": "even"
+      }
+     ],
+     "weight": 0.5
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "BygoneEffigyElite",
    "entity_key": "encounters:BYGONE_EFFIGY_ELITE",
+   "evidence": [
+    "GenerateMonsters ModelDb::Monster<BygoneEffigy>: single ToMutable() wrapped in ReadOnlySingleElementList, slot ldnull; no setter calls, no RNG",
+    "get_RoomType: ldc.i4.2 = RoomType.Elite (--enum RoomType)",
+    "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
+    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+   ],
    "fingerprint": "5c358325f83afd3263016d2207d8a10b3695fe368b787346bc360fc6b6969526",
    "hook_tokens": {
     "GenerateMonsters": "060037A5",
@@ -30980,11 +31371,39 @@
     "GetCameraOffset",
     "GetCameraScaling"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Elite",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "BYGONE_EFFIGY",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "ByrdonisElite",
    "entity_key": "encounters:BYRDONIS_ELITE",
+   "evidence": [
+    "GenerateMonsters ModelDb::Monster<Byrdonis>: single ToMutable() wrapped in ReadOnlySingleElementList, slot ldnull; no setter calls, no RNG",
+    "get_RoomType: ldc.i4.2 = RoomType.Elite (--enum RoomType)",
+    "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
+    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+   ],
    "fingerprint": "03aa612beaade8ded8ac98750e45c3640633e195d6e1776ced077027c2839291",
    "hook_tokens": {
     "GenerateMonsters": "060037A9"
@@ -30992,11 +31411,39 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Elite",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "BYRDONIS",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "CeremonialBeastBoss",
    "entity_key": "encounters:CEREMONIAL_BEAST_BOSS",
+   "evidence": [
+    "GenerateMonsters ModelDb::Monster<CeremonialBeast>: single ToMutable() wrapped in ReadOnlySingleElementList, slot ldnull; no setter calls, no RNG",
+    "get_RoomType: ldc.i4.3 = RoomType.Boss (--enum RoomType)",
+    "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
+    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+   ],
    "fingerprint": "d9702c168d834e7f7e8c23b8bfc3ca58307dbd8504c13927e184dea0246dbe61",
    "hook_tokens": {
     "GenerateMonsters": "060037B2",
@@ -31008,11 +31455,42 @@
     "GetCameraOffset",
     "GetCameraScaling"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Boss",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "CEREMONIAL_BEAST",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "ChompersNormal",
    "entity_key": "encounters:CHOMPERS_NORMAL",
+   "evidence": [
+    "GenerateMonsters ModelDb::Monster<Chomper>: two ToMutable() instances (loc0, loc1), both with slot ldnull, in array order loc0, loc1",
+    "GenerateMonsters Chomper::set_ScreamFirst: called with ldc.i4.1 on loc1 only (the second Chomper)",
+    "initial_state from monsters:CHOMPER pattern.initial_condition `_screamFirst ? SCREECH_MOVE : CLAMP_MOVE`",
+    "get_Tags: EncounterTag 2 = Chomper",
+    "get_RoomType: ldc.i4.1 = RoomType.Monster (--enum RoomType)",
+    "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
+    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+   ],
    "fingerprint": "880e7188cd9952667fea42f4ef269ea24daae52090aac531407c0b205d6362a5",
    "hook_tokens": {
     "GenerateMonsters": "060037B7"
@@ -31020,11 +31498,48 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": "CLAMP_MOVE",
+       "monster": "CHOMPER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": "SCREECH_MOVE",
+       "monster": "CHOMPER",
+       "set": {
+        "ScreamFirst": true
+       },
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "ConstructMenagerieNormal",
    "entity_key": "encounters:CONSTRUCT_MENAGERIE_NORMAL",
+   "evidence": [
+    "GenerateMonsters ModelDb::Monster<PunchConstruct>: array[0], slot ldnull; ModelDb::Monster<CubexConstruct>: array[1] and array[2], slot ldnull; no setters, no RNG",
+    "monsters:PUNCH_CONSTRUCT initial_if StartsWithFastPunch is not set by this encounter (no setter call), so no initial_state is recorded",
+    "get_RoomType: ldc.i4.1 = RoomType.Monster (--enum RoomType)",
+    "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
+    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+   ],
    "fingerprint": "6aae8d09810a5b98d57c19e782d90f8dd565848c9a313b0761086c87e79aabf5",
    "hook_tokens": {
     "GenerateMonsters": "060037BB"
@@ -31032,11 +31547,55 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "PUNCH_CONSTRUCT",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "CUBEX_CONSTRUCT",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "CUBEX_CONSTRUCT",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "CorpseSlugsNormal",
    "entity_key": "encounters:CORPSE_SLUGS_NORMAL",
+   "evidence": [
+    "GenerateMonsters ModelDb::Monster<CorpseSlug>: 3 ToMutable() instances, all with slot ldnull",
+    "GenerateMonsters CorpseSlug::EnsureCorpseSlugsStartWithDifferentMoves(monsters, get_Rng()): k = rng.NextInt(3); for each slug in list order set_StarterMoveIdx(k rem 3) then k++",
+    "initial_state from monsters:CORPSE_SLUG pattern.initial_condition `StarterMoveIdx % 3: 0 -> WHIP_SLAP_MOVE, 1 -> GLOMP_MOVE, otherwise GOOP_MOVE`; 3 variants (k = 0,1,2) at 1/3 each",
+    "Rng::NextItem<T>(items) = ElementAt(NextInt(0, Count)) and Rng::NextInt(n) = MegaRandom::Next(n): one uniform index draw, so each candidate is equally likely (uniformity of MegaRandom::NextInner is assumed, not derived)",
+    "get_Tags: EncounterTag 13 = Slugs",
+    "get_RoomType: ldc.i4.1 = RoomType.Monster (--enum RoomType)",
+    "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
+    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+   ],
    "fingerprint": "cccb20b08e50f547fbc8bd077a41885b5c60dc9e39c2dcaa61da1e3b91605d64",
    "hook_tokens": {
     "GenerateMonsters": "060037C0"
@@ -31044,11 +31603,119 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": "WHIP_SLAP_MOVE",
+       "monster": "CORPSE_SLUG",
+       "set": {
+        "StarterMoveIdx": 0
+       },
+       "slot": null
+      },
+      {
+       "initial_state": "GLOMP_MOVE",
+       "monster": "CORPSE_SLUG",
+       "set": {
+        "StarterMoveIdx": 1
+       },
+       "slot": null
+      },
+      {
+       "initial_state": "GOOP_MOVE",
+       "monster": "CORPSE_SLUG",
+       "set": {
+        "StarterMoveIdx": 2
+       },
+       "slot": null
+      }
+     ],
+     "weight": 0.3333333333333333
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": "GLOMP_MOVE",
+       "monster": "CORPSE_SLUG",
+       "set": {
+        "StarterMoveIdx": 1
+       },
+       "slot": null
+      },
+      {
+       "initial_state": "GOOP_MOVE",
+       "monster": "CORPSE_SLUG",
+       "set": {
+        "StarterMoveIdx": 2
+       },
+       "slot": null
+      },
+      {
+       "initial_state": "WHIP_SLAP_MOVE",
+       "monster": "CORPSE_SLUG",
+       "set": {
+        "StarterMoveIdx": 0
+       },
+       "slot": null
+      }
+     ],
+     "weight": 0.3333333333333333
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": "GOOP_MOVE",
+       "monster": "CORPSE_SLUG",
+       "set": {
+        "StarterMoveIdx": 2
+       },
+       "slot": null
+      },
+      {
+       "initial_state": "WHIP_SLAP_MOVE",
+       "monster": "CORPSE_SLUG",
+       "set": {
+        "StarterMoveIdx": 0
+       },
+       "slot": null
+      },
+      {
+       "initial_state": "GLOMP_MOVE",
+       "monster": "CORPSE_SLUG",
+       "set": {
+        "StarterMoveIdx": 1
+       },
+       "slot": null
+      }
+     ],
+     "weight": 0.3333333333333333
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "CorpseSlugsWeak",
    "entity_key": "encounters:CORPSE_SLUGS_WEAK",
+   "evidence": [
+    "GenerateMonsters ModelDb::Monster<CorpseSlug>: 2 ToMutable() instances, all with slot ldnull",
+    "GenerateMonsters CorpseSlug::EnsureCorpseSlugsStartWithDifferentMoves(monsters, get_Rng()): k = rng.NextInt(3); for each slug in list order set_StarterMoveIdx(k rem 3) then k++",
+    "initial_state from monsters:CORPSE_SLUG pattern.initial_condition `StarterMoveIdx % 3: 0 -> WHIP_SLAP_MOVE, 1 -> GLOMP_MOVE, otherwise GOOP_MOVE`; 3 variants (k = 0,1,2) at 1/3 each",
+    "Rng::NextItem<T>(items) = ElementAt(NextInt(0, Count)) and Rng::NextInt(n) = MegaRandom::Next(n): one uniform index draw, so each candidate is equally likely (uniformity of MegaRandom::NextInner is assumed, not derived)",
+    "get_Tags: EncounterTag 13 = Slugs",
+    "get_RoomType: ldc.i4.1 = RoomType.Monster (--enum RoomType)",
+    "get_IsWeak: overridden, `ldc.i4.1; ret` (true)",
+    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+   ],
    "fingerprint": "0998a9a63764ef6113de2ac821026c6fca94574694b04aa4e7a3692d9c9ca32d",
    "hook_tokens": {
     "GenerateMonsters": "060037C6"
@@ -31056,11 +31723,91 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": true,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": "WHIP_SLAP_MOVE",
+       "monster": "CORPSE_SLUG",
+       "set": {
+        "StarterMoveIdx": 0
+       },
+       "slot": null
+      },
+      {
+       "initial_state": "GLOMP_MOVE",
+       "monster": "CORPSE_SLUG",
+       "set": {
+        "StarterMoveIdx": 1
+       },
+       "slot": null
+      }
+     ],
+     "weight": 0.3333333333333333
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": "GLOMP_MOVE",
+       "monster": "CORPSE_SLUG",
+       "set": {
+        "StarterMoveIdx": 1
+       },
+       "slot": null
+      },
+      {
+       "initial_state": "GOOP_MOVE",
+       "monster": "CORPSE_SLUG",
+       "set": {
+        "StarterMoveIdx": 2
+       },
+       "slot": null
+      }
+     ],
+     "weight": 0.3333333333333333
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": "GOOP_MOVE",
+       "monster": "CORPSE_SLUG",
+       "set": {
+        "StarterMoveIdx": 2
+       },
+       "slot": null
+      },
+      {
+       "initial_state": "WHIP_SLAP_MOVE",
+       "monster": "CORPSE_SLUG",
+       "set": {
+        "StarterMoveIdx": 0
+       },
+       "slot": null
+      }
+     ],
+     "weight": 0.3333333333333333
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "CubexConstructNormal",
    "entity_key": "encounters:CUBEX_CONSTRUCT_NORMAL",
+   "evidence": [
+    "GenerateMonsters ModelDb::Monster<CubexConstruct>: single ToMutable() wrapped in ReadOnlySingleElementList, slot ldnull; no setter calls, no RNG",
+    "get_RoomType: ldc.i4.1 = RoomType.Monster (--enum RoomType)",
+    "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
+    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+   ],
    "fingerprint": "bfb4204c808df6a91226817bcc455d1ba7ba4fbc49dc2b556bf0465232f8d1cf",
    "hook_tokens": {
     "GenerateMonsters": "060037CA"
@@ -31068,11 +31815,39 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "CUBEX_CONSTRUCT",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "CultistsNormal",
    "entity_key": "encounters:CULTISTS_NORMAL",
+   "evidence": [
+    "GenerateMonsters ModelDb::Monster<CalcifiedCultist>: array[0], slot ldnull; ModelDb::Monster<DampCultist>: array[1], slot ldnull; no setters, no RNG",
+    "get_RoomType: ldc.i4.1 = RoomType.Monster (--enum RoomType)",
+    "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
+    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+   ],
    "fingerprint": "df028938635d07c71fe96df786a896de7eb737a8a514dc0bed106588143c0e21",
    "hook_tokens": {
     "GenerateMonsters": "060037CE"
@@ -31080,11 +31855,48 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "CALCIFIED_CULTIST",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "DAMP_CULTIST",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "DecimillipedeElite",
    "entity_key": "encounters:DECIMILLIPEDE_ELITE",
+   "evidence": [
+    "GenerateMonsters ModelDb::Monster<DecimillipedeSegmentFront> / <DecimillipedeSegmentMiddle> / <DecimillipedeSegmentBack>: one each, slots \"segment1\", \"segment2\", \"segment3\" in that order",
+    "GenerateMonsters Rng::NextInt(3): k = get_Rng().NextInt(3); DecimillipedeSegment::set_StarterMoveIdx(k) on Front, ((k+1) rem 3) on Middle, ((k+2) rem 3) on Back",
+    "initial_state from the segment facts pattern.initial_rule `StarterMoveIdx % 3: 0 -> WRITHE_MOVE, 1 -> BULK_MOVE, otherwise CONSTRICT_MOVE` (same switch read in DecimillipedeSegment.GenerateMoveStateMachine); 3 variants at 1/3 each",
+    "Rng::NextItem<T>(items) = ElementAt(NextInt(0, Count)) and Rng::NextInt(n) = MegaRandom::Next(n): one uniform index draw, so each candidate is equally likely (uniformity of MegaRandom::NextInner is assumed, not derived)",
+    "get_RoomType: ldc.i4.2 = RoomType.Elite (--enum RoomType)",
+    "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
+    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+   ],
    "fingerprint": "2a37a5c2e17f25dc1c79424f8134a8bd795c4b9edce03a5f1f682581eb8e2b6c",
    "hook_tokens": {
     "GenerateMonsters": "060037D7",
@@ -31096,11 +31908,117 @@
     "GetCameraOffset",
     "GetCameraScaling"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Elite",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": "WRITHE_MOVE",
+       "monster": "DECIMILLIPEDE_SEGMENT_FRONT",
+       "set": {
+        "StarterMoveIdx": 0
+       },
+       "slot": "segment1"
+      },
+      {
+       "initial_state": "BULK_MOVE",
+       "monster": "DECIMILLIPEDE_SEGMENT_MIDDLE",
+       "set": {
+        "StarterMoveIdx": 1
+       },
+       "slot": "segment2"
+      },
+      {
+       "initial_state": "CONSTRICT_MOVE",
+       "monster": "DECIMILLIPEDE_SEGMENT_BACK",
+       "set": {
+        "StarterMoveIdx": 2
+       },
+       "slot": "segment3"
+      }
+     ],
+     "weight": 0.3333333333333333
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": "BULK_MOVE",
+       "monster": "DECIMILLIPEDE_SEGMENT_FRONT",
+       "set": {
+        "StarterMoveIdx": 1
+       },
+       "slot": "segment1"
+      },
+      {
+       "initial_state": "CONSTRICT_MOVE",
+       "monster": "DECIMILLIPEDE_SEGMENT_MIDDLE",
+       "set": {
+        "StarterMoveIdx": 2
+       },
+       "slot": "segment2"
+      },
+      {
+       "initial_state": "WRITHE_MOVE",
+       "monster": "DECIMILLIPEDE_SEGMENT_BACK",
+       "set": {
+        "StarterMoveIdx": 0
+       },
+       "slot": "segment3"
+      }
+     ],
+     "weight": 0.3333333333333333
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": "CONSTRICT_MOVE",
+       "monster": "DECIMILLIPEDE_SEGMENT_FRONT",
+       "set": {
+        "StarterMoveIdx": 2
+       },
+       "slot": "segment1"
+      },
+      {
+       "initial_state": "WRITHE_MOVE",
+       "monster": "DECIMILLIPEDE_SEGMENT_MIDDLE",
+       "set": {
+        "StarterMoveIdx": 0
+       },
+       "slot": "segment2"
+      },
+      {
+       "initial_state": "BULK_MOVE",
+       "monster": "DECIMILLIPEDE_SEGMENT_BACK",
+       "set": {
+        "StarterMoveIdx": 1
+       },
+       "slot": "segment3"
+      }
+     ],
+     "weight": 0.3333333333333333
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "DenseVegetationEventEncounter",
    "entity_key": "encounters:DENSE_VEGETATION_EVENT_ENCOUNTER",
+   "evidence": [
+    "GenerateMonsters ModelDb::Monster<Wriggler>: one ToMutable() per entry of get_Slots() = [\"wriggler1\",\"wriggler2\",\"wriggler3\",\"wriggler4\"], each placed in that slot -> 4 Wrigglers; no RNG",
+    "GenerateMonsters Wriggler::set_StartStunned: called with ldc.i4.0 (false) on every Wriggler",
+    "initial_state from monsters:WRIGGLER: initial_if StartStunned == false -> INIT_MOVE, a conditional on Creature.SlotName (confirmed in Wriggler lambdas b__16_0..3): wriggler1 -> NASTY_BITE_MOVE, wriggler2 -> WRIGGLE_MOVE, wriggler3 -> NASTY_BITE_MOVE, wriggler4 -> WRIGGLE_MOVE; the resolved move state is recorded",
+    "get_RoomType: ldc.i4.1 = RoomType.Monster (--enum RoomType)",
+    "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
+    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+   ],
    "fingerprint": "ce46ea516b54600837ff15b7213285bb0f117a6a7e51af01a93d6a913bfba702",
    "hook_tokens": {
     "GenerateMonsters": "060037DD"
@@ -31108,11 +32026,65 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": "NASTY_BITE_MOVE",
+       "monster": "WRIGGLER",
+       "set": {
+        "StartStunned": false
+       },
+       "slot": "wriggler1"
+      },
+      {
+       "initial_state": "WRIGGLE_MOVE",
+       "monster": "WRIGGLER",
+       "set": {
+        "StartStunned": false
+       },
+       "slot": "wriggler2"
+      },
+      {
+       "initial_state": "NASTY_BITE_MOVE",
+       "monster": "WRIGGLER",
+       "set": {
+        "StartStunned": false
+       },
+       "slot": "wriggler3"
+      },
+      {
+       "initial_state": "WRIGGLE_MOVE",
+       "monster": "WRIGGLER",
+       "set": {
+        "StartStunned": false
+       },
+       "slot": "wriggler4"
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "DevotedSculptorWeak",
    "entity_key": "encounters:DEVOTED_SCULPTOR_WEAK",
+   "evidence": [
+    "GenerateMonsters ModelDb::Monster<DevotedSculptor>: single ToMutable() wrapped in ReadOnlySingleElementList, slot ldnull; no setter calls, no RNG",
+    "get_RoomType: ldc.i4.1 = RoomType.Monster (--enum RoomType)",
+    "get_IsWeak: overridden, `ldc.i4.1; ret` (true)",
+    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+   ],
    "fingerprint": "77df2e435519ea99d2bc05f3c263034b9716f4ef76a2a6efdba0e1eccb74d4cc",
    "hook_tokens": {
     "GenerateMonsters": "060037E6"
@@ -31120,11 +32092,39 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": true,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "DEVOTED_SCULPTOR",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "EntomancerElite",
    "entity_key": "encounters:ENTOMANCER_ELITE",
+   "evidence": [
+    "GenerateMonsters ModelDb::Monster<Entomancer>: single ToMutable() wrapped in ReadOnlySingleElementList, slot ldnull; no setter calls, no RNG",
+    "get_RoomType: ldc.i4.2 = RoomType.Elite (--enum RoomType)",
+    "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
+    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+   ],
    "fingerprint": "0fb83ebfc141719fc345c57d6c8f4c9fc0806a532d9ef5d47927e00fd511a925",
    "hook_tokens": {
     "GenerateMonsters": "060037EA"
@@ -31132,11 +32132,41 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Elite",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "ENTOMANCER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "ExoskeletonsNormal",
    "entity_key": "encounters:EXOSKELETONS_NORMAL",
+   "evidence": [
+    "GenerateMonsters ModelDb::Monster<Exoskeleton>: 4 ToMutable() instances with slots \"first\", \"second\", \"third\", \"fourth\"; no setters, no RNG",
+    "initial_state from monsters:EXOSKELETON INIT_MOVE conditional on Creature.SlotName (confirmed in Exoskeleton lambdas b__22_0..3): first -> SKITTER_MOVE, second -> MANDIBLES_MOVE, third -> ENRAGE_MOVE, fourth -> RAND (random SKITTER_MOVE / MANDIBLES_MOVE)",
+    "get_Tags: EncounterTag 14 = Exoskeletons",
+    "get_RoomType: ldc.i4.1 = RoomType.Monster (--enum RoomType)",
+    "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
+    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+   ],
    "fingerprint": "9fa8856471609c9604df41a1c0ef37dbde1470d60dea5fcb6743b5b32c07dcdb",
    "hook_tokens": {
     "GenerateMonsters": "060037F1"
@@ -31144,11 +32174,59 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": "SKITTER_MOVE",
+       "monster": "EXOSKELETON",
+       "set": {},
+       "slot": "first"
+      },
+      {
+       "initial_state": "MANDIBLES_MOVE",
+       "monster": "EXOSKELETON",
+       "set": {},
+       "slot": "second"
+      },
+      {
+       "initial_state": "ENRAGE_MOVE",
+       "monster": "EXOSKELETON",
+       "set": {},
+       "slot": "third"
+      },
+      {
+       "initial_state": "RAND",
+       "monster": "EXOSKELETON",
+       "set": {},
+       "slot": "fourth"
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "ExoskeletonsWeak",
    "entity_key": "encounters:EXOSKELETONS_WEAK",
+   "evidence": [
+    "GenerateMonsters ModelDb::Monster<Exoskeleton>: 3 ToMutable() instances with slots \"first\", \"second\", \"third\"; no setters, no RNG",
+    "initial_state from monsters:EXOSKELETON INIT_MOVE conditional on Creature.SlotName (confirmed in Exoskeleton lambdas b__22_0..3): first -> SKITTER_MOVE, second -> MANDIBLES_MOVE, third -> ENRAGE_MOVE, fourth -> RAND (random SKITTER_MOVE / MANDIBLES_MOVE)",
+    "get_Tags: EncounterTag 14 = Exoskeletons",
+    "get_RoomType: ldc.i4.1 = RoomType.Monster (--enum RoomType)",
+    "get_IsWeak: overridden, `ldc.i4.1; ret` (true)",
+    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+   ],
    "fingerprint": "efaed66461743d1b506dae4a11365aa484e45aaf86d0356b40f97aaa6acc44ed",
    "hook_tokens": {
     "GenerateMonsters": "060037F9"
@@ -31156,11 +32234,52 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": true,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": "SKITTER_MOVE",
+       "monster": "EXOSKELETON",
+       "set": {},
+       "slot": "first"
+      },
+      {
+       "initial_state": "MANDIBLES_MOVE",
+       "monster": "EXOSKELETON",
+       "set": {},
+       "slot": "second"
+      },
+      {
+       "initial_state": "ENRAGE_MOVE",
+       "monster": "EXOSKELETON",
+       "set": {},
+       "slot": "third"
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "FabricatorNormal",
    "entity_key": "encounters:FABRICATOR_NORMAL",
+   "evidence": [
+    "GenerateMonsters ModelDb::Monster<Fabricator>: single ToMutable() wrapped in ReadOnlySingleElementList, slot ldstr \"fabricator\"; no setter calls, no RNG",
+    "get_AllPossibleMonsters also lists Fabricator::defenseSpawns and Fabricator::aggroSpawns, and get_Slots has bot1/bot2/bot3/bot4: those bots are created later by the Fabricator monster (CreatureCmd::Add in Fabricator), not by GenerateMonsters",
+    "get_RoomType: ldc.i4.1 = RoomType.Monster (--enum RoomType)",
+    "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
+    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+   ],
    "fingerprint": "65838113e919dd0490340265662b9940d8a311ca385da404321083b9aef589eb",
    "hook_tokens": {
     "GenerateMonsters": "060037FF",
@@ -31172,11 +32291,39 @@
     "GetCameraOffset",
     "GetCameraScaling"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "FABRICATOR",
+       "set": {},
+       "slot": "fabricator"
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "FakeMerchantEventEncounter",
    "entity_key": "encounters:FAKE_MERCHANT_EVENT_ENCOUNTER",
+   "evidence": [
+    "GenerateMonsters ModelDb::Monster<FakeMerchantMonster>: single ToMutable() wrapped in ReadOnlySingleElementList, slot ldstr \"merchant\"; no setter calls, no RNG",
+    "get_RoomType: ldc.i4.1 = RoomType.Monster (--enum RoomType)",
+    "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
+    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+   ],
    "fingerprint": "b3816269506b69860f45f995bb1f231afd925d3eb251855caf00a3e216322aef",
    "hook_tokens": {
     "GenerateMonsters": "0600380B"
@@ -31184,11 +32331,42 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "FAKE_MERCHANT_MONSTER",
+       "set": {},
+       "slot": "merchant"
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "FlyconidNormal",
    "entity_key": "encounters:FLYCONID_NORMAL",
+   "evidence": [
+    "GenerateMonsters Rng::NextItem<MonsterModel>: array[0] = get_Rng().NextItem(_mediumSlimes), slot ldnull; .cctor: _mediumSlimes = [LeafSlimeM, TwigSlimeM] -> 2 line-ups at 1/2 each",
+    "GenerateMonsters ModelDb::Monster<Flyconid>: array[1], slot ldnull; no setters",
+    "Rng::NextItem<T>(items) = ElementAt(NextInt(0, Count)) and Rng::NextInt(n) = MegaRandom::Next(n): one uniform index draw, so each candidate is equally likely (uniformity of MegaRandom::NextInner is assumed, not derived)",
+    "get_Tags: EncounterTag 9 = Mushroom, 5 = Slimes",
+    "get_RoomType: ldc.i4.1 = RoomType.Monster (--enum RoomType)",
+    "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
+    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+   ],
    "fingerprint": "201e6f931f7253cb63f98cbf54646b7241aaa1c4d330ef87d0ca012fc697be08",
    "hook_tokens": {
     "GenerateMonsters": "06003810"
@@ -31196,11 +32374,63 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "LEAF_SLIME_M",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "FLYCONID",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.5
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "TWIG_SLIME_M",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "FLYCONID",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.5
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "FogmogNormal",
    "entity_key": "encounters:FOGMOG_NORMAL",
+   "evidence": [
+    "GenerateMonsters ModelDb::Monster<Fogmog>: single ToMutable() wrapped in ReadOnlySingleElementList, slot ldstr \"fogmog\"; no setter calls, no RNG",
+    "get_AllPossibleMonsters also lists EyeWithTeeth and get_Slots has \"illusion\": the EyeWithTeeth is summoned later by Fogmog (monsters:FOGMOG ILLUSION_MOVE), not by GenerateMonsters",
+    "get_RoomType: ldc.i4.1 = RoomType.Monster (--enum RoomType)",
+    "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
+    "catalog cross-check: monster ids: catalog ['EYE_WITH_TEETH', 'FOGMOG'] vs spawned by GenerateMonsters ['FOGMOG'] (catalog follows get_AllPossibleMonsters, which includes monsters summoned later; not the opening line-up)"
+   ],
    "fingerprint": "ed8b9e649d917ef2eea96f93dc97796464621a46d78362713aa0383f4949a0b4",
    "hook_tokens": {
     "GenerateMonsters": "06003817"
@@ -31208,11 +32438,39 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "FOGMOG",
+       "set": {},
+       "slot": "fogmog"
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "FossilStalkerNormal",
    "entity_key": "encounters:FOSSIL_STALKER_NORMAL",
+   "evidence": [
+    "GenerateMonsters ModelDb::Monster<FossilStalker>: single ToMutable() wrapped in ReadOnlySingleElementList, slot ldnull; no setter calls, no RNG",
+    "get_RoomType: ldc.i4.1 = RoomType.Monster (--enum RoomType)",
+    "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
+    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+   ],
    "fingerprint": "8f282468c0f5ffc8ab4ae6db3bb7c2dae81a614cc308d6452eeda9a95d6059ad",
    "hook_tokens": {
     "GenerateMonsters": "0600381B"
@@ -31220,11 +32478,39 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "FOSSIL_STALKER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "FrogKnightNormal",
    "entity_key": "encounters:FROG_KNIGHT_NORMAL",
+   "evidence": [
+    "GenerateMonsters ModelDb::Monster<FrogKnight>: single ToMutable() wrapped in ReadOnlySingleElementList, slot ldnull; no setter calls, no RNG",
+    "get_RoomType: ldc.i4.1 = RoomType.Monster (--enum RoomType)",
+    "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
+    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+   ],
    "fingerprint": "27c11ef98baba68d55150c73c08d6260ceb3e33648f4c204cd411ac919f51176",
    "hook_tokens": {
     "GenerateMonsters": "0600381F"
@@ -31232,11 +32518,40 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "FROG_KNIGHT",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "FuzzyWurmCrawlerWeak",
    "entity_key": "encounters:FUZZY_WURM_CRAWLER_WEAK",
+   "evidence": [
+    "GenerateMonsters ModelDb::Monster<FuzzyWurmCrawler>: single ToMutable() wrapped in ReadOnlySingleElementList, slot ldnull; no setter calls, no RNG",
+    "get_Tags: EncounterTag 8 = Crawler",
+    "get_RoomType: ldc.i4.1 = RoomType.Monster (--enum RoomType)",
+    "get_IsWeak: overridden, `ldc.i4.1; ret` (true)",
+    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+   ],
    "fingerprint": "1989cbe9280d9a7a00bec6d860bf38129ae2d404328649f183197cdc4892a001",
    "hook_tokens": {
     "GenerateMonsters": "06003825"
@@ -31244,11 +32559,39 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": true,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "FUZZY_WURM_CRAWLER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "GlobeHeadNormal",
    "entity_key": "encounters:GLOBE_HEAD_NORMAL",
+   "evidence": [
+    "GenerateMonsters ModelDb::Monster<GlobeHead>: single ToMutable() wrapped in ReadOnlySingleElementList, slot ldnull; no setter calls, no RNG",
+    "get_RoomType: ldc.i4.1 = RoomType.Monster (--enum RoomType)",
+    "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
+    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+   ],
    "fingerprint": "582c02f3fece8db29cdb2d20f54307009fe45c3b052a12cde7b0211d3b691478",
    "hook_tokens": {
     "GenerateMonsters": "0600382A"
@@ -31256,11 +32599,40 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "GLOBE_HEAD",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "GremlinMercNormal",
    "entity_key": "encounters:GREMLIN_MERC_NORMAL",
+   "evidence": [
+    "GenerateMonsters ModelDb::Monster<GremlinMerc>: single ToMutable() wrapped in ReadOnlySingleElementList, slot ldstr \"merc\"; no setter calls, no RNG",
+    "get_AllPossibleMonsters also lists FatGremlin and SneakyGremlin; GenerateMonsters creates only the GremlinMerc, so the gremlins are not part of the opening line-up (they can only appear through the monster side)",
+    "get_RoomType: ldc.i4.1 = RoomType.Monster (--enum RoomType)",
+    "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
+    "catalog cross-check: monster ids: catalog ['FAT_GREMLIN', 'GREMLIN_MERC', 'SNEAKY_GREMLIN'] vs spawned by GenerateMonsters ['GREMLIN_MERC'] (catalog follows get_AllPossibleMonsters, which includes monsters summoned later; not the opening line-up)"
+   ],
    "fingerprint": "7a256ec86a053fd0617e2b970b9bffebce2d4b024f569e7ffe5ce064b95ffceb",
    "hook_tokens": {
     "CalculateGoldProportion": "06003833",
@@ -31270,11 +32642,39 @@
     "CalculateGoldProportion",
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "GREMLIN_MERC",
+       "set": {},
+       "slot": "merc"
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "HauntedShipNormal",
    "entity_key": "encounters:HAUNTED_SHIP_NORMAL",
+   "evidence": [
+    "GenerateMonsters ModelDb::Monster<HauntedShip>: single ToMutable() wrapped in ReadOnlySingleElementList, slot ldnull; no setter calls, no RNG",
+    "get_RoomType: ldc.i4.1 = RoomType.Monster (--enum RoomType)",
+    "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
+    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+   ],
    "fingerprint": "98a901ca08344643e913eaacb966cb276f600c29c845e94cb255902bd47cfe88",
    "hook_tokens": {
     "GenerateMonsters": "06003837"
@@ -31282,11 +32682,39 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "HAUNTED_SHIP",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "HunterKillerNormal",
    "entity_key": "encounters:HUNTER_KILLER_NORMAL",
+   "evidence": [
+    "GenerateMonsters ModelDb::Monster<HunterKiller>: single ToMutable() wrapped in ReadOnlySingleElementList, slot ldnull; no setter calls, no RNG",
+    "get_RoomType: ldc.i4.1 = RoomType.Monster (--enum RoomType)",
+    "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
+    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+   ],
    "fingerprint": "d826c85203dd9e4dbeac742088f7696a4c7711479d8c713eb714c4f18babd60d",
    "hook_tokens": {
     "GenerateMonsters": "0600383B"
@@ -31294,11 +32722,40 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "HUNTER_KILLER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "InfestedPrismsElite",
    "entity_key": "encounters:INFESTED_PRISMS_ELITE",
+   "evidence": [
+    "GenerateMonsters ModelDb::Monster<InfestedPrism>: single ToMutable() wrapped in ReadOnlySingleElementList, slot ldnull; no setter calls, no RNG",
+    "Plural class name, but GenerateMonsters creates exactly one InfestedPrism",
+    "get_RoomType: ldc.i4.2 = RoomType.Elite (--enum RoomType)",
+    "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
+    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+   ],
    "fingerprint": "96fb947e5fd3c294e6f7010342c4d7d0362ef21ac3c127ff55d866672d0d1409",
    "hook_tokens": {
     "GenerateMonsters": "0600383F"
@@ -31306,11 +32763,41 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Elite",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "INFESTED_PRISM",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "InkletsNormal",
    "entity_key": "encounters:INKLETS_NORMAL",
+   "evidence": [
+    "GenerateMonsters ModelDb::Monster<Inklet>: three ToMutable() instances (loc0, loc1, loc2), all with slot ldnull, in array order loc0, loc1, loc2",
+    "GenerateMonsters Inklet::set_MiddleInklet: called with ldc.i4.1 on loc1 only (the second Inklet)",
+    "initial_state from monsters:INKLET: pattern.initial JAB_MOVE, initial_if MiddleInklet == true -> WHIRLWIND_MOVE",
+    "get_RoomType: ldc.i4.1 = RoomType.Monster (--enum RoomType)",
+    "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
+    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+   ],
    "fingerprint": "aeab985ace4471bb896bd8cb790b7e6b3f8102644c7b4b48e81b870b233825d5",
    "hook_tokens": {
     "GenerateMonsters": "06003844"
@@ -31318,11 +32805,53 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": "JAB_MOVE",
+       "monster": "INKLET",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": "WHIRLWIND_MOVE",
+       "monster": "INKLET",
+       "set": {
+        "MiddleInklet": true
+       },
+       "slot": null
+      },
+      {
+       "initial_state": "JAB_MOVE",
+       "monster": "INKLET",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "KaiserCrabBoss",
    "entity_key": "encounters:KAISER_CRAB_BOSS",
+   "evidence": [
+    "GenerateMonsters ModelDb::Monster<Crusher>: array[0], slot \"crusher\"; ModelDb::Monster<Rocket>: array[1], slot \"rocket\"; no setters, no RNG",
+    "get_RoomType: ldc.i4.3 = RoomType.Boss (--enum RoomType)",
+    "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
+    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+   ],
    "fingerprint": "bf7ca894991cba8f31635053a5989a892dc7a75af065a448047766d62003df51",
    "hook_tokens": {
     "GenerateMonsters": "06003851",
@@ -31334,11 +32863,46 @@
     "GetCameraOffset",
     "GetCameraScaling"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Boss",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "CRUSHER",
+       "set": {},
+       "slot": "crusher"
+      },
+      {
+       "initial_state": null,
+       "monster": "ROCKET",
+       "set": {},
+       "slot": "rocket"
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "KnightsElite",
    "entity_key": "encounters:KNIGHTS_ELITE",
+   "evidence": [
+    "GenerateMonsters ModelDb::Monster<FlailKnight>: array[0], slot \"first\"; ModelDb::Monster<SpectralKnight>: array[1], slot \"second\"; ModelDb::Monster<MagiKnight>: array[2], slot \"third\"; no setters, no RNG",
+    "get_Tags: EncounterTag 10 = Knights",
+    "get_RoomType: ldc.i4.2 = RoomType.Elite (--enum RoomType)",
+    "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
+    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+   ],
    "fingerprint": "7cb345203b69cebc00f59fac09551e06dd6db85c83b59c34bf0689c051fb7f72",
    "hook_tokens": {
     "GenerateMonsters": "0600385A",
@@ -31350,11 +32914,51 @@
     "GetCameraOffset",
     "GetCameraScaling"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Elite",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "FLAIL_KNIGHT",
+       "set": {},
+       "slot": "first"
+      },
+      {
+       "initial_state": null,
+       "monster": "SPECTRAL_KNIGHT",
+       "set": {},
+       "slot": "second"
+      },
+      {
+       "initial_state": null,
+       "monster": "MAGI_KNIGHT",
+       "set": {},
+       "slot": "third"
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "KnowledgeDemonBoss",
    "entity_key": "encounters:KNOWLEDGE_DEMON_BOSS",
+   "evidence": [
+    "GenerateMonsters ModelDb::Monster<KnowledgeDemon>: single ToMutable() wrapped in ReadOnlySingleElementList, slot ldnull; no setter calls, no RNG",
+    "get_RoomType: ldc.i4.3 = RoomType.Boss (--enum RoomType)",
+    "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
+    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+   ],
    "fingerprint": "c958eed4bc4e68b2c0eafe1707dcfb70170daee0c3358ba522e23fe7c95b58c3",
    "hook_tokens": {
     "GenerateMonsters": "06003863",
@@ -31366,11 +32970,39 @@
     "GetCameraOffset",
     "GetCameraScaling"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Boss",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "KNOWLEDGE_DEMON",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "LagavulinMatriarchBoss",
    "entity_key": "encounters:LAGAVULIN_MATRIARCH_BOSS",
+   "evidence": [
+    "GenerateMonsters ModelDb::Monster<LagavulinMatriarch>: single ToMutable() wrapped in ReadOnlySingleElementList, slot ldnull; no setter calls, no RNG",
+    "get_RoomType: ldc.i4.3 = RoomType.Boss (--enum RoomType)",
+    "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
+    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+   ],
    "fingerprint": "cfefff243c908625ab669f7e34dbbc45b7bc9dcf759faabdfcc7e9e4daee2e88",
    "hook_tokens": {
     "GenerateMonsters": "0600386C",
@@ -31380,11 +33012,40 @@
     "GenerateMonsters",
     "GetCameraScaling"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Boss",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "LAGAVULIN_MATRIARCH",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "LivingFogNormal",
    "entity_key": "encounters:LIVING_FOG_NORMAL",
+   "evidence": [
+    "GenerateMonsters ModelDb::Monster<LivingFog>: single ToMutable() wrapped in ReadOnlySingleElementList, slot ldstr \"livingFog\"; no setter calls, no RNG",
+    "get_AllPossibleMonsters also lists GasBomb and get_Slots has bomb1..bomb5: GasBombs are created later by LivingFog (CreatureCmd::Add in LivingFog), not by GenerateMonsters",
+    "get_RoomType: ldc.i4.1 = RoomType.Monster (--enum RoomType)",
+    "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
+    "catalog cross-check: monster ids: catalog ['GAS_BOMB', 'LIVING_FOG'] vs spawned by GenerateMonsters ['LIVING_FOG'] (catalog follows get_AllPossibleMonsters, which includes monsters summoned later; not the opening line-up)"
+   ],
    "fingerprint": "95773cc6e883e6847049cc67ac61e1aa17b334074c7f48987d40397978285d83",
    "hook_tokens": {
     "GenerateMonsters": "06003874",
@@ -31394,11 +33055,39 @@
     "GenerateMonsters",
     "GetCameraScaling"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "LIVING_FOG",
+       "set": {},
+       "slot": "livingFog"
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "LouseProgenitorNormal",
    "entity_key": "encounters:LOUSE_PROGENITOR_NORMAL",
+   "evidence": [
+    "GenerateMonsters ModelDb::Monster<LouseProgenitor>: single ToMutable() wrapped in ReadOnlySingleElementList, slot ldnull; no setter calls, no RNG",
+    "get_RoomType: ldc.i4.1 = RoomType.Monster (--enum RoomType)",
+    "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
+    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+   ],
    "fingerprint": "d7ed189babcb65a9ec01bfd3061b7111d1a9583b15e48898feb408fd4dfbefe5",
    "hook_tokens": {
     "GenerateMonsters": "06003878"
@@ -31406,11 +33095,39 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "LOUSE_PROGENITOR",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "MawlerNormal",
    "entity_key": "encounters:MAWLER_NORMAL",
+   "evidence": [
+    "GenerateMonsters ModelDb::Monster<Mawler>: single ToMutable() wrapped in ReadOnlySingleElementList, slot ldnull; no setter calls, no RNG",
+    "get_RoomType: ldc.i4.1 = RoomType.Monster (--enum RoomType)",
+    "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
+    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+   ],
    "fingerprint": "48b7f24e88abff1cbb657eaae30403752743c295b4f82afd943c6c030e373120",
    "hook_tokens": {
     "GenerateMonsters": "0600387C"
@@ -31418,11 +33135,39 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "MAWLER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "MechaKnightElite",
    "entity_key": "encounters:MECHA_KNIGHT_ELITE",
+   "evidence": [
+    "GenerateMonsters ModelDb::Monster<MechaKnight>: single ToMutable() wrapped in ReadOnlySingleElementList, slot ldnull; no setter calls, no RNG",
+    "get_RoomType: ldc.i4.2 = RoomType.Elite (--enum RoomType)",
+    "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
+    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+   ],
    "fingerprint": "53b52757765558d6f2ebdc93264fa9984d647d6f4adea6b1681fd343f853bd4e",
    "hook_tokens": {
     "GenerateMonsters": "06003882",
@@ -31434,11 +33179,39 @@
     "GetCameraOffset",
     "GetCameraScaling"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Elite",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "MECHA_KNIGHT",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC1",
+    "verdict": "agree"
+   },
    "class": "MysteriousKnightEventEncounter",
    "entity_key": "encounters:MYSTERIOUS_KNIGHT_EVENT_ENCOUNTER",
+   "evidence": [
+    "GenerateMonsters ModelDb::Monster<MysteriousKnight>: single ToMutable() wrapped in ReadOnlySingleElementList, slot ldnull; no setter calls, no RNG",
+    "get_RoomType: ldc.i4.1 = RoomType.Monster (--enum RoomType)",
+    "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
+    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+   ],
    "fingerprint": "33cf8b16d3c515944fcfdb5ddb4d915635d2c3a2a6008b2a7b5eb898cc4f7719",
    "hook_tokens": {
     "GenerateMonsters": "06003886"
@@ -31446,11 +33219,40 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 1",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "MYSTERIOUS_KNIGHT",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "MytesNormal",
    "entity_key": "encounters:MYTES_NORMAL",
+   "evidence": [
+    "GenerateMonsters 0600388E: Two Myte in slots \"first\" and \"second\"; no setters. Opening states come from monsters:MYTE pattern.initial_if (Creature.SlotName first -> TOXIC_MOVE, second -> SUCK_MOVE).",
+    "get_RoomType: ldc.i4.1 -> RoomType.Monster (--enum RoomType).",
+    "get_IsWeak: not overridden; EncounterModel.get_IsWeak returns false.",
+    "get_AllPossibleMonsters: MYTE.",
+    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+   ],
    "fingerprint": "e335b09217bff9d80666b52a928250b9ca5816401e343ce358e2a344158fafc0",
    "hook_tokens": {
     "GenerateMonsters": "0600388E",
@@ -31462,11 +33264,46 @@
     "GetCameraOffset",
     "GetCameraScaling"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": "TOXIC_MOVE",
+       "monster": "MYTE",
+       "set": {},
+       "slot": "first"
+      },
+      {
+       "initial_state": "SUCK_MOVE",
+       "monster": "MYTE",
+       "set": {},
+       "slot": "second"
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "NibbitsNormal",
    "entity_key": "encounters:NIBBITS_NORMAL",
+   "evidence": [
+    "GenerateMonsters 06003894: First Nibbit: set_IsFront(true), slot \"front\"; second Nibbit: no setter, slot \"back\". monsters:NIBBIT initial_if: IsFront -> SLICE_MOVE; neither flag -> HISS_MOVE.",
+    "get_RoomType: ldc.i4.1 -> RoomType.Monster (--enum RoomType).",
+    "get_IsWeak: not overridden; EncounterModel.get_IsWeak returns false.",
+    "get_AllPossibleMonsters: NIBBIT.",
+    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+   ],
    "fingerprint": "0a52cb06c3905e8fce2be5947b5f535430662b2dca7e6c8f7446e42a3ac7c73c",
    "hook_tokens": {
     "GenerateMonsters": "06003894"
@@ -31474,11 +33311,48 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": "SLICE_MOVE",
+       "monster": "NIBBIT",
+       "set": {
+        "IsFront": true
+       },
+       "slot": "front"
+      },
+      {
+       "initial_state": "HISS_MOVE",
+       "monster": "NIBBIT",
+       "set": {},
+       "slot": "back"
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "NibbitsWeak",
    "entity_key": "encounters:NIBBITS_WEAK",
+   "evidence": [
+    "GenerateMonsters 0600389A: Single Nibbit with set_IsAlone(true), slot null. monsters:NIBBIT initial_if: IsAlone -> BUTT_MOVE.",
+    "get_RoomType: ldc.i4.1 -> RoomType.Monster (--enum RoomType).",
+    "get_IsWeak: overridden, returns true.",
+    "get_AllPossibleMonsters: NIBBIT.",
+    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+   ],
    "fingerprint": "416bd593ebc33bcb456a40ed600f3d7371add6ac8090228c4d5ad6c01a5c712d",
    "hook_tokens": {
     "GenerateMonsters": "0600389A"
@@ -31486,11 +33360,42 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": true,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": "BUTT_MOVE",
+       "monster": "NIBBIT",
+       "set": {
+        "IsAlone": true
+       },
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "OvergrowthCrawlers",
    "entity_key": "encounters:OVERGROWTH_CRAWLERS",
+   "evidence": [
+    "GenerateMonsters 0600389F: Fixed array: ShrinkerBeetle then FuzzyWurmCrawler, both slot null, no setters.",
+    "get_RoomType: ldc.i4.1 -> RoomType.Monster (--enum RoomType).",
+    "get_IsWeak: not overridden; EncounterModel.get_IsWeak returns false.",
+    "get_AllPossibleMonsters: FUZZY_WURM_CRAWLER, SHRINKER_BEETLE.",
+    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+   ],
    "fingerprint": "1d281aa0eb042f4a4c7f7dc7898314556c89d9526398b9cf306f363082b767c3",
    "hook_tokens": {
     "GenerateMonsters": "0600389F"
@@ -31498,11 +33403,46 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "SHRINKER_BEETLE",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "FUZZY_WURM_CRAWLER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "OvicopterNormal",
    "entity_key": "encounters:OVICOPTER_NORMAL",
+   "evidence": [
+    "GenerateMonsters 060038A7: GenerateMonsters adds only Ovicopter (slot \"ovicopter\"). ToughEgg is in get_AllPossibleMonsters but is not spawned by the encounter; eggs come from the Ovicopter's LAY_EGGS move during the fight.",
+    "get_RoomType: ldc.i4.1 -> RoomType.Monster (--enum RoomType).",
+    "get_IsWeak: not overridden; EncounterModel.get_IsWeak returns false.",
+    "get_AllPossibleMonsters: OVICOPTER, TOUGH_EGG.",
+    "Catalog cross-check: DISAGREES: catalog monsters ['OVICOPTER', 'TOUGH_EGG'] vs spawned at fight start ['OVICOPTER'] (catalog equals get_AllPossibleMonsters: True)."
+   ],
    "fingerprint": "1b53f3999b2bbf0f3ed897502cbacbc837ac36280618864c0cf6cc6196085932",
    "hook_tokens": {
     "GenerateMonsters": "060038A7",
@@ -31514,11 +33454,40 @@
     "GetCameraOffset",
     "GetCameraScaling"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "OVICOPTER",
+       "set": {},
+       "slot": "ovicopter"
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "OwlMagistrateNormal",
    "entity_key": "encounters:OWL_MAGISTRATE_NORMAL",
+   "evidence": [
+    "GenerateMonsters 060038AB: Single OwlMagistrate, slot null.",
+    "get_RoomType: ldc.i4.1 -> RoomType.Monster (--enum RoomType).",
+    "get_IsWeak: not overridden; EncounterModel.get_IsWeak returns false.",
+    "get_AllPossibleMonsters: OWL_MAGISTRATE.",
+    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+   ],
    "fingerprint": "1600ae388c794b1169a89d34ee3a2ba4ad381c41aeb3fff6e581790290949d48",
    "hook_tokens": {
     "GenerateMonsters": "060038AB"
@@ -31526,11 +33495,40 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "OWL_MAGISTRATE",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "PhantasmalGardenersElite",
    "entity_key": "encounters:PHANTASMAL_GARDENERS_ELITE",
+   "evidence": [
+    "GenerateMonsters 060038B3: Four PhantasmalGardener in slots first/second/third/fourth, no setters. Opening states from monsters:PHANTASMAL_GARDENER initial_if (SlotName first -> FLAIL_MOVE, second -> BITE_MOVE, third -> LASH_MOVE, fourth -> ENLARGE_MOVE).",
+    "get_RoomType: ldc.i4.2 -> RoomType.Elite (--enum RoomType).",
+    "get_IsWeak: not overridden; EncounterModel.get_IsWeak returns false.",
+    "get_AllPossibleMonsters: PHANTASMAL_GARDENER.",
+    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+   ],
    "fingerprint": "41659218ae8d754d34a4b8bae8eebb504df2dc0d21620157b0e6ebf80302cf2b",
    "hook_tokens": {
     "GenerateMonsters": "060038B3",
@@ -31542,11 +33540,58 @@
     "GetCameraOffset",
     "GetCameraScaling"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Elite",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": "FLAIL_MOVE",
+       "monster": "PHANTASMAL_GARDENER",
+       "set": {},
+       "slot": "first"
+      },
+      {
+       "initial_state": "BITE_MOVE",
+       "monster": "PHANTASMAL_GARDENER",
+       "set": {},
+       "slot": "second"
+      },
+      {
+       "initial_state": "LASH_MOVE",
+       "monster": "PHANTASMAL_GARDENER",
+       "set": {},
+       "slot": "third"
+      },
+      {
+       "initial_state": "ENLARGE_MOVE",
+       "monster": "PHANTASMAL_GARDENER",
+       "set": {},
+       "slot": "fourth"
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "PhrogParasiteElite",
    "entity_key": "encounters:PHROG_PARASITE_ELITE",
+   "evidence": [
+    "GenerateMonsters 060038BC: GenerateMonsters spawns only PhrogParasite (slot \"phrog\"). Wriggler is in get_AllPossibleMonsters and the class has GetWrigglerSlotName(i) = \"wriggler\"+(i+1), but no Wriggler is spawned at fight start (monsters:WRIGGLER fact: four are spawned by InfestedPower.AfterDeath when the Phrog dies).",
+    "get_RoomType: ldc.i4.2 -> RoomType.Elite (--enum RoomType).",
+    "get_IsWeak: not overridden; EncounterModel.get_IsWeak returns false.",
+    "get_AllPossibleMonsters: PHROG_PARASITE, WRIGGLER.",
+    "Catalog cross-check: DISAGREES: catalog monsters ['PHROG_PARASITE', 'WRIGGLER'] vs spawned at fight start ['PHROG_PARASITE'] (catalog equals get_AllPossibleMonsters: True)."
+   ],
    "fingerprint": "744a6ec2b6244d6b33c013749f126438c1188adc0473a1d9289a9ccca1b7bafa",
    "hook_tokens": {
     "GenerateMonsters": "060038BC",
@@ -31556,11 +33601,40 @@
     "GenerateMonsters",
     "GetCameraScaling"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Elite",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "PHROG_PARASITE",
+       "set": {},
+       "slot": "phrog"
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "PunchConstructNormal",
    "entity_key": "encounters:PUNCH_CONSTRUCT_NORMAL",
+   "evidence": [
+    "GenerateMonsters 060038C0: Single PunchConstruct, slot null, no setters (opens with the fact's default READY_MOVE).",
+    "get_RoomType: ldc.i4.1 -> RoomType.Monster (--enum RoomType).",
+    "get_IsWeak: not overridden; EncounterModel.get_IsWeak returns false.",
+    "get_AllPossibleMonsters: PUNCH_CONSTRUCT.",
+    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+   ],
    "fingerprint": "e058b387a1f63e93808aaa2b480cc4acad2d0c35e71f19fcd915f036acf728cf",
    "hook_tokens": {
     "GenerateMonsters": "060038C0"
@@ -31568,11 +33642,43 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "PUNCH_CONSTRUCT",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "PunchOffEventEncounter",
    "entity_key": "encounters:PUNCH_OFF_EVENT_ENCOUNTER",
+   "evidence": [
+    "GenerateMonsters 060038C4: Two PunchConstruct, both slot null. First: set_StartsWithFastPunch(true) and set_StartingHpReduction(Rng.NextInt(2,10)); second: only set_StartingHpReduction(Rng.NextInt(2,10)) (independent draw). monsters:PUNCH_CONSTRUCT initial_if: StartsWithFastPunch -> FAST_PUNCH_MOVE.",
+    "Rng.NextInt(min,max) -> MegaRandom.Next(min,max) = NextInner(max-min)+min with NextInner(n)=(int)(NextDouble()*n): upper bound exclusive, so the reduction is 2..9, each 1/8. PunchConstruct.AfterAddedToRoom sets CurrentHp = max(1, CurrentHp - StartingHpReduction) when the reduction is > 0.",
+    "The line-up is fixed (weight 1); only the starting HP of each construct varies, recorded as text in set.StartingHpReduction rather than as 64 variants.",
+    "get_RoomType returns 1 (Monster) although this is an event fight.",
+    "get_RoomType: ldc.i4.1 -> RoomType.Monster (--enum RoomType).",
+    "get_IsWeak: not overridden; EncounterModel.get_IsWeak returns false.",
+    "get_AllPossibleMonsters: PUNCH_CONSTRUCT.",
+    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+   ],
    "fingerprint": "e7e1d165a89d4206ba0b6b845de7cf80f33e3c56e70b5fea0025b75cb42ea111",
    "hook_tokens": {
     "GenerateMonsters": "060038C4"
@@ -31580,11 +33686,53 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [
+    "PunchOffEventEncounter: set.StartingHpReduction holds a text description of a random value (2..9 uniform, independent per construct) instead of a literal; confirm the preferred representation for random setter values."
+   ],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": "FAST_PUNCH_MOVE",
+       "monster": "PUNCH_CONSTRUCT",
+       "set": {
+        "StartingHpReduction": "Rng.NextInt(2,10): uniform integer 2..9",
+        "StartsWithFastPunch": true
+       },
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "PUNCH_CONSTRUCT",
+       "set": {
+        "StartingHpReduction": "Rng.NextInt(2,10): uniform integer 2..9"
+       },
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "QueenBoss",
    "entity_key": "encounters:QUEEN_BOSS",
+   "evidence": [
+    "GenerateMonsters 060038CF: Fixed array: TorchHeadAmalgam (slot \"amalgam\") then Queen (slot \"queen\"), no setters.",
+    "get_RoomType: ldc.i4.3 -> RoomType.Boss (--enum RoomType).",
+    "get_IsWeak: not overridden; EncounterModel.get_IsWeak returns false.",
+    "get_AllPossibleMonsters: QUEEN, TORCH_HEAD_AMALGAM.",
+    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+   ],
    "fingerprint": "bda57cfc7cf42462ad79742d4724abe926af731713904604dafda1a13ec5ebb0",
    "hook_tokens": {
     "GenerateMonsters": "060038CF",
@@ -31596,11 +33744,48 @@
     "GetCameraOffset",
     "GetCameraScaling"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Boss",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "TORCH_HEAD_AMALGAM",
+       "set": {},
+       "slot": "amalgam"
+      },
+      {
+       "initial_state": null,
+       "monster": "QUEEN",
+       "set": {},
+       "slot": "queen"
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "RubyRaidersNormal",
    "entity_key": "encounters:RUBY_RAIDERS_NORMAL",
+   "evidence": [
+    "GenerateMonsters 060038D3: _raiderValidCounts (.cctor) = {AxeRubyRaider:1, AssassinRubyRaider:1, BruteRubyRaider:1, CrossbowRubyRaider:1, TrackerRubyRaider:1}. Loop i = 0..2: candidates = keys whose count in currentRaiders < their valid count (i.e. not yet picked); pick = Rng.NextItem(candidates); spawned with slot null, no setters.",
+    "So three distinct raiders drawn without replacement from five: 5*4*3 = 60 ordered line-ups, each 1/60 (equivalently each of the 10 unordered trios has probability 1/10). All 60 are listed in spawn order.",
+    "Rng.NextInt(n) -> MegaRandom.Next(n) -> NextInner(n) = (int)(NextDouble()*n), i.e. uniform over 0..n-1; Rng.NextItem(list) = ElementAt(NextInt(0,Count)), uniform; Rng.NextBool() = MegaRandom.Next(2)==0, probability 1/2.",
+    "get_RoomType: ldc.i4.1 -> RoomType.Monster (--enum RoomType).",
+    "get_IsWeak: not overridden; EncounterModel.get_IsWeak returns false.",
+    "get_AllPossibleMonsters: returns the static lists built in .cctor (ASSASSIN_RUBY_RAIDER, AXE_RUBY_RAIDER, BRUTE_RUBY_RAIDER, CROSSBOW_RUBY_RAIDER, TRACKER_RUBY_RAIDER).",
+    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+   ],
    "fingerprint": "a0fbe2ff03d00a3bbc8fd7a3f96cc367191feab4fa70c8624042ebe52f8a5786",
    "hook_tokens": {
     "GenerateMonsters": "060038D3"
@@ -31608,11 +33793,1413 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [
+    "RubyRaidersNormal is recorded as 60 ordered variants (1/60 each); if spawn order is irrelevant downstream these collapse to 10 unordered trios at 1/10 each."
+   ],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "AXE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "ASSASSIN_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "BRUTE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "AXE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "ASSASSIN_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "CROSSBOW_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "AXE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "ASSASSIN_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "TRACKER_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "AXE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "BRUTE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "ASSASSIN_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "AXE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "BRUTE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "CROSSBOW_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "AXE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "BRUTE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "TRACKER_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "AXE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "CROSSBOW_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "ASSASSIN_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "AXE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "CROSSBOW_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "BRUTE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "AXE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "CROSSBOW_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "TRACKER_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "AXE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "TRACKER_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "ASSASSIN_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "AXE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "TRACKER_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "BRUTE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "AXE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "TRACKER_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "CROSSBOW_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "ASSASSIN_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "AXE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "BRUTE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "ASSASSIN_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "AXE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "CROSSBOW_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "ASSASSIN_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "AXE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "TRACKER_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "ASSASSIN_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "BRUTE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "AXE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "ASSASSIN_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "BRUTE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "CROSSBOW_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "ASSASSIN_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "BRUTE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "TRACKER_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "ASSASSIN_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "CROSSBOW_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "AXE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "ASSASSIN_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "CROSSBOW_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "BRUTE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "ASSASSIN_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "CROSSBOW_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "TRACKER_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "ASSASSIN_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "TRACKER_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "AXE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "ASSASSIN_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "TRACKER_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "BRUTE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "ASSASSIN_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "TRACKER_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "CROSSBOW_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "BRUTE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "AXE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "ASSASSIN_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "BRUTE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "AXE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "CROSSBOW_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "BRUTE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "AXE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "TRACKER_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "BRUTE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "ASSASSIN_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "AXE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "BRUTE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "ASSASSIN_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "CROSSBOW_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "BRUTE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "ASSASSIN_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "TRACKER_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "BRUTE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "CROSSBOW_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "AXE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "BRUTE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "CROSSBOW_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "ASSASSIN_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "BRUTE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "CROSSBOW_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "TRACKER_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "BRUTE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "TRACKER_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "AXE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "BRUTE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "TRACKER_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "ASSASSIN_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "BRUTE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "TRACKER_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "CROSSBOW_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "CROSSBOW_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "AXE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "ASSASSIN_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "CROSSBOW_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "AXE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "BRUTE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "CROSSBOW_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "AXE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "TRACKER_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "CROSSBOW_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "ASSASSIN_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "AXE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "CROSSBOW_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "ASSASSIN_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "BRUTE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "CROSSBOW_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "ASSASSIN_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "TRACKER_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "CROSSBOW_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "BRUTE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "AXE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "CROSSBOW_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "BRUTE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "ASSASSIN_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "CROSSBOW_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "BRUTE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "TRACKER_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "CROSSBOW_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "TRACKER_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "AXE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "CROSSBOW_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "TRACKER_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "ASSASSIN_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "CROSSBOW_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "TRACKER_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "BRUTE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "TRACKER_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "AXE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "ASSASSIN_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "TRACKER_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "AXE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "BRUTE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "TRACKER_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "AXE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "CROSSBOW_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "TRACKER_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "ASSASSIN_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "AXE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "TRACKER_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "ASSASSIN_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "BRUTE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "TRACKER_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "ASSASSIN_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "CROSSBOW_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "TRACKER_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "BRUTE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "AXE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "TRACKER_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "BRUTE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "ASSASSIN_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "TRACKER_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "BRUTE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "CROSSBOW_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "TRACKER_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "CROSSBOW_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "AXE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "TRACKER_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "CROSSBOW_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "ASSASSIN_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "TRACKER_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "CROSSBOW_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "BRUTE_RUBY_RAIDER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.016666666666666666
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "ScrollsOfBitingNormal",
    "entity_key": "encounters:SCROLLS_OF_BITING_NORMAL",
+   "evidence": [
+    "GenerateMonsters 060038D9: Four ScrollOfBiting, all slot null. r = Rng.NextInt(3); StarterMoveIdx = r, (r+1)%3, (r+2)%3 for the first three and the constant 2 for the fourth. Three variants (r = 0,1,2), each 1/3.",
+    "monsters:SCROLL_OF_BITING initial_if: StarterMoveIdx%3 == 0 -> CHOMP, 1 -> CHEW, 2 -> MORE_TEETH.",
+    "Rng.NextInt(n) -> MegaRandom.Next(n) -> NextInner(n) = (int)(NextDouble()*n), i.e. uniform over 0..n-1; Rng.NextItem(list) = ElementAt(NextInt(0,Count)), uniform; Rng.NextBool() = MegaRandom.Next(2)==0, probability 1/2.",
+    "get_RoomType: ldc.i4.1 -> RoomType.Monster (--enum RoomType).",
+    "get_IsWeak: not overridden; EncounterModel.get_IsWeak returns false.",
+    "get_AllPossibleMonsters: SCROLL_OF_BITING.",
+    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+   ],
    "fingerprint": "a05a6f93f2b40a8f7f41036642fcaa7042d880bb11941d700d8b79a5d5678790",
    "hook_tokens": {
     "GenerateMonsters": "060038D9"
@@ -31620,11 +35207,142 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": "CHOMP",
+       "monster": "SCROLL_OF_BITING",
+       "set": {
+        "StarterMoveIdx": 0
+       },
+       "slot": null
+      },
+      {
+       "initial_state": "CHEW",
+       "monster": "SCROLL_OF_BITING",
+       "set": {
+        "StarterMoveIdx": 1
+       },
+       "slot": null
+      },
+      {
+       "initial_state": "MORE_TEETH",
+       "monster": "SCROLL_OF_BITING",
+       "set": {
+        "StarterMoveIdx": 2
+       },
+       "slot": null
+      },
+      {
+       "initial_state": "MORE_TEETH",
+       "monster": "SCROLL_OF_BITING",
+       "set": {
+        "StarterMoveIdx": 2
+       },
+       "slot": null
+      }
+     ],
+     "weight": 0.3333333333333333
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": "CHEW",
+       "monster": "SCROLL_OF_BITING",
+       "set": {
+        "StarterMoveIdx": 1
+       },
+       "slot": null
+      },
+      {
+       "initial_state": "MORE_TEETH",
+       "monster": "SCROLL_OF_BITING",
+       "set": {
+        "StarterMoveIdx": 2
+       },
+       "slot": null
+      },
+      {
+       "initial_state": "CHOMP",
+       "monster": "SCROLL_OF_BITING",
+       "set": {
+        "StarterMoveIdx": 0
+       },
+       "slot": null
+      },
+      {
+       "initial_state": "MORE_TEETH",
+       "monster": "SCROLL_OF_BITING",
+       "set": {
+        "StarterMoveIdx": 2
+       },
+       "slot": null
+      }
+     ],
+     "weight": 0.3333333333333333
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": "MORE_TEETH",
+       "monster": "SCROLL_OF_BITING",
+       "set": {
+        "StarterMoveIdx": 2
+       },
+       "slot": null
+      },
+      {
+       "initial_state": "CHOMP",
+       "monster": "SCROLL_OF_BITING",
+       "set": {
+        "StarterMoveIdx": 0
+       },
+       "slot": null
+      },
+      {
+       "initial_state": "CHEW",
+       "monster": "SCROLL_OF_BITING",
+       "set": {
+        "StarterMoveIdx": 1
+       },
+       "slot": null
+      },
+      {
+       "initial_state": "MORE_TEETH",
+       "monster": "SCROLL_OF_BITING",
+       "set": {
+        "StarterMoveIdx": 2
+       },
+       "slot": null
+      }
+     ],
+     "weight": 0.3333333333333333
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "ScrollsOfBitingWeak",
    "entity_key": "encounters:SCROLLS_OF_BITING_WEAK",
+   "evidence": [
+    "GenerateMonsters 060038DF: Three ScrollOfBiting, all slot null. r = Rng.NextInt(3); StarterMoveIdx = r, (r+1)%3, (r+2)%3. Three variants (r = 0,1,2), each 1/3.",
+    "monsters:SCROLL_OF_BITING initial_if: StarterMoveIdx%3 == 0 -> CHOMP, 1 -> CHEW, 2 -> MORE_TEETH.",
+    "Rng.NextInt(n) -> MegaRandom.Next(n) -> NextInner(n) = (int)(NextDouble()*n), i.e. uniform over 0..n-1; Rng.NextItem(list) = ElementAt(NextInt(0,Count)), uniform; Rng.NextBool() = MegaRandom.Next(2)==0, probability 1/2.",
+    "get_RoomType: ldc.i4.1 -> RoomType.Monster (--enum RoomType).",
+    "get_IsWeak: overridden, returns true.",
+    "get_AllPossibleMonsters: SCROLL_OF_BITING.",
+    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+   ],
    "fingerprint": "d1f5ed4df5780e64362259aea864f77640482968a570747fed035d9f00f94e51",
    "hook_tokens": {
     "GenerateMonsters": "060038DF"
@@ -31632,11 +35350,116 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": true,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": "CHOMP",
+       "monster": "SCROLL_OF_BITING",
+       "set": {
+        "StarterMoveIdx": 0
+       },
+       "slot": null
+      },
+      {
+       "initial_state": "CHEW",
+       "monster": "SCROLL_OF_BITING",
+       "set": {
+        "StarterMoveIdx": 1
+       },
+       "slot": null
+      },
+      {
+       "initial_state": "MORE_TEETH",
+       "monster": "SCROLL_OF_BITING",
+       "set": {
+        "StarterMoveIdx": 2
+       },
+       "slot": null
+      }
+     ],
+     "weight": 0.3333333333333333
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": "CHEW",
+       "monster": "SCROLL_OF_BITING",
+       "set": {
+        "StarterMoveIdx": 1
+       },
+       "slot": null
+      },
+      {
+       "initial_state": "MORE_TEETH",
+       "monster": "SCROLL_OF_BITING",
+       "set": {
+        "StarterMoveIdx": 2
+       },
+       "slot": null
+      },
+      {
+       "initial_state": "CHOMP",
+       "monster": "SCROLL_OF_BITING",
+       "set": {
+        "StarterMoveIdx": 0
+       },
+       "slot": null
+      }
+     ],
+     "weight": 0.3333333333333333
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": "MORE_TEETH",
+       "monster": "SCROLL_OF_BITING",
+       "set": {
+        "StarterMoveIdx": 2
+       },
+       "slot": null
+      },
+      {
+       "initial_state": "CHOMP",
+       "monster": "SCROLL_OF_BITING",
+       "set": {
+        "StarterMoveIdx": 0
+       },
+       "slot": null
+      },
+      {
+       "initial_state": "CHEW",
+       "monster": "SCROLL_OF_BITING",
+       "set": {
+        "StarterMoveIdx": 1
+       },
+       "slot": null
+      }
+     ],
+     "weight": 0.3333333333333333
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "SeapunkNormal",
    "entity_key": "encounters:SEAPUNK_NORMAL",
+   "evidence": [
+    "GenerateMonsters 060038E4: Fixed array: CalcifiedCultist then Seapunk, slot null, no setters.",
+    "get_RoomType: ldc.i4.1 -> RoomType.Monster (--enum RoomType).",
+    "get_IsWeak: not overridden; EncounterModel.get_IsWeak returns false.",
+    "get_AllPossibleMonsters: CALCIFIED_CULTIST, SEAPUNK.",
+    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+   ],
    "fingerprint": "f033b307260954c55e347992cb5ca348dd3259ff28f58071143a60d775a857c2",
    "hook_tokens": {
     "GenerateMonsters": "060038E4"
@@ -31644,11 +35467,46 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "CALCIFIED_CULTIST",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "SEAPUNK",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "SeapunkWeak",
    "entity_key": "encounters:SEAPUNK_WEAK",
+   "evidence": [
+    "GenerateMonsters 060038EA: Single Seapunk, slot null.",
+    "get_RoomType: ldc.i4.1 -> RoomType.Monster (--enum RoomType).",
+    "get_IsWeak: overridden, returns true.",
+    "get_AllPossibleMonsters: SEAPUNK.",
+    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+   ],
    "fingerprint": "f3bb9ebbbc106d77b3c75b322a5822e83fd1842d44b3343d0a1f4bf33b482af3",
    "hook_tokens": {
     "GenerateMonsters": "060038EA"
@@ -31656,11 +35514,40 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": true,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "SEAPUNK",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "SewerClamNormal",
    "entity_key": "encounters:SEWER_CLAM_NORMAL",
+   "evidence": [
+    "GenerateMonsters 060038EE: Single SewerClam, slot null.",
+    "get_RoomType: ldc.i4.1 -> RoomType.Monster (--enum RoomType).",
+    "get_IsWeak: not overridden; EncounterModel.get_IsWeak returns false.",
+    "get_AllPossibleMonsters: SEWER_CLAM.",
+    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+   ],
    "fingerprint": "ae75efbe79d3956a4ad9b7ecf107d5929f5b95b006a626f41e3fa83c21757ffe",
    "hook_tokens": {
     "GenerateMonsters": "060038EE"
@@ -31668,11 +35555,40 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "SEWER_CLAM",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "ShrinkerBeetleWeak",
    "entity_key": "encounters:SHRINKER_BEETLE_WEAK",
+   "evidence": [
+    "GenerateMonsters 060038F4: Single ShrinkerBeetle, slot null.",
+    "get_RoomType: ldc.i4.1 -> RoomType.Monster (--enum RoomType).",
+    "get_IsWeak: overridden, returns true.",
+    "get_AllPossibleMonsters: SHRINKER_BEETLE.",
+    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+   ],
    "fingerprint": "c70ee1494ef68b0d73c445305f6ee127b8d63219f1cdc98c068c6a0780e607e8",
    "hook_tokens": {
     "GenerateMonsters": "060038F4"
@@ -31680,11 +35596,40 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": true,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "SHRINKER_BEETLE",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "SkulkingColonyElite",
    "entity_key": "encounters:SKULKING_COLONY_ELITE",
+   "evidence": [
+    "GenerateMonsters 060038F8: Single SkulkingColony, slot null.",
+    "get_RoomType: ldc.i4.2 -> RoomType.Elite (--enum RoomType).",
+    "get_IsWeak: not overridden; EncounterModel.get_IsWeak returns false.",
+    "get_AllPossibleMonsters: SKULKING_COLONY.",
+    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+   ],
    "fingerprint": "61fedebb70f1771cd1afbdebf846147f2e74336d92c8af4f237f57fec2296359",
    "hook_tokens": {
     "GenerateMonsters": "060038F8"
@@ -31692,11 +35637,40 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Elite",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "SKULKING_COLONY",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "SlimedBerserkerNormal",
    "entity_key": "encounters:SLIMED_BERSERKER_NORMAL",
+   "evidence": [
+    "GenerateMonsters 060038FC: Single SlimedBerserker, slot null.",
+    "get_RoomType: ldc.i4.1 -> RoomType.Monster (--enum RoomType).",
+    "get_IsWeak: not overridden; EncounterModel.get_IsWeak returns false.",
+    "get_AllPossibleMonsters: SLIMED_BERSERKER.",
+    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+   ],
    "fingerprint": "3d866cd4c752cb37a0c462933a2d790ea549af5549a17cc3abd28012b40b2b41",
    "hook_tokens": {
     "GenerateMonsters": "060038FC"
@@ -31704,11 +35678,41 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "SLIMED_BERSERKER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "SlimesNormal",
    "entity_key": "encounters:SLIMES_NORMAL",
+   "evidence": [
+    "GenerateMonsters 06003903: b = Rng.NextBool(). Array: TwigSlimeM, LeafSlimeM, then (b ? LeafSlimeS : TwigSlimeS), then (b ? TwigSlimeS : LeafSlimeS); all slot null, no setters. Always one of each of the four slimes; only the order of the two small slimes varies (1/2 each).",
+    "Rng.NextInt(n) -> MegaRandom.Next(n) -> NextInner(n) = (int)(NextDouble()*n), i.e. uniform over 0..n-1; Rng.NextItem(list) = ElementAt(NextInt(0,Count)), uniform; Rng.NextBool() = MegaRandom.Next(2)==0, probability 1/2.",
+    "get_RoomType: ldc.i4.1 -> RoomType.Monster (--enum RoomType).",
+    "get_IsWeak: not overridden; EncounterModel.get_IsWeak returns false.",
+    "get_AllPossibleMonsters: LEAF_SLIME_M, LEAF_SLIME_S, TWIG_SLIME_M, TWIG_SLIME_S.",
+    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+   ],
    "fingerprint": "fbc3d15a6a4ec5721c7c9b3a7a5c46c37c00c82b0db8cbbcb7e0b3e2eaa1600f",
    "hook_tokens": {
     "GenerateMonsters": "06003903",
@@ -31720,11 +35724,89 @@
     "GetCameraOffset",
     "GetCameraScaling"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "TWIG_SLIME_M",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "LEAF_SLIME_M",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "LEAF_SLIME_S",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "TWIG_SLIME_S",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.5
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "TWIG_SLIME_M",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "LEAF_SLIME_M",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "TWIG_SLIME_S",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "LEAF_SLIME_S",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.5
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "SlimesWeak",
    "entity_key": "encounters:SLIMES_WEAK",
+   "evidence": [
+    "GenerateMonsters 06003909: _smallSlimes = [LeafSlimeS, TwigSlimeS], _mediumSlimes = [LeafSlimeM, TwigSlimeM] (.cctor). s1 = NextItem(copy of smalls); s1 is removed from the copy; s2 = NextItem(remaining one element) = the other small slime; list = s1, NextItem(_mediumSlimes), s2; all slot null.",
+    "So always both small slimes plus one medium slime: 2 orders x 2 mediums = 4 variants, each 1/4.",
+    "Rng.NextInt(n) -> MegaRandom.Next(n) -> NextInner(n) = (int)(NextDouble()*n), i.e. uniform over 0..n-1; Rng.NextItem(list) = ElementAt(NextInt(0,Count)), uniform; Rng.NextBool() = MegaRandom.Next(2)==0, probability 1/2.",
+    "get_RoomType: ldc.i4.1 -> RoomType.Monster (--enum RoomType).",
+    "get_IsWeak: overridden, returns true.",
+    "get_AllPossibleMonsters: returns the static lists built in .cctor (LEAF_SLIME_M, LEAF_SLIME_S, TWIG_SLIME_M, TWIG_SLIME_S).",
+    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+   ],
    "fingerprint": "41b25c3b8d0978fdcf4cdcb1e055bfd4f0185b4f50a85c33922a5698ae729e35",
    "hook_tokens": {
     "GenerateMonsters": "06003909"
@@ -31732,11 +35814,123 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": true,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "LEAF_SLIME_S",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "LEAF_SLIME_M",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "TWIG_SLIME_S",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.25
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "LEAF_SLIME_S",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "TWIG_SLIME_M",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "TWIG_SLIME_S",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.25
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "TWIG_SLIME_S",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "LEAF_SLIME_M",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "LEAF_SLIME_S",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.25
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "TWIG_SLIME_S",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "TWIG_SLIME_M",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "LEAF_SLIME_S",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.25
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "SlitheringStranglerNormal",
    "entity_key": "encounters:SLITHERING_STRANGLER_NORMAL",
+   "evidence": [
+    "GenerateMonsters 0600390F: t = Rng.NextItem(Enum.GetValues<SecondaryEnemyType>()) with enum (--enum) SnappingJaxfruit=0, MediumSlime=1, SmallSlimes=2 -> 1/3 each. switch: 0 -> [SnappingJaxfruit]; 1 -> [NextItem(_mediumSlimes)]; 2 -> [NextItem(_smallSlimes), NextItem(_smallSlimes)] (two independent draws, repeats allowed). Then SlitheringStrangler is appended last; every entry gets slot null.",
+    "_smallSlimes = [LeafSlimeS, TwigSlimeS], _mediumSlimes = [LeafSlimeM, TwigSlimeM] (.cctor). Weights: Jaxfruit 1/3; each medium 1/6; each ordered pair of smalls 1/12.",
+    "Rng.NextInt(n) -> MegaRandom.Next(n) -> NextInner(n) = (int)(NextDouble()*n), i.e. uniform over 0..n-1; Rng.NextItem(list) = ElementAt(NextInt(0,Count)), uniform; Rng.NextBool() = MegaRandom.Next(2)==0, probability 1/2.",
+    "get_RoomType: ldc.i4.1 -> RoomType.Monster (--enum RoomType).",
+    "get_IsWeak: not overridden; EncounterModel.get_IsWeak returns false.",
+    "get_AllPossibleMonsters: SLITHERING_STRANGLER, SNAPPING_JAXFRUIT.",
+    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+   ],
    "fingerprint": "1b62d936cc07ae4344be4d9f4a0d78df6317029fbdbed9e5a51bce59485a1e52",
    "hook_tokens": {
     "GenerateMonsters": "0600390F"
@@ -31744,11 +35938,172 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "SNAPPING_JAXFRUIT",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "SLITHERING_STRANGLER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.3333333333333333
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "LEAF_SLIME_M",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "SLITHERING_STRANGLER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.16666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "TWIG_SLIME_M",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "SLITHERING_STRANGLER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.16666666666666666
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "LEAF_SLIME_S",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "LEAF_SLIME_S",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "SLITHERING_STRANGLER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.08333333333333333
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "LEAF_SLIME_S",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "TWIG_SLIME_S",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "SLITHERING_STRANGLER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.08333333333333333
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "TWIG_SLIME_S",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "LEAF_SLIME_S",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "SLITHERING_STRANGLER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.08333333333333333
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "TWIG_SLIME_S",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "TWIG_SLIME_S",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "SLITHERING_STRANGLER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 0.08333333333333333
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "SludgeSpinnerWeak",
    "entity_key": "encounters:SLUDGE_SPINNER_WEAK",
+   "evidence": [
+    "GenerateMonsters 06003915: Single SludgeSpinner, slot null.",
+    "get_RoomType: ldc.i4.1 -> RoomType.Monster (--enum RoomType).",
+    "get_IsWeak: overridden, returns true.",
+    "get_AllPossibleMonsters: SLUDGE_SPINNER.",
+    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+   ],
    "fingerprint": "9910b3040f50662907b3982d44404edc9b25314c2a131aac33f5b0d48723cc27",
    "hook_tokens": {
     "GenerateMonsters": "06003915"
@@ -31756,11 +36111,40 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": true,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "SLUDGE_SPINNER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "SlumberingBeetleNormal",
    "entity_key": "encounters:SLUMBERING_BEETLE_NORMAL",
+   "evidence": [
+    "GenerateMonsters 0600391A: Fixed array: BowlbugRock (first), BowlbugSilk (second), SlumberingBeetle (third); no setters.",
+    "get_RoomType: ldc.i4.1 -> RoomType.Monster (--enum RoomType).",
+    "get_IsWeak: not overridden; EncounterModel.get_IsWeak returns false.",
+    "get_AllPossibleMonsters: BOWLBUG_ROCK, BOWLBUG_SILK, SLUMBERING_BEETLE.",
+    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+   ],
    "fingerprint": "fa609ed233ff80e31a043653132c73c96e50fb45daf9fb6a8a201b21a5ff7fc0",
    "hook_tokens": {
     "GenerateMonsters": "0600391A",
@@ -31772,11 +36156,52 @@
     "GetCameraOffset",
     "GetCameraScaling"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "BOWLBUG_ROCK",
+       "set": {},
+       "slot": "first"
+      },
+      {
+       "initial_state": null,
+       "monster": "BOWLBUG_SILK",
+       "set": {},
+       "slot": "second"
+      },
+      {
+       "initial_state": null,
+       "monster": "SLUMBERING_BEETLE",
+       "set": {},
+       "slot": "third"
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "SnappingJaxfruitNormal",
    "entity_key": "encounters:SNAPPING_JAXFRUIT_NORMAL",
+   "evidence": [
+    "GenerateMonsters 06003922: Fixed array: SnappingJaxfruit then Flyconid, slot null, no setters.",
+    "get_RoomType: ldc.i4.1 -> RoomType.Monster (--enum RoomType).",
+    "get_IsWeak: not overridden; EncounterModel.get_IsWeak returns false.",
+    "get_AllPossibleMonsters: FLYCONID, SNAPPING_JAXFRUIT.",
+    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+   ],
    "fingerprint": "d91657c7b843a5633bea56a61047113fe28f937b0c7d71a25df5b5dd8b6d8f05",
    "hook_tokens": {
     "GenerateMonsters": "06003922"
@@ -31784,11 +36209,46 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "SNAPPING_JAXFRUIT",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "FLYCONID",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "SoulFyshBoss",
    "entity_key": "encounters:SOUL_FYSH_BOSS",
+   "evidence": [
+    "GenerateMonsters 0600392A: Single SoulFysh, slot null.",
+    "get_RoomType: ldc.i4.3 -> RoomType.Boss (--enum RoomType).",
+    "get_IsWeak: not overridden; EncounterModel.get_IsWeak returns false.",
+    "get_AllPossibleMonsters: SOUL_FYSH.",
+    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+   ],
    "fingerprint": "240f58e3882774ada1b9384ae76a0ad3646597499575647b5184d97ba7fece0b",
    "hook_tokens": {
     "GenerateMonsters": "0600392A"
@@ -31796,11 +36256,40 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Boss",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "SOUL_FYSH",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "SoulNexusElite",
    "entity_key": "encounters:SOUL_NEXUS_ELITE",
+   "evidence": [
+    "GenerateMonsters 0600392E: Single SoulNexus, slot null.",
+    "get_RoomType: ldc.i4.2 -> RoomType.Elite (--enum RoomType).",
+    "get_IsWeak: not overridden; EncounterModel.get_IsWeak returns false.",
+    "get_AllPossibleMonsters: SOUL_NEXUS.",
+    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+   ],
    "fingerprint": "1d4781aebbb9b2d174c610418c3df55579d6e4e4eb88eed808f8bceb9d6299d6",
    "hook_tokens": {
     "GenerateMonsters": "0600392E"
@@ -31808,11 +36297,40 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Elite",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "SOUL_NEXUS",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "SpinyToadNormal",
    "entity_key": "encounters:SPINY_TOAD_NORMAL",
+   "evidence": [
+    "GenerateMonsters 06003932: Single SpinyToad, slot null.",
+    "get_RoomType: ldc.i4.1 -> RoomType.Monster (--enum RoomType).",
+    "get_IsWeak: not overridden; EncounterModel.get_IsWeak returns false.",
+    "get_AllPossibleMonsters: SPINY_TOAD.",
+    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+   ],
    "fingerprint": "32bc1d853d89526af064ee6e804b6b1caca1744ee8c45c0b374d17db060a7063",
    "hook_tokens": {
     "GenerateMonsters": "06003932"
@@ -31820,11 +36338,40 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "SPINY_TOAD",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "TerrorEelElite",
    "entity_key": "encounters:TERROR_EEL_ELITE",
+   "evidence": [
+    "GenerateMonsters 06003937: Single TerrorEel, slot null.",
+    "get_RoomType: ldc.i4.2 -> RoomType.Elite (--enum RoomType).",
+    "get_IsWeak: not overridden; EncounterModel.get_IsWeak returns false.",
+    "get_AllPossibleMonsters: TERROR_EEL.",
+    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+   ],
    "fingerprint": "9100686b75be5353bcf053d84c2c66ee657ef389a8c5219b157b9ed7e5ea5141",
    "hook_tokens": {
     "GenerateMonsters": "06003937",
@@ -31834,11 +36381,40 @@
     "GenerateMonsters",
     "GetCameraScaling"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Elite",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "TERROR_EEL",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "TestSubjectBoss",
    "entity_key": "encounters:TEST_SUBJECT_BOSS",
+   "evidence": [
+    "GenerateMonsters 0600393F: Single TestSubject, slot null.",
+    "get_RoomType: ldc.i4.3 -> RoomType.Boss (--enum RoomType).",
+    "get_IsWeak: not overridden; EncounterModel.get_IsWeak returns false.",
+    "get_AllPossibleMonsters: TEST_SUBJECT.",
+    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+   ],
    "fingerprint": "8f7cc2166aae54d88541f3a3b5474e12d94c7b935cd7f13f89d859546e044a0e",
    "hook_tokens": {
     "GenerateMonsters": "0600393F"
@@ -31846,11 +36422,41 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Boss",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "TEST_SUBJECT",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "TheArchitectEventEncounter",
    "entity_key": "encounters:THE_ARCHITECT_EVENT_ENCOUNTER",
+   "evidence": [
+    "GenerateMonsters 06003944: Single Architect, slot null.",
+    "get_RoomType returns 1 (Monster) although this is an event fight.",
+    "get_RoomType: ldc.i4.1 -> RoomType.Monster (--enum RoomType).",
+    "get_IsWeak: not overridden; EncounterModel.get_IsWeak returns false.",
+    "get_AllPossibleMonsters: ARCHITECT.",
+    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+   ],
    "fingerprint": "dc68789fd7236bf3f92d2ef0198a64474efce066e5a32ec24b9fe85ab0ff35c5",
    "hook_tokens": {
     "GenerateMonsters": "06003944"
@@ -31858,11 +36464,40 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "ARCHITECT",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "TheInsatiableBoss",
    "entity_key": "encounters:THE_INSATIABLE_BOSS",
+   "evidence": [
+    "GenerateMonsters 0600394C: Single TheInsatiable, slot null.",
+    "get_RoomType: ldc.i4.3 -> RoomType.Boss (--enum RoomType).",
+    "get_IsWeak: not overridden; EncounterModel.get_IsWeak returns false.",
+    "get_AllPossibleMonsters: THE_INSATIABLE.",
+    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+   ],
    "fingerprint": "3961a1d5e59737119ee852984e36280bd09d9af6b68d17742e23293960f5aebf",
    "hook_tokens": {
     "GenerateMonsters": "0600394C",
@@ -31872,11 +36507,40 @@
     "GenerateMonsters",
     "GetCameraScaling"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Boss",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "THE_INSATIABLE",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "TheKinBoss",
    "entity_key": "encounters:THE_KIN_BOSS",
+   "evidence": [
+    "GenerateMonsters 06003958: First KinFollower: set_StartsWithDance(true), slot \"slot1\"; second KinFollower: no setter, slot \"slot2\"; KinPriest slot \"leaderSlot\". monsters:KIN_FOLLOWER initial_if: StartsWithDance -> POWER_DANCE_MOVE; the second follower keeps the fact's default initial (QUICK_SLASH_MOVE), recorded as null.",
+    "get_RoomType: ldc.i4.3 -> RoomType.Boss (--enum RoomType).",
+    "get_IsWeak: not overridden; EncounterModel.get_IsWeak returns false.",
+    "get_AllPossibleMonsters: KIN_FOLLOWER, KIN_PRIEST.",
+    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+   ],
    "fingerprint": "1f94d2a33aea106e9e97775b16ae2640dd17055379e6eccb5626c5260c0f44f2",
    "hook_tokens": {
     "GenerateMonsters": "06003958",
@@ -31888,11 +36552,54 @@
     "GetCameraOffset",
     "GetCameraScaling"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Boss",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": "POWER_DANCE_MOVE",
+       "monster": "KIN_FOLLOWER",
+       "set": {
+        "StartsWithDance": true
+       },
+       "slot": "slot1"
+      },
+      {
+       "initial_state": null,
+       "monster": "KIN_FOLLOWER",
+       "set": {},
+       "slot": "slot2"
+      },
+      {
+       "initial_state": null,
+       "monster": "KIN_PRIEST",
+       "set": {},
+       "slot": "leaderSlot"
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "TheLostAndForgottenNormal",
    "entity_key": "encounters:THE_LOST_AND_FORGOTTEN_NORMAL",
+   "evidence": [
+    "GenerateMonsters 0600395C: Fixed array: TheLost then TheForgotten, slot null, no setters.",
+    "get_RoomType: ldc.i4.1 -> RoomType.Monster (--enum RoomType).",
+    "get_IsWeak: not overridden; EncounterModel.get_IsWeak returns false.",
+    "get_AllPossibleMonsters: THE_FORGOTTEN, THE_LOST.",
+    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+   ],
    "fingerprint": "9ab1355cb35779671a460e97ec0bb1fde5b24a61038342499fc8c64cd047da74",
    "hook_tokens": {
     "GenerateMonsters": "0600395C"
@@ -31900,11 +36607,46 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "THE_LOST",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "THE_FORGOTTEN",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "TheObscuraNormal",
    "entity_key": "encounters:THE_OBSCURA_NORMAL",
+   "evidence": [
+    "GenerateMonsters 06003962: GenerateMonsters spawns only TheObscura (slot \"obscura\"). Parafright is in get_AllPossibleMonsters but is not spawned by the encounter at fight start.",
+    "get_RoomType: ldc.i4.1 -> RoomType.Monster (--enum RoomType).",
+    "get_IsWeak: not overridden; EncounterModel.get_IsWeak returns false.",
+    "get_AllPossibleMonsters: PARAFRIGHT, THE_OBSCURA.",
+    "Catalog cross-check: DISAGREES: catalog monsters ['PARAFRIGHT', 'THE_OBSCURA'] vs spawned at fight start ['THE_OBSCURA'] (catalog equals get_AllPossibleMonsters: True)."
+   ],
    "fingerprint": "158c48846ae5fc55a1e5e1123d576b4d384760499dc78a745bab053ef1d97f59",
    "hook_tokens": {
     "GenerateMonsters": "06003962"
@@ -31912,11 +36654,40 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "THE_OBSCURA",
+       "set": {},
+       "slot": "obscura"
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "ThievingHopperWeak",
    "entity_key": "encounters:THIEVING_HOPPER_WEAK",
+   "evidence": [
+    "GenerateMonsters 06003968: Single ThievingHopper, slot null.",
+    "get_RoomType: ldc.i4.1 -> RoomType.Monster (--enum RoomType).",
+    "get_IsWeak: overridden, returns true.",
+    "get_AllPossibleMonsters: THIEVING_HOPPER.",
+    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+   ],
    "fingerprint": "4b16d91af4adce88249acfdb45f8a7866577fa54bc17df1f603457b3ecf29b55",
    "hook_tokens": {
     "GenerateMonsters": "06003968"
@@ -31924,11 +36695,40 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": true,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "THIEVING_HOPPER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "ToadpolesWeak",
    "entity_key": "encounters:TOADPOLES_WEAK",
+   "evidence": [
+    "GenerateMonsters 0600396D: Two Toadpole, slot null: first set_IsFront(true), second set_IsFront(false). monsters:TOADPOLE initial_if: IsFront -> SPIKEN_MOVE, !IsFront -> WHIRL_MOVE (also read from Toadpole.GenerateMoveStateMachine INIT_MOVE branches).",
+    "get_RoomType: ldc.i4.1 -> RoomType.Monster (--enum RoomType).",
+    "get_IsWeak: overridden, returns true.",
+    "get_AllPossibleMonsters: TOADPOLE.",
+    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+   ],
    "fingerprint": "15d6ba051664cd0aade200290147e861dd0cdecf4f2d80788fd468ca64eb6dae",
    "hook_tokens": {
     "GenerateMonsters": "0600396D"
@@ -31936,11 +36736,50 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": true,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": "SPIKEN_MOVE",
+       "monster": "TOADPOLE",
+       "set": {
+        "IsFront": true
+       },
+       "slot": null
+      },
+      {
+       "initial_state": "WHIRL_MOVE",
+       "monster": "TOADPOLE",
+       "set": {
+        "IsFront": false
+       },
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "TunnelerNormal",
    "entity_key": "encounters:TUNNELER_NORMAL",
+   "evidence": [
+    "GenerateMonsters 06003972: Chomper with set_ScreamFirst(true) then Tunneler, both slot null. monsters:CHOMPER pattern.initial_condition: _screamFirst ? SCREECH_MOVE : CLAMP_MOVE.",
+    "get_RoomType: ldc.i4.1 -> RoomType.Monster (--enum RoomType).",
+    "get_IsWeak: not overridden; EncounterModel.get_IsWeak returns false.",
+    "get_AllPossibleMonsters: CHOMPER, TUNNELER.",
+    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+   ],
    "fingerprint": "b3d5fe32331eb9f1513318a5be87239fd3bdd9be1d1294a1cf617dcacd813b17",
    "hook_tokens": {
     "GenerateMonsters": "06003972"
@@ -31948,11 +36787,48 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": "SCREECH_MOVE",
+       "monster": "CHOMPER",
+       "set": {
+        "ScreamFirst": true
+       },
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "TUNNELER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "TunnelerWeak",
    "entity_key": "encounters:TUNNELER_WEAK",
+   "evidence": [
+    "GenerateMonsters 06003978: Single Tunneler, slot null.",
+    "get_RoomType: ldc.i4.1 -> RoomType.Monster (--enum RoomType).",
+    "get_IsWeak: overridden, returns true.",
+    "get_AllPossibleMonsters: TUNNELER.",
+    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+   ],
    "fingerprint": "ab156d3651f87ced13f646732b7c7308de3a953754adbadcd3701a786918aaba",
    "hook_tokens": {
     "GenerateMonsters": "06003978"
@@ -31960,11 +36836,40 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": true,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "TUNNELER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "TurretOperatorWeak",
    "entity_key": "encounters:TURRET_OPERATOR_WEAK",
+   "evidence": [
+    "GenerateMonsters 0600397D: Fixed array: LivingShield then TurretOperator, slot null, no setters.",
+    "get_RoomType: ldc.i4.1 -> RoomType.Monster (--enum RoomType).",
+    "get_IsWeak: overridden, returns true.",
+    "get_AllPossibleMonsters: LIVING_SHIELD, TURRET_OPERATOR.",
+    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+   ],
    "fingerprint": "aa76517fea2247933d0627f780b7151c724ba5455343f6305a550f5b54596679",
    "hook_tokens": {
     "GenerateMonsters": "0600397D"
@@ -31972,11 +36877,48 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": true,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "LIVING_SHIELD",
+       "set": {},
+       "slot": null
+      },
+      {
+       "initial_state": null,
+       "monster": "TURRET_OPERATOR",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "TwoTailedRatsNormal",
    "entity_key": "encounters:TWO_TAILED_RATS_NORMAL",
+   "evidence": [
+    "GenerateMonsters 06003985: Three TwoTailedRat. r = Rng.NextInt(3); StarterMoveIndex = r, (r+1)%3, (r+2)%3. Slots are Slots[2], Slots[3], Slots[4] with get_Slots = [first, second, third, fourth, fifth] -> third, fourth, fifth.",
+    "monsters:TWO_TAILED_RAT initial_if: StarterMoveIndex%3 == 0 -> SCRATCH_MOVE, 1 -> DISEASE_BITE_MOVE, 2 -> SCREECH_MOVE (also read from TwoTailedRat.GenerateMoveStateMachine). Three variants, each 1/3.",
+    "Rng.NextInt(n) -> MegaRandom.Next(n) -> NextInner(n) = (int)(NextDouble()*n), i.e. uniform over 0..n-1; Rng.NextItem(list) = ElementAt(NextInt(0,Count)), uniform; Rng.NextBool() = MegaRandom.Next(2)==0, probability 1/2.",
+    "get_RoomType: ldc.i4.1 -> RoomType.Monster (--enum RoomType).",
+    "get_IsWeak: not overridden; EncounterModel.get_IsWeak returns false.",
+    "get_AllPossibleMonsters: TWO_TAILED_RAT.",
+    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+   ],
    "fingerprint": "ba9cef3099510903013d4c15e50a986a5b1cfbca0063b09c9df5d260c9f22187",
    "hook_tokens": {
     "GenerateMonsters": "06003985",
@@ -31988,11 +36930,116 @@
     "GetCameraOffset",
     "GetCameraScaling"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": "SCRATCH_MOVE",
+       "monster": "TWO_TAILED_RAT",
+       "set": {
+        "StarterMoveIndex": 0
+       },
+       "slot": "third"
+      },
+      {
+       "initial_state": "DISEASE_BITE_MOVE",
+       "monster": "TWO_TAILED_RAT",
+       "set": {
+        "StarterMoveIndex": 1
+       },
+       "slot": "fourth"
+      },
+      {
+       "initial_state": "SCREECH_MOVE",
+       "monster": "TWO_TAILED_RAT",
+       "set": {
+        "StarterMoveIndex": 2
+       },
+       "slot": "fifth"
+      }
+     ],
+     "weight": 0.3333333333333333
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": "DISEASE_BITE_MOVE",
+       "monster": "TWO_TAILED_RAT",
+       "set": {
+        "StarterMoveIndex": 1
+       },
+       "slot": "third"
+      },
+      {
+       "initial_state": "SCREECH_MOVE",
+       "monster": "TWO_TAILED_RAT",
+       "set": {
+        "StarterMoveIndex": 2
+       },
+       "slot": "fourth"
+      },
+      {
+       "initial_state": "SCRATCH_MOVE",
+       "monster": "TWO_TAILED_RAT",
+       "set": {
+        "StarterMoveIndex": 0
+       },
+       "slot": "fifth"
+      }
+     ],
+     "weight": 0.3333333333333333
+    },
+    {
+     "spawns": [
+      {
+       "initial_state": "SCREECH_MOVE",
+       "monster": "TWO_TAILED_RAT",
+       "set": {
+        "StarterMoveIndex": 2
+       },
+       "slot": "third"
+      },
+      {
+       "initial_state": "SCRATCH_MOVE",
+       "monster": "TWO_TAILED_RAT",
+       "set": {
+        "StarterMoveIndex": 0
+       },
+       "slot": "fourth"
+      },
+      {
+       "initial_state": "DISEASE_BITE_MOVE",
+       "monster": "TWO_TAILED_RAT",
+       "set": {
+        "StarterMoveIndex": 1
+       },
+       "slot": "fifth"
+      }
+     ],
+     "weight": 0.3333333333333333
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "VantomBoss",
    "entity_key": "encounters:VANTOM_BOSS",
+   "evidence": [
+    "GenerateMonsters 0600398F: Single Vantom, slot null.",
+    "get_RoomType: ldc.i4.3 -> RoomType.Boss (--enum RoomType).",
+    "get_IsWeak: not overridden; EncounterModel.get_IsWeak returns false.",
+    "get_AllPossibleMonsters: VANTOM.",
+    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+   ],
    "fingerprint": "abf349155f24537ba6f6df966fe84c7c48fc9ef37b9c0f049abd7dee9fd66ba9",
    "hook_tokens": {
     "GenerateMonsters": "0600398F",
@@ -32004,11 +37051,40 @@
     "GetCameraOffset",
     "GetCameraScaling"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Boss",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "VANTOM",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "VineShamblerNormal",
    "entity_key": "encounters:VINE_SHAMBLER_NORMAL",
+   "evidence": [
+    "GenerateMonsters 06003994: Single VineShambler, slot null.",
+    "get_RoomType: ldc.i4.1 -> RoomType.Monster (--enum RoomType).",
+    "get_IsWeak: not overridden; EncounterModel.get_IsWeak returns false.",
+    "get_AllPossibleMonsters: VINE_SHAMBLER.",
+    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+   ],
    "fingerprint": "db09f9e9b6a8fe68173f773e2e38fb5b4e9090ec28ec1d00ae9b95875e8f58e7",
    "hook_tokens": {
     "GenerateMonsters": "06003994"
@@ -32016,11 +37092,40 @@
    "hooks": [
     "GenerateMonsters"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Monster",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "VINE_SHAMBLER",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
+   "audit": {
+    "by": "TASK-025 cross-review ENC2",
+    "verdict": "agree"
+   },
    "class": "WaterfallGiantBoss",
    "entity_key": "encounters:WATERFALL_GIANT_BOSS",
+   "evidence": [
+    "GenerateMonsters 0600399D: Single WaterfallGiant, slot null.",
+    "get_RoomType: ldc.i4.3 -> RoomType.Boss (--enum RoomType).",
+    "get_IsWeak: not overridden; EncounterModel.get_IsWeak returns false.",
+    "get_AllPossibleMonsters: WATERFALL_GIANT.",
+    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+   ],
    "fingerprint": "d0e205633d292fe780052e04f4315ce70f12d45cc95f75bd2ce329fb7828349a",
    "hook_tokens": {
     "GenerateMonsters": "0600399D",
@@ -32030,7 +37135,25 @@
     "GenerateMonsters",
     "GetCameraScaling"
    ],
-   "status": "unreviewed"
+   "is_weak": false,
+   "open_questions": [],
+   "reviewed_by": "TASK-025 encounters batch 2",
+   "room_type": "Boss",
+   "status": "converted",
+   "unknowable": [],
+   "variants": [
+    {
+     "spawns": [
+      {
+       "initial_state": null,
+       "monster": "WATERFALL_GIANT",
+       "set": {},
+       "slot": null
+      }
+     ],
+     "weight": 1.0
+    }
+   ]
   },
   {
    "audit": {

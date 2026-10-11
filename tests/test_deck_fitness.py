@@ -361,10 +361,24 @@ class CardMechanicTests(unittest.TestCase):
         scores = self.helper.scores(result)
         return scores[f"0:{offered}"] - scores["skip"], result
 
-    def test_perfected_strike_is_worth_more_with_more_strikes(self):
-        few, _ = self.gain("PERFECTED_STRIKE", [card("DEFEND_IRONCLAD", 6), card("STRIKE_IRONCLAD", 1)])
-        many, _ = self.gain("PERFECTED_STRIKE", [card("DEFEND_IRONCLAD", 2), card("STRIKE_IRONCLAD", 5)])
-        self.assertGreater(many, few)
+    def test_perfected_strike_deals_more_with_more_strikes(self):
+        # Compared on the damage it adds: the score gain also depends on how
+        # much damage the deck still lacks.
+        from advisor.deck_fitness import PARAMETERS_KEY
+        from advisor.deck_mechanics import Situation, card_profile, deck_capabilities
+
+        repository = self.helper.repository
+        params = repository.mechanic_constant(PARAMETERS_KEY)
+        situation = Situation(6.0, 0.0, 10.0, {"MONSTER": 1.0}, 1.0, 0)
+
+        def added_damage(strikes):
+            deck = [card_profile(repository, cid, 0)[0]
+                    for cid in ["STRIKE_IRONCLAD"] * strikes + ["DEFEND_IRONCLAD"] * (7 - strikes)]
+            perfected = card_profile(repository, "PERFECTED_STRIKE", 0)[0]
+            base = deck_capabilities(deck, (), situation, params)[0]["frontload"]
+            return deck_capabilities([*deck, perfected], (), situation, params)[0]["frontload"] - base
+
+        self.assertGreater(added_damage(5), added_damage(1))
 
     def test_body_slam_is_worth_more_in_a_block_heavy_deck(self):
         block, _ = self.gain("BODY_SLAM", [card("DEFEND_IRONCLAD", 7), card("STRIKE_IRONCLAD", 1)])
@@ -941,3 +955,44 @@ class GapRoundTwoTests(unittest.TestCase):
         buffer, gaps = power_use(self.repository, "Buffer", 2)
         self.assertEqual((buffer.duration, gaps), ("combat", ()))
         self.assertEqual(buffer.mechanics, ({"modifier": "hp_loss_negate", "uses": 2.0},))
+
+
+class FactBasedNeedsTests(unittest.TestCase):
+    """Situation needs come from encounter and monster facts."""
+
+    @classmethod
+    def setUpClass(cls):
+        DeckFitnessPolicyTests.setUpClass()
+        cls.repository = DeckFitnessPolicyTests.repository
+
+    @classmethod
+    def tearDownClass(cls):
+        DeckFitnessPolicyTests.tearDownClass()
+
+    def test_pools_use_real_line_ups_and_split_weak_fights(self):
+        from advisor.deck_fitness import PARAMETERS_KEY, _fact_pools
+
+        params = self.repository.mechanic_constant(PARAMETERS_KEY)
+        pools = _fact_pools(self.repository, ["VANTOM_BOSS"], params, 0)
+        self.assertEqual(set(pools), {"MONSTER", "MONSTER_WEAK", "ELITE", "BOSS"})
+        # The act's opening fights are easier than its regular ones.
+        self.assertLess(pools["MONSTER_WEAK"]["attack"], pools["MONSTER"]["attack"])
+        self.assertLess(pools["MONSTER_WEAK"]["hp"], pools["MONSTER"]["hp"])
+        # Per-turn attack walked from the move machines is far below the
+        # "strongest move every turn" of the catalog statistic.
+        old = self.repository.encounter_pool_expectations(["VANTOM_BOSS"])
+        self.assertLess(pools["MONSTER"]["attack"], old["MONSTER"]["average_attack"])
+        self.assertEqual(self.repository.act_index(["VANTOM_BOSS"]), 0)
+
+    def test_needs_carry_enemy_hits_and_player_debuffs(self):
+        from advisor.deck_fitness import PARAMETERS_KEY, compute_needs
+        from advisor.route import RoutePolicy
+
+        view = {s["id"]: s for s in load_golden_set()}["silent-f3-ricochet"]["scoring_view"]
+        params = self.repository.mechanic_constant(PARAMETERS_KEY)
+        needs = compute_needs(
+            self.repository, RoutePolicy(self.repository), card_reward_request(view), params, ScoringPreferences()
+        )
+        self.assertGreater(needs.enemy_hits, 0.0)
+        self.assertGreaterEqual(needs.player_frail, 0.0)
+        self.assertFalse([g for g in needs.gaps if g.startswith("encounter_facts_missing")])
