@@ -114,7 +114,7 @@ def load_golden_set(path: Path | str = DEFAULT_GOLDEN_SET_PATH) -> List[dict]:
             )
         if situation.get("label_status") not in {"draft", "confirmed"}:
             raise GoldenSetError(f"{situation_id} has no label status")
-        if (situation.get("source") or {}).get("kind") not in {"live_snapshot", "reconstructed"}:
+        if (situation.get("source") or {}).get("kind") not in {"live_snapshot", "reconstructed", "run_history"}:
             raise GoldenSetError(f"{situation_id} has no source kind")
     return situations
 

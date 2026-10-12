@@ -946,6 +946,13 @@ class ScaleSourceTests(unittest.TestCase):
         # Damage to all per extra enemy: more enemies give more kills, so more repeats.
         self.assertGreater(added(3.0), added(1.0))
 
+    def test_replays_work_with_several_copies_of_the_replayed_card(self):
+        # Found on the run history: copies of one card share a profile, and
+        # the replay step used to put profiles in a set (they are unhashable).
+        with_echo = self.frontload(["ECHO_FORM"] + ["STRIKE_DEFECT"] * 5 + ["DEFEND_DEFECT"] * 4)
+        without = self.frontload(["DEFEND_DEFECT"] + ["STRIKE_DEFECT"] * 5 + ["DEFEND_DEFECT"] * 4)
+        self.assertGreater(with_echo, without)
+
     def test_finisher_hits_once_per_other_attack_played(self):
         many = self.frontload(["FINISHER"] + ["STRIKE_SILENT"] * 4 + ["DEFEND_SILENT"] * 2)
         few = self.frontload(["FINISHER"] + ["STRIKE_SILENT"] * 1 + ["DEFEND_SILENT"] * 5)

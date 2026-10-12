@@ -1149,8 +1149,9 @@ class _Engine:
                 add = float(modifier.get("add") or 0.0) * weight
                 uses = modifier.get("uses")
                 factor = add if uses is None else add * min(1.0, float(uses) / base_plays)
-                for c in set(matching):
-                    plays[id(c)] *= 1.0 + factor
+                # Copies share one profile (and one entry in ``plays``).
+                for key in {id(c) for c in matching}:
+                    plays[key] *= 1.0 + factor
             # Sly (CardCmd.Discard -> DiscardAndDraw): a Sly card discarded by
             # an effect is played for free. A chosen discard takes a Sly card
             # in hand when there is one; a random one hits a copy 1/size of the
