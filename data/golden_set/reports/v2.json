@@ -1,14 +1,14 @@
 {
  "all": {
-  "situations": 70,
-  "hits": 22,
-  "hit_rate": 0.3143,
+  "situations": 79,
+  "hits": 24,
+  "hit_rate": 0.3038,
   "obvious_errors_first": 0
  },
  "confirmed": {
-  "situations": 70,
-  "hits": 22,
-  "hit_rate": 0.3143,
+  "situations": 79,
+  "hits": 24,
+  "hit_rate": 0.3038,
   "obvious_errors_first": 0
  },
  "rows": [
@@ -1062,6 +1062,141 @@
     "1:FINISHER": 53.1,
     "2:MURDER": 50.5,
     "skip": 52.8
+   }
+  },
+  {
+   "id": "defect-8080-f2-skip",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": "0:FUSION",
+   "hit": false,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:deck_fitness_1",
+   "scores": {
+    "0:FUSION": 47.5,
+    "1:CAPACITOR": 42.6,
+    "2:LIGHTNING_ROD": 45.1,
+    "skip": 43.9
+   }
+  },
+  {
+   "id": "defect-8080-f5-compact",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": "2:BOOST_AWAY",
+   "hit": false,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:deck_fitness_1",
+   "scores": {
+    "0:GO_FOR_THE_EYES": 45.6,
+    "1:COMPACT": 44.5,
+    "2:BOOST_AWAY": 46.1,
+    "skip": 45.1
+   }
+  },
+  {
+   "id": "defect-8080-f6-sweeping-beam",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": "0:SWEEPING_BEAM",
+   "hit": true,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:deck_fitness_1",
+   "scores": {
+    "0:SWEEPING_BEAM": 50.1,
+    "1:MACHINE_LEARNING": 50.0,
+    "2:LIGHTNING_ROD": 48.5,
+    "skip": 47.8
+   }
+  },
+  {
+   "id": "defect-8080-f8-skip",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": "0:FUSION",
+   "hit": false,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:deck_fitness_1",
+   "scores": {
+    "0:FUSION": 57.7,
+    "1:HOTFIX": 55.1,
+    "2:SYNCHRONIZE": 52.5,
+    "skip": 54.5
+   }
+  },
+  {
+   "id": "defect-8080-f9-darkness",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": "1:LIGHTNING_ROD",
+   "hit": false,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:deck_fitness_1",
+   "scores": {
+    "0:DARKNESS": 52.3,
+    "1:LIGHTNING_ROD": 53.8,
+    "2:FOCUSED_STRIKE": 53.5,
+    "skip": 53.6
+   }
+  },
+  {
+   "id": "defect-8080-f12-coolheaded",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": "2:COOLHEADED",
+   "hit": true,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:deck_fitness_1",
+   "scores": {
+    "0:SUNDER": 52.2,
+    "1:COMPILE_DRIVER": 52.9,
+    "2:COOLHEADED": 54.1,
+    "skip": 53.6
+   }
+  },
+  {
+   "id": "defect-8080-f13-gunk-up",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": "1:CLAW",
+   "hit": false,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:deck_fitness_1",
+   "scores": {
+    "0:CHILL": 54.0,
+    "1:CLAW": 54.5,
+    "2:GUNK_UP": 54.0,
+    "skip": 54.0
+   }
+  },
+  {
+   "id": "defect-8080-f14-skip",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": "1:HOTFIX",
+   "hit": false,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:deck_fitness_1",
+   "scores": {
+    "0:COLD_SNAP": 52.5,
+    "1:HOTFIX": 52.8,
+    "2:COOLHEADED": 52.7,
+    "skip": 52.6
+   }
+  },
+  {
+   "id": "defect-8080-f17-skip",
+   "label_status": "confirmed",
+   "warnings": [],
+   "first": "0:SPINNER",
+   "hit": false,
+   "obvious_error_first": false,
+   "policy_version": "card_reward:deck_fitness_1",
+   "scores": {
+    "0:SPINNER": 63.5,
+    "1:SHATTER": 57.2,
+    "2:ICE_LANCE": 56.9,
+    "skip": 56.9
    }
   }
  ]
