@@ -108,6 +108,7 @@ class Fitness:
     raw: float
     capabilities: Mapping[str, float]
     terms: Mapping[str, float]
+    tempo: float = 1.0   # expected fight length relative to the nominal one
 
 
 def _parameter_gaps(params: object) -> tuple[str, ...]:
@@ -440,6 +441,24 @@ def compute_needs(
     )
 
 
+def fight_tempo(capabilities: Mapping[str, float], needs: Needs, params: Mapping) -> float:
+    """Expected fight length relative to the nominal one.
+
+    The damage need is enemy HP over the nominal turns, so need / damage per
+    turn is how many nominal fights the deck takes to kill. Bounded by the
+    ``fight_tempo`` parameters; 1.0 (no effect) when they are absent.
+    """
+
+    bounds = params.get("fight_tempo")
+    if not bounds or needs.values["frontload"] <= 0:
+        return 1.0
+    low, high = float(bounds["min"]), float(bounds["max"])
+    damage = capabilities["frontload"] + capabilities["scaling"]
+    if damage <= 0:
+        return high
+    return max(low, min(high, needs.values["frontload"] / damage))
+
+
 def fitness(capabilities: Mapping[str, float], needs: Needs, params: Mapping) -> Fitness:
     cap = float(params["satisfaction_cap"])
     slope = float(params["surplus_slope"])
@@ -447,19 +466,32 @@ def fitness(capabilities: Mapping[str, float], needs: Needs, params: Mapping) ->
     def gain(satisfaction: float) -> float:
         # Below the need: s - (1-s)^2/2, slope 2 at s=0 falling to 1 at s=1.
         # Above it: logarithmic, slope at most ``slope`` (0.25). Shifted by
-        # 0.5 so an empty dimension is worth 0.
-        s = max(0.0, min(cap, satisfaction))
+        # 0.5 so an empty dimension is worth 0. Only defense can go below 0
+        # (a slow fight takes more than the nominal fight's damage); the same
+        # curve continues there, so more block or a shorter fight always counts.
+        s = max(floor, min(cap, satisfaction))
         value = s - 0.5 * (1.0 - s) ** 2 if s <= 1.0 else 1.0 + slope * math.log(s)
         return value + 0.5
 
+    satisfaction = {
+        d: capabilities[d] / needs.values[d] if needs.values[d] > 0 else cap
+        for d in DIMENSIONS
+    }
+    tempo = fight_tempo(capabilities, needs, params)
+    floor = min(0.0, 1.0 - float((params.get("fight_tempo") or {}).get("max", 1.0)))
+    if satisfaction["defense"] < 1.0:
+        # Unblocked damage is taken every turn the fight lasts: a deck that
+        # kills faster than the nominal fight length takes less of it, a
+        # slower one more.
+        satisfaction["defense"] = 1.0 - (1.0 - max(0.0, satisfaction["defense"])) * tempo
     norm = sum(needs.weights[d] for d in DIMENSIONS) * gain(cap)
     terms = {
         d: 100.0 * needs.weights[d]
-        * gain(capabilities[d] / needs.values[d] if needs.values[d] > 0 else cap) / norm
+        * gain(satisfaction[d] if d == "defense" else max(0.0, satisfaction[d])) / norm
         for d in DIMENSIONS
     }
-    raw = sum(terms.values())
-    return Fitness(score=round(raw, 1), raw=raw, capabilities=capabilities, terms=terms)
+    raw = max(0.0, sum(terms.values()))
+    return Fitness(score=round(raw, 1), raw=raw, capabilities=capabilities, terms=terms, tempo=tempo)
 
 
 def _contract_dimensions(before: Fitness, after: Fitness, known: bool) -> Dict[str, float]:
@@ -481,6 +513,16 @@ def _dimension_factors(
     for dimension in DIMENSIONS:
         delta = after.terms[dimension] - before.terms[dimension]
         if abs(delta) < 0.05:
+            continue
+        if (dimension == "defense" and abs(after.tempo - before.tempo) >= 0.005
+                and abs(after.capabilities[dimension] - before.capabilities[dimension]) < 0.05):
+            # Same block, different fight length: the change is damage taken.
+            rows.append({
+                "code": "deck_fitness:defense",
+                "delta": round(delta, 2),
+                "message": f"拿{label}后战斗长度变化，挡不住的伤害随之增减："
+                           f"预计战斗长度为标准的 {before.tempo:.2f} → {after.tempo:.2f} 倍",
+            })
             continue
         detail = (
             f"每回合额外抽牌 {before.capabilities[dimension]:.2f} → {after.capabilities[dimension]:.2f}"

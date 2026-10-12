@@ -11,3 +11,7 @@
 ## Addendum (2026-10-09): lookahead over future card rewards
 
 On 38 confirmed situations v2's overall ranking was slightly better than v1 but its top pick hit less, and the misses were archetype-building picks: v2 valued only the current deck. We decided to score each candidate by the deck's fitness averaged over the act's remaining fights, with the card rewards those fights grant sampled from the character pool at the assembly's `CardRarityOdds` and picked greedily by the same fitness. Only rewards are sampled, never combats; all candidates share one seeded set of scenarios so results are reproducible. Synergy between owned cards is already inside the whole-deck engine, so it is explained (which deck cards make a candidate stronger) but not scored a second time.
+
+## Addendum (2026-10-12): fight length follows the deck's damage
+
+Fight length was a fixed parameter per fight kind, so killing faster and taking fewer enemy turns was worth nothing, and damage cards barely separated from skipping. We decided that the expected fight length relative to the nominal one is the damage need divided by the deck's damage per turn (frontload plus scaling), bounded by the `fight_tempo` parameters, and that it multiplies only the unblocked share of the defense need. It stays an analytic per-turn expectation: no combat is simulated. Raising the defense need from 60% of enemy attack to 80% or 100% was tried at the same time and rejected: on the golden set it only shuffled ranks with no net gain.

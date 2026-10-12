@@ -217,6 +217,37 @@ class DeckFitnessRuleTests(unittest.TestCase):
             self.assertGreater(value(below + step) - value(below),
                                value(10.0 + step) - value(10.0))
 
+    def test_killing_faster_shrinks_the_unblocked_damage(self):
+        from advisor.deck_fitness import DIMENSIONS, Needs, fight_tempo, fitness
+
+        params = {"satisfaction_cap": 3.0, "surplus_slope": 0.25, "fight_tempo": {"min": 0.5, "max": 2.0}}
+        needs = Needs(
+            values={d: 10.0 for d in DIMENSIONS},
+            weights={d: (1.0 if d == "defense" else 0.0) for d in DIMENSIONS},
+            fight_turns=4.0, extra_enemies=0.0, incoming_attack=0.0, fight_mix={},
+        )
+
+        def deck(damage, block):
+            return {d: {"frontload": damage, "defense": block}.get(d, 0.0) for d in DIMENSIONS}
+
+        # Half the block need is missing. Damage equal to the need: nominal length.
+        nominal = fitness(deck(10.0, 5.0), needs, params)
+        self.assertEqual(nominal.tempo, 1.0)
+        # Twice the damage halves the fight and the damage taken; half doubles it.
+        self.assertGreater(fitness(deck(20.0, 5.0), needs, params).terms["defense"], nominal.terms["defense"])
+        self.assertLess(fitness(deck(5.0, 5.0), needs, params).terms["defense"], nominal.terms["defense"])
+        # Bounded, and growth damage counts as damage.
+        self.assertEqual(fight_tempo(deck(1000.0, 0.0), needs, params), 0.5)
+        self.assertEqual(fight_tempo(deck(0.0, 0.0), needs, params), 2.0)
+        self.assertEqual(fight_tempo({**deck(5.0, 0.0), "scaling": 5.0}, needs, params), 1.0)
+        # A fully met block need takes no damage whatever the length.
+        self.assertEqual(fitness(deck(5.0, 10.0), needs, params).terms["defense"],
+                         fitness(deck(20.0, 10.0), needs, params).terms["defense"])
+        # Without the parameter the length has no effect.
+        plain = {"satisfaction_cap": 3.0, "surplus_slope": 0.25}
+        self.assertEqual(fitness(deck(20.0, 5.0), needs, plain).terms["defense"],
+                         fitness(deck(5.0, 5.0), needs, plain).terms["defense"])
+
     def test_fallback_counts_only_fights_on_paths_to_the_boss(self):
         from advisor.deck_fitness import _reachable_fight_share
         from advisor.decision_core import WorldMap
