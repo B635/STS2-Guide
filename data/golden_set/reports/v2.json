@@ -1,14 +1,14 @@
 {
  "all": {
   "situations": 38,
-  "hits": 14,
-  "hit_rate": 0.3684,
+  "hits": 13,
+  "hit_rate": 0.3421,
   "obvious_errors_first": 0
  },
  "confirmed": {
   "situations": 38,
-  "hits": 14,
-  "hit_rate": 0.3684,
+  "hits": 13,
+  "hit_rate": 0.3421,
   "obvious_errors_first": 0
  },
  "rows": [
@@ -48,13 +48,13 @@
    "id": "silent-f2-predator-echoing-prepared",
    "label_status": "confirmed",
    "warnings": [],
-   "first": "0:PREDATOR",
+   "first": "1:ECHOING_SLASH",
    "hit": false,
    "obvious_error_first": false,
    "policy_version": "card_reward:deck_fitness_1",
    "scores": {
     "0:PREDATOR": 52.9,
-    "1:ECHOING_SLASH": 48.2,
+    "1:ECHOING_SLASH": 55.2,
     "2:PREPARED": 51.5,
     "skip": 49.8
    }
@@ -78,15 +78,15 @@
    "id": "silent-f5-piercing-wail",
    "label_status": "confirmed",
    "warnings": [],
-   "first": "2:PIERCING_WAIL",
-   "hit": true,
+   "first": "0:DODGE_AND_ROLL",
+   "hit": false,
    "obvious_error_first": false,
    "policy_version": "card_reward:deck_fitness_1",
    "scores": {
-    "0:DODGE_AND_ROLL": 53.0,
-    "1:UNTOUCHABLE": 50.6,
-    "2:PIERCING_WAIL": 53.0,
-    "skip": 52.8
+    "0:DODGE_AND_ROLL": 53.6,
+    "1:UNTOUCHABLE": 51.0,
+    "2:PIERCING_WAIL": 53.5,
+    "skip": 53.3
    }
   },
   {
@@ -98,7 +98,7 @@
    "obvious_error_first": false,
    "policy_version": "card_reward:deck_fitness_1",
    "scores": {
-    "0:ECHOING_SLASH": 64.4,
+    "0:ECHOING_SLASH": 66.3,
     "1:CLOAK_AND_DAGGER": 66.6,
     "2:DAGGER_SPRAY": 65.8,
     "skip": 66.9
@@ -113,10 +113,10 @@
    "obvious_error_first": false,
    "policy_version": "card_reward:deck_fitness_1",
    "scores": {
-    "0:ADRENALINE": 57.3,
-    "1:MURDER": 49.0,
-    "2:SHADOWMELD": 53.8,
-    "skip": 55.9
+    "0:ADRENALINE": 59.9,
+    "1:MURDER": 51.7,
+    "2:SHADOWMELD": 56.3,
+    "skip": 58.4
    }
   },
   {

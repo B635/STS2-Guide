@@ -73,6 +73,7 @@ SCALE_SOURCES = frozenset({
     # Per card (see ``_resolve``).
     "attacks_played_this_turn", "skills_played_this_turn", "osty_attacks_this_turn",
     "other_osty_attack_cards", "times_drawn_this_combat", "star_cost_cards", "x_value",
+    "enemies_killed_by_this_card",
 })
 EFFECT_CONDITIONS = frozenset({
     "target_has_power", "exhaust_pile_at_least", "lost_hp_this_turn",
@@ -208,6 +209,7 @@ class Situation:
     sovereign_blade: Optional["CardProfile"] = None   # the card a first forge creates
     # From encounter/monster facts; None/0 when they are not available.
     enemy_hits: Optional[float] = None    # attack hits aimed at the player per turn
+    enemy_hp: Optional[float] = None      # total HP of a fight's enemies
     player_weak: float = 0.0              # share of turns the player is Weak
     player_frail: float = 0.0             # share of turns the player is Frail
     status_cards: float = 0.0             # cards enemies add to the player's piles per turn
@@ -929,6 +931,7 @@ class _Engine:
         self.x_value = 0.0
         self.play_totals: Dict[str, float] = {"Attack": 0.0, "Skill": 0.0, "OstyAttack": 0.0}
         self.status_made = 0.0   # Status cards created for the player per turn
+        self.damage_dealt = 0.0  # damage per turn over all enemies (previous pass)
         self.orb_evokes: Dict[str, float] = {}   # evokes per turn by orb (previous pass)
         self.known_set = {id(c) for c in self.known}
         self.deck_counts = {
@@ -1208,6 +1211,11 @@ class _Engine:
         death = min(1.0, hit + previous.osty_kills)
         alive = revive / (revive + death) if revive + death > 0 else (1.0 if previous.summoned > 0 else 0.0)
         last = self.last_plays
+        # Damage dealt per turn summed over the enemies (previous pass).
+        self.damage_dealt = (
+            previous.single + previous.random + previous.osty_single + previous.osty_random
+            + (previous.all + previous.osty_all) * (1.0 + self.situation.extra_enemies)
+        )
         # Per-type play totals of the previous pass, shared by every card.
         self.play_totals = {
             "Attack": sum(last.get(id(c), 0.0) for c in self.cards if c.card_type == "Attack"),
@@ -1319,6 +1327,8 @@ class _Engine:
                 value = max(float(scale["min"]), value)
             resolved["amount"] = float(effect.get("amount") or 0.0) + float(scale.get("factor") or 0.0) * value
         hits_scale = effect.get("hits_scale")
+        if hits_scale and hits_scale.get("per") == "enemies_killed_by_this_card":
+            estimates["enemies_killed_by_this_card"] = self._repeats_on_kill(resolved)
         if hits_scale:
             base = float(hits_scale.get("base") or 0.0)
             if hits_scale["per"] == "condition":
@@ -1597,6 +1607,32 @@ class _Engine:
                 self._apply(totals, effect, times, None, persist_share=persist * share)
             else:
                 self._apply(totals, effect, times, None)
+
+    def _repeats_on_kill(self, effect: Mapping) -> float:
+        """Extra rounds of a hit that repeats once per enemy it kills.
+
+        Every point of damage is an equal share of a kill, so a round kills
+        (its damage to one enemy) / (one enemy's HP) of each enemy it hits.
+        Each kill adds a round against the enemies still alive. Without the
+        encounter HP, the HP is what the deck deals over the fight.
+        """
+
+        enemies = 1.0 + self.situation.extra_enemies
+        amount = float(effect.get("amount") or 0.0)
+        if amount <= 0:
+            return 0.0
+        # Enemies still alive at an average moment of the fight.
+        alive = (enemies + 1.0) / 2.0
+        targets = alive if effect.get("target") == "all" else 1.0
+        total_hp = self.situation.enemy_hp or max(self.damage_dealt, amount * targets) * self.situation.fight_turns
+        chance = min(1.0, amount * enemies / total_hp)
+        repeats, rounds = 0.0, 1.0
+        for _ in range(int(math.ceil(enemies))):
+            kills = min(alive, rounds * chance * (alive if effect.get("target") == "all" else min(1.0, alive)))
+            repeats += kills
+            alive -= kills
+            rounds = kills
+        return repeats
 
     def _enemy_hits(self) -> float:
         """Attack hits the enemies aim at the player per turn: from the

@@ -929,6 +929,23 @@ class ScaleSourceTests(unittest.TestCase):
         situation = Situation(6.0, 0.0, 10.0, {"MONSTER": 1.0}, 1.0, 0, orb_slots=slots, orbs=orbs)
         return deck_capabilities(profiles, (), situation, params)[0]["frontload"]
 
+    def test_a_hit_repeating_on_kills_is_worth_more_against_groups(self):
+        from advisor.deck_fitness import PARAMETERS_KEY
+        from advisor.deck_mechanics import Situation, card_profile, deck_capabilities
+
+        params = self.repository.mechanic_constant(PARAMETERS_KEY)
+        slash, gaps = card_profile(self.repository, "ECHOING_SLASH", 0)
+        self.assertEqual(gaps, ())
+        base = [card_profile(self.repository, cid, 0)[0] for cid in ["STRIKE_SILENT"] * 5 + ["DEFEND_SILENT"] * 5]
+
+        def added(extra_enemies, turns=4.0):
+            situation = Situation(turns, extra_enemies, 10.0, {"MONSTER": 1.0}, 1.0, 0)
+            with_slash = deck_capabilities([*base, slash], (), situation, params)[0]["aoe"]
+            return with_slash / max(extra_enemies, 1e-9) if extra_enemies else with_slash
+
+        # Damage to all per extra enemy: more enemies give more kills, so more repeats.
+        self.assertGreater(added(3.0), added(1.0))
+
     def test_finisher_hits_once_per_other_attack_played(self):
         many = self.frontload(["FINISHER"] + ["STRIKE_SILENT"] * 4 + ["DEFEND_SILENT"] * 2)
         few = self.frontload(["FINISHER"] + ["STRIKE_SILENT"] * 1 + ["DEFEND_SILENT"] * 5)

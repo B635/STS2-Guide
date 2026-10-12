@@ -100,6 +100,7 @@ class Needs:
     player_weak: float = 0.0               # share of turns the player is Weak / Frail
     player_frail: float = 0.0
     status_cards: float = 0.0              # cards pushed into the player's piles per turn
+    enemy_hp: Optional[float] = None       # total HP of a fight's enemies
 
 
 @dataclass(frozen=True)
@@ -398,6 +399,7 @@ def compute_needs(
             ("defense", attack * float(params["block_share"])),
             ("scaling", damage * max(0.0, turns - float(params["scaling_onset_turns"])) / turns),
             ("turns", turns),
+            ("hp", hp),
             ("extra", enemies - 1.0),
             ("attack", attack),
             ("hits", hits),
@@ -438,6 +440,7 @@ def compute_needs(
         player_weak=_weighted(rows["weak"]),
         player_frail=_weighted(rows["frail"]),
         status_cards=_weighted(rows["cards"]),
+        enemy_hp=_weighted(rows["hp"]),
     )
 
 
@@ -845,6 +848,7 @@ class DeckFitnessPolicy:
             player_weak=needs.player_weak,
             player_frail=needs.player_frail,
             status_cards=needs.status_cards,
+            enemy_hp=needs.enemy_hp,
             sovereign_blade=self._card("SOVEREIGN_BLADE", 0)[0],
         )
 
