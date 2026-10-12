@@ -39,6 +39,7 @@ from advisor.deck_mechanics import (
     adjust_added_card,
     card_profile,
     deck_capabilities,
+    enchant,
     relic_profile,
 )
 from advisor.decision_core import (
@@ -748,11 +749,18 @@ class DeckFitnessPolicy:
         gaps: List[str] = []
         for entry in state.get("deck") or ():
             count = int(entry.get("count") or 1)
-            if entry.get("enchantment") or entry.get("affliction"):
-                gaps.append(f"card_instance_modifier_unmodeled:{entry['card']}")
             profile, profile_gaps = self._card(
                 str(entry["card"]).upper(), int(entry.get("upgrades") or 0)
             )
+            if entry.get("affliction"):
+                gaps.append(f"card_instance_modifier_unmodeled:{entry['card']}")
+            if entry.get("enchantment") and profile is not None:
+                profile, enchant_gaps = enchant(
+                    profile,
+                    self.repository.find_assembly_fact("enchantments", str(entry["enchantment"]).upper()),
+                    float(entry.get("enchantment_amount") or 1.0),
+                )
+                profile_gaps = (*profile_gaps, *enchant_gaps)
             gaps.extend(profile_gaps)
             if profile is None:
                 unknown_cards.extend([str(entry["card"])] * count)

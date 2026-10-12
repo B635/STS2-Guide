@@ -593,9 +593,14 @@ class CostRuleTests(unittest.TestCase):
             profile, gaps = card_profile(self.repository, card_id, 0)
             self.assertEqual(profile.cost_rule, rule, card_id)
             self.assertNotIn(f"card_effect_unsupported:{card_id}:cost_modifier", gaps)
-        # A sign the fact does not settle stays a disclosed gap.
-        _, gaps = card_profile(self.repository, "UP_MY_SLEEVE", 0)
-        self.assertIn("card_effect_unsupported:UP_MY_SLEEVE:cost_modifier", gaps)
+        # The recorded IL call settles the sign: AddThisCombat(-1).
+        sleeve, _ = card_profile(self.repository, "UP_MY_SLEEVE", 0)
+        self.assertEqual(sleeve.cost_rule, ("per_own_play", -1.0))
+        self.assertEqual(card_profile(self.repository, "FLATTEN", 0)[0].cost_rule, ("free_if_osty_attacked",))
+        self.assertEqual(card_profile(self.repository, "ROCKET_PUNCH", 0)[0].cost_rule, ("per_status_generated", -1.0))
+        # A rule the engine has no source for stays a disclosed gap.
+        _, gaps = card_profile(self.repository, "BANSHEES_CRY", 0)
+        self.assertIn("card_effect_unsupported:BANSHEES_CRY:cost_modifier", gaps)
 
     def test_a_card_that_becomes_free_frees_energy_for_the_rest(self):
         import dataclasses
@@ -996,3 +1001,46 @@ class FactBasedNeedsTests(unittest.TestCase):
         self.assertGreater(needs.enemy_hits, 0.0)
         self.assertGreaterEqual(needs.player_frail, 0.0)
         self.assertFalse([g for g in needs.gaps if g.startswith("encounter_facts_missing")])
+
+
+class GapRoundThreeTests(unittest.TestCase):
+    """Run-only card mechanics, enchantments on a card, orb evoke triggers."""
+
+    @classmethod
+    def setUpClass(cls):
+        DeckFitnessPolicyTests.setUpClass()
+        cls.repository = DeckFitnessPolicyTests.repository
+
+    @classmethod
+    def tearDownClass(cls):
+        DeckFitnessPolicyTests.tearDownClass()
+
+    def test_card_counters_that_run_between_fights_are_not_gaps(self):
+        from advisor.deck_mechanics import card_profile
+
+        for card_id in ("GUILTY", "DOWSING"):
+            _, gaps = card_profile(self.repository, card_id, 0)
+            self.assertNotIn(f"card_effect_unsupported:{card_id}:mechanics", gaps)
+        # Returning to the hand during a fight is still unmodeled.
+        _, gaps = card_profile(self.repository, "RIGHT_HAND_HAND", 0)
+        self.assertIn("card_effect_unsupported:RIGHT_HAND_HAND:mechanics", gaps)
+
+    def test_sharp_adds_its_amount_to_the_cards_damage(self):
+        from advisor.deck_mechanics import card_profile, enchant
+
+        star, _ = card_profile(self.repository, "FALLING_STAR", 0)
+        sharp = self.repository.find_assembly_fact("enchantments", "SHARP")
+        enchanted, gaps = enchant(star, sharp, 2.0)
+        self.assertEqual(gaps, ())
+        base = next(e for e in star.effects if e["kind"] == "damage")["amount"]
+        self.assertEqual(next(e for e in enchanted.effects if e["kind"] == "damage")["amount"], base + 2.0)
+        # A once-per-combat rider is disclosed, not spread over every play.
+        _, gaps = enchant(star, self.repository.find_assembly_fact("enchantments", "SWIFT"), 1.0)
+        self.assertEqual(gaps, ("enchantment_unsupported:FALLING_STAR:card_played",))
+
+    def test_thunder_triggers_on_lightning_evokes(self):
+        from advisor.deck_mechanics import power_use
+
+        thunder, gaps = power_use(self.repository, "Thunder", 1)
+        self.assertEqual(gaps, ())
+        self.assertEqual(thunder.mechanics[0]["when"], "orb_evoked")

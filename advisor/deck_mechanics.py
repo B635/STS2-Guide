@@ -39,7 +39,7 @@ SELF_POWERS = {"Strength": "strength", "Dexterity": "dexterity", "Vigor": "vigor
 ORB_TYPES = {"Lightning": "LIGHTNING_ORB", "Frost": "FROST_ORB", "Dark": "DARK_ORB",
              "Plasma": "PLASMA_ORB", "Glass": "GLASS_ORB"}
 ENEMY_POWERS = {"Vulnerable": "vulnerable", "Weak": "weak", "Poison": "poison", "Doom": "doom"}
-DAMAGE_TARGETS = frozenset({"single", "all", "random", "attacker"})
+DAMAGE_TARGETS = frozenset({"single", "all", "random", "attacker", "evoke_targets"})
 EFFECT_KEYS = frozenset({
     "kind", "amount", "upgrade", "hits", "target", "power", "count", "choice", "per_x", "orb", "scope",
     # Osty attacks: dealt by the pet (``source: osty``), only while it lives.
@@ -52,6 +52,8 @@ EFFECT_KEYS = frozenset({
     "amount_per_stack", "unpowered", "hits_upgrade", "hits_x",
     # generate: a named card a relic/power mechanic creates (resolved profile).
     "profile", "destination",
+    # Enemy block is not modeled, so "cannot be blocked" changes nothing here.
+    "unblockable",
     # State-dependent amounts (see ``_Engine._resolve``); *_text keeps the
     # reviewer's wording of the same rule.
     "scale", "hits_scale", "count_scale", "condition", "amount_text", "hits_text",
@@ -84,7 +86,7 @@ NEXT_TURN_DROP = ("turns", "limit", "timing", "turns_relative_to")
 SUPPORTED_WHEN = frozenset({
     "combat_start", "turn_start", "turn_end", "card_played", "card_exhausted",
     "card_discarded", "shuffle", "damage_received", "enemy_died", "block_gained",
-    "card_drawn", "damage_dealt",
+    "card_drawn", "damage_dealt", "orb_evoked",
 })
 SUPPORTED_CONDITIONS = frozenset({
     "no_block", "per_card_in_hand", "hand_empty", "block_at_least",
@@ -119,6 +121,8 @@ MODIFIER_FIELDS = {
     "hp_loss_negate": {"uses"},
     "card_added_to_deck": {"filter", "upgrade"},
 }
+# Card-level triggers that fire between fights (quest and curse counters).
+RUN_ONLY_WHEN = frozenset({"combat_end", "room_entered", "rest_site", "map_generated", "quest_complete"})
 CARD_FILTER_KEYS = frozenset({"card_type", "tag", "min_cost", "upgraded", "x_cost", "owner_card", "card"})
 # Filters on an attack: the hit that is dealt or received.
 ATTACK_FILTER_KEYS = frozenset({"powered_attack", "powered_attack_or_card", "dealer"})
@@ -127,7 +131,7 @@ LIMITS = frozenset({None, "once_per_turn", "once_per_combat"})
 # Generated cards: a named card sent to a pile. Pools, chosen copies and
 # dynamic counts stay gaps until their distribution is modeled.
 ADD_CARD_KEYS = frozenset({
-    "kind", "card", "count", "count_upgrade", "destination", "free", "position",
+    "kind", "card", "count", "count_upgrade", "upgrade", "destination", "free", "position",
     "copy_of_self", "upgraded_if_self_upgraded", "upgraded_if_this_upgraded",
     "upgraded_generated",
 })
@@ -473,10 +477,16 @@ def unsupported_reason(mechanic: Mapping) -> Optional[str]:
     when = mechanic.get("when")
     if when not in SUPPORTED_WHEN:
         return str(when)
-    reason = _filter_unsupported(
-        mechanic.get("filter"), when in {"card_played", "card_drawn"},
-        when in {"damage_dealt", "damage_received"},
-    )
+    if when == "orb_evoked":
+        orb_filter = mechanic.get("filter") or {}
+        if set(orb_filter) - {"orb"} or orb_filter.get("orb") not in {None, *ORB_TYPES}:
+            return "filter:orb"
+        reason = None
+    else:
+        reason = _filter_unsupported(
+            mechanic.get("filter"), when in {"card_played", "card_drawn"},
+            when in {"damage_dealt", "damage_received"},
+        )
     if reason:
         return reason
     if mechanic.get("counter") not in COUNTERS:
@@ -520,9 +530,18 @@ def _cost_rule(modifier: object) -> Optional[tuple]:
     if (isinstance(add, (int, float)) and m.get("duration") == "this_turn" and m.get("counter") == "turn"
             and m.get("when") == "card_played" and set(flt) == {"card_type"}):
         return ("per_type_this_turn", float(add), str(flt["card_type"]))
-    if (m.get("duration") == "combat" and isinstance(m.get("amount"), (int, float))
-            and str(m.get("per") or "").startswith("each play of this card (EnergyCost.AddThisCombat(1)")):
-        return ("per_own_play", float(m["amount"]))
+    per = str(m.get("per") or "")
+    if m.get("duration") == "combat" and isinstance(m.get("amount"), (int, float)) and per.startswith("each play of this card"):
+        # The recorded IL call carries the sign (AddThisCombat(1) / (-1)).
+        if "AddThisCombat(1)" in per:
+            return ("per_own_play", abs(float(m["amount"])))
+        if "AddThisCombat(-1)" in per:
+            return ("per_own_play", -abs(float(m["amount"])))
+    if m.get("kind") == "set_this_turn" and m.get("when") == "osty_attacked_this_turn" and m.get("value") == 0:
+        return ("free_if_osty_attacked",)
+    if (m.get("duration") == "until_played" and isinstance(m.get("amount"), (int, float))
+            and per.startswith("Status card generated")):
+        return ("per_status_generated", float(m["amount"]))
     return None
 
 
@@ -615,7 +634,9 @@ def _generated(
         return None, (f"generated_card_fact_missing:{card_id}:{target}", *gaps)
     if effect.get("free") in (True, "this_turn"):
         profile = replace(profile, cost=0.0) if profile.cost is not None else profile
-    amount = float(count) + (float(effect.get("count_upgrade") or 0.0) if upgraded else 0.0)
+    amount = float(count) + (
+        float(effect.get("count_upgrade") or 0.0) + float(effect.get("upgrade") or 0.0) if upgraded else 0.0
+    )
     return Generated(profile, amount, str(effect["destination"])), tuple(
         f"generated:{card_id}:{gap}" for gap in gaps
     )
@@ -694,7 +715,7 @@ def card_profile(
     cost_rule = _cost_rule(fact.get("cost_modifier")) if fact.get("cost_modifier") else None
     if fact.get("cost_modifier") and cost_rule is None:
         gaps.append(f"card_effect_unsupported:{card_id}:cost_modifier")
-    if fact.get("mechanics"):
+    if any(m.get("when") not in RUN_ONLY_WHEN for m in fact.get("mechanics") or ()):
         gaps.append(f"card_effect_unsupported:{card_id}:mechanics")
     raw_stars = fact.get("star_cost")
     if raw_stars == "X":
@@ -724,6 +745,45 @@ def card_profile(
         star_cost=star_cost,
         cost_rule=cost_rule,
     ), tuple(dict.fromkeys(gaps))  # a card may repeat one unsupported effect
+
+
+def enchant(profile: CardProfile, fact: Optional[Mapping], amount: float) -> tuple[CardProfile, tuple[str, ...]]:
+    """Apply an enchantment that changes this card's own numbers.
+
+    Supported: flat or multiplied damage/block on the enchanted card and
+    effects added to each of its plays. Once-per-combat riders, replays and
+    keyword changes are returned as a gap.
+    """
+
+    if fact is None or fact.get("status") != "converted":
+        return profile, (f"enchantment_fact_missing:{profile.card_id}",)
+    effects = [dict(e) for e in profile.effects]
+    gaps = []
+    if fact.get("adds_keywords") or fact.get("removes_keywords"):
+        gaps.append(f"enchantment_unsupported:{profile.card_id}:keywords")
+    for mechanic in fact.get("mechanics") or ():
+        m = {k: v for k, v in mechanic.items() if v is not None and k not in {"scope", "applies_to"}}
+        if mechanic.get("scope") != "enchanted_card" or m.get("limit"):
+            gaps.append(f"enchantment_unsupported:{profile.card_id}:{m.get('modifier') or m.get('when')}")
+            continue
+        name = m.get("modifier")
+        if name in {"damage", "block"} and set(m) <= {"modifier", "add", "add_per_stack", "multiply", "filter"} \
+                and set(m.get("filter") or {}) <= {"powered_attack"}:
+            add = float(m.get("add") or 0.0) + float(m.get("add_per_stack") or 0.0) * amount
+            for effect in effects:
+                if effect.get("kind") == name and effect.get("source") != "osty":
+                    effect["amount"] = (float(effect.get("amount") or 0.0) + add) * float(m.get("multiply") or 1.0)
+            continue
+        effect = m.get("effect") or {}
+        if m.get("when") == "card_played" and (m.get("filter") or {}) == {"self": True} \
+                and set(m) <= {"when", "filter", "effect"}:
+            added = {k: v for k, v in effect.items() if k not in {"amount_per_stack", "upgrade"}}
+            added["amount"] = float(effect.get("amount") or 0.0) + float(effect.get("amount_per_stack") or 0.0) * amount
+            if effect_unsupported(added) is None:
+                effects.append(added)
+                continue
+        gaps.append(f"enchantment_unsupported:{profile.card_id}:{name or m.get('when')}")
+    return replace(profile, effects=tuple(effects)), tuple(gaps)
 
 
 def relic_profile(
@@ -868,6 +928,8 @@ class _Engine:
         self.rates: Dict[int, float] = {}
         self.x_value = 0.0
         self.play_totals: Dict[str, float] = {"Attack": 0.0, "Skill": 0.0, "OstyAttack": 0.0}
+        self.status_made = 0.0   # Status cards created for the player per turn
+        self.orb_evokes: Dict[str, float] = {}   # evokes per turn by orb (previous pass)
         self.known_set = {id(c) for c in self.known}
         self.deck_counts = {
             "OstyAttack": float(sum(1 for c in self.known if "OstyAttack" in c.tags)),
@@ -954,6 +1016,17 @@ class _Engine:
                 cost = max(0.0, cost + rule[1] * (plays - 1.0) / 2.0)
             elif rule[0] == "per_own_draw":
                 cost = max(0.0, cost + rule[1] * rate * turns / 2.0)
+            elif rule[0] == "free_if_osty_attacked":
+                # Free once Osty has attacked this turn (another Osty attack
+                # played first, with Osty alive).
+                others = self.play_totals["OstyAttack"] - (
+                    self.last_plays.get(id(card), 0.0) if "OstyAttack" in card.tags else 0.0
+                )
+                cost *= 1.0 - self.estimates.get("osty_alive", 0.0) * (1.0 - math.exp(-max(0.0, others)))
+            elif rule[0] == "per_status_generated":
+                # Status cards made for the owner between two plays of this card.
+                between = self.status_made / max(rate, 1.0 / turns)
+                cost = max(0.0, cost + rule[1] * between)
             elif rule[0] == "per_type_this_turn":
                 # Cards of that type played earlier the same turn, on average half.
                 others = sum(
@@ -1141,6 +1214,12 @@ class _Engine:
             "Skill": sum(last.get(id(c), 0.0) for c in self.cards if c.card_type == "Skill"),
             "OstyAttack": sum(last.get(id(c), 0.0) for c in self.cards if "OstyAttack" in c.tags),
         }
+        self.status_made = self.situation.status_cards + sum(
+            last.get(id(c), 0.0) * g.count for c, g in self.sources if g.profile.card_type == "Status"
+        ) + sum(
+            previous.generated.get(key, 0.0) for key, (profile, _) in self.mechanic_made.items()
+            if profile.card_type == "Status"
+        )
         doom = (previous.doom_single + previous.doom_all) * max(1.0, elapsed)
         generated = sum(last.get(id(c), 0.0) * g.count for c, g in self.sources) + sum(
             previous.generated.values()
@@ -1286,6 +1365,8 @@ class _Engine:
             target = effect.get("target") or "single"
             if target == "attacker":
                 target = "single"
+            elif target == "evoke_targets":
+                target = "random"
             if effect.get("source") == "osty":
                 target = f"osty_{target}"
             setattr(totals, target, getattr(totals, target) + amount * hits * times)
@@ -1434,6 +1515,9 @@ class _Engine:
             return totals.discards
         if when == "shuffle":
             return drawn / self.size
+        if when == "orb_evoked":
+            orb = (mechanic.get("filter") or {}).get("orb")
+            return self.orb_evokes.get(ORB_TYPES[orb], 0.0) if orb else sum(self.orb_evokes.values())
         if when == "damage_dealt":
             # Powered attack hits the owner (and its pet) lands per turn.
             hits = sum(
@@ -1563,6 +1647,7 @@ class _Engine:
         # Passives before an orb is evicted (Dark grows, Glass decays).
         age = min(turns, slots / channel)
         focus = self._focus(totals)
+        self.orb_evokes = {orb: evokes * rate / channel for orb, rate in totals.channels.items()}
         for orb, rate in totals.channels.items():
             fact = self.situation.orbs.get(orb)
             if not fact:
