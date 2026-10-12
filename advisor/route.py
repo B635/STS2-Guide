@@ -39,6 +39,8 @@ _FACTOR_MESSAGES = {
     "boss_preparation_opportunity": "路线中的篝火提供应对本幕 Boss 的准备机会。",
     "shop_affordability": "当前金币达到策略阈值，商店具有补强机会；未假定未来库存。",
     "shop_low_gold": "当前金币较少，商店补强空间有限。",
+    "shop_gold_spent_earlier": "金币已计入路线上更早的商店，这间商店不重复计入。",
+    "combat_risk_floor": "牌组能力已足以抵消这场战斗的风险；多出的能力不会让战斗变成加分。",
     "potion_buffer_once": "当前药水作为一次战斗缓冲计入，不在沿途重复消耗同一瓶。",
 }
 
@@ -308,6 +310,13 @@ def _validate_profile(profile: Mapping[str, Any] | None) -> tuple[Mapping[str, A
         gaps.append("risk_profile_hp_thresholds_invalid")
     if shop is not None and shop < 0:
         gaps.append("risk_profile_shop_gold_threshold_invalid")
+    relief = profile.get("shop_gold_relief")
+    if not isinstance(relief, Mapping):
+        gaps.append("risk_profile_shop_gold_relief_missing")
+    else:
+        per_point, cap = _as_float(relief.get("gold_per_point")), _as_float(relief.get("max"))
+        if per_point is None or per_point <= 0 or cap is None or cap < 0:
+            gaps.append("risk_profile_shop_gold_relief_invalid")
     for key in (
         "elite_hp_penalty",
         "boss_path_bonus",
@@ -561,6 +570,7 @@ class RoutePolicy:
         capabilities: RouteCapabilities,
         boss_threat: float,
         encounter_pools: Mapping[str, Mapping[str, float]],
+        gold_available: bool = True,
     ) -> tuple[float, tuple[dict[str, Any], ...]]:
         kind = str(node.kind or "UNKNOWN").upper()
         kind_weights = profile["kind_weights"]
@@ -607,6 +617,11 @@ class RoutePolicy:
                     factors.append({"code": "elite_low_hp", "delta": -round(penalty, 3)})
                 if growth_relief:
                     factors.append({"code": "elite_growth_relief", "delta": round(growth_relief, 3)})
+            if risk < 0:
+                # A deck can make a fight safe, never better than no fight:
+                # the surplus is not carried along the path.
+                factors.append({"code": "combat_risk_floor", "delta": round(risk, 3)})
+                risk = 0.0
         elif kind == "BOSS":
             risk += boss_threat
             risk -= (
@@ -616,6 +631,9 @@ class RoutePolicy:
                 + capabilities.resources * _number(weights["resource"])
             )
             factors.append({"code": "known_boss_risk", "delta": -round(boss_threat, 3)})
+            if risk < 0:
+                factors.append({"code": "combat_risk_floor", "delta": round(risk, 3)})
+                risk = 0.0
         elif kind == "CAMPFIRE":
             if hp_ratio is not None and hp_ratio < _number(profile["hp_low_threshold"]):
                 relief = _number(profile["rest_low_hp_bonus"])
@@ -639,8 +657,15 @@ class RoutePolicy:
         elif kind == "SHOP":
             if request.world.gold is None:
                 factors.append({"code": "shop_gold_unknown", "delta": 0.0})
+            elif request.world.gold >= _number(profile["shop_gold_threshold"]) and not gold_available:
+                # The gold is spent at the first shop of the path.
+                factors.append({"code": "shop_gold_spent_earlier", "delta": 0.0})
             elif request.world.gold >= _number(profile["shop_gold_threshold"]):
-                relief = min(3.0, 1.0 + request.world.gold / 300.0)
+                scale = profile["shop_gold_relief"]
+                relief = min(
+                    _number(scale["max"]),
+                    1.0 + request.world.gold / _number(scale["gold_per_point"]),
+                )
                 risk -= relief
                 factors.append({"code": "shop_affordability", "delta": round(relief, 3)})
             else:
@@ -750,38 +775,44 @@ class RoutePolicy:
         encounter_pools: Mapping[str, Mapping[str, float]],
     ) -> tuple[dict[str, SearchPath], dict[str, tuple[dict[str, Any], ...]], tuple[str, ...]]:
         """Find one minimum-risk path per candidate with bounded memoization."""
-        cache: dict[str, SearchPath | None] = {}
+        # State: the node and whether the gold is still unspent (no shop yet
+        # on the way here); a shop's gold value counts once per path.
+        cache: dict[tuple[str, bool], SearchPath | None] = {}
+        factors_by_state: dict[tuple[str, bool], tuple[dict[str, Any], ...]] = {}
         factors_by_node: dict[str, tuple[dict[str, Any], ...]] = {}
         expanded = 0
         limit_hit = False
 
-        def best(node_id: str) -> SearchPath | None:
+        def best(node_id: str, gold_available: bool = True) -> SearchPath | None:
             nonlocal expanded, limit_hit
-            if node_id in cache:
-                return cache[node_id]
+            state = (node_id, gold_available)
+            if state in cache:
+                return cache[state]
             if expanded >= self.max_search_expansions:
                 limit_hit = True
                 return None
             expanded += 1
             node = graph.nodes[node_id]
             own_risk, factors = self._node_risk(
-                node, request, profile, capabilities, boss_threat, encounter_pools
+                node, request, profile, capabilities, boss_threat, encounter_pools,
+                gold_available,
             )
-            factors_by_node[node_id] = factors
+            factors_by_state[state] = factors
+            gold_after = gold_available and str(node.kind).upper() != "SHOP"
             own_combat_risk = own_risk if str(node.kind).upper() in {
                 "MONSTER", "ELITE", "BOSS"
             } else 0.0
             if node_id in graph.boss_ids:
                 result = SearchPath((node_id,), own_risk, own_combat_risk)
-                cache[node_id] = result
+                cache[state] = result
                 return result
             options: list[SearchPath] = []
             for child_id in sorted(node.edges):
-                child = best(child_id)
+                child = best(child_id, gold_after)
                 if child is not None:
                     options.append(child)
             if not options:
-                cache[node_id] = None
+                cache[state] = None
                 return None
             tail = min(options, key=lambda value: (value.risk, value.node_ids))
             result = SearchPath(
@@ -789,10 +820,16 @@ class RoutePolicy:
                 round(own_risk + tail.risk, 4),
                 max(own_combat_risk, tail.max_combat_risk),
             )
-            cache[node_id] = result
+            cache[state] = result
             return result
 
         found = {candidate.candidate_id: best(candidate.candidate_id) for candidate in request.candidates}
+        # Factors of each node as it is reached on its candidate's path.
+        for path in found.values():
+            gold_available = True
+            for node_id in path.node_ids if path is not None else ():
+                factors_by_node.setdefault(node_id, factors_by_state[(node_id, gold_available)])
+                gold_available = gold_available and str(graph.nodes[node_id].kind).upper() != "SHOP"
         gaps: list[str] = []
         if limit_hit:
             gaps.append("route_search_limit_exceeded")

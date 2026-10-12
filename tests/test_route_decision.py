@@ -73,6 +73,7 @@ def _risk_profile(**overrides):
         "boss_path_bonus": 2.0,
         "rest_low_hp_bonus": 5.0,
         "shop_gold_threshold": 150,
+        "shop_gold_relief": {"gold_per_point": 100, "max": 8.0},
         "encounter_expected_risk": {
             "MONSTER": 2.2, "ELITE": 6.6, "BOSS": 9.5,
         },
@@ -820,6 +821,68 @@ class RouteDecisionTests(unittest.TestCase):
         self.assertEqual(result.recommended_candidate_id, "1:2")
         self.assertGreater(scores["1:2"], scores["1:4"])
         self.assertLess(scores["1:2"], 100.0)
+
+    def test_a_strong_deck_does_not_turn_fights_into_a_bonus(self):
+        # TASK-026: twenty AoE cards used to give every normal fight a large
+        # negative risk, so the path with more fights always won and every
+        # score saturated at 100.
+        nodes = [
+            {"node_id": "0:3", "kind": "MONSTER", "row": 0, "col": 3, "edges": ["1:2", "1:4"]},
+            {"node_id": "1:2", "kind": "MONSTER", "row": 1, "col": 2, "edges": ["2:2"]},
+            {"node_id": "2:2", "kind": "MONSTER", "row": 2, "col": 2, "edges": ["3:3"]},
+            {"node_id": "1:4", "kind": "MONSTER", "row": 1, "col": 4, "edges": ["2:4"]},
+            {"node_id": "2:4", "kind": "TREASURE", "row": 2, "col": 4, "edges": ["3:3"]},
+            {"node_id": "3:3", "kind": "BOSS", "row": 3, "col": 3, "edges": []},
+        ]
+        context = _map_context(candidates=("1:2", "1:4"), nodes=nodes)
+        state = _state(deck=[{"card": "AOE", "count": 20}], gold=0)
+        result = RoutePolicy(self.repository).recommend(_route_request(context, state=state))
+        scores = {row.candidate_id: row.score for row in result.candidates}
+        self.assertEqual(result.recommended_candidate_id, "1:4")
+        self.assertGreater(scores["1:4"], scores["1:2"])
+        self.assertLess(max(scores.values()), 100.0)
+        floors = [
+            factor for row in result.candidates for factor in row.factors
+            if factor["code"] == "combat_risk_floor"
+        ]
+        self.assertTrue(floors)
+        self.assertTrue(all(factor["message"] for factor in floors))
+
+    def test_shop_value_follows_gold_and_counts_once_per_path(self):
+        # TASK-026: a rich player is led to the shop; the gold is spent at
+        # the first shop of a path, so a second shop adds no gold value.
+        nodes = [
+            {"node_id": "0:3", "kind": "MONSTER", "row": 0, "col": 3, "edges": ["1:2", "1:4", "1:6"]},
+            {"node_id": "1:2", "kind": "TREASURE", "row": 1, "col": 2, "edges": ["2:2"]},
+            {"node_id": "2:2", "kind": "EVENT", "row": 2, "col": 2, "edges": ["3:3"]},
+            {"node_id": "1:4", "kind": "SHOP", "row": 1, "col": 4, "edges": ["2:4"]},
+            {"node_id": "2:4", "kind": "EVENT", "row": 2, "col": 4, "edges": ["3:3"]},
+            {"node_id": "1:6", "kind": "SHOP", "row": 1, "col": 6, "edges": ["2:6"]},
+            {"node_id": "2:6", "kind": "SHOP", "row": 2, "col": 6, "edges": ["3:3"]},
+            {"node_id": "3:3", "kind": "BOSS", "row": 3, "col": 3, "edges": []},
+        ]
+        context = _map_context(candidates=("1:2", "1:4", "1:6"), nodes=nodes)
+        profile = _risk_profile()
+
+        def run(gold):
+            policy = RoutePolicy(self.repository, risk_profile=profile)
+            result = policy.recommend(_route_request(context, state=_state(gold=gold)))
+            return result, {row.candidate_id: row for row in result.candidates}
+
+        poor, poor_rows = run(100)
+        rich, rich_rows = run(900)
+        # With little gold the treasure path is better; with a lot, the shop.
+        self.assertEqual(poor.recommended_candidate_id, "1:2")
+        self.assertIn(rich.recommended_candidate_id, {"1:4", "1:6"})
+        self.assertGreater(rich_rows["1:4"].score, poor_rows["1:4"].score)
+
+        def gold_value(row):
+            return sum(f["delta"] for f in row.factors if f["code"] == "shop_affordability")
+
+        # Capped by the parameter, and the same on one-shop and two-shop paths.
+        self.assertEqual(gold_value(rich_rows["1:4"]), 8.0)
+        self.assertEqual(gold_value(rich_rows["1:6"]), 8.0)
+        self.assertIn("shop_gold_spent_earlier", {f["code"] for f in rich_rows["1:6"].factors})
 
     def test_route_reasons_describe_only_existing_factors(self):
         recommendation = RoutePolicy(self.repository).recommend(_route_request(state=_state(hp=15)))

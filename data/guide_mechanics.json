@@ -17,6 +17,10 @@
     "boss_path_bonus": 2.0,
     "rest_low_hp_bonus": 5.0,
     "shop_gold_threshold": 150,
+    "shop_gold_relief": {
+      "gold_per_point": 100,
+      "max": 8.0
+    },
     "encounter_expected_risk": {
       "MONSTER": 2.4,
       "ELITE": 6.8,
