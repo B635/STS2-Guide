@@ -306,6 +306,7 @@ def build_public_beta_controller(args) -> WindowsGuideController:
             _acquire_instance_lock,
             _release_instance_lock,
             build_bridge,
+            start_policy_warm_up,
         )
 
         exchange_dir = args.checkpoint.parent
@@ -315,6 +316,7 @@ def build_public_beta_controller(args) -> WindowsGuideController:
         except Exception:
             _release_instance_lock(exchange_dir)
             raise
+        start_policy_warm_up(bridge)
         def cleanup_worker() -> None:
             try:
                 clear_advice()

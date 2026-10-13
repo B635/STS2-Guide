@@ -10,6 +10,7 @@ import hashlib
 import logging
 import os
 import sys
+import threading
 from datetime import datetime, timezone
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
@@ -29,6 +30,7 @@ from advisor.versions import (
 from realtime.checkpoint import ActiveRunCheckpointStore
 from realtime.compatibility import (
     RuntimeComponents,
+    sqlite_snapshot_id,
     default_manifest_path,
     load_compatibility_manifest,
 )
@@ -44,6 +46,7 @@ from realtime.processor import RealtimeEventProcessor
 from realtime.protocol import CURRENT_SCHEMA_VERSION
 from realtime.version import GUIDE_VERSION
 from storage.relational import RelationalRepository
+from storage.assembly_facts import DEFAULT_EXTRACT_PATH, DEFAULT_FACTS_PATH
 from storage.release_database import (
     DEFAULT_GUIDE_PARAMETERS_PATH,
     GUIDE_PARAMETER_KEYS,
@@ -141,7 +144,9 @@ def _observe_local_components(
                     WHERE key IN (
                         'schema_version',
                         'catalog_sha256',
-                        'community_scores_sha256'
+                        'community_scores_sha256',
+                        'assembly_facts_sha256',
+                        'guide_parameters_sha256'
                     )
                     """
                 ).fetchall()
@@ -160,10 +165,12 @@ def _observe_local_components(
         guide_version=GUIDE_VERSION,
         protocol_schema_version=CURRENT_SCHEMA_VERSION,
         sqlite_schema_version=sqlite_schema_version,
-        sqlite_snapshot_id=(
-            f"knowledge-{stored_catalog_hash[:16]}"
-            if stored_catalog_hash
-            else None
+        sqlite_snapshot_id=sqlite_snapshot_id(
+            stored_catalog_hash,
+            # A release database records both; the from-source host loads the
+            # files themselves, so their own hashes identify what it scores with.
+            metadata.get("assembly_facts_sha256") or _sha256_path(DEFAULT_FACTS_PATH),
+            metadata.get("guide_parameters_sha256") or _sha256_path(DEFAULT_GUIDE_PARAMETERS_PATH),
         ),
         knowledge_sha256=(
             stored_catalog_hash or _sha256_path(catalog_path)
@@ -276,6 +283,27 @@ def _application_scoring_preferences(args: argparse.Namespace) -> ScoringPrefere
     return existing
 
 
+def _warm_up(processor: RealtimeEventProcessor) -> None:
+    try:
+        processor.policies.warm_up()
+    except Exception:  # a slower first answer is better than no host
+        LOGGER.exception("Policy warm-up failed; the first decision will be slower.")
+
+
+def start_policy_warm_up(bridge: GameStateFileBridge) -> threading.Thread | None:
+    """Build the policies' caches in the background so that the first
+    decision of a session is answered as fast as the later ones."""
+
+    processor = getattr(bridge, "processor", None)
+    if processor is None:
+        return None
+    thread = threading.Thread(
+        target=_warm_up, args=(processor,), name="policy-warm-up", daemon=True,
+    )
+    thread.start()
+    return thread
+
+
 def build_bridge(args: argparse.Namespace) -> GameStateFileBridge:
     preferences = _application_scoring_preferences(args)
     compatibility_manifest = load_compatibility_manifest(
@@ -301,6 +329,8 @@ def build_bridge(args: argparse.Namespace) -> GameStateFileBridge:
             GUIDE_PARAMETER_KEYS,
             datetime.now(timezone.utc).isoformat(),
         )
+        if DEFAULT_EXTRACT_PATH.exists() and DEFAULT_FACTS_PATH.exists():
+            repository.sync_assembly_facts(str(DEFAULT_EXTRACT_PATH), str(DEFAULT_FACTS_PATH))
         if args.community_scores.exists():
             repository.sync_entity_statistics(str(args.community_scores))
 
@@ -500,6 +530,7 @@ def main() -> int:
     try:
         try:
             bridge = build_bridge(args)
+            start_policy_warm_up(bridge)
         except Exception:
             _clear_visible_advice(args.output)
             LOGGER.exception("STS2 Guide background host failed to initialize.")

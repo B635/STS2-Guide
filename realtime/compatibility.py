@@ -657,6 +657,29 @@ def _parse_manifest(payload: object) -> CompatibilityManifest:
     return parsed
 
 
+def sqlite_snapshot_id(
+    catalog_sha256: Optional[str],
+    assembly_facts_sha256: Optional[str],
+    guide_parameters_sha256: Optional[str],
+) -> Optional[str]:
+    """Identity of everything in the database that decides a score.
+
+    The catalog, the assembly facts and the Guide parameters each change what
+    the policies answer; the id (part of the release fingerprint) names all
+    three, so two builds that differ in any of them cannot be confused.
+    ``None`` without a catalog hash; a missing part is written ``none`` and
+    can never match a packaged manifest.
+    """
+
+    if not catalog_sha256:
+        return None
+    return (
+        f"knowledge-{catalog_sha256[:16]}"
+        f"-facts-{(assembly_facts_sha256 or 'none')[:16]}"
+        f"-params-{(guide_parameters_sha256 or 'none')[:16]}"
+    )
+
+
 def compute_release_fingerprint(
     manifest: CompatibilityManifest,
 ) -> str:

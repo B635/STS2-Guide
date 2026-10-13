@@ -287,37 +287,56 @@ def _fight_mix(
 STAT_KEYS = ("hp", "enemies", "attack", "hits", "weak", "frail", "vulnerable", "cards")
 
 
-def _encounter_stats(
-    repository: RelationalRepository, encounter_ids: Sequence[str], turns: int, ascension: int,
-) -> Optional[Dict[str, float]]:
-    """Mean per-turn pressure over the reviewed encounters of one pool."""
+def _encounter_row(
+    repository: RelationalRepository, encounter_id: str, turns: int, ascension: int,
+) -> Optional[tuple]:
+    """One reviewed encounter walked for ``turns`` turns: (mean per-turn
+    pressure, kinds of what the walk could not follow), or ``None``. Cached
+    on the repository: facts are fixed for one release database."""
+
+    cache = repository.__dict__.setdefault("_encounter_row_cache", {})
+    key = (str(encounter_id).upper(), int(turns), int(ascension))
+    if key in cache:
+        return cache[key]
 
     def monster_fact(monster_id: str) -> Optional[Mapping]:
         fact = repository.find_assembly_fact("monsters", monster_id)
         return fact if fact is not None and fact.get("status") == "converted" else None
 
+    result = None
+    fact = repository.find_assembly_fact("encounters", encounter_id)
+    if fact is not None and fact.get("status") == "converted":
+        walked = encounter_turns(fact, monster_fact, turns, ascension)
+        if walked is not None and not any(g.startswith("monster_fact_missing") for g in walked.gaps):
+            result = ({
+                "hp": walked.hp,
+                "enemies": walked.enemies,
+                "attack": mean(walked.attack),
+                "hits": mean(walked.hits),
+                # A debuff stack lasts about a turn: uptime is capped at every turn.
+                "weak": mean([min(1.0, v) for v in walked.debuffs["Weak"]]),
+                "frail": mean([min(1.0, v) for v in walked.debuffs["Frail"]]),
+                "vulnerable": mean([min(1.0, v) for v in walked.debuffs["Vulnerable"]]),
+                "cards": mean(walked.cards),
+                # What the walk could not follow, by kind (the ids stay in the facts).
+            }, frozenset(gap.split(":", 1)[0] for gap in walked.gaps))
+    cache[key] = result
+    return result
+
+
+def _encounter_stats(
+    repository: RelationalRepository, encounter_ids: Sequence[str], turns: int, ascension: int,
+) -> Optional[Dict[str, float]]:
+    """Mean per-turn pressure over the reviewed encounters of one pool."""
+
     rows = []
     kinds: set = set()
     for encounter_id in encounter_ids:
-        fact = repository.find_assembly_fact("encounters", encounter_id)
-        if fact is None or fact.get("status") != "converted":
+        walked = _encounter_row(repository, encounter_id, turns, ascension)
+        if walked is None:
             continue
-        walked = encounter_turns(fact, monster_fact, turns, ascension)
-        if walked is None or any(g.startswith("monster_fact_missing") for g in walked.gaps):
-            continue
-        # What the walk could not follow, by kind (the ids stay in the facts).
-        kinds.update(gap.split(":", 1)[0] for gap in walked.gaps)
-        rows.append({
-            "hp": walked.hp,
-            "enemies": walked.enemies,
-            "attack": mean(walked.attack),
-            "hits": mean(walked.hits),
-            # A debuff stack lasts about a turn: uptime is capped at every turn.
-            "weak": mean([min(1.0, v) for v in walked.debuffs["Weak"]]),
-            "frail": mean([min(1.0, v) for v in walked.debuffs["Frail"]]),
-            "vulnerable": mean([min(1.0, v) for v in walked.debuffs["Vulnerable"]]),
-            "cards": mean(walked.cards),
-        })
+        rows.append(walked[0])
+        kinds.update(walked[1])
     if not rows:
         return None
     stats: Dict = {key: sum(row[key] for row in rows) / len(rows) for key in STAT_KEYS}
@@ -616,29 +635,49 @@ def _gap_notes(
     unknown_cards: Sequence[str],
     unmodeled_relics: Sequence[str],
     partial_cards: Sequence[str] = (),
+    card_name=lambda c: c,
+    relic_name=lambda r: r,
 ) -> list[dict]:
+    """The detailed disclosures (kept in the advice for diagnosis)."""
+
+    def names(ids, name_of):
+        return "、".join(sorted({name_of(item) for item in ids}))
+
     notes = []
     if unknown_cards:
         notes.append({
             "code": "unmodeled_deck_cards",
             "delta": 0.0,
-            "message": f"牌组中 {len(unknown_cards)} 张牌（{'、'.join(sorted(set(unknown_cards)))}）"
+            "message": f"牌组中 {len(unknown_cards)} 张牌（{names(unknown_cards, card_name)}）"
                        "尚无经核对的机制事实，只计入稀释。",
         })
     if partial_cards:
         notes.append({
             "code": "partially_modeled_deck_cards",
             "delta": 0.0,
-            "message": f"牌组中 {len(partial_cards)} 张牌（{'、'.join(sorted(set(partial_cards)))}）"
+            "message": f"牌组中 {len(partial_cards)} 张牌（{names(partial_cards, card_name)}）"
                        "有部分效果尚未计入评分。",
         })
     if unmodeled_relics:
         notes.append({
             "code": "unmodeled_relics",
             "delta": 0.0,
-            "message": f"遗物 {'、'.join(unmodeled_relics)} 尚未计入评分。",
+            "message": f"遗物 {names(unmodeled_relics, relic_name)} 尚未计入评分。",
         })
     return notes
+
+
+def _scope_note(unknown_cards: Sequence[str], unmodeled_relics: Sequence[str], partial_cards: Sequence[str]) -> str:
+    """One short sentence for the drawer: how much of the deck and relics the
+    score leaves out. Empty when everything is counted."""
+
+    parts = []
+    cards = len(unknown_cards) + len(partial_cards)
+    if cards:
+        parts.append(f"牌组中 {cards} 张牌")
+    if unmodeled_relics:
+        parts.append(f"{len(unmodeled_relics)} 件遗物")
+    return "、".join(parts) + "未完整计入评分" if parts else ""
 
 
 def _legacy_payload(
@@ -766,8 +805,38 @@ class DeckFitnessPolicy:
         return self._cards[key]
 
     def _card_name(self, card_id: str) -> str:
-        entity = self.repository.find_entity("cards", card_id)
+        entity = self.repository.find_entity("cards", str(card_id).upper())
         return str((entity or {}).get("name") or card_id)
+
+    def _relic_name(self, relic_id: str) -> str:
+        entity = self.repository.find_entity("relics", str(relic_id).upper())
+        return str((entity or {}).get("name") or relic_id)
+
+    def warm_up(self) -> None:
+        """Build what the first decision would otherwise pay for: every
+        character's reward pool and every encounter's walk (ascension 0)."""
+
+        params = self.repository.mechanic_constant(PARAMETERS_KEY)
+        if _parameter_gaps(params):
+            return
+        with self.repository.connect() as connection:
+            characters = [
+                str(row[0]).split(":", 1)[1] for row in connection.execute(
+                    "SELECT entity_key FROM catalog_entities WHERE entity_type = 'characters'"
+                )
+            ]
+            encounters = [
+                str(row[0]).split(":", 1)[1] for row in connection.execute(
+                    "SELECT entity_key FROM assembly_facts WHERE entity_key LIKE 'encounters:%'"
+                )
+            ]
+        for character in characters:
+            self._pool(character)
+        turns = sorted({int(round(float(params["fight_turns"][kind]))) for kind in FIGHT_KINDS})
+        for encounter_id in encounters:
+            for count in turns:
+                _encounter_row(self.repository, encounter_id, count, 0)
+        self._orb_facts()
 
     def _relic(self, relic_id: str) -> tuple:
         if relic_id not in self._relics:
@@ -940,7 +1009,17 @@ class DeckFitnessPolicy:
 
         engine_gap_count = len(gaps)
         baseline = evaluate(deck)
-        notes = _gap_notes(unknown_cards, unmodeled_relics, partial_cards)
+        notes = _gap_notes(
+            unknown_cards, unmodeled_relics, partial_cards, self._card_name, self._relic_name,
+        )
+        # The drawer shows three reasons a row: the whole disclosure goes in
+        # one line (the code is one the Mod always shows first).
+        scope = _scope_note(unknown_cards, unmodeled_relics, partial_cards)
+        scope_notes = ({
+            "code": "estimate_scope",
+            "delta": 0.0,
+            "message": scope + "，分数只反映已计入的部分。",
+        },) if scope else ()
         # Engine gaps (e.g. an unsupported power) also make the data incomplete.
         complete = (
             not unknown_cards and not partial_cards and not unmodeled_relics
@@ -963,7 +1042,7 @@ class DeckFitnessPolicy:
                     eligible=candidate.eligible,
                     score=baseline.score if candidate.eligible else None,
                     rank=None,
-                    factors=tuple(notes),
+                    factors=(*scope_notes, *notes),
                     dimensions=_contract_dimensions(baseline, baseline, complete),
                 ))
                 continue
@@ -980,7 +1059,7 @@ class DeckFitnessPolicy:
                     factors=({
                         "code": "insufficient_data",
                         "delta": 0.0,
-                        "message": f"数据不足：{candidate.label} 尚无经程序集核对的机制事实，不给分。",
+                        "message": f"数据不足：{self._card_name(card_id)} 尚无经程序集核对的机制事实，不给分。",
                     },) if profile is None else (),
                     dimensions={"data_completeness": 0.0},
                     data_gaps=profile_gaps,
@@ -991,12 +1070,13 @@ class DeckFitnessPolicy:
             after = evaluate([*deck, profile])
             raw_by_id[candidate.candidate_id] = after.raw
             added_by_id[candidate.candidate_id] = profile
+            name = self._card_name(card_id)
+            # The reasons stay readable: the exact gap codes are in data_gaps.
             own_notes = ({
                 "code": "unmodeled_mechanic",
                 "delta": 0.0,
-                "message": f"{candidate.label} 的部分效果尚未计入评分："
-                           + "、".join(gap.split(":", 2)[-1] for gap in profile_gaps),
-            },) if profile_gaps else ()
+                "message": f"{name}的部分效果尚未计入评分" + (f"；{scope}。" if scope else "。"),
+            },) if profile_gaps else scope_notes
             assessments.append(CandidateAssessment(
                 candidate_id=candidate.candidate_id,
                 label=candidate.label,
@@ -1006,7 +1086,7 @@ class DeckFitnessPolicy:
                 rank=None,
                 # Unmodeled notes first, then dimensions by absolute effect.
                 factors=(*own_notes, *notes, *_dimension_factors(
-                    candidate.label, baseline, after, needs, len(deck)
+                    name, baseline, after, needs, len(deck)
                 )),
                 dimensions=_contract_dimensions(baseline, after, complete and not profile_gaps),
                 data_gaps=profile_gaps,
@@ -1022,7 +1102,8 @@ class DeckFitnessPolicy:
         # so this never changes a score.
         assessments = [
             replace(a, factors=(*a.factors, *_synergy_notes(
-                added_by_id[a.candidate_id], a.label, deck, score_deck, params, self._card_name,
+                added_by_id[a.candidate_id], self._card_name(added_by_id[a.candidate_id].card_id),
+                deck, score_deck, params, self._card_name,
             ))) if a.candidate_id in added_by_id else a
             for a in assessments
         ]

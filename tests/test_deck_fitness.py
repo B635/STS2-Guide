@@ -88,7 +88,8 @@ class DeckFitnessPolicyTests(unittest.TestCase):
         scores = self.scores(result)
         self.assertGreater(scores["1:DEFEND_IRONCLAD"], scores["0:STRIKE_IRONCLAD"])
         top = next(r for r in result.candidates if r.candidate_id == "1:DEFEND_IRONCLAD").factors[0]
-        self.assertIn("DEFEND_IRONCLAD", top["message"])
+        self.assertIn("防御", top["message"])          # the card's name, not its id
+        self.assertNotIn("DEFEND_IRONCLAD", top["message"])
         self.assertEqual(top["code"], "deck_fitness:defense")
         self.assertGreater(top["delta"], 0)
 
@@ -173,8 +174,11 @@ class DeckFitnessPolicyTests(unittest.TestCase):
         diluted = self.recommend([card("STRIKE_IRONCLAD", 5), card("UNREVIEWED_CARD", 5)], ["DEFEND_IRONCLAD"])
         self.assertLess(self.scores(diluted)["skip"], self.scores(known)["skip"])
         defend = next(r for r in diluted.candidates if r.candidate_id == "0:DEFEND_IRONCLAD")
-        self.assertEqual(defend.factors[0]["code"], "unmodeled_deck_cards")
-        self.assertIn("UNREVIEWED_CARD", defend.factors[0]["message"])
+        # One line for the drawer, then the detailed note naming the cards.
+        self.assertEqual(defend.factors[0]["code"], "estimate_scope")
+        self.assertIn("未完整计入评分", defend.factors[0]["message"])
+        detail = next(f for f in defend.factors if f["code"] == "unmodeled_deck_cards")
+        self.assertIn("UNREVIEWED_CARD", detail["message"])
         self.assertEqual(defend.dimensions["data_completeness"], 0.0)
 
     def test_survival_preference_raises_the_value_of_defense_once(self):
@@ -381,7 +385,9 @@ class RelicMechanicTests(unittest.TestCase):
         _, result = self.gain("DEFEND_IRONCLAD", ("CRACKED_CORE",))
         self.assertIn("relic_mechanic_unsupported:CRACKED_CORE:effect:test_only_unmodeled", result.data_gaps)
         defend = next(r for r in result.candidates if r.candidate_id == "0:DEFEND_IRONCLAD")
-        self.assertEqual(defend.factors[0]["code"], "unmodeled_relics")
+        self.assertEqual(defend.factors[0]["code"], "estimate_scope")
+        self.assertIn("1 件遗物", defend.factors[0]["message"])
+        self.assertTrue(any(f["code"] == "unmodeled_relics" for f in defend.factors))
 
     def test_unreviewed_relics_are_disclosed_and_never_scored(self):
         without, _ = self.gain("DEFEND_IRONCLAD", ())
@@ -394,8 +400,9 @@ class RelicMechanicTests(unittest.TestCase):
         _, result = self.gain("DEFEND_IRONCLAD", ("PAELS_WING",))
         self.assertIn("relic_mechanic_unsupported:PAELS_WING:card_reward_choice", result.data_gaps)
         skip = next(r for r in result.candidates if r.candidate_id == "skip")
-        self.assertEqual(skip.factors[0]["code"], "unmodeled_relics")
-        self.assertIn("PAELS_WING", skip.factors[0]["message"])
+        self.assertEqual(skip.factors[0]["code"], "estimate_scope")
+        detail = next(f for f in skip.factors if f["code"] == "unmodeled_relics")
+        self.assertIn("佩尔之翼", detail["message"])
 
 
 class CardMechanicTests(unittest.TestCase):

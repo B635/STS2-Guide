@@ -190,6 +190,28 @@ class CompatibilityManifestTests(unittest.TestCase):
         ):
             digest = hashlib.sha256((ROOT / "data" / name).read_bytes()).hexdigest()
             self.assertEqual(digest, expected, name)
+        # The database identity names the catalog, the assembly facts and the
+        # Guide parameters: a change in any of them is a different release.
+        from realtime.compatibility import sqlite_snapshot_id
+
+        def file_hash(*parts):
+            return hashlib.sha256(ROOT.joinpath(*parts).read_bytes()).hexdigest()
+
+        self.assertEqual(
+            self.manifest.sqlite.snapshot_id,
+            sqlite_snapshot_id(
+                file_hash("data", "knowledge.json"),
+                file_hash("data", "assembly", "facts.json"),
+                file_hash("data", "guide_mechanics.json"),
+            ),
+        )
+        self.assertNotEqual(
+            sqlite_snapshot_id("a" * 64, "b" * 64, "c" * 64), sqlite_snapshot_id("a" * 64, "d" * 64, "c" * 64)
+        )
+        self.assertNotEqual(
+            sqlite_snapshot_id("a" * 64, "b" * 64, "c" * 64), sqlite_snapshot_id("a" * 64, "b" * 64, "d" * 64)
+        )
+        self.assertIsNone(sqlite_snapshot_id(None, "b" * 64, "c" * 64))
 
         packaging_spec = (ROOT / "packaging" / "sts2-guide.spec").read_text(
             encoding="utf-8"

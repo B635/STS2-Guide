@@ -79,6 +79,26 @@ class SwitchedCardRewardPolicyTests(unittest.TestCase):
         self.assertEqual(result.policy_version, CARD_REWARD_POLICY_VERSION)
         self.assertIn("deck_fitness_error", result.data_gaps)
 
+    def test_when_both_versions_fail_the_decision_is_uncertain_not_an_error(self):
+        policy = SwitchedCardRewardPolicy(Fixed(error=RuntimeError("new")), Fixed(error=ValueError("old")))
+        with self.assertLogs("advisor.card_reward_switch", level="ERROR"):
+            result = PolicyRegistry([policy]).recommend(self.request)
+        self.assertEqual((result.status, result.recommended_candidate_id), ("uncertain", None))
+        self.assertIn("card_reward_fallback_error", result.data_gaps)
+        self.assertIn("deck_fitness_error", result.data_gaps)
+
+    def test_warming_up_changes_no_answer(self):
+        cold = RealtimeEventProcessor(self.repository).policies.recommend(self.request)
+        warm_processor = RealtimeEventProcessor(self.repository)
+        warm_processor.policies.warm_up()
+        warm = warm_processor.policies.recommend(self.request)
+        self.assertEqual(
+            [(row.candidate_id, row.score, row.rank) for row in warm.candidates],
+            [(row.candidate_id, row.score, row.rank) for row in cold.candidates],
+        )
+        primary = warm_processor.policies._policies[CARD_REWARD].primary
+        self.assertEqual(len(primary._pools), 5)   # every character's reward pool is ready
+
 
 if __name__ == "__main__":
     unittest.main()

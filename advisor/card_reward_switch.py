@@ -12,6 +12,7 @@ import logging
 from dataclasses import replace
 
 from advisor.decision_core import CARD_REWARD, DecisionPolicy, DecisionRequest, Recommendation
+from advisor.deck_fitness import DeckFitnessPolicy
 
 LOGGER = logging.getLogger(__name__)
 FALLBACK_GAP = "deck_fitness_unavailable"
@@ -24,6 +25,11 @@ class SwitchedCardRewardPolicy:
         self.primary = primary
         self.fallback = fallback
 
+    def warm_up(self) -> None:
+        warm_up = getattr(self.primary, "warm_up", None)
+        if callable(warm_up):
+            warm_up()
+
     def recommend(self, request: DecisionRequest) -> Recommendation:
         reasons: tuple = ()
         try:
@@ -35,7 +41,14 @@ class SwitchedCardRewardPolicy:
             if result.status != "uncertain":
                 return result
             reasons = tuple(result.data_gaps)
-        legacy = self.fallback.recommend(request)
+        try:
+            legacy = self.fallback.recommend(request)
+        except Exception:
+            # Neither version can answer: say so instead of failing the event.
+            LOGGER.exception("The fallback card-reward policy failed as well.")
+            return DeckFitnessPolicy._uncertain(
+                request, tuple(dict.fromkeys((*reasons, FALLBACK_GAP, "card_reward_fallback_error"))),
+            )
         return replace(
             legacy,
             data_gaps=tuple(dict.fromkeys((*legacy.data_gaps, FALLBACK_GAP, *reasons))),

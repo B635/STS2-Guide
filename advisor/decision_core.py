@@ -772,6 +772,14 @@ class PolicyRegistry:
             raise ValueError(f"duplicate policy for {decision_type}")
         self._policies[decision_type] = policy
 
+    def warm_up(self) -> None:
+        """Let every policy that has caches build them ahead of use."""
+
+        for policy in self._policies.values():
+            warm_up = getattr(policy, "warm_up", None)
+            if callable(warm_up):
+                warm_up()
+
     def supports(self, decision_type: str) -> bool:
         return decision_type in self._policies
 
