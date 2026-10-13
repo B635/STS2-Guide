@@ -611,10 +611,6 @@ class RoutePolicy:
             else:
                 growth_relief = capabilities.growth * _number(weights["growth"])
                 risk -= growth_relief
-                if hp_ratio is not None and hp_ratio < _number(profile["hp_low_threshold"]):
-                    penalty = _number(profile["elite_hp_penalty"])
-                    risk += penalty
-                    factors.append({"code": "elite_low_hp", "delta": -round(penalty, 3)})
                 if growth_relief:
                     factors.append({"code": "elite_growth_relief", "delta": round(growth_relief, 3)})
             if risk < 0:
@@ -622,6 +618,15 @@ class RoutePolicy:
                 # the surplus is not carried along the path.
                 factors.append({"code": "combat_risk_floor", "delta": round(risk, 3)})
                 risk = 0.0
+            if (
+                kind == "ELITE" and hp_ratio is not None
+                and hp_ratio < _number(profile["hp_low_threshold"])
+            ):
+                # After the floor: low HP makes an elite risky however strong
+                # the deck is.
+                penalty = _number(profile["elite_hp_penalty"])
+                risk += penalty
+                factors.append({"code": "elite_low_hp", "delta": -round(penalty, 3)})
         elif kind == "BOSS":
             risk += boss_threat
             risk -= (
@@ -675,6 +680,7 @@ class RoutePolicy:
             kind,
             request,
             profile,
+            gold_available,
         )
         if mode_adjustment:
             risk += mode_adjustment
@@ -691,6 +697,7 @@ class RoutePolicy:
         kind: str,
         request: DecisionRequest,
         profile: Mapping[str, Any],
+        gold_available: bool = True,
     ) -> tuple[float, str]:
         """Return one soft, explainable mode adjustment in risk units.
 
@@ -754,7 +761,8 @@ class RoutePolicy:
             "EVENT": -0.35 * safety,
             "SHOP": (
                 -1.25 * safety
-                if request.world.gold is not None
+                if gold_available
+                and request.world.gold is not None
                 and request.world.gold
                 >= _number(profile["shop_gold_threshold"])
                 else 0.0
@@ -779,7 +787,7 @@ class RoutePolicy:
         # on the way here); a shop's gold value counts once per path.
         cache: dict[tuple[str, bool], SearchPath | None] = {}
         factors_by_state: dict[tuple[str, bool], tuple[dict[str, Any], ...]] = {}
-        factors_by_node: dict[str, tuple[dict[str, Any], ...]] = {}
+        factors_by_candidate: dict[str, tuple[dict[str, Any], ...]] = {}
         expanded = 0
         limit_hit = False
 
@@ -824,12 +832,16 @@ class RoutePolicy:
             return result
 
         found = {candidate.candidate_id: best(candidate.candidate_id) for candidate in request.candidates}
-        # Factors of each node as it is reached on its candidate's path.
-        for path in found.values():
+        # Each candidate's factors are those of its own path: a node reached
+        # with the gold already spent reads differently from the same node
+        # reached with it.
+        for candidate_id, path in found.items():
+            rows: list[dict[str, Any]] = []
             gold_available = True
             for node_id in path.node_ids if path is not None else ():
-                factors_by_node.setdefault(node_id, factors_by_state[(node_id, gold_available)])
+                rows.extend(factors_by_state[(node_id, gold_available)])
                 gold_available = gold_available and str(graph.nodes[node_id].kind).upper() != "SHOP"
+            factors_by_candidate[candidate_id] = tuple(rows)
         gaps: list[str] = []
         if limit_hit:
             gaps.append("route_search_limit_exceeded")
@@ -838,7 +850,7 @@ class RoutePolicy:
                 gaps.append(f"boss_unreachable_from_candidate:{candidate_id}")
         return (
             {candidate_id: path for candidate_id, path in found.items() if path is not None},
-            factors_by_node,
+            factors_by_candidate,
             _unique(gaps),
         )
 
@@ -901,11 +913,7 @@ class RoutePolicy:
                 "node_ids": list(path.node_ids),
                 "score": score if candidate.eligible else None,
             })
-            path_factor_rows = tuple(
-                factor
-                for node_id in path.node_ids
-                for factor in path_factors.get(node_id, ())
-            )
+            path_factor_rows = tuple(path_factors.get(candidate.candidate_id, ()))
             if request.world.route_mode == ROUTE_MODE_BALANCED:
                 path_factor_rows = (*path_factor_rows, {
                     "code": "route_mode_balanced",

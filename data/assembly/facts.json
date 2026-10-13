@@ -6482,8 +6482,8 @@
     },
     {
      "amount": 1,
-     "amount_text": "for each DarkOrb in OrbQueue (including the one just channeled): OrbCmd.Passive triggerCount times; triggerCount = IsUpgraded ? 2 : 1",
      "kind": "orb_passive",
+     "note_text": "for each DarkOrb in OrbQueue (including the one just channeled): OrbCmd.Passive triggerCount times; triggerCount = IsUpgraded ? 2 : 1",
      "orb": "Dark",
      "scope": "all_of_type",
      "upgrade": 1
@@ -6495,7 +6495,8 @@
     "No CanonicalVars, no OnUpgrade override",
     "OnPlay <OnPlay>d__3: TriggerAnim; OrbCmd.Channel<DarkOrb>(ctx, Owner); triggerCount = IsUpgraded ? 2 : 1; foreach orb in OrbQueue.Orbs.Where(o => o is DarkOrb): loop i<triggerCount: OrbCmd.Passive(ctx, orb, null)",
     "Catalog agrees",
-    "hook tokens {\"OnPlay\": \"06003D86\"}"
+    "hook tokens {\"OnPlay\": \"06003D86\"}",
+    "2026-10-13 review: this effect's *_text is a plain remark (the structured number is complete); renamed note_text so that amount_text/hits_text/count_text always mean a value the structure does not carry."
    ],
    "fingerprint": "0384a82602ec098657e972f7d5d180fe6e2282a2b145ab8a20afcec621049ce8",
    "hook_tokens": {
@@ -8105,8 +8106,8 @@
     },
     {
      "amount": 4,
-     "amount_text": "equal to the block actually gained by the preceding GainBlock (its awaited result), so after Dexterity/Frail modifiers",
      "kind": "apply_power",
+     "note_text": "equal to the block actually gained by the preceding GainBlock (its awaited result), so after Dexterity/Frail modifiers",
      "power": "BlockNextTurn",
      "target": "self",
      "upgrade": 2
@@ -8118,7 +8119,8 @@
     "CanonicalVars BlockVar(4); OnUpgrade 06003E42: Block +2",
     "OnPlay 06003E41: <OnPlay>d__5 gained = await CreatureCmd.GainBlock(owner creature, Block, cardPlay); PowerCmd.Apply<BlockNextTurnPower>(owner creature, gained)",
     "No get_CanonicalKeywords override; no CanonicalTags",
-    "Catalog: 4/6 block now and next turn; agrees"
+    "Catalog: 4/6 block now and next turn; agrees",
+    "2026-10-13 review: this effect's *_text is a plain remark (the structured number is complete); renamed note_text so that amount_text/hits_text/count_text always mean a value the structure does not carry."
    ],
    "fingerprint": "f0d4e11b4f709fd795051b08544fcbdb49e3b0e5da6cf6e51c0f7bf3514eb4f8",
    "hook_tokens": {
@@ -8580,9 +8582,9 @@
    },
    "effects": [
     {
-     "amount_text": "evoke front orb twice: EvokeNext(owner, false) then EvokeNext(owner, true); does nothing if no orbs",
      "count": 2,
      "kind": "evoke_orb",
+     "note_text": "evoke front orb twice: EvokeNext(owner, false) then EvokeNext(owner, true); does nothing if no orbs",
      "orb": "next",
      "upgrade": 0
     }
@@ -8592,7 +8594,8 @@
     "OnPlay 06003E75: <OnPlay>d__5: if OrbQueue.Orbs.Count <= 0 return; TriggerAnim Cast; OrbCmd.EvokeNext(owner, false); wait; OrbCmd.EvokeNext(owner, true)",
     "ctor CardModel(cost=1, Skill(2), Basic(1), Self(1))",
     "get_OrbEvokeType = 1 (Front); no CanonicalVars; OnUpgrade 06003E76: EnergyCost.UpgradeBy(-1)",
-    "Catalog: evoke your next orb twice; no upgraded text; code reduces cost 1->0"
+    "Catalog: evoke your next orb twice; no upgraded text; code reduces cost 1->0",
+    "2026-10-13 review: this effect's *_text is a plain remark (the structured number is complete); renamed note_text so that amount_text/hits_text/count_text always mean a value the structure does not carry."
    ],
    "fingerprint": "7f903a56c31c8d0c55b63f20b963aee3509dae08597eee0eb3d2352fe98a4d7d",
    "hook_tokens": {
@@ -8686,8 +8689,8 @@
     },
     {
      "amount": 9,
-     "amount_text": "applied to each enemy in CombatState.HittableEnemies snapshotted BEFORE the attack; amount = DynamicVar 'StrengthLoss'",
      "kind": "apply_power",
+     "note_text": "applied to each enemy in CombatState.HittableEnemies snapshotted BEFORE the attack; amount = DynamicVar 'StrengthLoss'",
      "power": "DyingStar",
      "target": "all_enemies",
      "upgrade": 2
@@ -8701,7 +8704,8 @@
     "CanonicalVars DamageVar(9), DynamicVar('StrengthLoss', 9); OnUpgrade Damage +2, StrengthLoss +2",
     "OnPlay <OnPlay>d__10: enemies = HittableEnemies; DamageCmd.Attack(Damage).TargetingAllOpponents; foreach enemy in enemies: PowerCmd.Apply<DyingStarPower>(enemy, StrengthLoss.BaseValue, owner creature)",
     "Catalog: 9/11 damage to all, all enemies lose 9/11 Strength this turn; temporary loss is DyingStarPower behaviour (reviewed separately); catalog omits star cost 3 and Ethereal",
-    "hook tokens {\"OnPlay\": \"06003E81\", \"OnUpgrade\": \"06003E82\"}"
+    "hook tokens {\"OnPlay\": \"06003E81\", \"OnUpgrade\": \"06003E82\"}",
+    "2026-10-13 review: this effect's *_text is a plain remark (the structured number is complete); renamed note_text so that amount_text/hits_text/count_text always mean a value the structure does not carry."
    ],
    "fingerprint": "47b95f72e2051ab3014354533e1eb367e28f5801218c42cb24577e54a941c13b",
    "hook_tokens": {
@@ -8900,8 +8904,8 @@
      "upgrade": 8
     },
     {
-     "amount_text": "immediately kill every hittable enemy whose current HP <= its Doom (DoomPower.GetDoomedCreatures -> DoomPower.DoomKill)",
      "kind": "doom_kill",
+     "note_text": "immediately kill every hittable enemy whose current HP <= its Doom (DoomPower.GetDoomedCreatures -> DoomPower.DoomKill)",
      "target": "all_enemies"
     }
    ],
@@ -8911,7 +8915,8 @@
     "CanonicalVars PowerVar<DoomPower>(29); OnUpgrade 06003E96: Doom +8",
     "OnPlay 06003E95 (<OnPlay>d__6): foreach enemy in CombatState.HittableEnemies: PowerCmd.Apply<DoomPower>(enemy, Doom.BaseValue, owner.Creature, card); then DoomPower.DoomKill(DoomPower.GetDoomedCreatures(HittableEnemies))",
     "DoomPower.IsOwnerDoomed: !(Owner.CurrentHp > Amount), i.e. HP <= Doom",
-    "Catalog: 29 (37) Doom to all enemies, kill enemies with Doom >= HP; agrees"
+    "Catalog: 29 (37) Doom to all enemies, kill enemies with Doom >= HP; agrees",
+    "2026-10-13 review: this effect's *_text is a plain remark (the structured number is complete); renamed note_text so that amount_text/hits_text/count_text always mean a value the structure does not carry."
    ],
    "fingerprint": "59bddaee80e7d003fc1de1dac49a33d4f77c41ca9aabc5f59e7985a9ec24f01e",
    "hook_tokens": {
@@ -8945,8 +8950,8 @@
    "effects": [
     {
      "amount": 2,
-     "amount_text": "Each alive player creature in CombatState.GetTeammatesOf(owner creature) gains Energy",
      "kind": "energy",
+     "note_text": "Each alive player creature in CombatState.GetTeammatesOf(owner creature) gains Energy",
      "target": "all_players",
      "upgrade": 1
     }
@@ -8957,7 +8962,8 @@
     "CanonicalKeywords [Exhaust(1)]; get_MultiplayerConstraint = 1 (MultiplayerOnly)",
     "CanonicalVars EnergyVar(2); OnUpgrade Energy +1",
     "OnPlay <OnPlay>d__9: TriggerAnim PowerUp; foreach c in GetTeammatesOf(owner).Where(c => c != null && c.IsAlive && c.IsPlayer): PlayerCmd.GainEnergy(Energy.IntValue, c.Player)",
-    "Catalog: all players gain energy (icon text dropped); agrees"
+    "Catalog: all players gain energy (icon text dropped); agrees",
+    "2026-10-13 review: this effect's *_text is a plain remark (the structured number is complete); renamed note_text so that amount_text/hits_text/count_text always mean a value the structure does not carry."
    ],
    "fingerprint": "6b8ed02a98ab0ba612372cee2d22ac226bb1d7d24789245f02c45a2dfaf4c58c",
    "hook_tokens": {
@@ -11981,8 +11987,8 @@
     },
     {
      "amount": 5,
-     "amount_text": "Hook.ModifyBlock(owner, BlockNextTurn base 5/7, BlockVar props) computed before gaining this turn's block, so Dexterity/Frail etc. apply",
      "kind": "apply_power",
+     "note_text": "Hook.ModifyBlock(owner, BlockNextTurn base 5/7, BlockVar props) computed before gaining this turn's block, so Dexterity/Frail etc. apply",
      "power": "BlockNextTurn",
      "target": "self",
      "upgrade": 2
@@ -11994,7 +12000,8 @@
     "CanonicalVars BlockVar(11), BlockVar('BlockNextTurn', 5); OnUpgrade Block +2, BlockNextTurn +2",
     "OnPlay <OnPlay>d__6: blockNextTurnAmount = Hook.ModifyBlock(...BlockNextTurn...); CreatureCmd.GainBlock(owner, Block); PowerCmd.Apply<BlockNextTurnPower>(owner, blockNextTurnAmount)",
     "Catalog 11/13 now, 5/7 next turn agrees",
-    "hook tokens {\"OnPlay\": \"06003FF3\", \"OnUpgrade\": \"06003FF4\"}"
+    "hook tokens {\"OnPlay\": \"06003FF3\", \"OnUpgrade\": \"06003FF4\"}",
+    "2026-10-13 review: this effect's *_text is a plain remark (the structured number is complete); renamed note_text so that amount_text/hits_text/count_text always mean a value the structure does not carry."
    ],
    "fingerprint": "12f29375713afe81e40e7ee0b6b97d2c9a69d813ab03999502e69c62ff28443d",
    "hook_tokens": {
@@ -13842,8 +13849,8 @@
    "effects": [
     {
      "amount": 2,
-     "amount_text": "foreach c in CombatState.GetTeammatesOf(owner creature).Where(c != null && c.IsAlive && c.IsPlayer): CardPileCmd.DrawWithoutBlockingOnOtherPlayers(choiceContext, Cards.BaseValue, c.Player)",
      "kind": "draw",
+     "note_text": "foreach c in CombatState.GetTeammatesOf(owner creature).Where(c != null && c.IsAlive && c.IsPlayer): CardPileCmd.DrawWithoutBlockingOnOtherPlayers(choiceContext, Cards.BaseValue, c.Player)",
      "target": "all_players",
      "upgrade": 1
     }
@@ -13855,7 +13862,8 @@
     "CanonicalKeywords [Exhaust(1)]",
     "CanonicalVars CardsVar(2); OnUpgrade 060040AE: Cards +1",
     "get_MultiplayerConstraint 1 (MultiplayerOnly)",
-    "Catalog 'all players draw 2/3' agrees; catalog omits Exhaust"
+    "Catalog 'all players draw 2/3' agrees; catalog omits Exhaust",
+    "2026-10-13 review: this effect's *_text is a plain remark (the structured number is complete); renamed note_text so that amount_text/hits_text/count_text always mean a value the structure does not carry."
    ],
    "fingerprint": "c7b68578f8f33dbd2057263e59c079c3c129af21d00bb75dc5e48dcd63caf4cb",
    "hook_tokens": {
@@ -14048,8 +14056,8 @@
    "effects": [
     {
      "amount": 2,
-     "amount_text": "tracks the targeted ally player (PlayerTarget = cardPlay.Target.Player); if owner already has an ImitationLearningPower for that same player, its amount is increased instead (PowerCmd.ModifyAmount)",
      "kind": "apply_power",
+     "note_text": "tracks the targeted ally player (PlayerTarget = cardPlay.Target.Player); if owner already has an ImitationLearningPower for that same player, its amount is increased instead (PowerCmd.ModifyAmount)",
      "power": "ImitationLearning",
      "target": "self",
      "upgrade": 1
@@ -14063,7 +14071,8 @@
     "CanonicalVars PowerVar<ImitationLearningPower>(2); OnUpgrade ImitationLearningPower +1",
     "OnPlay <OnPlay>d__7: existing = owner.Powers.OfType<ImitationLearningPower>().FirstOrDefault(p => p.PlayerTarget == cardPlay.Target.Player); if existing: PowerCmd.ModifyAmount(existing, var); else PowerCmd.Apply<ImitationLearningPower>(owner, var) and set PlayerTarget = cardPlay.Target.Player",
     "Catalog: 'choose another player; next 2 (3) times they play a Power you play a copy' agrees; catalog omits Exhaust",
-    "hook tokens {\"OnPlay\": \"060040CA\", \"OnUpgrade\": \"060040CB\"}"
+    "hook tokens {\"OnPlay\": \"060040CA\", \"OnUpgrade\": \"060040CB\"}",
+    "2026-10-13 review: this effect's *_text is a plain remark (the structured number is complete); renamed note_text so that amount_text/hits_text/count_text always mean a value the structure does not carry."
    ],
    "fingerprint": "ce6caa5e582b589065186496c4cc36680316eb65ca55186da8484c5936fe62dc",
    "hook_tokens": {
@@ -16127,9 +16136,9 @@
    "effects": [
     {
      "amount": -1,
-     "amount_text": "target loses X Strength (X+1 if upgraded): PowerCmd.Apply<StrengthPower>(target, -powerAmount)",
      "bonus_if_upgraded": -1,
      "kind": "apply_power",
+     "note_text": "target loses X Strength (X+1 if upgraded): PowerCmd.Apply<StrengthPower>(target, -powerAmount)",
      "per_x": true,
      "power": "Strength",
      "target": "enemy",
@@ -16137,9 +16146,9 @@
     },
     {
      "amount": 1,
-     "amount_text": "X Weak (X+1 if upgraded)",
      "bonus_if_upgraded": 1,
      "kind": "apply_power",
+     "note_text": "X Weak (X+1 if upgraded)",
      "per_x": true,
      "power": "Weak",
      "target": "enemy",
@@ -17441,8 +17450,8 @@
    "effects": [
     {
      "amount": 1,
-     "amount_text": "applied with constant amount 1; then the returned MonologuePower's DynamicVars.Strength.BaseValue is set to the card's DynamicVar 'Power' (1)",
      "kind": "apply_power",
+     "note_text": "applied with constant amount 1; then the returned MonologuePower's DynamicVars.Strength.BaseValue is set to the card's DynamicVar 'Power' (1)",
      "power": "Monologue",
      "target": "self",
      "upgrade": 0
@@ -17454,7 +17463,8 @@
     "CanonicalVars DynamicVar('Power', 1); OnUpgrade AddKeyword(Retain(5))",
     "OnPlay <OnPlay>d__6: power = PowerCmd.Apply<MonologuePower>(owner, 1); if power != null: power.DynamicVars.Strength.BaseValue = DynamicVars['Power'].BaseValue",
     "Catalog: this turn, whenever you play a card gain 1 Strength this turn; behaviour in MonologuePower; catalog has no upgraded text, code adds Retain",
-    "hook tokens {\"OnPlay\": \"0600422A\", \"OnUpgrade\": \"0600422B\"}"
+    "hook tokens {\"OnPlay\": \"0600422A\", \"OnUpgrade\": \"0600422B\"}",
+    "2026-10-13 review: this effect's *_text is a plain remark (the structured number is complete); renamed note_text so that amount_text/hits_text/count_text always mean a value the structure does not carry."
    ],
    "fingerprint": "5528a7d602ab8e5415452dabd6bfc42f04ba2f63f0c6feb224a2738a3b8d4e59",
    "hook_tokens": {
@@ -19549,8 +19559,8 @@
    "effects": [
     {
      "amount": 2,
-     "amount_text": "for each creature in CombatState.GetTeammatesOf(owner creature) where alive and IsPlayer: PowerCmd.Apply<DrawCardsNextTurnPower>(creature, Cards, applier = owner)",
      "kind": "apply_power",
+     "note_text": "for each creature in CombatState.GetTeammatesOf(owner creature) where alive and IsPlayer: PowerCmd.Apply<DrawCardsNextTurnPower>(creature, Cards, applier = owner)",
      "power": "DrawCardsNextTurn",
      "target": "all_players",
      "upgrade": 1
@@ -19563,7 +19573,8 @@
     "get_MultiplayerConstraint = 1 (MultiplayerOnly)",
     "OnPlay <OnPlay>d__5: foreach teammate (c != null && c.IsAlive && c.IsPlayer): PowerCmd.Apply<DrawCardsNextTurnPower>(c, Cards.BaseValue, owner creature, this)",
     "Catalog: next turn all players draw 2 (3); agrees",
-    "hook tokens {\"OnPlay\": \"0600430B\", \"OnUpgrade\": \"0600430C\"}"
+    "hook tokens {\"OnPlay\": \"0600430B\", \"OnUpgrade\": \"0600430C\"}",
+    "2026-10-13 review: this effect's *_text is a plain remark (the structured number is complete); renamed note_text so that amount_text/hits_text/count_text always mean a value the structure does not carry."
    ],
    "fingerprint": "61d8cc51c3ed30fbd8dca9051ec90b365ffd5aff286e498cc19f62f23b6f5212",
    "hook_tokens": {
@@ -20425,10 +20436,10 @@
     {
      "choice": "choose",
      "count": 3,
-     "count_text": "choose up to Cards (3, +2 upgraded) cards from hand (CardSelectorPrefs min 0, max Cards.IntValue)",
      "count_upgrade": 2,
      "kind": "exhaust_other",
-     "min": 0
+     "min": 0,
+     "note_text": "choose up to Cards (3, +2 upgraded) cards from hand (CardSelectorPrefs min 0, max Cards.IntValue)"
     }
    ],
    "entity_key": "cards:PURITY",
@@ -20437,7 +20448,8 @@
     "OnPlay 06004361: <OnPlay>d__5: selected = CardSelectCmd.FromHand(choiceContext, owner, new CardSelectorPrefs(SelectionScreenPrompt, 0, Cards.IntValue), null, this); foreach selected: CardCmd.Exhaust(choiceContext, card)",
     "CanonicalKeywords [Retain(5), Exhaust(1)]",
     "CanonicalVars CardsVar(3); OnUpgrade 06004362: Cards +2",
-    "Catalog 'exhaust up to 3/5' agrees; catalog omits Retain/Exhaust keywords"
+    "Catalog 'exhaust up to 3/5' agrees; catalog omits Retain/Exhaust keywords",
+    "2026-10-13 review: this effect's *_text is a plain remark (the structured number is complete); renamed note_text so that amount_text/hits_text/count_text always mean a value the structure does not carry."
    ],
    "fingerprint": "1b6ad7a0870521a915a5e7b1e0fd64969079398cf9bd41ce994547b78f1020ac",
    "hook_tokens": {
@@ -20572,9 +20584,9 @@
    },
    "effects": [
     {
-     "amount_text": "evoke front orb Repeat(4) times: EvokeNext(owner, i == Repeat-1); does nothing if no orbs",
      "count": 4,
      "kind": "evoke_orb",
+     "note_text": "evoke front orb Repeat(4) times: EvokeNext(owner, i == Repeat-1); does nothing if no orbs",
      "orb": "next",
      "upgrade": 0
     }
@@ -20584,7 +20596,8 @@
     "OnPlay 06004372: <OnPlay>d__5: if OrbQueue.Orbs.Count <= 0 return; TriggerAnim Cast; for i < Repeat.IntValue: OrbCmd.EvokeNext(owner, i == Repeat.IntValue-1), CustomScaledWait",
     "ctor CardModel(cost=1, Skill(2), Ancient(5), Self(1))",
     "get_OrbEvokeType = 1 (Front); CanonicalVars RepeatVar(4); OnUpgrade 06004373: EnergyCost.UpgradeBy(-1)",
-    "Catalog: evoke next orb 4 times; no upgraded text; code reduces cost 1->0"
+    "Catalog: evoke next orb 4 times; no upgraded text; code reduces cost 1->0",
+    "2026-10-13 review: this effect's *_text is a plain remark (the structured number is complete); renamed note_text so that amount_text/hits_text/count_text always mean a value the structure does not carry."
    ],
    "fingerprint": "f5779e2dd7451b4c29b63030ad807978c05eb38c773d848043875b38bc33e598",
    "hook_tokens": {
@@ -20825,8 +20838,8 @@
    "effects": [
     {
      "amount": 12,
-     "amount_text": "for each creature in CombatState.GetTeammatesOf(owner creature) where non-null, IsAlive and IsPlayer: CreatureCmd.GainBlock(creature, Block, cardPlay)",
      "kind": "block",
+     "note_text": "for each creature in CombatState.GetTeammatesOf(owner creature) where non-null, IsAlive and IsPlayer: CreatureCmd.GainBlock(creature, Block, cardPlay)",
      "target": "all_players",
      "upgrade": 5
     }
@@ -20839,7 +20852,8 @@
     "OnPlay <OnPlay>d__7: foreach teammate in GetTeammatesOf(owner creature).Where(c != null && c.IsAlive && c.IsPlayer): CreatureCmd.GainBlock(teammate, Block, cardPlay)",
     "No CanonicalKeywords override",
     "Catalog: all players gain 12 (17) block; agrees",
-    "hook tokens {\"OnPlay\": \"06004389\", \"OnUpgrade\": \"0600438A\"}"
+    "hook tokens {\"OnPlay\": \"06004389\", \"OnUpgrade\": \"0600438A\"}",
+    "2026-10-13 review: this effect's *_text is a plain remark (the structured number is complete); renamed note_text so that amount_text/hits_text/count_text always mean a value the structure does not carry."
    ],
    "fingerprint": "5e2d457455564668819ecab9b720f85a2e45fb4d039fca656269c2df0c99815d",
    "hook_tokens": {
@@ -21718,12 +21732,12 @@
    "effects": [
     {
      "amount": 2,
-     "amount_text": "loop Cards.IntValue times: CardPileCmd.Draw(choiceContext, owner), one card per call",
      "condition": {
       "hand_empty": true
      },
      "condition_text": "IsOnlyCardInHand: !Hand.Cards.Except([this]).Any() (no other card in hand)",
      "kind": "draw",
+     "note_text": "loop Cards.IntValue times: CardPileCmd.Draw(choiceContext, owner), one card per call",
      "upgrade": 1
     },
     {
@@ -21743,7 +21757,8 @@
     "get_IsOnlyCardInHand: !Hand.Cards.Except([this]).Any()",
     "CanonicalKeywords [Retain(5)]",
     "CanonicalVars CardsVar(2), EnergyVar(2); OnUpgrade 060043EB: Cards +1, Energy +1",
-    "Catalog 'if hand is empty draw 2/3 and gain [energy]' agrees (energy amount missing from catalog text); catalog omits Retain"
+    "Catalog 'if hand is empty draw 2/3 and gain [energy]' agrees (energy amount missing from catalog text); catalog omits Retain",
+    "2026-10-13 review: this effect's *_text is a plain remark (the structured number is complete); renamed note_text so that amount_text/hits_text/count_text always mean a value the structure does not carry."
    ],
    "fingerprint": "8de0bbaeb297e6a46bc886a1e6254d74cd6924f8120ddc31fa2f99000e7b4e47",
    "hook_tokens": {
@@ -24588,20 +24603,20 @@
    "effects": [
     {
      "amount": 10,
-     "amount_text": "Damage starts at 10 and is raised by Forge (SovereignBlade.AddDamage, stored in CurrentDamage); hit count = Repeat (1, changed by SetRepeats from other cards); targets all enemies instead if owner has SeekingEdgePower",
      "hits": 1,
      "kind": "damage",
+     "note_text": "Damage starts at 10 and is raised by Forge (SovereignBlade.AddDamage, stored in CurrentDamage); hit count = Repeat (1, changed by SetRepeats from other cards); targets all enemies instead if owner has SeekingEdgePower",
      "target": "single",
      "target_text": "single; all if owner has SeekingEdgePower",
      "upgrade": 0
     },
     {
      "amount": 0,
-     "amount_text": "if owner's ParryPower amount > 0: GainBlock CalculatedBlock = CalculationBase(0) + CalculationExtra(1) x owner ParryPower amount (0 if card not in a combat pile)",
      "condition": {
       "self_has_power": "Parry"
      },
      "kind": "block",
+     "note_text": "if owner's ParryPower amount > 0: GainBlock CalculatedBlock = CalculationBase(0) + CalculationExtra(1) x owner ParryPower amount (0 if card not in a combat pile)",
      "upgrade": 0
     }
    ],
@@ -24613,7 +24628,8 @@
     "get_TargetType => HasSeekingEdge (owner HasPower<SeekingEdgePower>) ? AllEnemies(3) : AnyEnemy(2)",
     "OnPlay 06004522: <OnPlay>d__25 DamageCmd.Attack(Damage).FromCard.WithHitCount(Repeat) -> TargetingAllOpponents if HasSeekingEdge else Targeting(cardPlay.Target); then if GetOwnerParryAmount > 0: CreatureCmd.GainBlock(owner, CalculatedBlock.Calculate(target), Props)",
     "AfterCardChangedPiles 06004527 / AfterTransformedFrom 06004526: remove the blade VFX node only; AfterCloned 06004524: CreatedThroughForge = false; AfterDowngraded 06004525: restore Damage = CurrentDamage, Repeat = CurrentRepeats",
-    "Catalog: deal 10 damage; base value agrees"
+    "Catalog: deal 10 damage; base value agrees",
+    "2026-10-13 review: this effect's *_text is a plain remark (the structured number is complete); renamed note_text so that amount_text/hits_text/count_text always mean a value the structure does not carry."
    ],
    "fingerprint": "df3cf15ba84a49625f7e8d8310b0a232b3aa107301ef77808a018f35a7fef064",
    "hook_tokens": {
@@ -24798,8 +24814,8 @@
    "effects": [
     {
      "amount": 0,
-     "amount_text": "upgraded only: OrbCmd.Channel<GlassOrb> once on play",
      "kind": "channel_orb",
+     "note_text": "upgraded only: OrbCmd.Channel<GlassOrb> once on play",
      "orb": "Glass",
      "upgrade": 1
     },
@@ -24817,7 +24833,8 @@
     "CanonicalVars PowerVar<SpinnerPower>(1); no OnUpgrade override (upgrade changes behaviour via IsUpgraded)",
     "OnPlay <OnPlay>d__5: TriggerAnim; if IsUpgraded: OrbCmd.Channel<GlassOrb>(new ThrowingPlayerChoiceContext(), Owner); then PowerCmd.Apply<SpinnerPower>(owner, DynamicVars['SpinnerPower'].BaseValue)",
     "Catalog upgraded text 'channel 1 Glass; at turn start channel 1 Glass' agrees",
-    "hook tokens {\"OnPlay\": \"0600453E\"}"
+    "hook tokens {\"OnPlay\": \"0600453E\"}",
+    "2026-10-13 review: this effect's *_text is a plain remark (the structured number is complete); renamed note_text so that amount_text/hits_text/count_text always mean a value the structure does not carry."
    ],
    "fingerprint": "3be2ca3576648d9181f78ee32c2368ebfb7ebb64aca186a99827fc9c4881349e",
    "hook_tokens": {
@@ -26954,8 +26971,9 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review D2",
-    "verdict": "agree"
+    "by": "TASK-025 independent review 2026-10-13",
+    "notes": "Structured amount corrected per IL (Tempest.<OnPlay>d__5: numOfOrbs = ResolveEnergyXValue(); +1 if IsUpgraded): amount 1 per X with bonus_if_upgraded 1, the same encoding as MALAISE. It was amount 0 / upgrade 1, which made the unupgraded card channel nothing.",
+    "verdict": "resolved"
    },
    "card_type": "Skill",
    "class": "Tempest",
@@ -26965,12 +26983,13 @@
    },
    "effects": [
     {
-     "amount": 0,
-     "amount_text": "numOfOrbs = ResolveEnergyXValue() (+1 if IsUpgraded); loop channel LightningOrb numOfOrbs times",
+     "amount": 1,
+     "bonus_if_upgraded": 1,
      "kind": "channel_orb",
+     "note_text": "numOfOrbs = ResolveEnergyXValue() (+1 if IsUpgraded); loop channel LightningOrb numOfOrbs times",
      "orb": "Lightning",
      "per_x": true,
-     "upgrade": 1
+     "upgrade": 0
     }
    ],
    "entity_key": "cards:TEMPEST",
@@ -27064,8 +27083,8 @@
     },
     {
      "amount": 1,
-     "amount_text": "for each LightningOrb in OrbQueue (snapshot list): OrbCmd.Passive(ctx, orb, cardPlay.Target); if IsUpgraded, Passive again",
      "kind": "orb_passive",
+     "note_text": "for each LightningOrb in OrbQueue (snapshot list): OrbCmd.Passive(ctx, orb, cardPlay.Target); if IsUpgraded, Passive again",
      "orb": "Lightning",
      "scope": "all_of_type",
      "target": "single",
@@ -27078,7 +27097,8 @@
     "CanonicalVars DamageVar(3); OnUpgrade Damage +1",
     "OnPlay <OnPlay>d__5: DamageCmd.Attack(Damage) targeting cardPlay.Target; foreach orb in OrbQueue.Orbs.OfType<LightningOrb>().ToList(): OrbCmd.Passive(ctx, orb, cardPlay.Target); if IsUpgraded: OrbCmd.Passive(ctx, orb, cardPlay.Target)",
     "Catalog agrees",
-    "hook tokens {\"OnPlay\": \"06004627\", \"OnUpgrade\": \"06004628\"}"
+    "hook tokens {\"OnPlay\": \"06004627\", \"OnUpgrade\": \"06004628\"}",
+    "2026-10-13 review: this effect's *_text is a plain remark (the structured number is complete); renamed note_text so that amount_text/hits_text/count_text always mean a value the structure does not carry."
    ],
    "fingerprint": "ab81cd4e7393c0fefff469b25b08862975929053f013634852a500d23051503f",
    "hook_tokens": {
@@ -27181,8 +27201,8 @@
    "effects": [
     {
      "amount": 3,
-     "amount_text": "power amount = Turns(3); then TheBombPower.SetDamage(BombDamage 40, +10 upgraded)",
      "kind": "apply_power",
+     "note_text": "power amount = Turns(3); then TheBombPower.SetDamage(BombDamage 40, +10 upgraded)",
      "power": "TheBomb",
      "power_damage": 40,
      "power_damage_upgrade": 10,
@@ -27197,7 +27217,8 @@
     "OnPlay <OnPlay>d__5: power = PowerCmd.Apply<TheBombPower>(owner creature, Turns.BaseValue, owner creature); power.SetDamage(BombDamage.BaseValue)",
     "No CanonicalKeywords override",
     "Catalog: after 3 turns deal 40 (50) damage to all enemies; agrees",
-    "hook tokens {\"OnPlay\": \"06004635\", \"OnUpgrade\": \"06004636\"}"
+    "hook tokens {\"OnPlay\": \"06004635\", \"OnUpgrade\": \"06004636\"}",
+    "2026-10-13 review: this effect's *_text is a plain remark (the structured number is complete); renamed note_text so that amount_text/hits_text/count_text always mean a value the structure does not carry."
    ],
    "fingerprint": "6ac02fd9aa3123a791dbe9252355b9e7257a341df605ac4bf4801b6f34e65aa6",
    "hook_tokens": {

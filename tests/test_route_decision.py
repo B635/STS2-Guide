@@ -884,6 +884,64 @@ class RouteDecisionTests(unittest.TestCase):
         self.assertEqual(gold_value(rich_rows["1:6"]), 8.0)
         self.assertIn("shop_gold_spent_earlier", {f["code"] for f in rich_rows["1:6"].factors})
 
+    def test_each_candidate_shows_the_factors_of_its_own_path(self):
+        # Review of TASK-026: two candidates whose paths share a shop reached
+        # in different gold states used to show the first one's factors.
+        nodes = [
+            {"node_id": "0:3", "kind": "MONSTER", "row": 0, "col": 3, "edges": ["1:2", "1:4"]},
+            {"node_id": "1:2", "kind": "SHOP", "row": 1, "col": 2, "edges": ["2:3"]},
+            {"node_id": "1:4", "kind": "TREASURE", "row": 1, "col": 4, "edges": ["2:3"]},
+            {"node_id": "2:3", "kind": "SHOP", "row": 2, "col": 3, "edges": ["3:3"]},
+            {"node_id": "3:3", "kind": "BOSS", "row": 3, "col": 3, "edges": []},
+        ]
+        for order in (("1:2", "1:4"), ("1:4", "1:2")):
+            context = _map_context(candidates=order, nodes=nodes)
+            result = RoutePolicy(self.repository, risk_profile=_risk_profile()).recommend(
+                _route_request(context, state=_state(gold=900))
+            )
+            codes = {
+                row.candidate_id: [f["code"] for f in row.factors if f["code"].startswith("shop_")]
+                for row in result.candidates
+            }
+            # Two shops: the gold counts at the first one only.
+            self.assertEqual(codes["1:2"], ["shop_affordability", "shop_gold_spent_earlier"], order)
+            # One shop, reached with the gold unspent.
+            self.assertEqual(codes["1:4"], ["shop_affordability"], order)
+
+    def test_low_hp_still_counts_against_an_elite_the_deck_outclasses(self):
+        # Review of TASK-026: the penalty was added before the floor and
+        # disappeared inside it.
+        nodes = [
+            {"node_id": "0:3", "kind": "MONSTER", "row": 0, "col": 3, "edges": ["1:2", "1:4"]},
+            {"node_id": "1:2", "kind": "ELITE", "row": 1, "col": 2, "edges": ["2:3"]},
+            {"node_id": "1:4", "kind": "MONSTER", "row": 1, "col": 4, "edges": ["2:3"]},
+            {"node_id": "2:3", "kind": "BOSS", "row": 2, "col": 3, "edges": []},
+        ]
+        context = _map_context(candidates=("1:2", "1:4"), nodes=nodes, boss_ids=("2:3",))
+        strong = [{"card": "AOE", "count": 20}, {"card": "GROWTH", "count": 20}]
+
+        def elite_score(hp):
+            result = RoutePolicy(self.repository, risk_profile=_risk_profile()).recommend(
+                _route_request(context, state=_state(deck=strong, hp=hp))
+            )
+            return next(row.score for row in result.candidates if row.candidate_id == "1:2")
+
+        self.assertLess(elite_score(24), elite_score(70))
+
+    def test_growth_mode_counts_the_gold_at_one_shop_only(self):
+        nodes = [
+            {"node_id": "0:3", "kind": "MONSTER", "row": 0, "col": 3, "edges": ["1:2"]},
+            {"node_id": "1:2", "kind": "SHOP", "row": 1, "col": 2, "edges": ["2:2"]},
+            {"node_id": "2:2", "kind": "SHOP", "row": 2, "col": 2, "edges": ["3:3"]},
+            {"node_id": "3:3", "kind": "BOSS", "row": 3, "col": 3, "edges": []},
+        ]
+        context = _map_context(candidates=("1:2",), nodes=nodes)
+        result = RoutePolicy(self.repository, risk_profile=_risk_profile()).recommend(
+            _route_request(context, state=_state(gold=900), route_mode="growth")
+        )
+        factors = result.candidates[0].factors
+        self.assertEqual(sum(f["code"] == "route_mode_growth_shop" for f in factors), 1)
+
     def test_route_reasons_describe_only_existing_factors(self):
         recommendation = RoutePolicy(self.repository).recommend(_route_request(state=_state(hp=15)))
         factors = [factor for candidate in recommendation.candidates for factor in candidate.factors]

@@ -455,12 +455,11 @@ class CardMechanicTests(unittest.TestCase):
         self.assertEqual(blade.dimensions["data_completeness"], 0.0)
 
     def test_a_repeated_unsupported_effect_is_one_gap(self):
-        # Malaise records its upgrade bonus on two effects; one gap.
+        # A card may repeat one unsupported effect: the gap is listed once.
         _, result = self.gain("MALAISE", [card("STRIKE_SILENT", 4), card("DEFEND_SILENT", 4)])
         malaise = next(r for r in result.candidates if r.candidate_id == "0:MALAISE")
-        self.assertEqual(
-            malaise.data_gaps.count("card_effect_unsupported:MALAISE:effect_key:bonus_if_upgraded"), 1
-        )
+        self.assertTrue(malaise.data_gaps)
+        self.assertEqual(len(malaise.data_gaps), len(set(malaise.data_gaps)))
 
 
 class GeneratedCardTests(unittest.TestCase):
@@ -1122,3 +1121,97 @@ class GapRoundThreeTests(unittest.TestCase):
         thunder, gaps = power_use(self.repository, "Thunder", 1)
         self.assertEqual(gaps, ())
         self.assertEqual(thunder.mechanics[0]["when"], "orb_evoked")
+
+class IndependentReviewFixTests(unittest.TestCase):
+    """Defects found by the independent review of 2026-10-13."""
+
+    @classmethod
+    def setUpClass(cls):
+        DeckFitnessPolicyTests.setUpClass()
+        cls.repository = DeckFitnessPolicyTests.repository
+
+    @classmethod
+    def tearDownClass(cls):
+        DeckFitnessPolicyTests.tearDownClass()
+
+    def profile(self, card_id, upgrades=0):
+        from advisor.deck_mechanics import card_profile
+
+        return card_profile(self.repository, card_id, upgrades)
+
+    def capabilities(self, cards, turns=6.0):
+        from advisor.deck_fitness import PARAMETERS_KEY
+        from advisor.deck_mechanics import ORB_TYPES, Situation, deck_capabilities
+
+        params = self.repository.mechanic_constant(PARAMETERS_KEY)
+        orbs = {orb: self.repository.find_assembly_fact("orbs", orb) for orb in ORB_TYPES.values()}
+        situation = Situation(turns, 0.0, 10.0, {"MONSTER": 1.0}, 1.0, 0, orb_slots=3.0, orbs=orbs)
+        return deck_capabilities(cards, (), situation, params)[0]
+
+    def starter(self, character="SILENT"):
+        return [self.profile(f"STRIKE_{character}")[0] for _ in range(5)] + [
+            self.profile(f"DEFEND_{character}")[0] for _ in range(5)
+        ]
+
+    def test_copies_sharing_one_profile_score_like_separate_copies(self):
+        # The policy builds a deck as [profile] * count.
+        for card_id, character in (("GAMMA_BLAST", "REGENT"), ("FLICK_FLACK", "SILENT"), ("REFLEX", "SILENT")):
+            base = self.starter(character) + [self.profile("ACROBATICS")[0], self.profile("VENERATE")[0]]
+            shared = self.capabilities(base + [self.profile(card_id)[0]] * 3)
+            separate = self.capabilities(base + [self.profile(card_id)[0] for _ in range(3)])
+            for dimension in shared:
+                self.assertAlmostEqual(shared[dimension], separate[dimension], places=6, msg=card_id)
+
+    def test_upgrade_keywords_change_the_card(self):
+        self.assertTrue(self.profile("HOLOGRAM", 0)[0].exhausts_self)
+        self.assertFalse(self.profile("HOLOGRAM", 1)[0].exhausts_self)
+        self.assertTrue(self.profile("ECHO_FORM", 0)[0].ethereal)
+        self.assertFalse(self.profile("ECHO_FORM", 1)[0].ethereal)
+        plain, upgraded = self.profile("BIG_BANG", 0)[0], self.profile("BIG_BANG", 1)[0]
+        self.assertEqual((plain.innate, upgraded.innate), (False, True))
+
+    def test_an_innate_one_off_card_is_always_seen(self):
+        from dataclasses import replace
+
+        big_bang = self.profile("BIG_BANG", 0)[0]
+        deck = self.starter("REGENT") * 5   # too big to count on drawing one card
+        late = self.capabilities(deck + [big_bang])["cycle"]
+        opening = self.capabilities(deck + [replace(big_bang, innate=True)])["cycle"]
+        self.assertGreater(opening, late)
+
+    def test_a_value_given_only_as_text_is_a_gap_and_keeps_its_base(self):
+        rend, gaps = self.profile("REND")
+        self.assertIn("card_effect_unsupported:REND:effect_text_only:amount_text", gaps)
+        self.assertEqual([e["amount"] for e in rend.effects if e["kind"] == "damage"], [10.0])
+        _, gaps = self.profile("MIND_BLAST")
+        self.assertIn("card_effect_unsupported:MIND_BLAST:effect_text_only:amount_text", gaps)
+        # A plain remark is not a gap.
+        self.assertFalse(any("effect_text_only" in gap for gap in self.profile("DODGE_AND_ROLL")[1]))
+
+    def test_a_scaled_or_foreign_target_effect_is_not_dropped_silently(self):
+        self.assertTrue(any("power_effect_key" in gap for gap in self.profile("PROLONG")[1]))
+        self.assertTrue(any("power_effect_key" in gap for gap in self.profile("SYNCHRONIZE")[1]))
+        self.assertIn("card_effect_unsupported:SPUR:effect_target:heal:osty", self.profile("SPUR")[1])
+
+    def test_tempest_channels_one_orb_per_energy_and_one_more_upgraded(self):
+        self.assertEqual(self.profile("TEMPEST")[1], ())
+        deck = [self.profile("DEFEND_DEFECT")[0] for _ in range(2)]
+        nothing = self.capabilities(deck)["frontload"]
+        plain = self.capabilities(deck + [self.profile("TEMPEST", 0)[0]])["frontload"]
+        upgraded = self.capabilities(deck + [self.profile("TEMPEST", 1)[0]])["frontload"]
+        self.assertGreater(plain, nothing)
+        self.assertGreater(upgraded, plain)
+
+    def test_a_free_card_is_played_whenever_it_is_drawn(self):
+        shiv = self.profile("SHIV")[0]
+        self.assertEqual(shiv.cost, 0.0)
+        heavy = [self.profile("BLUDGEON")[0] for _ in range(9)]
+        with_shiv = self.capabilities(heavy + [shiv])["frontload"]
+        without = self.capabilities(heavy)["frontload"]
+        # Nine three-cost cards use all the energy either way; the free card
+        # (4 damage, exhausts: once in a six-turn fight) adds all of it.
+        self.assertAlmostEqual(with_shiv - without, 4.0 / 6.0, places=3)
+
+    def test_a_finisher_with_no_other_attack_hits_nothing(self):
+        deck = [self.profile("DEFEND_SILENT")[0] for _ in range(6)]
+        self.assertEqual(self.capabilities(deck + [self.profile("FINISHER")[0]])["frontload"], 0.0)

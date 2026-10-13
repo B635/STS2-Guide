@@ -42,6 +42,8 @@ ENEMY_POWERS = {"Vulnerable": "vulnerable", "Weak": "weak", "Poison": "poison", 
 DAMAGE_TARGETS = frozenset({"single", "all", "random", "attacker", "evoke_targets"})
 EFFECT_KEYS = frozenset({
     "kind", "amount", "upgrade", "hits", "target", "power", "count", "choice", "per_x", "orb", "scope",
+    # With ``per_x``: the upgraded card counts X + this (Tempest, Malaise).
+    "bonus_if_upgraded",
     # Osty attacks: dealt by the pet (``source: osty``), only while it lives.
     "source",
     # enemy_strength_down: until the enemy's turn ends, or for the combat.
@@ -80,6 +82,14 @@ EFFECT_CONDITIONS = frozenset({
     "card_exhausted_this_turn", "target_alive", "osty_alive",
 })
 NUMERIC_EFFECT_KEYS = ("amount", "upgrade", "hits", "count", "amount_per_stack", "hits_upgrade")
+# A value written as text needs its structured scale to be counted in full.
+VALUE_TEXT_KEYS = {"amount_text": "scale", "hits_text": "hits_scale", "count_text": "count_scale"}
+# Effects that only ever act on the card's owner.
+SELF_ONLY_EFFECTS = frozenset({"block", "draw", "energy", "heal", "hp_loss"})
+POWER_EFFECT_KEYS = frozenset({"kind", "power", "amount", "upgrade", "target"})
+# Keywords the engine accounts for. Eternal (cannot leave the deck) and
+# Unplayable (no cost) need nothing more inside a fight.
+MODELED_KEYWORDS = frozenset({"Exhaust", "Ethereal", "Sly", "Retain", "Innate", "Eternal", "Unplayable"})
 POWER_DURATIONS = frozenset({"combat", "this_turn", "turns_decrement"})
 # One-shot powers that fire once at the owner's next turn start.
 NEXT_TURN_MARKS = frozenset({"next_own_turn", "next own turn only"})
@@ -180,6 +190,8 @@ class CardProfile:
     star_cost: Optional[float] = None
     cost_rule: Optional[tuple] = None   # (kind, value[, card_type]) see ``_cost_rule``
     sly: bool = False               # played for free when discarded by an effect
+    retain: bool = False            # stays in hand until played
+    innate: bool = False            # starts every fight in the opening hand
 
     @property
     def once_per_fight(self) -> bool:
@@ -282,6 +294,8 @@ def effect_unsupported(effect: object) -> Optional[str]:
     extra = {key for key in set(effect) - EFFECT_KEYS if not key.endswith("_text")}
     if extra:
         return f"effect_key:{sorted(extra)[0]}"
+    if kind in SELF_ONLY_EFFECTS and effect.get("target") not in (None, "self"):
+        return f"effect_target:{kind}:{effect.get('target')}"
     for key in NUMERIC_EFFECT_KEYS:
         value = effect.get(key)
         if key == "hits" and value == "X" and effect.get("per_x"):
@@ -324,6 +338,21 @@ def effect_unsupported(effect: object) -> Optional[str]:
         if not ((target == "self" and power in SELF_POWERS)
                 or (target in {"enemy", "all_enemies"} and power in ENEMY_POWERS)):
             return f"power:{power}:{target}"
+    return None
+
+
+def effect_text_only(effect: Mapping) -> Optional[str]:
+    """A value written only as text: the structured number is a base case.
+
+    ``amount_text`` / ``hits_text`` / ``count_text`` say the value depends on
+    something the structured fields do not carry, unless the matching scale
+    is there (a plain remark is written ``note_text``). The effect is still
+    scored at its structured value; the caller reports the rest as a gap.
+    """
+
+    for text_key, scale_key in VALUE_TEXT_KEYS.items():
+        if text_key in effect and not effect.get(scale_key) and effect.get("hits") != "X":
+            return f"effect_text_only:{text_key}"
     return None
 
 
@@ -498,7 +527,8 @@ def unsupported_reason(mechanic: Mapping) -> Optional[str]:
     for key in (mechanic.get("condition") or {}):
         if key not in SUPPORTED_CONDITIONS:
             return f"condition:{key}"
-    return effect_unsupported(mechanic.get("effect"))
+    effect = mechanic.get("effect")
+    return effect_unsupported(effect) or effect_text_only(effect)
 
 
 def _amount(effect: Mapping, upgraded: bool) -> float:
@@ -685,6 +715,13 @@ def card_profile(
             effect.get("kind") == "apply_power" and effect.get("target") == "self"
             and power not in SELF_POWERS
         ):
+            extra = sorted(
+                key for key in effect
+                if key not in POWER_EFFECT_KEYS and not key.endswith("_text") or key in VALUE_TEXT_KEYS
+            )
+            if extra:
+                gaps.append(f"card_effect_unsupported:{card_id}:power_effect_key:{extra[0]}")
+                continue
             use, use_gaps = power_use(repository, str(power), _amount(effect, upgraded))
             gaps.extend(use_gaps)
             if use is not None:
@@ -694,7 +731,17 @@ def card_profile(
         if reason:
             gaps.append(f"card_effect_unsupported:{card_id}:{reason}")
             continue
+        partial = effect_text_only(effect)
+        if partial:
+            # Counted at its structured base value; the rest is disclosed.
+            gaps.append(f"card_effect_unsupported:{card_id}:{partial}")
         resolved = {**effect, "amount": _amount(effect, upgraded)}
+        if "bonus_if_upgraded" in effect:
+            bonus = resolved.pop("bonus_if_upgraded")
+            if not effect.get("per_x") or isinstance(bonus, bool) or not isinstance(bonus, (int, float)):
+                gaps.append(f"card_effect_unsupported:{card_id}:effect_value:bonus_if_upgraded")
+                continue
+            resolved["x_bonus"] = float(bonus) if upgraded else 0.0
         if effect.get("hits") == "X":
             # X counts hits, not damage: the engine sets hits to the X spent.
             resolved.pop("per_x", None)
@@ -731,6 +778,12 @@ def card_profile(
     # X-cost cards record their cost as "X" rather than a base/upgraded pair.
     cost = raw_cost if not isinstance(raw_cost, dict) else raw_cost.get("upgraded" if upgraded else "base")
     keywords = set(fact.get("keywords") or ())
+    if upgraded:
+        changes = fact.get("upgrade_keywords") or {}
+        keywords -= set(changes.get("remove") or ())
+        keywords |= set(changes.get("add") or ())
+    for keyword in sorted(keywords - MODELED_KEYWORDS):
+        gaps.append(f"card_keyword_unmodeled:{card_id}:{keyword}")
     return CardProfile(
         card_id=card_id,
         cost=None if cost is None or cost == "X" else float(cost),
@@ -741,6 +794,8 @@ def card_profile(
         exhausts_self="Exhaust" in keywords or any(e.get("kind") == "exhaust_self" for e in effects),
         ethereal="Ethereal" in keywords,
         sly="Sly" in keywords,
+        retain="Retain" in keywords,
+        innate="Innate" in keywords,
         effects=tuple(effects),
         powers=tuple(powers),
         generates=tuple(generates),
@@ -1096,6 +1151,14 @@ class _Engine:
                 id(c): min(per_turn, 1.0 / turns) if c.once_per_fight else per_turn
                 for c in self.known
             }
+            for c in self.known:
+                if c.innate:
+                    # Always in the opening hand: a one-off card is certain to
+                    # be seen, any other gains the first-turn draws it lacked.
+                    rates[id(c)] = (
+                        1.0 / turns if c.once_per_fight
+                        else min(1.0, per_turn + (1.0 - per_turn) / turns)
+                    )
             for card in self.virtual:
                 rates[id(card)] = 0.0
             if self.blade is not None and previous.forge_events > 0:
@@ -1126,7 +1189,7 @@ class _Engine:
             self.x_value = x_value
             plays = {
                 id(c): (
-                    rates[id(c)] * (1.0 if c.x_cost else playable)
+                    rates[id(c)] * (1.0 if c.x_cost or c.retain or self._cost(c) == 0 else playable)
                     if c.x_cost or self._cost(c) is not None else 0.0
                 )
                 for c in self.cards
@@ -1136,9 +1199,9 @@ class _Engine:
             star_demand = sum(plays[id(c)] * c.star_cost for c in self.cards if c.star_cost)
             if star_demand > 0:
                 star_playable = min(1.0, star_supply / star_demand)
-                for c in self.cards:
-                    if c.star_cost:
-                        plays[id(c)] *= star_playable
+                # Copies share one profile (and one entry in ``plays``).
+                for key in {id(c) for c in self.cards if c.star_cost}:
+                    plays[key] *= star_playable
             # Replays (Burst, Echo Form...): extra plays that cost nothing,
             # shared between the matching cards in proportion to their plays.
             for modifier, weight in ((m, w) for m, w in self.modifiers if m["modifier"] == "card_play_count"):
@@ -1161,8 +1224,8 @@ class _Engine:
                 in_hand = len(sly) * per_turn
                 chosen = min(1.0, previous_chosen / in_hand) if in_hand > 0 else 0.0
                 random_share = max(0.0, previous_discards - previous_chosen) / size
-                for c in sly:
-                    plays[id(c)] += min(per_turn, per_turn * chosen + random_share)
+                for key in {id(c) for c in sly}:
+                    plays[key] += min(per_turn, per_turn * chosen + random_share)
             played = sum(plays.values())
             if play_limit is not None and played > play_limit:
                 scale = play_limit / played
@@ -1361,7 +1424,7 @@ class _Engine:
 
         amount = float(effect.get("amount") or 0.0)
         if x_value is not None and effect.get("per_x"):
-            amount *= x_value
+            amount *= x_value + float(effect.get("x_bonus") or 0.0)
         kind = effect.get("kind")
         if kind == "apply_power" and effect.get("target") == "self" and persist_share is not None:
             name = SELF_POWERS[effect["power"]]
@@ -1645,7 +1708,8 @@ class _Engine:
     def _hits(self, effect: Mapping) -> float:
         if effect.get("hits_x"):
             return self.x_value
-        return float(effect.get("hits") or 1)
+        hits = effect.get("hits")
+        return 1.0 if hits is None else float(hits)
 
     def _focus(self, totals: _Totals) -> float:
         growth = max(0.0, self.situation.fight_turns - 1.0) / 2.0

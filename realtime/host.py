@@ -10,6 +10,7 @@ import hashlib
 import logging
 import os
 import sys
+from datetime import datetime, timezone
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
@@ -43,7 +44,11 @@ from realtime.processor import RealtimeEventProcessor
 from realtime.protocol import CURRENT_SCHEMA_VERSION
 from realtime.version import GUIDE_VERSION
 from storage.relational import RelationalRepository
-from storage.release_database import ensure_runtime_database
+from storage.release_database import (
+    DEFAULT_GUIDE_PARAMETERS_PATH,
+    GUIDE_PARAMETER_KEYS,
+    ensure_runtime_database,
+)
 
 
 LOGGER = logging.getLogger("sts2-guide")
@@ -289,6 +294,13 @@ def build_bridge(args: argparse.Namespace) -> GameStateFileBridge:
                 f"Structured catalog not found: {args.catalog}"
             )
         repository.sync_catalog(str(args.catalog))
+        # Guide-owned parameters come from their own file, exactly as in the
+        # release database (the copy embedded in the catalog may be older).
+        repository.sync_guide_parameters(
+            str(DEFAULT_GUIDE_PARAMETERS_PATH),
+            GUIDE_PARAMETER_KEYS,
+            datetime.now(timezone.utc).isoformat(),
+        )
         if args.community_scores.exists():
             repository.sync_entity_statistics(str(args.community_scores))
 
