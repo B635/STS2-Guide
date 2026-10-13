@@ -18,7 +18,7 @@ Mod/PCK零警告零错误，冻结EXE、安装包和payload审计通过。此安
 **2026-10-13：候选 Guide0.3.12-alpha.0 / Mod0.3.12（TASK-025 票 11、TASK-026）——仅自动与构建证据，未安装、未真机。**
 选牌默认策略切换为牌组适合度（`card_reward:deck_fitness_1`），旧版保留为回退；路线评分加入战斗风险下限与随金币变化的商店价值
 （`route:mode_aware_risk_v4`）；抽屉分数显示 1 位小数。SQLite schema 9，发行指纹
-`1bd7a02ddd0bc666c26bf7623a4c4e1978b1cd345581257cb1de3e839b6863da`。`scripts/build_public_beta.ps1`：完整 Python 748 项 OK，
+`36edbe67e5d8b1882fce7f32acc82f252d0a38611f9bf98f37b2945b6ed35adb`。`scripts/build_public_beta.ps1`：完整 Python 769 项 OK，
 Mod/PCK、冻结 EXE 自检、安装包与 payload 审计通过；产物 `dist/installer/STS2-Guide-0.3.12-alpha.0-win-x64-setup.exe`。
 标准答案集（当前版本真机 79 题）v2 34 对 v1 27，明显错误排第一 0 对 1。引擎完整计分 592/1093（54%），其余按“部分计入并披露”发行。
 五角色安装态真机验收（票 12）尚未进行；0.3.11 的真机结论不继承。
