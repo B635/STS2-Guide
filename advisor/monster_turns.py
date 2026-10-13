@@ -20,6 +20,16 @@ WALKS = 48
 MAX_HOPS = 16
 REPEAT_TYPES = {"CannotRepeat": ("max_repeat", 1), "UseOnlyOnce": ("once", True)}
 PLAYER_DEBUFFS = frozenset({"Weak", "Frail", "Vulnerable"})
+# Powers a monster puts on itself that the walk turns into attack damage.
+# Ritual (RitualPower.AfterSideTurnEnd): Strength equal to its amount at the
+# end of each of the owner's turns, except the turn an enemy applied it.
+ATTACK_POWERS = frozenset({"Strength", "Ritual"})
+SELF_TARGETS = frozenset({"self", "all_allies"})
+# Fields of a damage effect the walk reads; anything else is reported.
+DAMAGE_KEYS = frozenset({
+    "kind", "target", "amount", "amount_ascension", "ascension_level", "hits", "hits_ascension",
+    "scale", "hits_scale", "note",
+})
 
 
 @dataclass(frozen=True)
@@ -164,19 +174,62 @@ def monster_turns(
         for s in states if isinstance(s, Mapping)
     )
     walks = 1 if fixed else max(1, walks)
+    # Strength the monster gains at the end of each of its turns (hooks).
+    turn_end_strength = 0.0
+    for mechanic in fact.get("mechanics") or ():
+        effect = mechanic.get("effect") if isinstance(mechanic, Mapping) else None
+        if not isinstance(effect, Mapping) or effect.get("kind") != "apply_power":
+            continue
+        power = effect.get("power")
+        if effect.get("target") in SELF_TARGETS and power == "Strength" and mechanic.get("when") == "turn_end":
+            turn_end_strength += _value(effect, "amount", ascension) or 0.0
+        elif effect.get("target") in SELF_TARGETS:
+            gaps.add(f"monster_power_unmodeled:{power}")
+        elif effect.get("target") == "player" and power not in PLAYER_DEBUFFS:
+            gaps.add(f"monster_debuff_unmodeled:{power}")
+    for effect in fact.get("innate") or ():
+        if (
+            isinstance(effect, Mapping) and effect.get("kind") == "apply_power"
+            and effect.get("target") in SELF_TARGETS and effect.get("power") not in ATTACK_POWERS
+        ):
+            gaps.add(f"monster_power_unmodeled:{effect.get('power')}")
+    ritual_start = sum(
+        _value(e, "amount", ascension) or 0.0 for e in fact.get("innate") or ()
+        if isinstance(e, Mapping) and e.get("kind") == "apply_power"
+        and e.get("power") == "Ritual" and e.get("target") == "self"
+    )
     for walk in range(walks):
         walker = _Walker(fact, ascension, random.Random(seed * 1009 + walk), gaps, initial_state)
         strength = strength_start
+        ritual, ritual_new = ritual_start, 0.0
+        played: Dict[str, int] = {}
         for turn in range(turns):
             move = walker.step()
             if move is None:
                 gaps.add("monster_pattern_unresolved")
                 break
+            before = played.get(move["id"], 0)
+            played[move["id"]] = before + 1
             for effect in move.get("effects") or ():
+                if not isinstance(effect, Mapping):
+                    continue
                 kind, target = effect.get("kind"), effect.get("target")
                 amount = _value(effect, "amount", ascension)
                 if kind == "damage" and target == "player":
                     count = _value(effect, "hits", ascension) or 1.0
+                    scale, hits_scale = effect.get("scale"), effect.get("hits_scale")
+                    if set(effect) - DAMAGE_KEYS or any(
+                        s is not None and (not isinstance(s, Mapping) or s.get("per") != "own_previous_plays")
+                        for s in (scale, hits_scale)
+                    ):
+                        # A condition, a value taken from elsewhere or a
+                        # scale the walk does not follow: base value only.
+                        gaps.add(f"monster_damage_partial:{move['id']}")
+                        scale = hits_scale = None
+                    if scale:
+                        amount = (amount or 0.0) + (_value(scale, "factor", ascension) or 0.0) * before
+                    if hits_scale:
+                        count = float(hits_scale.get("base") or 0.0) + before
                     if amount is None:
                         gaps.add(f"monster_damage_unresolved:{move['id']}")
                         continue
@@ -184,16 +237,27 @@ def monster_turns(
                     hits[turn] += count
                 elif kind == "block" and target == "self" and amount is not None:
                     block[turn] += amount
-                elif kind == "apply_power" and amount is not None:
+                elif kind == "apply_power":
                     power = effect.get("power")
-                    if target == "self" and power == "Strength":
-                        strength += amount
-                    elif target == "player" and power in PLAYER_DEBUFFS:
+                    if target in SELF_TARGETS and power in ATTACK_POWERS and amount is not None:
+                        if power == "Strength":
+                            strength += amount
+                        else:
+                            ritual_new += amount
+                    elif target in SELF_TARGETS or target == "all_other_allies":
+                        gaps.add(f"monster_power_unmodeled:{power}")
+                    elif target == "player" and power in PLAYER_DEBUFFS and amount is not None:
                         debuffs[power][turn] += amount
+                    elif target == "player":
+                        gaps.add(f"monster_debuff_unmodeled:{power}")
                 elif kind == "add_card" and target == "player":
                     count = _value(effect, "count", ascension)
                     if count is not None:
                         cards[turn] += count
+            # End of the monster's turn: hooks, then Ritual already in place
+            # (Ritual applied this turn starts with the next one).
+            strength += turn_end_strength + ritual
+            ritual, ritual_new = ritual + ritual_new, 0.0
     scale = 1.0 / max(1, walks)
     return MonsterTurns(
         hp=(float(low) + float(high)) / 2.0,

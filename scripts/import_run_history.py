@@ -57,6 +57,10 @@ def main() -> int:
         str(card["id"]).upper()
         for card in json.loads(args.knowledge.read_text(encoding="utf-8"))["cards"]
     }
+    known_encounters = {
+        str(encounter["id"]).upper()
+        for encounter in json.loads(args.knowledge.read_text(encoding="utf-8"))["encounters"]
+    }
     files = sorted(args.history_root.glob("**/history/*.run"))
     counts = collections.Counter()
     situations, fights, rejected = [], [], []
@@ -80,7 +84,12 @@ def main() -> int:
         if character not in decks:
             rejected.append(f"{path.name}: unknown character {character}")
             continue
-        result = replay_run(run, decks[character], path.stem)
+        try:
+            result = replay_run(run, decks[character], path.stem)
+        except (KeyError, TypeError, ValueError, RunHistoryError) as exc:
+            # One malformed file must not stop the import.
+            rejected.append(f"{path.name}: unreadable run ({type(exc).__name__}: {exc})")
+            continue
         if result["problems"]:
             rejected.append(f"{path.name} ({run.get('build_id')}): {result['problems'][0]}")
             continue
@@ -96,6 +105,11 @@ def main() -> int:
             if unknown:
                 # A card that no longer exists in the current catalog.
                 counts["situations_with_unknown_cards"] += 1
+                continue
+            bosses = situation["scoring_view"]["map_context"]["boss_encounter_ids"]
+            if not bosses or any(boss not in known_encounters for boss in bosses):
+                # A boss the current catalog does not have: no needs to score against.
+                counts["situations_with_unknown_boss"] += 1
                 continue
             situations.append(situation)
         fights.extend(result["fights"])

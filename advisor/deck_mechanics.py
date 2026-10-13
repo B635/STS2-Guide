@@ -161,6 +161,7 @@ class PowerUse:
     duration: str                   # combat | this_turn | turns_decrement
     stacks: float
     mechanics: tuple
+    per_stack: tuple = ()           # per mechanic: does its amount follow the stacks?
 
 
 @dataclass(frozen=True)
@@ -341,6 +342,14 @@ def effect_unsupported(effect: object) -> Optional[str]:
     return None
 
 
+def _unknowable(fact: Optional[Mapping], entity_key: str) -> tuple[str, ...]:
+    """Gaps for the ``unknowable`` notes a reviewed fact carries."""
+
+    if not fact or not fact.get("unknowable"):
+        return ()
+    return (f"fact_unknowable:{entity_key}",)
+
+
 def effect_text_only(effect: Mapping) -> Optional[str]:
     """A value written only as text: the structured number is a base case.
 
@@ -440,17 +449,22 @@ def power_use(
         duration = "combat"  # held until its uses are spent
     elif duration not in POWER_DURATIONS:
         return None, (f"power_duration_unsupported:{power_id}:{duration}",)
-    mechanics, gaps = [], []
+    mechanics, gaps, per_stack = [], [], []
     for raw in fact.get("mechanics") or ():
         raw, generated_gaps = _mechanic_cards(repository, raw)
         gaps.extend(generated_gaps)
-        mechanic = _resolve_stacks(_next_turn_once(raw) if next_turn else raw, stacks)
+        source = _next_turn_once(raw) if next_turn else raw
+        mechanic = _resolve_stacks(source, stacks)
         reason = unsupported_reason(mechanic)
         if reason:
             gaps.append(f"power_mechanic_unsupported:{power_id}:{reason}")
         else:
             mechanics.append(mechanic)
-    return PowerUse(power_id, duration, stacks, tuple(mechanics)), tuple(gaps)
+            per_stack.append(
+                "amount_per_stack" in (source.get("effect") or {})
+                or any(key in source for key in ("amount_per_stack", "add_per_stack"))
+            )
+    return PowerUse(power_id, duration, stacks, tuple(mechanics), tuple(per_stack)), tuple(gaps)
 
 
 def _filter_unsupported(
@@ -694,6 +708,13 @@ def card_profile(
         return None, (f"card_upgrade_count_unmodeled:{card_id}",)
     upgraded = upgrades == 1
     effects, powers, generates, gaps = [], [], [], []
+    # What the review registered as impossible to know is disclosed with the
+    # card, for itself and for every power it applies.
+    gaps.extend(_unknowable(fact, f"cards:{card_id}"))
+    for effect in fact.get("effects") or ():
+        if isinstance(effect, Mapping) and effect.get("kind") == "apply_power" and effect.get("power"):
+            power_id = class_to_entity_id(str(effect["power"]))
+            gaps.extend(_unknowable(repository.find_assembly_fact("powers", power_id), f"powers:{power_id}"))
     for effect in fact.get("effects") or ():
         weakened = _enemy_strength_down(repository, effect, upgraded) if isinstance(effect, Mapping) else None
         if weakened is not None:
@@ -850,7 +871,7 @@ def relic_profile(
     fact = repository.find_assembly_fact("relics", relic_id)
     if fact is None or fact.get("status") != "converted":
         return None, (f"relic_fact_missing:{relic_id}",)
-    supported, gaps = [], []
+    supported, gaps = [], list(_unknowable(fact, f"relics:{relic_id}"))
     for mechanic in fact.get("mechanics") or ():
         mechanic, generated_gaps = _mechanic_cards(repository, mechanic)
         gaps.extend(generated_gaps)
@@ -1015,14 +1036,20 @@ class _Engine:
                 else:
                     played = min(1.0, rate * turns)  # chance it is played this fight
                     weight = played * max(0.0, turns - first_turn + 1.0) / turns
-                for mechanic in use.mechanics:
-                    if use.duration == "turns_decrement":
-                        # Stacks drop by one per turn: spread the total over the fight.
+                for index, mechanic in enumerate(use.mechanics):
+                    follows_stacks = index < len(use.per_stack) and use.per_stack[index]
+                    if use.duration == "turns_decrement" and follows_stacks:
+                        # Stacks drop by one per turn and the amount follows
+                        # them: spread the total over the fight.
                         mechanic = dict(mechanic)
                         effect = dict(mechanic.get("effect") or {})
                         effect["amount"] = _poison_dealt(float(effect.get("amount") or 0.0), turns) / turns
                         mechanic["effect"] = effect
                         weight = min(1.0, rate * turns)
+                    elif use.duration == "turns_decrement":
+                        # A fixed effect or a modifier: it is simply there for
+                        # as many turns as it has stacks.
+                        weight = min(1.0, rate * min(max(use.stacks, 1.0), turns))
                     weighted.append((mechanic, weight))
         self._set_mechanics(weighted)
 
@@ -1834,7 +1861,7 @@ class _Engine:
                 totals.all + totals.poison_all + totals.orb_all + totals.osty_all + totals.doom_all
             ) * situation.extra_enemies,
             "defense": (
-                totals.block * (1.0 - float(params.get("frail_block_reduction", 0.25)) * situation.player_frail)
+                totals.block * (1.0 - float(params["frail_block_reduction"]) * situation.player_frail)
                 + kept_block + totals.heal - totals.hp_loss
                 # Die For You: Osty takes the unblocked attack damage, up to
                 # the HP summoned for it.

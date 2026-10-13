@@ -1193,6 +1193,62 @@ class IndependentReviewFixTests(unittest.TestCase):
         self.assertTrue(any("power_effect_key" in gap for gap in self.profile("SYNCHRONIZE")[1]))
         self.assertIn("card_effect_unsupported:SPUR:effect_target:heal:osty", self.profile("SPUR")[1])
 
+    def test_a_one_turn_power_is_worth_less_than_the_permanent_one(self):
+        # Blur keeps block for one turn per play; Barricade for the whole fight.
+        from dataclasses import replace
+
+        defends = [self.profile("DEFEND_SILENT")[0] for _ in range(9)]
+        blur = replace(self.profile("BLUR")[0], effects=(), cost=0.0)
+        barricade = replace(self.profile("BARRICADE")[0], cost=0.0)
+        self.assertGreater(
+            self.capabilities(defends + [barricade])["defense"],
+            self.capabilities(defends + [blur])["defense"],
+        )
+
+    def test_what_the_review_could_not_know_is_disclosed_with_the_card(self):
+        self.assertIn("fact_unknowable:powers:THORNS", self.profile("CALTROPS")[1])
+        # A card applying Doom carries Doom's own note.
+        self.assertIn("fact_unknowable:powers:DOOM", self.profile("SCOURGE")[1])
+        self.assertFalse(any("fact_unknowable" in gap for gap in self.profile("STRIKE_SILENT")[1]))
+
+    def test_every_parameter_is_required_and_checked(self):
+        import copy
+
+        from advisor.deck_fitness import PARAMETERS_KEY, REQUIRED_PARAMETERS, _parameter_gaps
+
+        params = dict(self.repository.mechanic_constant(PARAMETERS_KEY))
+        self.assertEqual(_parameter_gaps(params), ())
+        for key in REQUIRED_PARAMETERS:
+            without = {k: v for k, v in params.items() if k != key}
+            self.assertEqual(_parameter_gaps(without), (f"deck_fitness_parameter_missing:{key}",))
+
+        def broken(path, value):
+            changed = copy.deepcopy(params)
+            target = changed
+            for step in path[:-1]:
+                target = target[step]
+            if value is None:
+                del target[path[-1]]
+            else:
+                target[path[-1]] = value
+            return _parameter_gaps(changed)
+
+        for path, value in (
+            (("fight_tempo", "max"), None),
+            (("dimension_weights", "cycle"), None),
+            (("fight_importance",), {"MONSTER": 0, "ELITE": 0, "BOSS": 0}),
+            (("pick_margin_by_act",), {"1": "x"}),
+            (("pick_margin_by_act",), {"1": -1}),
+            (("pick_margin_by_act",), {}),
+            (("card_reward_odds", "base"), None),
+            (("lookahead", "scenarios"), "many"),
+            (("frail_block_reduction",), "a quarter"),
+            (("hand_size",), True),
+        ):
+            gaps = broken(path, value)
+            self.assertEqual(len(gaps), 1, path)
+            self.assertTrue(gaps[0].startswith("deck_fitness_parameter_invalid:" + path[0]), (path, gaps))
+
     def test_tempest_channels_one_orb_per_energy_and_one_more_upgraded(self):
         self.assertEqual(self.profile("TEMPEST")[1], ())
         deck = [self.profile("DEFEND_DEFECT")[0] for _ in range(2)]

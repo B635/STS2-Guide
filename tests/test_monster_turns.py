@@ -107,5 +107,58 @@ class MonsterTurnsTests(unittest.TestCase):
                 self.assertNotIn("monster_pattern_unresolved", turns.gaps)
 
 
+def single_move(effects, **extra):
+    """A monster that repeats one move."""
+
+    return {
+        "hp": {"min": 50, "max": 50},
+        "moves": [{"id": "HIT", "effects": effects}],
+        "pattern": {"initial": "HIT", "states": [{"id": "HIT", "type": "move", "move": "HIT", "next": "HIT"}]},
+        **extra,
+    }
+
+
+HIT = {"kind": "damage", "target": "player", "amount": 5, "hits": 1}
+
+
+class AttackGrowthTests(unittest.TestCase):
+    """Independent review 2026-10-13: growth was ignored and gaps were lost."""
+
+    def test_ritual_adds_strength_from_the_turn_after_it_is_applied(self):
+        # RitualPower.AfterSideTurnEnd skips the turn an enemy applied it.
+        fact = {
+            "hp": {"min": 50, "max": 50},
+            "moves": [
+                {"id": "CHANT", "effects": [{"kind": "apply_power", "power": "Ritual", "target": "self", "amount": 3}]},
+                {"id": "HIT", "effects": [HIT]},
+            ],
+            "pattern": {"initial": "CHANT", "states": [
+                {"id": "CHANT", "type": "move", "move": "CHANT", "next": "HIT"},
+                {"id": "HIT", "type": "move", "move": "HIT", "next": "HIT"},
+            ]},
+        }
+        turns = monster_turns(fact, 5)
+        self.assertEqual(turns.attack, (0.0, 5.0, 8.0, 11.0, 14.0))
+        self.assertEqual(turns.gaps, ())
+
+    def test_a_turn_end_strength_hook_raises_every_later_attack(self):
+        fact = single_move([HIT], mechanics=[{
+            "when": "turn_end", "effect": {"kind": "apply_power", "power": "Strength", "target": "self", "amount": 2},
+        }])
+        self.assertEqual(monster_turns(fact, 3).attack, (5.0, 7.0, 9.0))
+
+    def test_damage_growing_with_each_use_is_followed(self):
+        fact = single_move([{**HIT, "scale": {"per": "own_previous_plays", "factor": 4}}])
+        self.assertEqual(monster_turns(fact, 3).attack, (5.0, 9.0, 13.0))
+
+    def test_what_the_walk_cannot_follow_is_reported(self):
+        partial = single_move([{**HIT, "condition": {"player_has_power": "Weak"}}])
+        self.assertEqual(monster_turns(partial, 2).gaps, ("monster_damage_partial:HIT",))
+        power = single_move([HIT, {"kind": "apply_power", "power": "Enrage", "target": "self", "amount": 1}])
+        self.assertEqual(monster_turns(power, 2).gaps, ("monster_power_unmodeled:Enrage",))
+        debuff = single_move([HIT, {"kind": "apply_power", "power": "Hex", "target": "player", "amount": 1}])
+        self.assertEqual(monster_turns(debuff, 2).gaps, ("monster_debuff_unmodeled:Hex",))
+
+
 if __name__ == "__main__":
     unittest.main()

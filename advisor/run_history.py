@@ -46,10 +46,16 @@ def _entry(card: Mapping) -> dict:
     }
 
 
-def _remove(deck: List[dict], card_id: str, warnings: List[str], floor: int) -> Optional[dict]:
-    for index, entry in enumerate(deck):
-        if entry["card"] == card_id:
-            return deck.pop(index)
+def _remove(deck: List[dict], card: Mapping, warnings: List[str], floor: int) -> Optional[dict]:
+    """Take out the copy the record names: same upgrade level when it says
+    one, else any copy of that card."""
+
+    wanted = _entry(card)
+    card_id = wanted["card"]
+    exact = [i for i, entry in enumerate(deck) if entry["card"] == card_id and entry["upgrades"] == wanted["upgrades"]]
+    loose = [i for i, entry in enumerate(deck) if entry["card"] == card_id]
+    if exact or loose:
+        return deck.pop((exact or loose)[0])
     # The file did not record when this card arrived (an event or a relic):
     # the decks before this floor lack it.
     warnings.append(f"floor {floor}: {card_id} left the deck but its arrival was not recorded")
@@ -168,7 +174,31 @@ def replay_run(run: Mapping, starting_deck: Iterable[str], run_key: str) -> dict
     warnings: List[str] = []
     final_relics = [(bare_id(relic["id"]), int(relic.get("floor_added_to_deck") or 0))
                     for relic in player.get("relics") or ()]
-    removed_relics: List[tuple] = []   # (relic, floor it left)
+    # Relics that left during the run are not in the final list. The file
+    # says when they left (``relics_removed``) and, when they were chosen or
+    # bought, when they arrived; an arrival it did not record counts from the
+    # start of the run and is reported.
+    lost_relics: Dict[str, List[int]] = {}   # relic -> [arrival floor, floor it left]
+    floor_counter = 0
+    for act_points in run.get("map_point_history") or ():
+        for point in act_points:
+            floor_counter += 1
+            point_stats = (point.get("player_stats") or [{}])[0]
+            arrived = [bare_id(c["choice"]) for c in point_stats.get("relic_choices") or () if c.get("was_picked")]
+            arrived += [bare_id(r) for r in point_stats.get("bought_relics") or ()]
+            arrived += [bare_id(c.get("TextKey")) for c in point_stats.get("ancient_choice") or () if c.get("was_chosen")]
+            for relic in arrived:
+                lost_relics.setdefault(relic, [floor_counter, None])
+            for relic in point_stats.get("relics_removed") or ():
+                relic = bare_id(relic)
+                if relic not in lost_relics:
+                    lost_relics[relic] = [0, None]
+                lost_relics[relic][1] = floor_counter
+    final_relic_ids = {relic for relic, _ in final_relics}
+    lost_relics = {
+        relic: span for relic, span in lost_relics.items()
+        if span[1] is not None and relic not in final_relic_ids
+    }
     potions: List[str] = []
     problems: List[str] = []
     situations: List[dict] = []
@@ -180,7 +210,22 @@ def replay_run(run: Mapping, starting_deck: Iterable[str], run_key: str) -> dict
             stats = (point.get("player_stats") or [{}])[0]
             kind = point["map_point_type"]
             before = _state_deck(deck)
-            relics_now = [relic for relic, added in final_relics if added < floor]
+            # A relic gained at this point comes after the fight's reward,
+            # except what the run starts with (floor 1).
+            relics_now = [relic for relic, added in final_relics if added < floor or added <= 1]
+            relics_now += [
+                relic for relic, (arrived, left) in lost_relics.items() if arrived < floor <= left
+            ]
+            # Potions used or thrown away in this fight are gone by the reward.
+            for potion in (*(stats.get("potion_used") or ()), *(stats.get("potion_discarded") or ())):
+                if bare_id(potion) in potions:
+                    potions.remove(bare_id(potion))
+            slots = int(player.get("max_potion_slot_count") or 3)
+            if len(potions) > slots:
+                # More than the belt holds: the file did not record a potion
+                # leaving. The oldest are dropped and the run says so.
+                warnings.append(f"floor {floor}: {len(potions)} potions replayed for {slots} slots")
+                del potions[:len(potions) - slots]
             choices = stats.get("card_choices") or ()
             picked = [choice for choice in choices if choice.get("was_picked")]
             for room in point.get("rooms") or ():
@@ -241,9 +286,9 @@ def replay_run(run: Mapping, starting_deck: Iterable[str], run_key: str) -> dict
                 })
             # Deck changes of this point, in the order the game applies them.
             for change in stats.get("cards_transformed") or ():
-                _remove(deck, bare_id(change["original_card"]["id"]), warnings, floor)
+                _remove(deck, change["original_card"], warnings, floor)
             for card in stats.get("cards_removed") or ():
-                _remove(deck, bare_id(card["id"]), warnings, floor)
+                _remove(deck, card, warnings, floor)
             transformed = [bare_id(c["final_card"]["id"]) for c in stats.get("cards_transformed") or ()]
             for card in stats.get("cards_gained") or ():
                 deck.append(_entry(card))
@@ -270,15 +315,13 @@ def replay_run(run: Mapping, starting_deck: Iterable[str], run_key: str) -> dict
                 if target is not None:
                     target["enchantment"] = card["enchantment"] or bare_id(change.get("enchantment"))
                     target["enchantment_amount"] = card["enchantment_amount"]
-            for relic in stats.get("relics_removed") or ():
-                removed_relics.append((bare_id(relic), floor))
             for choice in stats.get("potion_choices") or ():
                 if choice.get("was_picked"):
                     potions.append(bare_id(choice["choice"]))
             potions.extend(bare_id(potion) for potion in stats.get("bought_potions") or ())
-            for potion in (*(stats.get("potion_used") or ()), *(stats.get("potion_discarded") or ())):
-                if bare_id(potion) in potions:
-                    potions.remove(bare_id(potion))
+    for relic, (arrived, left) in lost_relics.items():
+        if arrived == 0:
+            warnings.append(f"{relic} left at floor {left}; its arrival was not recorded, counted from the start")
     final = [_entry(card) for card in player.get("deck") or ()]
     cards = collections.Counter(entry["card"] for entry in deck)
     final_cards = collections.Counter(entry["card"] for entry in final)

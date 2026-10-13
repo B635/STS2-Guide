@@ -107,6 +107,49 @@ class RunHistoryTests(unittest.TestCase):
         deck = {row["card"] for row in result["situations"][0]["scoring_view"]["state"]["deck"]}
         self.assertIn("ASCENDERS_BANE", deck)
 
+    def test_a_relic_lost_later_is_still_held_before_it_left(self):
+        # Independent review 2026-10-13: such relics were missing everywhere.
+        data = copy.deepcopy(run())
+        points = data["map_point_history"][0]
+        points[0]["player_stats"][0]["relic_choices"] = [{"choice": "RELIC.LOST_LATER", "was_picked": True}]
+        points[2]["player_stats"][0]["relics_removed"] = ["RELIC.LOST_LATER"]
+        result = replay_run(data, STARTER, "1")
+        first, second = result["situations"]
+        self.assertIn("LOST_LATER", first["scoring_view"]["state"]["relics"])      # floor 2, lost at 3
+        self.assertNotIn("LOST_LATER", second["scoring_view"]["state"]["relics"])  # floor 4
+        self.assertEqual(result["problems"], [])
+
+    def test_the_starting_relic_is_there_in_a_first_floor_fight(self):
+        data = copy.deepcopy(run())
+        points = data["map_point_history"][0]
+        points[0] = {
+            "map_point_type": "monster",
+            "player_stats": stats(card_choices=[choice("CLEAVE"), choice("ANGER"), choice("SHRUG")]),
+            "rooms": [{"model_id": "ENCOUNTER.FIRST", "room_type": "monster", "turns_taken": 3}],
+        }
+        first = replay_run(data, STARTER, "1")["situations"][0]
+        self.assertEqual(first["scoring_view"]["state"]["floor"], 1)
+        self.assertEqual(first["scoring_view"]["state"]["relics"], ["START"])
+
+    def test_the_removed_copy_is_the_one_the_record_names(self):
+        data = copy.deepcopy(run())
+        points = data["map_point_history"][0]
+        # Floor 2: one Strike is upgraded. Floor 3: the other, not upgraded, is removed.
+        points[1]["player_stats"][0]["upgraded_cards"] = ["CARD.STRIKE"]
+        points[2]["player_stats"] = stats(cards_removed=[{"id": "CARD.STRIKE", "floor_added_to_deck": 1}])
+        second = replay_run(data, STARTER, "1")["situations"][1]
+        deck = {(row["card"], row["upgrades"]): row["count"] for row in second["scoring_view"]["state"]["deck"]}
+        self.assertEqual(deck[("STRIKE", 1)], 1)
+        self.assertNotIn(("STRIKE", 0), deck)
+
+    def test_a_potion_used_in_the_fight_is_gone_at_its_reward(self):
+        data = copy.deepcopy(run())
+        points = data["map_point_history"][0]
+        points[0]["player_stats"][0]["potion_choices"] = [{"choice": "POTION.FIRE_POTION", "was_picked": True}]
+        points[1]["player_stats"][0]["potion_used"] = ["POTION.FIRE_POTION"]
+        first = replay_run(data, STARTER, "1")["situations"][0]
+        self.assertEqual(first["scoring_view"]["state"]["potions"], [])
+
     def test_multiplayer_runs_are_refused(self):
         data = copy.deepcopy(run())
         data["players"].append(data["players"][0])

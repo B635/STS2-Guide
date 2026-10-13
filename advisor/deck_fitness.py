@@ -77,12 +77,6 @@ CONTRACT_DIMENSIONS = {
     "energy": "resource_efficiency",
 }
 FIGHT_KINDS = ("MONSTER", "ELITE", "BOSS")
-REQUIRED_PARAMETERS = (
-    "hand_size", "base_energy", "fight_turns", "fight_importance", "block_share",
-    "low_hp_defense_pressure", "scaling_onset_turns", "cycle_need",
-    "vulnerable_damage_bonus", "weak_damage_reduction", "dimension_weights",
-    "preference_dimensions", "surplus_slope", "satisfaction_cap",
-)
 
 
 @dataclass(frozen=True)
@@ -112,16 +106,75 @@ class Fitness:
     tempo: float = 1.0   # expected fight length relative to the nominal one
 
 
+# Every Guide-owned parameter the kernel reads: scalars, and tables with the
+# keys they must hold. Nothing has a hidden default: a missing or malformed
+# value stops scoring with a parameter gap.
+SCALAR_PARAMETERS = (
+    "hand_size", "base_energy", "block_share", "low_hp_defense_pressure", "scaling_onset_turns",
+    "cycle_need", "vulnerable_damage_bonus", "weak_damage_reduction", "frail_block_reduction",
+    "surplus_slope", "satisfaction_cap",
+)
+TABLE_PARAMETERS = {
+    "fight_turns": FIGHT_KINDS,
+    "fight_importance": FIGHT_KINDS,
+    "dimension_weights": DIMENSIONS,
+    "fight_tempo": ("min", "max"),
+    "lookahead": ("scenarios", "max_rewards"),
+    "synergy_notes": ("min_gain", "max_cards"),
+    "card_reward_odds": ("ascension_threshold", "rare_offset_initial"),
+    "pick_margin_by_act": (),
+    "weak_encounters_by_act_index": (),
+    "base_orb_slots": (),
+}
+REQUIRED_PARAMETERS = (*SCALAR_PARAMETERS, *TABLE_PARAMETERS, "preference_dimensions")
+
+
+def _number(value: object) -> bool:
+    return isinstance(value, (int, float)) and not isinstance(value, bool)
+
+
 def _parameter_gaps(params: object) -> tuple[str, ...]:
     if not isinstance(params, Mapping):
         return ("deck_fitness_parameters_missing",)
     missing = [key for key in REQUIRED_PARAMETERS if key not in params]
     if missing:
         return tuple(f"deck_fitness_parameter_missing:{key}" for key in missing)
-    if any(float(params["fight_turns"].get(kind) or 0) <= 0 for kind in FIGHT_KINDS):
+    invalid = [key for key in SCALAR_PARAMETERS if not _number(params[key])]
+    for key, fields in TABLE_PARAMETERS.items():
+        table = params[key]
+        if not isinstance(table, Mapping) or any(not _number(table.get(field)) for field in fields):
+            invalid.append(key)
+    if invalid:
+        return tuple(f"deck_fitness_parameter_invalid:{key}" for key in invalid)
+    odds = params["card_reward_odds"]
+    rarity_rows = [
+        (odds.get(level) or {}).get(kind) for level in ("base", "ascension") for kind in FIGHT_KINDS
+    ]
+    if any(not isinstance(row, Mapping) or not row or not all(_number(v) for v in row.values()) for row in rarity_rows):
+        return ("deck_fitness_parameter_invalid:card_reward_odds",)
+    for key in ("pick_margin_by_act", "weak_encounters_by_act_index"):
+        table = params[key]
+        if not table or any(not str(act).isdigit() or not _number(value) or value < 0 for act, value in table.items()):
+            return (f"deck_fitness_parameter_invalid:{key}",)
+    if not all(_number(value) for value in params["base_orb_slots"].values()):
+        return ("deck_fitness_parameter_invalid:base_orb_slots",)
+    preferences = params["preference_dimensions"]
+    if not isinstance(preferences, Mapping) or any(
+        not isinstance(dimensions, (list, tuple)) or any(d not in DIMENSIONS for d in dimensions)
+        for dimensions in preferences.values()
+    ):
+        return ("deck_fitness_parameter_invalid:preference_dimensions",)
+    if any(float(params["fight_turns"][kind]) <= 0 for kind in FIGHT_KINDS):
         return ("deck_fitness_parameter_invalid:fight_turns",)
+    if sum(float(params["fight_importance"][kind]) for kind in FIGHT_KINDS) <= 0:
+        return ("deck_fitness_parameter_invalid:fight_importance",)
     if sum(float(value) for value in params["dimension_weights"].values()) <= 0:
         return ("deck_fitness_parameter_invalid:dimension_weights",)
+    tempo = params["fight_tempo"]
+    if not 0 < float(tempo["min"]) <= float(tempo["max"]):
+        return ("deck_fitness_parameter_invalid:fight_tempo",)
+    if float(params["satisfaction_cap"]) <= 1 or float(params["block_share"]) <= 0:
+        return ("deck_fitness_parameter_invalid:satisfaction_cap",)
     return ()
 
 
@@ -236,6 +289,7 @@ def _encounter_stats(
         return fact if fact is not None and fact.get("status") == "converted" else None
 
     rows = []
+    kinds: set = set()
     for encounter_id in encounter_ids:
         fact = repository.find_assembly_fact("encounters", encounter_id)
         if fact is None or fact.get("status") != "converted":
@@ -243,6 +297,8 @@ def _encounter_stats(
         walked = encounter_turns(fact, monster_fact, turns, ascension)
         if walked is None or any(g.startswith("monster_fact_missing") for g in walked.gaps):
             continue
+        # What the walk could not follow, by kind (the ids stay in the facts).
+        kinds.update(gap.split(":", 1)[0] for gap in walked.gaps)
         rows.append({
             "hp": walked.hp,
             "enemies": walked.enemies,
@@ -256,7 +312,9 @@ def _encounter_stats(
         })
     if not rows:
         return None
-    return {key: sum(row[key] for row in rows) / len(rows) for key in STAT_KEYS}
+    stats: Dict = {key: sum(row[key] for row in rows) / len(rows) for key in STAT_KEYS}
+    stats["gaps"] = tuple(sorted(kinds))
+    return stats
 
 
 def _fact_pools(
@@ -351,6 +409,9 @@ def compute_needs(
     boss = build_boss_preparation(repository, boss_ids, ascension=world.ascension)
     gaps.extend(boss.data_gaps)
 
+    if world.hp is None or not world.max_hp:
+        # Unknown HP is scored as full HP (no extra weight on defense) and said so.
+        gaps = (*gaps, "hp_unknown")
     hp_ratio = world.hp / world.max_hp if world.hp is not None and world.max_hp else 1.0
     rows: Dict[str, List[tuple[float, float]]] = {}
     # The act's first normal fights come from its weak pool
@@ -375,6 +436,7 @@ def compute_needs(
         stats = fact_pools.get(group)
         pool = pools.get(kind)
         if stats is not None:
+            gaps.extend(f"encounter_pool_partial:{group}:{gap}" for gap in stats.get("gaps") or ())
             hp, enemies = stats["hp"], max(1.0, stats["enemies"])
             # Vulnerable on the player raises the attack damage taken.
             attack = stats["attack"] * (1.0 + vulnerable_bonus * stats["vulnerable"])
@@ -967,7 +1029,7 @@ class DeckFitnessPolicy:
                     factors=(*a.factors, {
                         "code": "deck_fitness:lookahead",
                         "delta": round(ahead[a.candidate_id] - raw_by_id[a.candidate_id], 2),
-                        "message": f"计入本幕后续 {rewards} 次选牌（按卡池稀有度抽样）后的牌组适合度",
+                        "message": f"计入后续 {rewards} 次选牌（按卡池稀有度抽样）后的牌组适合度",
                     }),
                 ) if a.candidate_id in ahead else a
                 for a in assessments
@@ -996,7 +1058,12 @@ class DeckFitnessPolicy:
                 ) if a.candidate_id == "skip" else a
                 for a in assessments
             ]
+        # Order by the score as shown (one decimal): a card level with skip
+        # on screen has not beaten it, so skip comes first; the unrounded
+        # value only separates cards that show the same score.
         ranked = sorted(raw_by_id, key=lambda cid: (
+            -round(raw_by_id[cid], 1),
+            cid != "skip",
             -raw_by_id[cid],
             next(a.display_index for a in assessments if a.candidate_id == cid),
         ))
