@@ -1012,7 +1012,9 @@ class GapRoundTwoTests(unittest.TestCase):
         profiles = []
         for relic in relics:
             profile, gaps = relic_profile(self.repository, relic)
-            self.assertEqual(gaps, (), relic)
+            # Every mechanic converts; a registered "cannot be known" note of
+            # an applied power is a disclosure, not a conversion failure.
+            self.assertEqual([g for g in gaps if not g.startswith("fact_unknowable:")], [], relic)
             profiles.append(profile)
         return deck_capabilities(deck, profiles, Situation(6.0, 1.0, 12.0, {"MONSTER": 1.0}, 1.0, 0), params)[0]
 
@@ -1271,3 +1273,66 @@ class IndependentReviewFixTests(unittest.TestCase):
     def test_a_finisher_with_no_other_attack_hits_nothing(self):
         deck = [self.profile("DEFEND_SILENT")[0] for _ in range(6)]
         self.assertEqual(self.capabilities(deck + [self.profile("FINISHER")[0]])["frontload"], 0.0)
+
+class SecondReviewFixTests(IndependentReviewFixTests):
+    """Defects the re-review of 2026-10-13 found in the first round of fixes."""
+
+    def test_unknown_hp_is_disclosed_and_still_scored(self):
+        import copy
+
+        from advisor.deck_fitness import DeckFitnessPolicy
+        from advisor.golden_set import card_reward_request, load_golden_set
+
+        view = copy.deepcopy(load_golden_set()[0]["scoring_view"])
+        view["state"]["hp"] = None
+        result = DeckFitnessPolicy(self.repository).recommend(card_reward_request(view))
+        self.assertIn("hp_unknown", result.data_gaps)
+        self.assertNotEqual(result.status, "uncertain")
+
+    def test_retained_cards_do_not_spend_energy_the_deck_lacks(self):
+        from dataclasses import replace
+
+        strike = self.profile("STRIKE_SILENT")[0]
+        plain = [replace(strike, cost=2.0) for _ in range(10)]
+        kept = [replace(strike, cost=2.0, retain=True) for _ in range(10)]
+        # Three energy pays for 1.5 two-cost cards a turn, retained or not.
+        self.assertAlmostEqual(self.capabilities(plain)["frontload"], 9.0, places=3)
+        self.assertAlmostEqual(self.capabilities(kept)["frontload"], 9.0, places=3)
+        # One retained card among them is played every time it is drawn; the
+        # others get what is left.
+        mixed = self.capabilities([replace(strike, cost=2.0, retain=True)] + plain[:9])
+        self.assertAlmostEqual(mixed["frontload"], 9.0, places=3)
+
+    def test_an_innate_power_works_from_the_first_turn(self):
+        from dataclasses import replace
+
+        deck = self.starter("SILENT")
+        power = self.profile("AFTERIMAGE", 0)[0]
+        late = self.capabilities(deck + [power])["defense"]
+        opening = self.capabilities(deck + [replace(power, innate=True)])["defense"]
+        self.assertGreater(opening, late)
+
+    def test_a_move_counted_only_in_words_keeps_its_gap(self):
+        self.assertTrue(any("move_card" in gap for gap in self.profile("DREDGE")[1]))
+
+    def test_out_of_range_parameters_stop_scoring(self):
+        import copy
+
+        from advisor.deck_fitness import PARAMETERS_KEY, _parameter_gaps
+
+        params = dict(self.repository.mechanic_constant(PARAMETERS_KEY))
+        for path, value in (
+            (("lookahead", "scenarios"), 0),
+            (("card_reward_odds", "base"), [0.6, 0.37, 0.03]),
+            (("preference_dimensions",), {"luck": ["defense"]}),
+            (("surplus_slope",), float("nan")),
+            (("hand_size",), 0),
+        ):
+            changed = copy.deepcopy(params)
+            target = changed
+            for step in path[:-1]:
+                target = target[step]
+            target[path[-1]] = value
+            gaps = _parameter_gaps(changed)
+            self.assertEqual(len(gaps), 1, path)
+            self.assertIn("deck_fitness_parameter_invalid", gaps[0])

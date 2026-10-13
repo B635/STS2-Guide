@@ -160,5 +160,38 @@ class AttackGrowthTests(unittest.TestCase):
         self.assertEqual(monster_turns(debuff, 2).gaps, ("monster_debuff_unmodeled:Hex",))
 
 
+    def test_the_hook_of_a_power_the_walk_follows_is_not_counted_twice(self):
+        # CALCIFIED_CULTIST records Ritual both as a move and as the hook the power installs.
+        fact = {
+            "hp": {"min": 50, "max": 50},
+            "moves": [
+                {"id": "CHANT", "effects": [{"kind": "apply_power", "power": "Ritual", "target": "self", "amount": 2}]},
+                {"id": "HIT", "effects": [HIT]},
+            ],
+            "mechanics": [{
+                "when": "turn_end", "source": "power:Ritual",
+                "effect": {"kind": "apply_power", "power": "Strength", "target": "self", "amount": 2},
+            }],
+            "pattern": {"initial": "CHANT", "states": [
+                {"id": "CHANT", "type": "move", "move": "CHANT", "next": "HIT"},
+                {"id": "HIT", "type": "move", "move": "HIT", "next": "HIT"},
+            ]},
+        }
+        self.assertEqual(monster_turns(fact, 4).attack, (0.0, 5.0, 7.0, 9.0))
+
+    def test_wording_beside_a_followed_scale_is_not_a_gap(self):
+        fact = single_move([{**HIT, "scale": {"per": "own_previous_plays", "factor": 4}, "amount_text": "5 + 4 per use"}])
+        turns = monster_turns(fact, 3)
+        self.assertEqual((turns.attack, turns.gaps), ((5.0, 9.0, 13.0), ()))
+
+    def test_effects_outside_the_walk_are_named(self):
+        fact = single_move([HIT, {"kind": "summon", "monster": "MINION"}], mechanics=[
+            {"when": "turn_end", "effect": {"kind": "block", "target": "self", "amount": 5}},
+        ])
+        self.assertEqual(
+            monster_turns(fact, 2).gaps, ("monster_effect_unmodeled:summon", "monster_hook_unmodeled:block"),
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

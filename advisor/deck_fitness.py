@@ -130,7 +130,7 @@ REQUIRED_PARAMETERS = (*SCALAR_PARAMETERS, *TABLE_PARAMETERS, "preference_dimens
 
 
 def _number(value: object) -> bool:
-    return isinstance(value, (int, float)) and not isinstance(value, bool)
+    return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
 
 
 def _parameter_gaps(params: object) -> tuple[str, ...]:
@@ -147,9 +147,9 @@ def _parameter_gaps(params: object) -> tuple[str, ...]:
     if invalid:
         return tuple(f"deck_fitness_parameter_invalid:{key}" for key in invalid)
     odds = params["card_reward_odds"]
-    rarity_rows = [
-        (odds.get(level) or {}).get(kind) for level in ("base", "ascension") for kind in FIGHT_KINDS
-    ]
+    if any(not isinstance(odds.get(level), Mapping) for level in ("base", "ascension")):
+        return ("deck_fitness_parameter_invalid:card_reward_odds",)
+    rarity_rows = [odds[level].get(kind) for level in ("base", "ascension") for kind in FIGHT_KINDS]
     if any(not isinstance(row, Mapping) or not row or not all(_number(v) for v in row.values()) for row in rarity_rows):
         return ("deck_fitness_parameter_invalid:card_reward_odds",)
     for key in ("pick_margin_by_act", "weak_encounters_by_act_index"):
@@ -160,10 +160,18 @@ def _parameter_gaps(params: object) -> tuple[str, ...]:
         return ("deck_fitness_parameter_invalid:base_orb_slots",)
     preferences = params["preference_dimensions"]
     if not isinstance(preferences, Mapping) or any(
-        not isinstance(dimensions, (list, tuple)) or any(d not in DIMENSIONS for d in dimensions)
-        for dimensions in preferences.values()
+        not hasattr(DEFAULT_SCORING_PREFERENCES, str(name))
+        or not isinstance(dimensions, (list, tuple)) or any(d not in DIMENSIONS for d in dimensions)
+        for name, dimensions in preferences.items()
     ):
         return ("deck_fitness_parameter_invalid:preference_dimensions",)
+    if float(params["hand_size"]) <= 0 or float(params["base_energy"]) <= 0:
+        return ("deck_fitness_parameter_invalid:hand_size",)
+    lookahead = params["lookahead"]
+    if float(lookahead["scenarios"]) < 1 or float(lookahead["max_rewards"]) < 0:
+        return ("deck_fitness_parameter_invalid:lookahead",)
+    if float(params["surplus_slope"]) < 0:
+        return ("deck_fitness_parameter_invalid:surplus_slope",)
     if any(float(params["fight_turns"][kind]) <= 0 for kind in FIGHT_KINDS):
         return ("deck_fitness_parameter_invalid:fight_turns",)
     if sum(float(params["fight_importance"][kind]) for kind in FIGHT_KINDS) <= 0:
@@ -411,7 +419,7 @@ def compute_needs(
 
     if world.hp is None or not world.max_hp:
         # Unknown HP is scored as full HP (no extra weight on defense) and said so.
-        gaps = (*gaps, "hp_unknown")
+        gaps = [*gaps, "hp_unknown"]
     hp_ratio = world.hp / world.max_hp if world.hp is not None and world.max_hp else 1.0
     rows: Dict[str, List[tuple[float, float]]] = {}
     # The act's first normal fights come from its weak pool

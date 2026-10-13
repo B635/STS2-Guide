@@ -636,6 +636,8 @@ def _move_to_hand(effect: Mapping, upgraded: bool) -> Optional[dict]:
 
     if set(k for k in effect if not k.endswith("_text")) - MOVE_TO_HAND_KEYS:
         return None
+    if effect_text_only(effect):
+        return None  # the count depends on something the structure does not carry
     destination = effect.get("destination") or effect.get("to")
     origin = effect.get("from") or effect.get("source")
     count = effect.get("count")
@@ -893,7 +895,12 @@ def relic_profile(
             gaps.append(f"relic_mechanic_unsupported:{relic_id}:{reason}")
         else:
             supported.append(mechanic)
-    return RelicProfile(relic_id, str(fact.get("category") or ""), tuple(supported)), tuple(gaps)
+    for mechanic in fact.get("mechanics") or ():
+        effect = mechanic.get("effect") if isinstance(mechanic, Mapping) else None
+        if isinstance(effect, Mapping) and effect.get("kind") == "apply_power" and effect.get("power"):
+            power_id = class_to_entity_id(str(effect["power"]))
+            gaps.extend(_unknowable(repository.find_assembly_fact("powers", power_id), f"powers:{power_id}"))
+    return RelicProfile(relic_id, str(fact.get("category") or ""), tuple(supported)), tuple(dict.fromkeys(gaps))
 
 
 def _poisson_at_least(rate: float, k: int) -> float:
@@ -1035,7 +1042,9 @@ class _Engine:
                     weight = rate  # active on the turns the card is played
                 else:
                     played = min(1.0, rate * turns)  # chance it is played this fight
-                    weight = played * max(0.0, turns - first_turn + 1.0) / turns
+                    # An Innate card is in the opening hand: in play from turn 1.
+                    start = 1.0 if card.innate else first_turn
+                    weight = played * max(0.0, turns - start + 1.0) / turns
                 for index, mechanic in enumerate(use.mechanics):
                     follows_stacks = index < len(use.per_stack) and use.per_stack[index]
                     if use.duration == "turns_decrement" and follows_stacks:
@@ -1210,13 +1219,26 @@ class _Engine:
                     rates[id(g.profile)] += min(created, held) if g.profile.once_per_fight else held
             demand = sum(rates[id(c)] * cost for c in self.cards if (cost := self._cost(c)) is not None)
             playable = min(1.0, supply / demand) if demand > 0 else 1.0
+            # A retained card waits in hand until it can be paid for, so it is
+            # paid first; the other cards share what is left.
+            kept_demand = sum(
+                rates[id(c)] * cost for c in self.cards
+                if c.retain and (cost := self._cost(c)) is not None
+            )
+            kept_share = min(1.0, supply / kept_demand) if kept_demand > 0 else 1.0
+            if kept_demand > 0 and demand > supply:
+                rest = demand - kept_demand
+                playable = max(0.0, supply - kept_demand * kept_share) / rest if rest > 0 else 1.0
             x_rate = sum(rates[id(c)] for c in self.cards if c.x_cost)
             # X cards spend what the other plays leave, shared between them.
             x_value = max(0.0, supply - demand) / max(1.0, x_rate) if x_rate else 0.0
             self.x_value = x_value
             plays = {
                 id(c): (
-                    rates[id(c)] * (1.0 if c.x_cost or c.retain or self._cost(c) == 0 else playable)
+                    rates[id(c)] * (
+                        1.0 if c.x_cost or self._cost(c) == 0
+                        else kept_share if c.retain else playable
+                    )
                     if c.x_cost or self._cost(c) is not None else 0.0
                 )
                 for c in self.cards

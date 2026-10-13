@@ -178,8 +178,13 @@ def monster_turns(
     turn_end_strength = 0.0
     for mechanic in fact.get("mechanics") or ():
         effect = mechanic.get("effect") if isinstance(mechanic, Mapping) else None
-        if not isinstance(effect, Mapping) or effect.get("kind") != "apply_power":
+        if not isinstance(effect, Mapping):
             continue
+        if effect.get("kind") != "apply_power":
+            gaps.add(f"monster_hook_unmodeled:{effect.get('kind')}")
+            continue
+        if str(mechanic.get("source") or "").removeprefix("power:") in ATTACK_POWERS:
+            continue  # the hook of a power the walk already follows (Ritual)
         power = effect.get("power")
         if effect.get("target") in SELF_TARGETS and power == "Strength" and mechanic.get("when") == "turn_end":
             turn_end_strength += _value(effect, "amount", ascension) or 0.0
@@ -218,7 +223,11 @@ def monster_turns(
                 if kind == "damage" and target == "player":
                     count = _value(effect, "hits", ascension) or 1.0
                     scale, hits_scale = effect.get("scale"), effect.get("hits_scale")
-                    if set(effect) - DAMAGE_KEYS or any(
+                    remarks = {
+                        text for text, key in (("amount_text", "scale"), ("hits_text", "hits_scale"))
+                        if effect.get(key)
+                    }
+                    if set(effect) - DAMAGE_KEYS - remarks or any(
                         s is not None and (not isinstance(s, Mapping) or s.get("per") != "own_previous_plays")
                         for s in (scale, hits_scale)
                     ):
@@ -254,6 +263,10 @@ def monster_turns(
                     count = _value(effect, "count", ascension)
                     if count is not None:
                         cards[turn] += count
+                else:
+                    # Summons, heals, block for allies, escapes...: not part
+                    # of what the walk reports, so said rather than dropped.
+                    gaps.add(f"monster_effect_unmodeled:{kind}")
             # End of the monster's turn: hooks, then Ritual already in place
             # (Ritual applied this turn starts with the next one).
             strength += turn_end_strength + ritual

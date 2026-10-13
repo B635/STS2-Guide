@@ -86,7 +86,7 @@ def main() -> int:
             continue
         try:
             result = replay_run(run, decks[character], path.stem)
-        except (KeyError, TypeError, ValueError, RunHistoryError) as exc:
+        except (AttributeError, KeyError, TypeError, ValueError, RunHistoryError) as exc:
             # One malformed file must not stop the import.
             rejected.append(f"{path.name}: unreadable run ({type(exc).__name__}: {exc})")
             continue
