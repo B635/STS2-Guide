@@ -69,7 +69,8 @@ internal sealed class ContextDrawerRowView
         _score = new Label
         {
             Name = "CandidateScore" + index,
-            CustomMinimumSize = new Vector2(32F, 0F),
+            // Wide enough for "100.0" so the scores line up in one column.
+            CustomMinimumSize = new Vector2(60F, 0F),
             HorizontalAlignment = HorizontalAlignment.Right,
             VerticalAlignment = VerticalAlignment.Center,
             MouseFilter = Control.MouseFilterEnum.Ignore,
@@ -102,13 +103,12 @@ internal sealed class ContextDrawerRowView
 
     internal void Render(ContextDrawerRow row, bool expanded)
     {
-        var valid = row.Score.HasValue && double.IsFinite(row.Score.Value)
-            && row.Score.Value is >= 0 and <= 100;
+        var valid = ScoreText.IsValid(row.Score);
         var recommended = valid && row.Recommended;
         _caption.Text = row.Caption;
         _caption.TooltipText = row.Caption;
         _caption.AddThemeColorOverride("font_color", recommended ? Accent : Text);
-        _score.Text = valid ? $"{row.Score!.Value:0}" : "--";
+        _score.Text = ScoreText.Format(row.Score);
         _score.AddThemeColorOverride("font_color", recommended ? Accent : Text);
         _marker.Text = recommended ? "●" : "";
         _style.BorderColor = recommended ? Accent : new Color(0.20F, 0.28F, 0.36F, 0.6F);

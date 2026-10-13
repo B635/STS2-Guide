@@ -49,6 +49,19 @@ internal static class AdviceReasonTests
             """);
         if (!estimate.SequenceEqual(new[] { "permanent deck baseline only", "prior", "synergy" }))
             throw new Exception("Estimate boundaries must remain visible even when damage efficiency is neutral.");
+        // Deck fitness (v2): an unmodeled-effect note first, then the note naming the owned cards that
+        // make the candidate stronger (explanation only, delta 0), then the largest capability change.
+        var fitness = Read("""
+            {"score":57.7,"factors":[
+            {"code":"unmodeled_mechanic","message":"part of FLATTEN is not scored","delta":0},
+            {"code":"partially_modeled_deck_cards","message":"one deck card is partly scored","delta":0},
+            {"code":"deck_fitness:cycle","message":"cycle falls","delta":-1.35},
+            {"code":"deck_fitness:defense","message":"defense falls","delta":-0.89},
+            {"code":"deck_fitness:synergy","message":"Bodyguard makes FLATTEN stronger","delta":0},
+            {"code":"deck_fitness:lookahead","message":"later rewards","delta":0.05}]}
+            """);
+        if (!fitness.SequenceEqual(new[] { "part of FLATTEN is not scored", "Bodyguard makes FLATTEN stronger", "cycle falls" }))
+            throw new Exception("Deck-fitness reasons must show limits and synergy before capability changes.");
         if (Read("""{"score":null,"factors":[{"code":"estimate_scope","message":"stale estimate","delta":0}]}""").Length != 0)
             throw new Exception("Unscored candidate retained stale estimate boundary.");
     }

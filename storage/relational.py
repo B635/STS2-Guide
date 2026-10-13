@@ -44,7 +44,7 @@ CATALOG_TYPES = (
     "orbs",
     "modifiers",
 )
-SCHEMA_VERSION = 8
+SCHEMA_VERSION = 9
 
 
 def _utc_now() -> str:

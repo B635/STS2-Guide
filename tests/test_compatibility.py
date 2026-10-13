@@ -89,8 +89,8 @@ class CompatibilityManifestTests(unittest.TestCase):
         )
         from storage.relational import SCHEMA_VERSION
         from advisor.versions import (
+            ACTIVE_CARD_REWARD_POLICY_VERSION as CARD_REWARD_POLICY_VERSION,
             CAMPFIRE_POLICY_VERSION,
-            CARD_REWARD_POLICY_VERSION,
             DECK_EDIT_POLICY_VERSION,
             EVENT_POLICY_VERSION,
             MERCHANT_POLICY_VERSION,
@@ -950,9 +950,18 @@ class LiveCompatibilityGateTests(unittest.TestCase):
                 ).process(event)
 
                 self.assertFalse(replay["duplicate"])
+                # Recomputed, not relabelled. This catalog-only database has
+                # no deck-fitness facts, so the fallback policy answers under
+                # its own version.
+                from advisor.versions import CARD_REWARD_POLICY_VERSION as FALLBACK_VERSION
+
                 self.assertEqual(
                     replay["recommendation"]["policy_version"],
-                    manifest.policy.card_reward_version,
+                    FALLBACK_VERSION,
+                )
+                self.assertIn(
+                    "deck_fitness_unavailable",
+                    replay["recommendation"]["data_gaps"],
                 )
                 self.assertEqual(
                     replay["compatibility"]["release_fingerprint"],

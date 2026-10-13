@@ -16,5 +16,6 @@
     <Compile Include="../../mod/STS2Guide.ReadOnlyExporter/AdviceReasonReader.cs" Link="AdviceReasonReader.cs" />
     <Compile Include="../../mod/STS2Guide.ReadOnlyExporter/AdviceFileReader.cs" Link="AdviceFileReader.cs" />
     <Compile Include="../../mod/STS2Guide.ReadOnlyExporter/BackendLiveness.cs" Link="BackendLiveness.cs" />
+    <Compile Include="../../mod/STS2Guide.ReadOnlyExporter/ScoreText.cs" Link="ScoreText.cs" />
   </ItemGroup>
 </Project>

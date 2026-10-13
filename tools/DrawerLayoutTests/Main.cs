@@ -104,7 +104,7 @@ public partial class Main : Control
         GetWindow().Size = new Vector2I(800, 600);
         var names = new[] { "这是一张特别特别长的中文卡牌名称", "另一张牌", "跳过" };
         var handle = ContextDrawer.Show(this, null, "选牌建议", names);
-        var values = names.Select((name, i) => new ContextDrawerRow(name, 61 - i, i == 0,
+        var values = names.Select((name, i) => new ContextDrawerRow(name, i == 0 ? 100 : 61.4 - i, i == 0,
             new[] { "与当前牌组协同。", "这是一条较长的真实评分依据，用来验证原因会换行而不是撑破侧栏边界。" })).ToArray();
         ContextDrawer.Render(handle, values);
         await Settle(handle);
@@ -118,7 +118,7 @@ public partial class Main : Control
         var reason1 = Node<Label>("CandidateReasons1");
         Require(panel.Size.X <= 240.5F, "Long name exceeded viewport width budget");
         Require(caption.GetGlobalRect().End.X <= score.GetGlobalRect().Position.X, "Name overlaps score");
-        Require(score.Text == "61" && caption.TooltipText == names[0], "Score or full name lost");
+        Require(score.Text == "100.0" && caption.TooltipText == names[0], "Score or full name lost");
         Require(caption.MouseFilter == MouseFilterEnum.Stop && first.MouseFilter == MouseFilterEnum.Stop,
             "Caption tooltip or explanation button cannot receive pointer events");
         Require(!reason0.Visible && !reason1.Visible, "Reasons must start collapsed");
@@ -139,7 +139,7 @@ public partial class Main : Control
         Require(!reason0.Visible && !reason1.Visible && !first.Disabled, "Recovery must be collapsed and usable");
         var partial = new[] { values[0], new ContextDrawerRow(names[1], null, false), values[2] };
         ContextDrawer.Render(handle, partial, AdviceAvailability.Unavailable);
-        Require(score.Text == "61" && !first.Disabled && second.Disabled,
+        Require(score.Text == "100.0" && !first.Disabled && second.Disabled,
             "One unavailable candidate erased another candidate's validated score/reasons");
         ContextDrawer.Hide(handle);
         var replacement = ContextDrawer.Show(this, null, "新决策", names);

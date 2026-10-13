@@ -53,10 +53,10 @@ from advisor.decision_core import (
 )
 from advisor.route import RoutePolicy
 from advisor.scoring_preferences import DEFAULT_SCORING_PREFERENCES, ScoringPreferences
+# Scoring kernel v2; the ``_1`` suffix versions the deck-fitness parameters.
+from advisor.versions import DECK_FITNESS_POLICY_VERSION
 from storage.relational import RelationalRepository
 
-# Scoring kernel v2; the ``_1`` suffix versions the deck-fitness parameters.
-DECK_FITNESS_POLICY_VERSION = "card_reward:deck_fitness_1"
 PARAMETERS_KEY = "deck_fitness_v1"
 DIMENSIONS = ("frontload", "aoe", "defense", "scaling", "cycle", "energy")
 DIMENSION_LABELS = {
@@ -1028,7 +1028,12 @@ class DeckFitnessPolicy:
                     score=round(ahead[a.candidate_id], 1),
                     factors=(*a.factors, {
                         "code": "deck_fitness:lookahead",
-                        "delta": round(ahead[a.candidate_id] - raw_by_id[a.candidate_id], 2),
+                        # What looking ahead changes for this candidate beyond what it
+                        # changes for skipping (0 for skip itself: nothing to explain).
+                        "delta": round(
+                            (ahead[a.candidate_id] - raw_by_id[a.candidate_id])
+                            - ((ahead["skip"] - raw_by_id["skip"]) if "skip" in ahead else 0.0), 2
+                        ),
                         "message": f"计入后续 {rewards} 次选牌（按卡池稀有度抽样）后的牌组适合度",
                     }),
                 ) if a.candidate_id in ahead else a

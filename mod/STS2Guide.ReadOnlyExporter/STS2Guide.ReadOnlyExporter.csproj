@@ -8,7 +8,7 @@
     <Nullable>enable</Nullable>
     <AssemblyName>STS2GuideReadOnlyExporter</AssemblyName>
     <RootNamespace>STS2Guide.ReadOnlyExporter</RootNamespace>
-    <Version>0.3.11</Version>
+    <Version>0.3.12</Version>
 
     <STS2GamePath Condition="'$(STS2GamePath)' == ''">C:\Program Files (x86)\Steam\steamapps\common\Slay the Spire 2</STS2GamePath>
     <GodotExePath Condition="'$(GodotExePath)' == ''"></GodotExePath>

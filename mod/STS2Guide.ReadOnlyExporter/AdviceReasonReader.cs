@@ -29,7 +29,7 @@ internal static class AdviceReasonReader
                 var limitation = numeric == 0
                     && factor.TryGetProperty("code", out var code)
                     && code.ValueKind == JsonValueKind.String
-                    && code.GetString() is "unmodeled_mechanic" or "estimate_scope";
+                    && code.GetString() is "unmodeled_mechanic" or "estimate_scope" or "deck_fitness:synergy";
                 if (numeric != 0 || limitation)
                     reasons.Add((limitation, Math.Abs(numeric), index, message.GetString()!.Trim()));
             }

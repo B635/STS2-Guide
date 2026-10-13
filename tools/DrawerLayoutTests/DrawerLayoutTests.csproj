@@ -8,6 +8,7 @@
   <ItemGroup>
     <Compile Include="../../mod/STS2Guide.ReadOnlyExporter/ContextDrawer.cs" Link="ContextDrawer.cs" />
     <Compile Include="../../mod/STS2Guide.ReadOnlyExporter/ContextDrawerRowView.cs" Link="ContextDrawerRowView.cs" />
+    <Compile Include="../../mod/STS2Guide.ReadOnlyExporter/ScoreText.cs" Link="ScoreText.cs" />
     <Compile Include="../../mod/STS2Guide.ReadOnlyExporter/AdviceAvailability.cs" Link="AdviceAvailability.cs" />
     <Compile Include="../../mod/STS2Guide.ReadOnlyExporter/ProtocolModels.cs" Link="ProtocolModels.cs" />
   </ItemGroup>

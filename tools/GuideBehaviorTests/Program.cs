@@ -8,6 +8,7 @@ var directory = Path.GetFullPath(args[0]);
 AdviceAvailabilityTests.Run();
 AdviceReasonTests.Run();
 BackendLivenessTests.Run();
+ScoreTextTests.Run();
 AssemblyLoadContext.Default.Resolving += (context, name) =>
 {
     var path = Path.Combine(directory, name.Name + ".dll");

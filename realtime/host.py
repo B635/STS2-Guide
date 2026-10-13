@@ -18,7 +18,7 @@ from advisor.data_sources import load_local_card_tiers
 from advisor.scoring_preferences import ScoringPreferences, load_scoring_preferences
 from advisor.versions import (
     CAMPFIRE_POLICY_VERSION,
-    CARD_REWARD_POLICY_VERSION,
+    ACTIVE_CARD_REWARD_POLICY_VERSION,
     DECK_EDIT_POLICY_VERSION,
     EVENT_POLICY_VERSION,
     MERCHANT_POLICY_VERSION,
@@ -173,7 +173,7 @@ def _observe_local_components(
             or _sha256_path(community_path)
         ),
         policy_bundle_version=POLICY_BUNDLE_VERSION,
-        card_reward_policy_version=CARD_REWARD_POLICY_VERSION,
+        card_reward_policy_version=ACTIVE_CARD_REWARD_POLICY_VERSION,
         route_policy_version=ROUTE_POLICY_VERSION,
         merchant_policy_version=MERCHANT_POLICY_VERSION,
         campfire_policy_version=CAMPFIRE_POLICY_VERSION,
