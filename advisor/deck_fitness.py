@@ -644,6 +644,17 @@ def _synergy_notes(card, label, deck, score_deck, params, name_of=lambda c: c) -
     }]
 
 
+def _pick_margin(params: Mapping, act: Optional[int]) -> float:
+    """Points a card must beat skipping by; the last act listed covers later ones."""
+
+    table = params.get("pick_margin_by_act") or {}
+    if not table or act is None:
+        return 0.0
+    known = sorted(int(key) for key in table)
+    chosen = max((key for key in known if key <= int(act)), default=known[0])
+    return float(table[str(chosen)])
+
+
 def _scenario_seed(decision_id: str) -> int:
     return int(hashlib.sha256(decision_id.encode("utf-8")).hexdigest()[:12], 16)
 
@@ -966,6 +977,25 @@ class DeckFitnessPolicy:
                 for c, s in legacy_rows
             ]
             raw_by_id = dict(ahead)
+        # A card is worth taking only when it beats skipping by a clear
+        # margin, larger in later acts (spec 2.8 addendum 2026-10-13). The
+        # margin is added to skip's score and listed as its own factor.
+        margin = _pick_margin(params, request.world.act)
+        if margin > 0 and "skip" in raw_by_id and len(raw_by_id) > 1:
+            raw_by_id["skip"] += margin
+            assessments = [
+                replace(
+                    a,
+                    score=round(raw_by_id["skip"], 1),
+                    factors=(*a.factors, {
+                        "code": "deck_fitness:pick_margin",
+                        "delta": round(margin, 2),
+                        "message": f"第 {request.world.act} 幕：候选要比跳过高出 {margin:g} 分以上才值得拿"
+                                   "（门槛按玩家历史对局中的取舍设定）",
+                    }),
+                ) if a.candidate_id == "skip" else a
+                for a in assessments
+            ]
         ranked = sorted(raw_by_id, key=lambda cid: (
             -raw_by_id[cid],
             next(a.display_index for a in assessments if a.candidate_id == cid),

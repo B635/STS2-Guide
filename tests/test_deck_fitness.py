@@ -85,11 +85,34 @@ class DeckFitnessPolicyTests(unittest.TestCase):
         result = self.recommend(
             [card("STRIKE_IRONCLAD", 9), card("BASH")], ["STRIKE_IRONCLAD", "DEFEND_IRONCLAD"]
         )
-        self.assertEqual(result.recommended_candidate_id, "1:DEFEND_IRONCLAD")
+        scores = self.scores(result)
+        self.assertGreater(scores["1:DEFEND_IRONCLAD"], scores["0:STRIKE_IRONCLAD"])
         top = next(r for r in result.candidates if r.candidate_id == "1:DEFEND_IRONCLAD").factors[0]
         self.assertIn("DEFEND_IRONCLAD", top["message"])
         self.assertEqual(top["code"], "deck_fitness:defense")
         self.assertGreater(top["delta"], 0)
+
+    def test_a_card_must_beat_skipping_by_the_acts_margin(self):
+        from advisor.deck_fitness import PARAMETERS_KEY, _pick_margin
+
+        params = self.repository.mechanic_constant(PARAMETERS_KEY)
+        self.assertEqual([_pick_margin(params, act) for act in (1, 2, 3, 4)], [1.0, 2.0, 3.0, 3.0])
+        self.assertEqual(_pick_margin({}, 2), 0.0)
+        deck = [card("STRIKE_IRONCLAD", 9), card("BASH")]
+        result = self.recommend(deck, ["STRIKE_IRONCLAD", "DEFEND_IRONCLAD"])
+        rows = {row.candidate_id: row for row in result.candidates}
+        margin = next(f for f in rows["skip"].factors if f["code"] == "deck_fitness:pick_margin")
+        self.assertEqual(margin["delta"], 1.0)
+        self.assertIn("1 分", margin["message"])
+        # Defend helps, but by less than the margin: skipping is recommended,
+        # and the cards keep their own order below it.
+        self.assertEqual((result.status, result.recommended_candidate_id), ("skip", "skip"))
+        self.assertEqual([rows[c].rank for c in ("skip", "1:DEFEND_IRONCLAD", "0:STRIKE_IRONCLAD")], [1, 2, 3])
+        # A card far better than the deck clears the margin.
+        strong = self.recommend(
+            [card("STRIKE_IRONCLAD", 5), card("DEFEND_IRONCLAD", 4), card("BASH")], ["OFFERING"]
+        )
+        self.assertEqual(strong.recommended_candidate_id, "0:OFFERING")
 
     def test_low_hp_makes_defense_matter_more_without_inventing_a_bigger_need(self):
         deck = [card("STRIKE_IRONCLAD", 5), card("DEFEND_IRONCLAD", 4), card("BASH")]
