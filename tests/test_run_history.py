@@ -150,6 +150,21 @@ class RunHistoryTests(unittest.TestCase):
         first = replay_run(data, STARTER, "1")["situations"][0]
         self.assertEqual(first["scoring_view"]["state"]["potions"], [])
 
+    def test_rest_sites_and_shop_removals_are_kept_for_checking_other_decisions(self):
+        data = copy.deepcopy(run())
+        points = data["map_point_history"][0]
+        points[2]["player_stats"][0]["rest_site_choices"] = ["SMITH"]
+        points[2]["player_stats"][0]["cards_removed"] = []
+        points[3]["map_point_type"] = "shop"
+        points[3]["player_stats"][0]["cards_removed"] = [{"id": "CARD.STRIKE", "floor_added_to_deck": 1}]
+        result = replay_run(data, STARTER, "1")
+        rest, removal = result["decisions"]
+        self.assertEqual((rest["kind"], rest["chosen"], rest["upgraded"]), ("rest", "SMITH", "STRIKE"))
+        self.assertEqual((removal["kind"], removal["chosen"], removal["chosen_upgrades"]), ("remove", "STRIKE", 0))
+        # The deck of the moment, before the point's own changes.
+        before = {(r["card"], r["upgrades"]): r["count"] for r in rest["scoring_view"]["state"]["deck"]}
+        self.assertEqual(before, {("STRIKE", 0): 2, ("DEFEND", 0): 1, ("BASH", 0): 1})
+
     def test_multiplayer_runs_are_refused(self):
         data = copy.deepcopy(run())
         data["players"].append(data["players"][0])

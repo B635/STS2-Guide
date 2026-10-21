@@ -202,6 +202,7 @@ def replay_run(run: Mapping, starting_deck: Iterable[str], run_key: str) -> dict
     potions: List[str] = []
     problems: List[str] = []
     situations: List[dict] = []
+    decisions: List[dict] = []   # rest sites, shop removals, ancient relic choices
     fights: List[dict] = []
     floor = 0
     for act_index, points in enumerate(run.get("map_point_history") or ()):
@@ -238,6 +239,38 @@ def replay_run(run: Mapping, starting_deck: Iterable[str], run_key: str) -> dict
                         "hp_after": stats.get("current_hp"), "max_hp": stats.get("max_hp"),
                         "deck": before, "relics": relics_now,
                     })
+            def view(label, hp, candidates):
+                """The situation at this point as a card-reward scoring view
+                (the shape the policies read); ``candidates`` may be empty."""
+
+                return {
+                    "schema_version": VIEW_SCHEMA_VERSION,
+                    "event_type": "card_reward",
+                    "game_version": str(run.get("build_id") or "").lstrip("v"),
+                    "run_id": f"history-{run_key}",
+                    "sequence": floor,
+                    "decision_id": f"history-{run_key}:{label}:{floor}",
+                    "guide_preferences": {"route_mode": "balanced"},
+                    "state": {
+                        "character": character, "ascension": int(run.get("ascension") or 0),
+                        "act": act_index + 1, "floor": floor,
+                        "hp": hp, "max_hp": stats.get("max_hp"),
+                        "gold": stats.get("current_gold"), "energy": 0,
+                        "deck": before, "relics": relics_now,
+                        "relic_states": [
+                            {"relic": relic, "display_amount": None, "stack_count": 1, "status": "NORMAL"}
+                            for relic in relics_now
+                        ],
+                        "potions": [{"potion": potion, "slot": slot} for slot, potion in enumerate(potions)],
+                        "max_potion_slots": int(player.get("max_potion_slot_count") or 3),
+                        "modifiers": [], "capture_warnings": [],
+                    },
+                    "candidates": [*candidates, SKIP_CANDIDATE],
+                    "decision": {"can_skip": True, "can_reroll": False, "reward_source": "CARD"},
+                    "decision_parent": None,
+                    "map_context": _act_map(points, index, act_index + 1),
+                }
+
             # One ordinary reward: three (or four) cards, at most one taken.
             if kind in FIGHT_POINTS and len(choices) in (3, 4) and len(picked) <= 1:
                 candidates = [_candidate(i, choice["card"]) for i, choice in enumerate(choices)]
@@ -256,33 +289,35 @@ def replay_run(run: Mapping, starting_deck: Iterable[str], run_key: str) -> dict
                     "obvious_errors": [],
                     "label_status": "confirmed",
                     "rationale": "The player's own pick in a finished run, read from the game's run history.",
-                    "scoring_view": {
-                        "schema_version": VIEW_SCHEMA_VERSION,
-                        "event_type": "card_reward",
-                        "game_version": str(run.get("build_id") or "").lstrip("v"),
-                        "run_id": f"history-{run_key}",
-                        "sequence": floor,
-                        "decision_id": f"history-{run_key}:card-reward:{floor}",
-                        "guide_preferences": {"route_mode": "balanced"},
-                        "state": {
-                            "character": character, "ascension": int(run.get("ascension") or 0),
-                            "act": act_index + 1, "floor": floor,
-                            "hp": stats.get("current_hp"), "max_hp": stats.get("max_hp"),
-                            "gold": stats.get("current_gold"), "energy": 0,
-                            "deck": before, "relics": relics_now,
-                            "relic_states": [
-                                {"relic": relic, "display_amount": None, "stack_count": 1, "status": "NORMAL"}
-                                for relic in relics_now
-                            ],
-                            "potions": [{"potion": potion, "slot": slot} for slot, potion in enumerate(potions)],
-                            "max_potion_slots": int(player.get("max_potion_slot_count") or 3),
-                            "modifiers": [], "capture_warnings": [],
-                        },
-                        "candidates": [*candidates, SKIP_CANDIDATE],
-                        "decision": {"can_skip": True, "can_reroll": False, "reward_source": "CARD"},
-                        "decision_parent": None,
-                        "map_context": _act_map(points, index, act_index + 1),
-                    },
+                    "scoring_view": view("card-reward", stats.get("current_hp"), candidates),
+                })
+            # Other decisions of the point, for checking the engine on them.
+            rest = [str(choice).upper() for choice in stats.get("rest_site_choices") or ()]
+            upgraded = [bare_id(card) for card in stats.get("upgraded_cards") or ()]
+            healed = int(stats.get("hp_healed") or 0)
+            hp_before = (stats.get("current_hp") or 0) - healed if stats.get("current_hp") is not None else None
+            common = {"character": character, "run": run_key, "build_id": run.get("build_id"),
+                      "win": bool(run.get("win")), "floor": floor, "act": act_index + 1}
+            if kind == "rest_site" and len(rest) == 1 and rest[0] in {"HEAL", "SMITH"}:
+                decisions.append({
+                    **common, "kind": "rest", "chosen": rest[0], "healed": healed,
+                    "upgraded": upgraded[0] if rest[0] == "SMITH" and len(upgraded) == 1 else None,
+                    "scoring_view": view("rest", hp_before, []),
+                })
+            removed = stats.get("cards_removed") or ()
+            if kind == "shop" and len(removed) == 1:
+                card = _entry(removed[0])
+                decisions.append({
+                    **common, "kind": "remove", "chosen": card["card"], "chosen_upgrades": card["upgrades"],
+                    "scoring_view": view("remove", stats.get("current_hp"), []),
+                })
+            options = [o for o in stats.get("ancient_choice") or () if isinstance(o, Mapping) and o.get("TextKey")]
+            if len(options) >= 2 and sum(bool(o.get("was_chosen")) for o in options) == 1:
+                decisions.append({
+                    **common, "kind": "ancient_relic",
+                    "options": [bare_id(o["TextKey"]) for o in options],
+                    "chosen": next(bare_id(o["TextKey"]) for o in options if o.get("was_chosen")),
+                    "scoring_view": view("ancient", stats.get("current_hp"), []),
                 })
             # Deck changes of this point, in the order the game applies them.
             for change in stats.get("cards_transformed") or ():
@@ -335,7 +370,10 @@ def replay_run(run: Mapping, starting_deck: Iterable[str], run_key: str) -> dict
         # record (a relic or an event). Its moment is unknown, so the decks
         # keep the card not upgraded.
         warnings.append(f"unrecorded upgrades: {dict(_deck_key(final) - _deck_key(deck))}")
-    return {"situations": situations, "fights": fights, "problems": problems, "warnings": warnings}
+    return {
+        "situations": situations, "fights": fights, "decisions": decisions,
+        "problems": problems, "warnings": warnings,
+    }
 
 
 def load_run(path: Path) -> dict:

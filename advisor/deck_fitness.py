@@ -780,6 +780,32 @@ def _roll_rarity(rng: random.Random, odds: Mapping[str, float], rare_offset: flo
     return "common"
 
 
+@dataclass
+class DeckContext:
+    """A situation ready for scoring decks (see ``DeckFitnessPolicy.deck_context``)."""
+
+    params: Mapping
+    deck: List[Optional[CardProfile]]
+    relics: List[RelicProfile]
+    needs: Needs
+    situation: Situation
+    gaps: List[str]
+    unknown_cards: List[str]
+    partial_cards: List[str]
+    unmodeled_relics: List[str]
+
+    def score(
+        self, cards: Sequence[Optional[CardProfile]], relics: Optional[Sequence[RelicProfile]] = None,
+    ) -> tuple["Fitness", tuple[str, ...]]:
+        """Fitness of ``cards`` (with ``relics``, by default the current ones)
+        here, and the engine gaps met on the way."""
+
+        capabilities, engine_gaps = deck_capabilities(
+            list(cards), list(self.relics if relics is None else relics), self.situation, self.params,
+        )
+        return fitness(capabilities, self.needs, self.params), tuple(engine_gaps)
+
+
 class DeckFitnessPolicy:
     decision_type = CARD_REWARD
 
@@ -931,11 +957,15 @@ class DeckFitnessPolicy:
             values[option] = totals / len(scenarios)
         return values, rewards
 
-    def recommend(self, request: DecisionRequest) -> Recommendation:
+    def deck_context(self, request: DecisionRequest) -> tuple[Optional["DeckContext"], tuple[str, ...]]:
+        """Everything a deck is scored against in this situation: the deck
+        and relics as profiles, the fight needs and the engine situation.
+        ``(None, gaps)`` when the situation cannot be scored."""
+
         params = self.repository.mechanic_constant(PARAMETERS_KEY)
         parameter_gaps = _parameter_gaps(params)
         if parameter_gaps:
-            return self._uncertain(request, parameter_gaps)
+            return None, parameter_gaps
 
         state = request.world.scoring_state()
         deck: List[Optional[CardProfile]] = []
@@ -977,7 +1007,7 @@ class DeckFitnessPolicy:
         )
         gaps.extend(needs.gaps)
         if not needs.values:
-            return self._uncertain(request, gaps)
+            return None, tuple(gaps)
         situation = Situation(
             fight_turns=needs.fight_turns,
             extra_enemies=needs.extra_enemies,
@@ -1001,6 +1031,24 @@ class DeckFitnessPolicy:
             enemy_hp=needs.enemy_hp,
             sovereign_blade=self._card("SOVEREIGN_BLADE", 0)[0],
         )
+
+        return DeckContext(
+            params=params, deck=deck, relics=relics, needs=needs, situation=situation, gaps=gaps,
+            unknown_cards=unknown_cards, partial_cards=partial_cards, unmodeled_relics=unmodeled_relics,
+        ), ()
+
+    def recommend(self, request: DecisionRequest) -> Recommendation:
+        context, context_gaps = self.deck_context(request)
+        if context is None:
+            return self._uncertain(request, context_gaps)
+        params, deck, relics, needs, situation = (
+            context.params, context.deck, context.relics, context.needs, context.situation,
+        )
+        gaps = context.gaps
+        unknown_cards, partial_cards, unmodeled_relics = (
+            context.unknown_cards, context.partial_cards, context.unmodeled_relics,
+        )
+        state = request.world.scoring_state()
 
         def evaluate(cards: List[Optional[CardProfile]]) -> Fitness:
             capabilities, engine_gaps = deck_capabilities(cards, relics, situation, params)

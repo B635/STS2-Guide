@@ -63,7 +63,7 @@ def main() -> int:
     }
     files = sorted(args.history_root.glob("**/history/*.run"))
     counts = collections.Counter()
-    situations, fights, rejected = [], [], []
+    situations, fights, decisions, rejected = [], [], [], []
     for path in files:
         counts["files"] += 1
         try:
@@ -113,6 +113,7 @@ def main() -> int:
                 continue
             situations.append(situation)
         fights.extend(result["fights"])
+        decisions.extend(result["decisions"])
 
     args.output.mkdir(parents=True, exist_ok=True)
     (args.output / "card_rewards.json").write_text(json.dumps({
@@ -120,12 +121,16 @@ def main() -> int:
         "note": "Generated from the game's run history by scripts/import_run_history.py; not committed.",
         "situations": situations,
     }, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    (args.output / "decisions.json").write_text(
+        json.dumps({"decisions": decisions}, ensure_ascii=False, indent=1) + "\n", encoding="utf-8"
+    )
     (args.output / "fights.json").write_text(
         json.dumps({"fights": fights}, ensure_ascii=False, indent=1) + "\n", encoding="utf-8"
     )
     print(dict(counts))
     print(f"situations {len(situations)} (skip answers {sum(s['best'] == ['skip'] for s in situations)}), "
           f"fights {len(fights)} -> {args.output}")
+    print("other decisions", dict(collections.Counter(d["kind"] for d in decisions)))
     by_character = collections.Counter(s["character"] for s in situations)
     print("by character", dict(by_character))
     if rejected:
