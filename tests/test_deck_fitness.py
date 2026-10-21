@@ -1189,11 +1189,13 @@ class IndependentReviewFixTests(unittest.TestCase):
         self.assertGreater(opening, late)
 
     def test_a_value_given_only_as_text_is_a_gap_and_keeps_its_base(self):
-        rend, gaps = self.profile("REND")
-        self.assertIn("card_effect_unsupported:REND:effect_text_only:amount_text", gaps)
-        self.assertEqual([e["amount"] for e in rend.effects if e["kind"] == "damage"], [10.0])
-        _, gaps = self.profile("MIND_BLAST")
-        self.assertIn("card_effect_unsupported:MIND_BLAST:effect_text_only:amount_text", gaps)
+        # Genetic Algorithm's growth lasts the whole run (DeckVersion): not a fight quantity.
+        algorithm, gaps = self.profile("GENETIC_ALGORITHM")
+        self.assertEqual([e["amount"] for e in algorithm.effects if e["kind"] == "block"], [1.0])
+        self.assertIn("card_effect_unsupported:GENETIC_ALGORITHM:effect_text_only:amount_text", gaps)
+        # Values the reviewed text states and a fight source can estimate are scored.
+        for card_id in ("MURDER", "REND", "MIND_BLAST", "CHILL", "DOUBLE_ENERGY"):
+            self.assertFalse(any("effect_text_only" in gap for gap in self.profile(card_id)[1]), card_id)
         # A plain remark is not a gap.
         self.assertFalse(any("effect_text_only" in gap for gap in self.profile("DODGE_AND_ROLL")[1]))
 
@@ -1343,3 +1345,31 @@ class SecondReviewFixTests(IndependentReviewFixTests):
             gaps = _parameter_gaps(changed)
             self.assertEqual(len(gaps), 1, path)
             self.assertIn("deck_fitness_parameter_invalid", gaps[0])
+
+
+class MissingMechanicTests(IndependentReviewFixTests):
+    """Mechanics added because the player kept taking cards that need them."""
+
+    def regent(self):
+        names = ["STRIKE_REGENT"] * 4 + ["DEFEND_REGENT"] * 4 + ["FALLING_STAR", "VENERATE", "GLOW"]
+        return [self.profile(name)[0] for name in names]
+
+    def test_a_card_that_returns_after_play_is_there_again_later(self):
+        from dataclasses import replace
+
+        for card_id, back in (("PARTICLE_WALL", "hand"), ("SHINING_STRIKE", "top")):
+            card, gaps = self.profile(card_id)
+            self.assertEqual((card.returns, gaps), (back, ()))
+            once = self.capabilities(self.regent() + [replace(card, returns=None)])
+            again = self.capabilities(self.regent() + [card])
+            dimension = "defense" if card_id == "PARTICLE_WALL" else "frontload"
+            self.assertGreater(again[dimension], once[dimension], card_id)
+
+    def test_a_power_moving_a_card_into_the_hand_draws_it(self):
+        from advisor.deck_mechanics import power_use
+
+        use, gaps = power_use(self.repository, "Aggression", 1)
+        self.assertEqual([m["effect"] for m in use.mechanics], [{"kind": "draw", "amount": 1.0}])
+        # The moved card is also upgraded: that part is not valued, and said so.
+        self.assertEqual(gaps, ("power_mechanic_unsupported:AGGRESSION:move_rider:upgrade_moved",))
+

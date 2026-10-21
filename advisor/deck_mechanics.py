@@ -75,7 +75,11 @@ SCALE_SOURCES = frozenset({
     # Per card (see ``_resolve``).
     "attacks_played_this_turn", "skills_played_this_turn", "osty_attacks_this_turn",
     "other_osty_attack_cards", "times_drawn_this_combat", "star_cost_cards", "x_value",
-    "enemies_killed_by_this_card",
+    "enemies_killed_by_this_card", "energy_after_cost",
+    # From the previous pass at an average moment (see ``_estimate``).
+    "cards_drawn_this_combat", "draw_pile", "target_debuff_types", "discards_this_turn",
+    "hand_space", "enemy_count", "orbs_channeled_this_combat", "cards_played_this_combat",
+    "energy_spent_this_turn", "skills_in_hand",
 })
 EFFECT_CONDITIONS = frozenset({
     "target_has_power", "exhaust_pile_at_least", "lost_hp_this_turn",
@@ -192,6 +196,10 @@ class CardProfile:
     cost_rule: Optional[tuple] = None   # (kind, value[, card_type]) see ``_cost_rule``
     sly: bool = False               # played for free when discarded by an effect
     retain: bool = False            # stays in hand until played
+    # After a play the card goes back to the hand ("hand") or onto the draw
+    # pile ("top") instead of the discard pile: once drawn, it is there again
+    # every turn (Particle Wall, Shining Strike).
+    returns: Optional[str] = None
     innate: bool = False            # starts every fight in the opening hand
 
     @property
@@ -455,6 +463,11 @@ def power_use(
         gaps.extend(generated_gaps)
         source = _next_turn_once(raw) if next_turn else raw
         mechanic = _resolve_stacks(source, stacks)
+        if (mechanic.get("effect") or {}).get("kind") == "move_card":
+            as_draw, rider_gaps = _move_as_draw(mechanic["effect"])
+            if as_draw is not None:
+                mechanic = {**mechanic, "effect": as_draw}
+                gaps.extend(f"power_mechanic_unsupported:{power_id}:{gap}" for gap in rider_gaps)
         reason = unsupported_reason(mechanic)
         if reason:
             gaps.append(f"power_mechanic_unsupported:{power_id}:{reason}")
@@ -626,6 +639,50 @@ def _enemy_strength_down(
     return {"kind": "enemy_strength_down", "amount": -per_stack * amount, "target": target, "lasting": "turn"}
 
 
+def _returns_after_play(effect: Mapping) -> Optional[str]:
+    """``hand`` / ``top`` for a card whose play result goes back to the hand
+    or onto the top of the draw pile, else ``None``.
+
+    The fact's text explains the redirection (``GetResultLocationForCardPlay``);
+    the structure (the card itself, from play, the destination) is complete.
+    A random position or a move to another player is not this case.
+    """
+
+    if effect.get("card") != "self" or effect.get("from") != "play":
+        return None
+    if set(k for k in effect if not k.endswith("_text")) - {"kind", "card", "from", "destination", "position"}:
+        return None
+    destination = effect.get("destination")
+    if destination == "hand" and effect.get("position") in (None, "top"):
+        return "hand"
+    if destination == "draw" and effect.get("position") == "top":
+        return "top"
+    return None
+
+
+def _move_as_draw(effect: Mapping) -> tuple[Optional[dict], tuple[str, ...]]:
+    """A power's move of cards from the draw or discard pile into the hand,
+    as a draw of that many cards (Aggression: a random Attack from the
+    discard pile each turn). Riders the engine does not value are gaps."""
+
+    destination = effect.get("destination") or effect.get("to")
+    origin = effect.get("from") or effect.get("source")
+    amount = effect.get("amount", effect.get("count"))
+    if destination != "hand" or origin not in {"draw", "discard"}:
+        return None, ()
+    if effect.get("choice") not in {None, "choose", "random"}:
+        return None, ()
+    if not isinstance(amount, (int, float)) or isinstance(amount, bool):
+        return None, ()
+    known = {"kind", "from", "source", "to", "destination", "amount", "count", "choice", "filter", "upgrade_moved"}
+    if set(k for k in effect if not k.endswith("_text")) - known:
+        return None, ()
+    if set(effect.get("filter") or {}) - {"card_type"}:
+        return None, ()
+    gaps = ("move_rider:upgrade_moved",) if effect.get("upgrade_moved") else ()
+    return {"kind": "draw", "amount": float(amount)}, gaps
+
+
 def _move_to_hand(effect: Mapping, upgraded: bool) -> Optional[dict]:
     """A chosen move from the draw or discard pile into the hand, as a draw.
 
@@ -710,6 +767,7 @@ def card_profile(
         return None, (f"card_upgrade_count_unmodeled:{card_id}",)
     upgraded = upgrades == 1
     effects, powers, generates, gaps = [], [], [], []
+    returns: Optional[str] = None
     # What the review registered as impossible to know is disclosed with the
     # card, for itself and for every power it applies.
     gaps.extend(_unknowable(fact, f"cards:{card_id}"))
@@ -723,6 +781,10 @@ def card_profile(
             effects.append(weakened)
             continue
         if isinstance(effect, Mapping) and effect.get("kind") == "move_card":
+            back = _returns_after_play(effect)
+            if back is not None:
+                returns = back
+                continue
             moved = _move_to_hand(effect, upgraded)
             if moved is not None:
                 effects.append(moved)
@@ -819,6 +881,7 @@ def card_profile(
         sly="Sly" in keywords,
         retain="Retain" in keywords,
         innate="Innate" in keywords,
+        returns=None if "Exhaust" in keywords else returns,
         effects=tuple(effects),
         powers=tuple(powers),
         generates=tuple(generates),
@@ -1015,6 +1078,8 @@ class _Engine:
         self.play_totals: Dict[str, float] = {"Attack": 0.0, "Skill": 0.0, "OstyAttack": 0.0}
         self.status_made = 0.0   # Status cards created for the player per turn
         self.damage_dealt = 0.0  # damage per turn over all enemies (previous pass)
+        self.supply = 0.0        # energy per turn (this pass)
+        self.energy_spent = 0.0  # energy the turn's plays use (this pass)
         self.orb_evokes: Dict[str, float] = {}   # evokes per turn by orb (previous pass)
         self.known_set = {id(c) for c in self.known}
         self.deck_counts = {
@@ -1183,6 +1248,7 @@ class _Engine:
             drawn = min(size, hand + (0.0 if no_draw else extra_draw))
             per_turn = min(1.0, drawn / size)
             supply = base_energy + extra_energy
+            self.supply = supply
             rates = {
                 id(c): min(per_turn, 1.0 / turns) if c.once_per_fight else per_turn
                 for c in self.known
@@ -1195,6 +1261,14 @@ class _Engine:
                         1.0 / turns if c.once_per_fight
                         else min(1.0, per_turn + (1.0 - per_turn) / turns)
                     )
+            for c in self.known:
+                if c.returns and not c.once_per_fight:
+                    # Seen by turn t with chance 1-(1-p)^t, then every turn.
+                    # (A card put back on top also takes one of the turn's
+                    # draws; that small cost to the other cards is left out.)
+                    whole = max(1, int(round(turns)))
+                    seen = sum(1.0 - (1.0 - rates[id(c)]) ** t for t in range(1, whole + 1)) / whole
+                    rates[id(c)] = 1.0 if c.innate else max(rates[id(c)], seen)
             for card in self.virtual:
                 rates[id(card)] = 0.0
             if self.blade is not None and previous.forge_events > 0:
@@ -1218,6 +1292,7 @@ class _Engine:
                     held = created * elapsed * per_turn
                     rates[id(g.profile)] += min(created, held) if g.profile.once_per_fight else held
             demand = sum(rates[id(c)] * cost for c in self.cards if (cost := self._cost(c)) is not None)
+            self.energy_spent = min(supply, demand)
             playable = min(1.0, supply / demand) if demand > 0 else 1.0
             # A retained card waits in hand until it can be paid for, so it is
             # paid first; the other cards share what is left.
@@ -1383,6 +1458,24 @@ class _Engine:
             "hp_lost_this_turn": hit,
             "non_attack_in_hand": hand * (1.0 - attacks),
             "attack_draw_chain": min(10.0, 1.0 / max(1e-9, 1.0 - attacks)),
+            # Cards drawn so far this fight: the earlier turns and this hand.
+            "cards_drawn_this_combat": drawn * (elapsed + 1.0),
+            # Half of what is not in hand sits in the draw pile on average.
+            "draw_pile": max(0.0, self.size - drawn) / 2.0,
+            # Distinct debuffs on the target: Vulnerable, Weak, Poison, Doom.
+            "target_debuff_types": (
+                min(1.0, previous.vulnerable) + min(1.0, previous.weak)
+                + (1.0 if previous.poison_single + previous.poison_all > 0 else 0.0)
+                + (1.0 if previous.doom_single + previous.doom_all > 0 else 0.0)
+            ),
+            "discards_this_turn": previous.discards / 2.0,
+            # CardPile.MaxCardsInHand is 10.
+            "hand_space": max(0.0, 10.0 - hand),
+            "enemy_count": 1.0 + self.situation.extra_enemies,
+            "orbs_channeled_this_combat": sum(previous.channels.values()) * elapsed,
+            "cards_played_this_combat": sum(last.values()) * (elapsed + 0.5),
+            "energy_spent_this_turn": self.energy_spent / 2.0,
+            "skills_in_hand": hand * sum(1 for c in self.known if c.card_type == "Skill") / known,
         }
 
     def _condition_chance(self, condition: Mapping) -> float:
@@ -1433,6 +1526,8 @@ class _Engine:
         estimates["times_drawn_this_combat"] = self.rates.get(id(card), rate) * self.situation.fight_turns / 2.0
         estimates["star_cost_cards"] = self.deck_counts["star_cost"]
         estimates["x_value"] = self.x_value
+        # Energy left after paying for this card, at an average moment.
+        estimates["energy_after_cost"] = max(0.0, self.supply - (self._cost(card) or 0.0)) / 2.0
         scale = effect.get("scale")
         if scale:
             value = estimates[scale["per"]]

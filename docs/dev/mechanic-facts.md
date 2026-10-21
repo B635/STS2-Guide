@@ -143,7 +143,11 @@
 - `count_scale: {"per": 来源}`：耗竭/弃牌张数随局面。
 - 来源：`exhaust_pile`（耗竭堆张数）、`block`（当前格挡）、`enemy_vulnerable`（目标易伤层数）、`strength`（力量）、`strike_cards`（打击标签牌数）、
   `hand_size`（打出时其余手牌数）、`hp_loss_events`（本场失血次数）、`non_attack_in_hand`（手牌中非攻击牌数）、`attack_draw_chain`（连续抽到攻击牌的期望长度）、
-  `own_previous_plays`（本场此前打出本牌的次数）、`enemies_killed_by_this_card`（本次打出击杀的敌人数，
+  `own_previous_plays`（本场此前打出本牌的次数）、
+  `cards_drawn_this_combat`（本场已抽牌数）、`draw_pile`（抽牌堆张数）、`target_debuff_types`（目标身上的负面效果种数）、
+  `discards_this_turn`（本回合已弃牌数）、`hand_space`（手牌上限 10 减当前手牌）、`enemy_count`（敌人数）、
+  `orbs_channeled_this_combat`（本场已充能的球数）、`cards_played_this_combat`（本场已打出的牌数）、
+  `energy_spent_this_turn`（本回合已花的能量）、`skills_in_hand`（手中技能牌数）、`energy_after_cost`（付完本牌费用后剩余的能量）、`enemies_killed_by_this_card`（本次打出击杀的敌人数，
   引擎按“每回合击杀数 × 本次伤害占全队伤害的比例”估计）。不在列表内的来源写 `amount_text` 并加 open_question。
 - 效果上的 `condition`：`target_has_power`（Vulnerable/Weak）、`exhaust_pile_at_least`、`lost_hp_this_turn`、`card_exhausted_this_turn`、`target_alive`。
 - 升级增加攻击次数：`hits_upgrade`。

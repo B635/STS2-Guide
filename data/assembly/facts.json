@@ -4679,6 +4679,10 @@
      "amount_text": "one Frost per enemy in CombatState.HittableEnemies at play time",
      "kind": "channel_orb",
      "orb": "Frost",
+     "scale": {
+      "factor": 1,
+      "per": "enemy_count"
+     },
      "upgrade": 0
     }
    ],
@@ -4688,7 +4692,8 @@
     "ctor CardModel(cost=0, Skill(2), Uncommon(3), Self(1))",
     "CanonicalKeywords [Exhaust(1)]; OnUpgrade 06003CC0: RemoveKeyword(Exhaust(1))",
     "No CanonicalVars",
-    "Catalog: channel 1 Frost per enemy; agrees"
+    "Catalog: channel 1 Frost per enemy; agrees",
+    "2026-10-22: the value stated in this effect's reviewed text (checked against the IL) is now also written as a structured scale with the source named in docs/dev/mechanic-facts.md."
    ],
    "fingerprint": "ae887476fba724650428699d0dec5d63a407dfeae77c86e224c7ef1f9ab963d8",
    "hook_tokens": {
@@ -5336,6 +5341,10 @@
      "amount": 0,
      "amount_text": "CalculatedCards = CalculationBase(0) + CalculationExtra(1) x number of distinct orb types (GroupBy ModelId) in Owner.PlayerCombatState.OrbQueue.Orbs",
      "kind": "draw",
+     "scale": {
+      "factor": 1,
+      "per": "distinct_orb_types"
+     },
      "upgrade": 0
     }
    ],
@@ -5345,7 +5354,8 @@
     "CanonicalVars DamageVar(7), CalculationBaseVar(0), CalculationExtraVar(1), CalculatedVar('CalculatedCards').WithMultiplier(lambda: OrbQueue.Orbs.GroupBy(o => o.Id).Count())",
     "OnUpgrade Damage +3",
     "OnPlay <OnPlay>d__4: DamageCmd.Attack(Damage) targeting cardPlay.Target; CardPileCmd.Draw(choiceContext, CalculatedCards.Calculate(target), owner)",
-    "Catalog: draw 1 per distinct orb type; agrees"
+    "Catalog: draw 1 per distinct orb type; agrees",
+    "2026-10-22: the value stated in this effect's reviewed text (checked against the IL) is now also written as a structured scale with the source named in docs/dev/mechanic-facts.md."
    ],
    "fingerprint": "8517834debf00e16ee9e655cd7762907d2c50aee177c42bca3e709d1eaa46762",
    "hook_tokens": {
@@ -8215,6 +8225,10 @@
      "amount": 0,
      "amount_text": "gain energy equal to current energy (PlayerCombatState.Energy after paying this card's cost), i.e. doubles remaining energy",
      "kind": "energy",
+     "scale": {
+      "factor": 1,
+      "per": "energy_after_cost"
+     },
      "upgrade": 0
     }
    ],
@@ -8223,7 +8237,8 @@
     "OnPlay 06003E4C: <OnPlay>d__5: PlayerCmd.GainEnergy((decimal)Owner.PlayerCombatState.Energy, owner)",
     "ctor CardModel(cost=1, Skill(2), Uncommon(3), Self(1))",
     "CanonicalKeywords [Exhaust(1)]; no CanonicalVars; OnUpgrade 06003E4D: EnergyCost.UpgradeBy(-1)",
-    "Catalog: double your energy; no upgraded text; code reduces cost 1->0"
+    "Catalog: double your energy; no upgraded text; code reduces cost 1->0",
+    "2026-10-22: the value stated in this effect's reviewed text (checked against the IL) is now also written as a structured scale with the source named in docs/dev/mechanic-facts.md."
    ],
    "fingerprint": "9e1fdcbe373807d9031e7c8cb44d9a725aabb4fd2240034082050979fc907cb3",
    "hook_tokens": {
@@ -10824,7 +10839,11 @@
    "effects": [
     {
      "amount": 5,
-     "hits": null,
+     "hits": 0,
+     "hits_scale": {
+      "base": 0,
+      "per": "skills_in_hand"
+     },
      "hits_text": "CalculatedHits = CalculationBase(0) + CalculationExtra(1) x count of Skill(2) cards in the owner's hand (PileType.Hand) at play time",
      "kind": "damage",
      "target": "single",
@@ -10837,7 +10856,8 @@
     "CanonicalVars DamageVar(5), CalculationBaseVar(0), CalculationExtraVar(1), CalculatedVar('CalculatedHits').WithMultiplier(lambda: GetPile(Hand).Cards.Count(c => c.Type == Skill))",
     "OnUpgrade 06003F6D: Damage +2",
     "OnPlay 06003F6C: <OnPlay>d__4 DamageCmd.Attack(Damage).WithHitCount((int)CalculatedHits.Calculate(cardPlay.Target)).FromCard.Targeting(cardPlay.Target).Execute",
-    "Catalog: 5/7 damage per Skill in hand; agrees"
+    "Catalog: 5/7 damage per Skill in hand; agrees",
+    "2026-10-22: the value stated in this effect's reviewed text (checked against the IL) is now also written as a structured scale with the source named in docs/dev/mechanic-facts.md."
    ],
    "fingerprint": "6ae709ccf10ec31b68d551d371e03af047762c962245af6de36f22ca03704509",
    "hook_tokens": {
@@ -12090,6 +12110,10 @@
      "amount_text": "CalculatedDamage = CalculationBase(0) + ExtraDamage(1) x CombatManager.History.CardPlaysFinished.Count() (every finished card play this combat, all players; this play not yet finished)",
      "hits": 1,
      "kind": "damage",
+     "scale": {
+      "factor": 1,
+      "per": "cards_played_this_combat"
+     },
      "target": "single",
      "upgrade": 0
     }
@@ -12102,7 +12126,8 @@
     "OnPlay <OnPlay>d__3: DamageCmd.Attack(CalculatedDamage).FromCard.Targeting(cardPlay.Target).Execute",
     "No CanonicalKeywords override",
     "Catalog: deal damage equal to cards played this combat; agrees (no upgraded text; code adds Retain)",
-    "hook tokens {\"OnPlay\": \"06004001\", \"OnUpgrade\": \"06004002\"}"
+    "hook tokens {\"OnPlay\": \"06004001\", \"OnUpgrade\": \"06004002\"}",
+    "2026-10-22: the value stated in this effect's reviewed text (checked against the IL) is now also written as a structured scale with the source named in docs/dev/mechanic-facts.md."
    ],
    "fingerprint": "c08cee8cce12b04c5f415a9cdcceec48511f131639bf67d2da196bb23ec77ce2",
    "hook_tokens": {
@@ -13213,6 +13238,10 @@
     {
      "amount": 3,
      "hits": 0,
+     "hits_scale": {
+      "base": 0,
+      "per": "energy_spent_this_turn"
+     },
      "hits_text": "CalculatedHits = CalculationBase(0) + CalculationExtra(1) x (sum of EnergySpentEntry.Amount this turn whose actor is the owner, minus this card's modified energy cost if it is in the Play pile); 0 if the card has no pile",
      "kind": "damage",
      "target": "single",
@@ -13225,7 +13254,8 @@
     "CanonicalVars DamageVar(3), CalculationBaseVar(0), CalculationExtraVar(1), CalculatedVar('CalculatedHits').WithMultiplier(energy spent this turn by owner, excluding this card's own cost while in Play pile)",
     "OnUpgrade Damage +2",
     "OnPlay <OnPlay>d__6: DamageCmd.Attack(Damage).WithHitCount((int)CalculatedHits.Calculate(target)) targeting cardPlay.Target",
-    "Catalog: hits once per energy spent this turn besides this card, 3/5 damage; agrees"
+    "Catalog: hits once per energy spent this turn besides this card, 3/5 damage; agrees",
+    "2026-10-22: the value stated in this effect's reviewed text (checked against the IL) is now also written as a structured scale with the source named in docs/dev/mechanic-facts.md."
    ],
    "fingerprint": "4dc30f1f3bcde0723d5d1a6a0d8a5e72a51e3dd7ea65f745ca7f1faff4fe05d3",
    "hook_tokens": {
@@ -16541,6 +16571,11 @@
      "amount_text": "CalculatedDamage = CalculationBase(9, +2 upgraded) + ExtraDamage(4, +1 upgraded) x count of CardDiscardedEntry this turn (HappenedThisTurn) whose Actor is the owner's creature",
      "hits": 1,
      "kind": "damage",
+     "scale": {
+      "factor": 4,
+      "factor_upgrade": 1,
+      "per": "discards_this_turn"
+     },
      "target": "single",
      "upgrade": 2
     }
@@ -16551,7 +16586,8 @@
     "CanonicalVars CalculationBaseVar(9), ExtraDamageVar(4), CalculatedDamageVar.WithMultiplier(lambda: History.Entries.OfType<CardDiscardedEntry>().Count(e => e.HappenedThisTurn(CombatState) && e.Actor == owner creature))",
     "OnUpgrade 060041C9: CalculationBase +2, ExtraDamage +1",
     "OnPlay 060041C8: <OnPlay>d__3 DamageCmd.Attack(CalculatedDamage).FromCard.Targeting(cardPlay.Target).Execute",
-    "Catalog: 9 damage, +4/+5 per card discarded this turn; catalog upgraded text keeps base 9 but code raises CalculationBase to 11"
+    "Catalog: 9 damage, +4/+5 per card discarded this turn; catalog upgraded text keeps base 9 but code raises CalculationBase to 11",
+    "2026-10-22: the value stated in this effect's reviewed text (checked against the IL) is now also written as a structured scale with the source named in docs/dev/mechanic-facts.md."
    ],
    "fingerprint": "169da4d1f15adeb0a0d73b68a0868bff39bb2f4862a1b2a1c5938355cd238008",
    "hook_tokens": {
@@ -16879,6 +16915,10 @@
      "amount_text": "CalculatedDamage = CalculationBase(0) + ExtraDamage(1) x number of cards in owner's Draw pile (PileType 1) at play time",
      "hits": 1,
      "kind": "damage",
+     "scale": {
+      "factor": 1,
+      "per": "draw_pile"
+     },
      "target": "single",
      "upgrade": 0
     }
@@ -16889,7 +16929,8 @@
     "OnPlay 060041ED: <OnPlay>d__5: DamageCmd.Attack(CalculatedDamage).FromCard.Targeting(cardPlay.Target).Execute",
     "CanonicalVars CalculationBaseVar(0), ExtraDamageVar(1), CalculatedDamageVar.WithMultiplier((card, _) => PileType.Draw(1).GetPile(owner).Cards.Count)",
     "CanonicalKeywords [Innate(3)]; OnUpgrade 060041EE: EnergyCost.UpgradeBy(-1), cost 1 -> 0",
-    "Catalog 'damage equal to cards in draw pile' agrees; catalog omits Innate and has no upgraded text"
+    "Catalog 'damage equal to cards in draw pile' agrees; catalog omits Innate and has no upgraded text",
+    "2026-10-22: the value stated in this effect's reviewed text (checked against the IL) is now also written as a structured scale with the source named in docs/dev/mechanic-facts.md."
    ],
    "fingerprint": "5bd26d8b638db6defcb94df73a6828a6c523b6e512015223e50b797e7688ca43",
    "hook_tokens": {
@@ -17553,6 +17594,10 @@
      "amount_text": "CalculatedDamage = CalculationBase(1) + ExtraDamage(1) x count of CardDrawnEntry in CombatManager.History whose Actor is the owner's creature (whole combat, no HappenedThisTurn filter)",
      "hits": 1,
      "kind": "damage",
+     "scale": {
+      "factor": 1,
+      "per": "cards_drawn_this_combat"
+     },
      "target": "single",
      "upgrade": 0
     }
@@ -17563,7 +17608,8 @@
     "CanonicalVars CalculationBaseVar(1), ExtraDamageVar(1), CalculatedDamageVar.WithMultiplier(lambda: History.Entries.OfType<CardDrawnEntry>().Count(e => e.Actor == card.Owner.Creature))",
     "OnUpgrade 06004233: EnergyCost.UpgradeBy(-1)",
     "OnPlay 06004232: <OnPlay>d__3 DamageCmd.Attack(CalculatedDamage).FromCard.Targeting(cardPlay.Target).Execute",
-    "Catalog: 1 damage +1 per card drawn this combat; upgraded text null, code reduces cost 3->2"
+    "Catalog: 1 damage +1 per card drawn this combat; upgraded text null, code reduces cost 3->2",
+    "2026-10-22: the value stated in this effect's reviewed text (checked against the IL) is now also written as a structured scale with the source named in docs/dev/mechanic-facts.md."
    ],
    "fingerprint": "988dd316e778c59c234abf30dfc4667bd676f7d5b11331ff3365d156626e0cdf",
    "hook_tokens": {
@@ -21628,6 +21674,11 @@
      "amount_text": "CalculatedDamage = CalculationBase(10, +2 on upgrade) + ExtraDamage(5, +3 on upgrade) x number of powers on the target whose TypeForCurrentAmount == Debuff(2) and that are not ITemporaryPower (0 if no target)",
      "hits": 1,
      "kind": "damage",
+     "scale": {
+      "factor": 5,
+      "factor_upgrade": 3,
+      "per": "target_debuff_types"
+     },
      "target": "single",
      "upgrade": 2
     }
@@ -21641,7 +21692,8 @@
     "OnPlay <OnPlay>d__3: DamageCmd.Attack(CalculatedDamage).FromCard.Targeting(cardPlay.Target).Execute",
     "No CanonicalKeywords/Tags override",
     "Catalog: 10 dmg +5 per debuff type; upgraded text says base 10 and +8. Code: upgraded base is 12 (CalculationBase +2) and +8 per debuff; catalog base for upgrade disagrees, code is authoritative",
-    "hook tokens {\"OnPlay\": \"060043DC\", \"OnUpgrade\": \"060043DD\"}"
+    "hook tokens {\"OnPlay\": \"060043DC\", \"OnUpgrade\": \"060043DD\"}",
+    "2026-10-22: the value stated in this effect's reviewed text (checked against the IL) is now also written as a structured scale with the source named in docs/dev/mechanic-facts.md."
    ],
    "fingerprint": "871aa4593a9a9381a9a275b57b96d9a2d7ea3f3d3d7d55825837a383fce7d1af",
    "hook_tokens": {
@@ -22489,6 +22541,10 @@
      "amount": 0,
      "amount_text": "CardPile.MaxCardsInHand - current Hand count (draw until hand is full; Scrawl itself is no longer in hand)",
      "kind": "draw",
+     "scale": {
+      "factor": 1,
+      "per": "hand_space"
+     },
      "upgrade": 0
     }
    ],
@@ -22499,7 +22555,8 @@
     "OnUpgrade: AddKeyword(Retain(5))",
     "OnPlay <OnPlay>d__3: CardPileCmd.Draw(ctx, CardPile.MaxCardsInHand - Owner.PlayerCombatState.Hand.Cards.Count, owner)",
     "Catalog: draw until hand is full; agrees (no upgraded text; code adds Retain)",
-    "hook tokens {\"OnPlay\": \"06004434\", \"OnUpgrade\": \"06004435\"}"
+    "hook tokens {\"OnPlay\": \"06004434\", \"OnUpgrade\": \"06004435\"}",
+    "2026-10-22: the value stated in this effect's reviewed text (checked against the IL) is now also written as a structured scale with the source named in docs/dev/mechanic-facts.md."
    ],
    "fingerprint": "cb8c84c263b815553635f9d9653c1b7cbf5631fe7fb98c0d1af1f915319924f5",
    "hook_tokens": {
@@ -29297,6 +29354,10 @@
      "amount_text": "Channel Lightning N times, N = CalculatedChannels = CalculationBase(0) + CalculationExtra(1) x count of OrbChanneledEntry in CombatHistory (whole combat) whose actor is the owner and whose orb is LightningOrb; snapshot taken before channeling",
      "kind": "channel_orb",
      "orb": "Lightning",
+     "scale": {
+      "factor": 1,
+      "per": "orbs_channeled_this_combat"
+     },
      "upgrade": 0
     }
    ],
@@ -29306,7 +29367,8 @@
     "CanonicalKeywords [Exhaust(1)]; OnUpgrade RemoveKeyword(Exhaust(1))",
     "CanonicalVars CalculationBaseVar(0), CalculationExtraVar(1), CalculatedVar('CalculatedChannels').WithMultiplier(lambda: CombatHistory.Entries.OfType<OrbChanneledEntry>().Count(e => e.Actor.Player == card.Owner && e.Orb is LightningOrb))",
     "OnPlay <OnPlay>d__8: TriggerAnim Cast; n = (int)CalculatedChannels.Calculate(target); for i < n: OrbCmd.Channel<LightningOrb>(owner)",
-    "Catalog: channel Lightning equal to Lightning channeled this combat; agrees"
+    "Catalog: channel Lightning equal to Lightning channeled this combat; agrees",
+    "2026-10-22: the value stated in this effect's reviewed text (checked against the IL) is now also written as a structured scale with the source named in docs/dev/mechanic-facts.md."
    ],
    "fingerprint": "d228be0af2e13b3f9b12a6c56f2756318b313e3dfa5aea2b3b91856867d73857",
    "hook_tokens": {

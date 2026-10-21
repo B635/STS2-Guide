@@ -12,7 +12,7 @@
   "compatibility": {
     "status": "compatible",
     "manifest_version": 2,
-    "release_fingerprint": "36edbe67e5d8b1882fce7f32acc82f252d0a38611f9bf98f37b2945b6ed35adb",
+    "release_fingerprint": "716e9a49d39176de0d2bd2090e1716fc7be76a99249f1a8a3d3769fac55a8b52",
     "guide_version": "0.3.12-alpha.0",
     "state_event_schema_version": 9,
     "producer_id": "STS2GuideReadOnlyExporter",
