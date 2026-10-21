@@ -12,7 +12,8 @@ from jsonschema import Draft202012Validator
 from jsonschema.exceptions import ValidationError as JsonSchemaValidationError
 
 from api import app
-from advisor.card_reward import recommend_card_reward
+from advisor.policies import CardRewardPolicy
+from advisor.route import RoutePolicy
 from advisor.decision_core import (
     CandidateAssessment,
     DecisionCandidate,
@@ -273,17 +274,11 @@ class RealtimeEventTests(unittest.TestCase):
         first = self.processor.process(event)
         second = self.processor.process(event)
 
-        legacy_state = event.state.model_dump()
-        legacy_state["game_version"] = event.game_version
-        legacy_advice = recommend_card_reward(
-            legacy_state,
-            [option.model_dump() for option in event.options],
-            self.repository,
-        )
-
         self.assertEqual(first["status"], "processed")
-        self.assertEqual(first["advice"]["recommended_option"], "轻防测试牌")
-        self.assertEqual(first["advice"], legacy_advice)
+        # The fixture catalog has no assembly facts: deck fitness, the only
+        # card policy, says it cannot judge (no other scoring stands in).
+        self.assertEqual(first["recommendation"]["status"], "uncertain")
+        self.assertEqual(second["recommendation"], first["recommendation"])
         self.assertFalse(first["duplicate"])
         self.assertTrue(second["duplicate"])
         self.assertEqual(first["decision_id"], second["decision_id"])
@@ -313,10 +308,7 @@ class RealtimeEventTests(unittest.TestCase):
         self.assertEqual(canonical["decision_id"], event.event_id)
         self.assertEqual(canonical["decision_type"], "card_reward")
         self.assertEqual(canonical["world_sequence"], event.sequence)
-        self.assertEqual(
-            canonical["recommended_candidate_id"],
-            "1:CHEAP_BLOCK",
-        )
+        self.assertIsNone(canonical["recommended_candidate_id"])
         self.assertEqual(
             len(canonical["candidates"]),
             len(event.options) + 1,
@@ -337,8 +329,9 @@ class RealtimeEventTests(unittest.TestCase):
             latest["payload"]["decision"]["reward_source"],
             "MONSTER",
         )
+        # The card instance's enchantment is kept with the event.
         self.assertEqual(
-            first["advice"]["recommendations"][0]["enchantment"],
+            latest["payload"]["options"][1]["enchantment"],
             "TEST_REWARD_ENCHANTMENT",
         )
         checkpoint = self.checkpoint.load()
@@ -1413,6 +1406,11 @@ class RealtimeEventTests(unittest.TestCase):
             GameStateEvent.model_validate(map_payload)
         )
 
+        # The previous card policy exposes the route context it was given as
+        # factors; it is no longer shipped, so it is plugged in explicitly.
+        self.processor.policies = PolicyRegistry([
+            CardRewardPolicy(self.repository), RoutePolicy(self.repository),
+        ])
         reward = self.processor.process(
             GameStateEvent.model_validate(_event_payload(2))
         )
@@ -1436,8 +1434,10 @@ class RealtimeEventTests(unittest.TestCase):
         result = self.processor.process(
             GameStateEvent.model_validate(payload)
         )
-        self.assertFalse(result["advice"]["skip_candidate"]["eligible"])
-        self.assertFalse(result["advice"]["skip_recommended"])
+        # Skip is either absent or not selectable, and never recommended.
+        skip = [row for row in result["recommendation"]["candidates"] if row["candidate_id"] == "skip"]
+        self.assertTrue(all(not row["eligible"] and row["score"] is None for row in skip))
+        self.assertNotEqual(result["recommendation"]["recommended_candidate_id"], "skip")
 
     def test_schema_v3_run_end_saves_only_final_summary(self):
         self.processor.process(

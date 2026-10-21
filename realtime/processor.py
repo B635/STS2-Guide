@@ -19,9 +19,8 @@ from advisor.decision_core import (
     PolicyRegistry,
     WorldState,
 )
-from advisor.card_reward_switch import SwitchedCardRewardPolicy
+from advisor.card_reward_guard import GuardedCardRewardPolicy
 from advisor.deck_fitness import DeckFitnessPolicy
-from advisor.policies import CardRewardPolicy
 from advisor.campfire import CAMPFIRE_ACTION, CampfirePolicy
 from advisor.deck_edit import DECK_EDIT, DeckEditPolicy
 from advisor.event_policy import EVENT_OPTION, EventPolicy
@@ -90,10 +89,7 @@ class RealtimeEventProcessor:
         )
         self.policies = policies or PolicyRegistry(
             [
-                SwitchedCardRewardPolicy(
-                    DeckFitnessPolicy(repository, preferences),
-                    CardRewardPolicy(repository, local_tiers, preferences),
-                ),
+                GuardedCardRewardPolicy(DeckFitnessPolicy(repository, preferences)),
                 RoutePolicy(repository),
                 MerchantPolicy(repository, preferences=preferences),
                 CampfirePolicy(repository, preferences=preferences),

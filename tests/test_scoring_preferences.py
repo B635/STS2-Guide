@@ -196,12 +196,25 @@ class PreferencePipelineTests(unittest.TestCase):
         self.assertIn("hp_safety_floor_violation", {item["code"] for item in result.candidates[0].factors})
 
     def test_restart_recomputes_current_snapshot_and_then_reuses_new_result(self):
+        # A real situation (with its map) scored by the shipped card policy,
+        # so that other preferences really give other scores.
+        from advisor.golden_set import _HARNESS_ENVELOPE, load_golden_set
+        from storage.release_database import build_release_database
+
+        view = load_golden_set()[0]["scoring_view"]
+        event = GameStateEvent.model_validate({
+            **_HARNESS_ENVELOPE, **view, "event_id": f"{view['run_id']}:{view['sequence']}",
+            "state_revision": view["sequence"],
+        })
         with tempfile.TemporaryDirectory() as directory:
+            database = Path(directory) / "release.db"
+            build_release_database(database, ROOT / "data" / "knowledge.json", ROOT / "data" / "community_scores.json")
+            repository = RelationalRepository(str(database))
             checkpoint = ActiveRunCheckpointStore(Path(directory) / "active-run.json")
-            event = self._event()
-            first = RealtimeEventProcessor(self.repository, checkpoint=checkpoint).process(event)
-            preferences = ScoringPreferences(immediate_power=1.25, survival=1.25, long_term_growth=1.25)
-            restored = RealtimeEventProcessor(self.repository, checkpoint=checkpoint, preferences=preferences)
+            first = RealtimeEventProcessor(repository, checkpoint=checkpoint).process(event)
+            self.assertNotEqual(first["recommendation"]["status"], "uncertain")
+            preferences = ScoringPreferences(immediate_power=1.25, survival=0.75, long_term_growth=1.25)
+            restored = RealtimeEventProcessor(repository, checkpoint=checkpoint, preferences=preferences)
             second = restored.process(event)
             self.assertEqual(second["sequence"], first["sequence"])
             self.assertEqual(second["event_id"], first["event_id"])
@@ -212,8 +225,9 @@ class PreferencePipelineTests(unittest.TestCase):
                 third = restored.process(event)
             self.assertEqual(third["recommendation"], second["recommendation"])
             self.assertEqual(checkpoint.load()["current_decision"]["result"]["scoring_preferences"], preferences.as_dict())
-            reset = RealtimeEventProcessor(self.repository, checkpoint=checkpoint).process(event)
+            reset = RealtimeEventProcessor(repository, checkpoint=checkpoint).process(event)
             self.assertEqual(reset["recommendation"], first["recommendation"])
+            del restored, repository
 
     def test_preference_restart_does_not_reopen_closed_decision(self):
         with tempfile.TemporaryDirectory() as directory:

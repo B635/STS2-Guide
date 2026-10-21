@@ -973,18 +973,12 @@ class LiveCompatibilityGateTests(unittest.TestCase):
 
                 self.assertFalse(replay["duplicate"])
                 # Recomputed, not relabelled. This catalog-only database has
-                # no deck-fitness facts, so the fallback policy answers under
-                # its own version.
-                from advisor.versions import CARD_REWARD_POLICY_VERSION as FALLBACK_VERSION
-
+                # no deck-fitness facts: the kernel says it cannot judge.
                 self.assertEqual(
                     replay["recommendation"]["policy_version"],
-                    FALLBACK_VERSION,
+                    manifest.policy.card_reward_version,
                 )
-                self.assertIn(
-                    "deck_fitness_unavailable",
-                    replay["recommendation"]["data_gaps"],
-                )
+                self.assertEqual(replay["recommendation"]["status"], "uncertain")
                 self.assertEqual(
                     replay["compatibility"]["release_fingerprint"],
                     manifest.release_fingerprint,
