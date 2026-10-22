@@ -10,7 +10,9 @@ into expected per-turn capabilities. Everything is an analytic expectation:
   its ``every``/``counter``/``limit`` rules (Poisson counts) and multiplied by
   the probability of its condition;
 * draw and energy produced by effects feed back into what is played, solved
-  by a fixed number of passes.
+  by a fixed number of passes;
+* a card upgraded during a fight plays as its upgraded profile for the
+  share of its draws that come after the upgrade.
 
 Anything the engine cannot convert is returned as an explicit gap and adds
 nothing. Unknown keys, values or filters make the whole mechanic unsupported:
@@ -32,7 +34,7 @@ SUPPORTED_EFFECTS = frozenset({
     "damage", "block", "draw", "energy", "apply_power", "hp_loss", "heal",
     "exhaust_self", "exhaust_other", "discard", "gain_stars",
     "channel_orb", "evoke_orb", "orb_slots", "orb_passive", "summon", "kill_osty",
-    "doom_kill", "enemy_strength_down", "forge", "generate",
+    "doom_kill", "enemy_strength_down", "forge", "generate", "upgrade_cards",
 })
 SELF_POWERS = {"Strength": "strength", "Dexterity": "dexterity", "Vigor": "vigor", "Focus": "focus"}
 # Orb names on effects -> orb fact ids (orbs:<ID>).
@@ -75,7 +77,7 @@ SCALE_SOURCES = frozenset({
     # Per card (see ``_resolve``).
     "attacks_played_this_turn", "skills_played_this_turn", "osty_attacks_this_turn",
     "other_osty_attack_cards", "times_drawn_this_combat", "star_cost_cards", "x_value",
-    "enemies_killed_by_this_card", "energy_after_cost",
+    "enemies_killed_by_this_card", "energy_after_cost", "own_exhausted_damage",
     # From the previous pass at an average moment (see ``_estimate``).
     "cards_drawn_this_combat", "draw_pile", "target_debuff_types", "discards_this_turn",
     "hand_space", "enemy_count", "orbs_channeled_this_combat", "cards_played_this_combat",
@@ -86,6 +88,18 @@ EFFECT_CONDITIONS = frozenset({
     "card_exhausted_this_turn", "target_alive", "osty_alive",
 })
 NUMERIC_EFFECT_KEYS = ("amount", "upgrade", "hits", "count", "amount_per_stack", "hits_upgrade")
+# Effects that act on a set of cards and may restrict it with ``filter``
+# (see ``_card_set_unsupported``); they have no amount, only a count.
+CARD_SET_EFFECTS = frozenset({"exhaust_other", "discard", "upgrade_cards"})
+# Count sources that only count cards of one type: a filter on that type is
+# already part of the count (Flak Cannon: every Status card in combat).
+TYPED_COUNT_SOURCES = {"status_cards_in_combat": "Status"}
+# get_MaxUpgradeLevel is 0 for every reviewed Status, Curse and Quest card;
+# every other card keeps CardModel's default of 1, and IsUpgradable is
+# CurrentUpgradeLevel < MaxUpgradeLevel.
+NOT_UPGRADABLE_TYPES = frozenset({"Status", "Curse", "Quest"})
+# Piles an in-fight upgrade picks from; ``all_combat`` is every pile.
+UPGRADE_SCOPES = frozenset({"hand", "draw", "discard", "all_combat"})
 # A value written as text needs its structured scale to be counted in full.
 VALUE_TEXT_KEYS = {"amount_text": "scale", "hits_text": "hits_scale", "count_text": "count_scale"}
 # Effects that only ever act on the card's owner.
@@ -201,6 +215,10 @@ class CardProfile:
     # every turn (Particle Wall, Shining Strike).
     returns: Optional[str] = None
     innate: bool = False            # starts every fight in the opening hand
+    # The same card upgraded, for upgrades made during a fight (Drain Power,
+    # Armaments...); None when it cannot be upgraded (already upgraded, or a
+    # Status, Curse or Quest card) or is a generated card.
+    upgraded_profile: Optional["CardProfile"] = None
 
     @property
     def once_per_fight(self) -> bool:
@@ -287,6 +305,13 @@ class _Totals:
     orbs_held: float = 0.0
     orb_kinds: float = 0.0
     weaken_rate: float = 0.0       # permanent enemy Strength loss gained per turn
+    status_exhausts: float = 0.0   # Status cards exhausted per turn (out of the piles)
+    # In-fight upgrades, in upgradable card instances: held for the whole
+    # fight (combat start, opening hand), per turn usable from the next turn,
+    # per turn sent to the discard pile (usable after it is reshuffled).
+    upgraded_held: float = 0.0
+    upgrades: float = 0.0
+    upgrades_discard: float = 0.0
     gaps: List[str] = field(default_factory=list)
 
 
@@ -300,15 +325,22 @@ def effect_unsupported(effect: object) -> Optional[str]:
         return f"effect:{kind}"
     # ``*_text`` keys keep the reviewer's wording next to the structured
     # base case; a value given only as text stays non-numeric and is rejected.
-    extra = {key for key in set(effect) - EFFECT_KEYS if not key.endswith("_text")}
+    allowed = EFFECT_KEYS | ({"filter"} if kind in CARD_SET_EFFECTS else frozenset())
+    extra = {key for key in set(effect) - allowed if not key.endswith("_text")}
     if extra:
         return f"effect_key:{sorted(extra)[0]}"
     if kind in SELF_ONLY_EFFECTS and effect.get("target") not in (None, "self"):
         return f"effect_target:{kind}:{effect.get('target')}"
+    if kind in CARD_SET_EFFECTS:
+        reason = _card_set_unsupported(effect)
+        if reason:
+            return reason
     for key in NUMERIC_EFFECT_KEYS:
         value = effect.get(key)
         if key == "hits" and value == "X" and effect.get("per_x"):
             continue  # one hit per energy spent (Whirlwind, Skewer)
+        if key == "count" and value == "all" and kind == "upgrade_cards":
+            continue  # every upgradable card in the scope
         if value is not None and (isinstance(value, bool) or not isinstance(value, (int, float))):
             return f"effect_value:{key}"
     for key in ("scale", "hits_scale", "count_scale"):
@@ -323,7 +355,11 @@ def effect_unsupported(effect: object) -> Optional[str]:
                 return f"condition:{key}:{value}"
     if kind == "damage" and (effect.get("target") or "single") not in DAMAGE_TARGETS:
         return f"effect_target:{effect.get('target')}"
-    if kind in {"exhaust_other", "discard"} and effect.get("choice") not in {None, "random", "choose"}:
+    if kind in {"exhaust_other", "discard"} and effect.get("choice") not in {None, "random", "choose"} and not (
+        effect.get("choice") == "all" and effect.get("count_scale")
+    ):
+        # ``all`` needs the count from its source (all cards in hand, every
+        # Status card); without one the count would be taken as one card.
         return f"effect_choice:{effect.get('choice')}"
     if kind in {"channel_orb", "orb_passive"}:
         if effect.get("orb") not in ORB_TYPES:
@@ -350,6 +386,53 @@ def effect_unsupported(effect: object) -> Optional[str]:
     return None
 
 
+def _card_set_unsupported(effect: Mapping) -> Optional[str]:
+    """Why an effect on a set of cards (exhaust, discard, upgrade) is not
+    convertible, or ``None``.
+
+    exhaust_other / discard: ``filter`` may only restrict the card type. A
+    fixed count then picks from the matching cards in hand (``random`` or
+    ``choose``); a count from a source must be a source that counts that
+    type only, so the filter is already in the count.
+
+    upgrade_cards: a pile in ``UPGRADE_SCOPES``, a fixed count or ``all``,
+    and at most the ``upgradable`` filter every in-fight upgrade applies
+    anyway (IsUpgradable). Counts that follow the fight state, conditions
+    and other scopes (the played card, a generated card) stay gaps.
+    """
+
+    kind = effect.get("kind")
+    flt = effect.get("filter")
+    if kind == "upgrade_cards":
+        if flt is not None and flt != {"upgradable": True}:
+            return "upgrade_cards:filter"
+        if effect.get("scope") not in UPGRADE_SCOPES:
+            return f"upgrade_cards:scope:{effect.get('scope')}"
+        if effect.get("choice") not in {None, "random", "choose", "all"}:
+            return f"upgrade_cards:choice:{effect.get('choice')}"
+        if any(effect.get(key) for key in ("scale", "hits_scale", "count_scale", "condition")):
+            return "upgrade_cards:dynamic"
+        count = effect.get("count")
+        if effect.get("scope") == "all_combat" and count != "all":
+            return "upgrade_cards:count"
+        if count != "all" and (isinstance(count, bool) or not isinstance(count, (int, float))):
+            return "upgrade_cards:count"
+        return None
+    if flt is None:
+        return None
+    if not isinstance(flt, Mapping) or set(flt) != {"card_type"} or not isinstance(flt["card_type"], str):
+        return "effect_filter:unsupported"
+    scale = effect.get("count_scale")
+    if scale:
+        if not isinstance(scale, Mapping) or TYPED_COUNT_SOURCES.get(scale.get("per")) != flt["card_type"]:
+            return "effect_filter:count_scale"
+        return None
+    count = effect.get("count")
+    if effect.get("choice") not in {"random", "choose"} or isinstance(count, bool) or not isinstance(count, (int, float)):
+        return "effect_filter:count"
+    return None
+
+
 def _unknowable(fact: Optional[Mapping], entity_key: str) -> tuple[str, ...]:
     """Gaps for the ``unknowable`` notes a reviewed fact carries."""
 
@@ -365,9 +448,16 @@ def effect_text_only(effect: Mapping) -> Optional[str]:
     something the structured fields do not carry, unless the matching scale
     is there (a plain remark is written ``note_text``). The effect is still
     scored at its structured value; the caller reports the rest as a gap.
+
+    An effect on a set of cards has no amount: its ``amount_text`` words the
+    count, given in full by ``count_scale`` or by ``count: "all"``.
     """
 
     for text_key, scale_key in VALUE_TEXT_KEYS.items():
+        if text_key == "amount_text" and effect.get("kind") in CARD_SET_EFFECTS and "amount" not in effect:
+            if effect.get("count") == "all":
+                continue
+            scale_key = "count_scale"
         if text_key in effect and not effect.get(scale_key) and effect.get("hits") != "X":
             return f"effect_text_only:{text_key}"
     return None
@@ -555,6 +645,10 @@ def unsupported_reason(mechanic: Mapping) -> Optional[str]:
         if key not in SUPPORTED_CONDITIONS:
             return f"condition:{key}"
     effect = mechanic.get("effect")
+    if isinstance(effect, Mapping) and effect.get("kind") in {"exhaust_other", "discard"} and effect.get("filter"):
+        # Mechanic effects are not resolved per event (``_apply_events``): a
+        # filtered pick from hand would count as always finding a card.
+        return "effect_filter:mechanic"
     return effect_unsupported(effect) or effect_text_only(effect)
 
 
@@ -747,6 +841,31 @@ def _generated(
     )
 
 
+def _keeps_exhausted_damage(effect: Mapping) -> bool:
+    """The reviewed ``then`` of an exhaust says this card's own Damage grows
+    by the exhausted card's damage for its later plays.
+
+    Thrash (OnPlay): after its attack it exhausts a random Attack from the
+    hand and adds that card's damage (through Hook.ModifyDamage) to its own
+    Damage.BaseValue for the rest of the fight. Any other ``then`` stays a
+    gap (``effect_key:then``).
+    """
+
+    then = str(effect.get("then") or "")
+    return "Damage base value increases by the exhausted card's damage" in then and "later plays" in then
+
+
+def _upgrade_branch(effect: Mapping, upgraded: bool) -> dict:
+    """An upgrade effect whose upgraded card takes another branch, recorded
+    as ``upgraded`` overrides (Armaments: ``if IsUpgraded`` every upgradable
+    card in hand, else one chosen card)."""
+
+    branch = {k: v for k, v in effect.items() if k != "upgraded"}
+    if upgraded:
+        branch.update(effect["upgraded"])
+    return branch
+
+
 def card_profile(
     repository: RelationalRepository,
     card_id: str,
@@ -768,6 +887,7 @@ def card_profile(
     upgraded = upgrades == 1
     effects, powers, generates, gaps = [], [], [], []
     returns: Optional[str] = None
+    growth: Optional[Mapping] = None    # an exhaust whose card's damage this card keeps
     # What the review registered as impossible to know is disclosed with the
     # card, for itself and for every power it applies.
     gaps.extend(_unknowable(fact, f"cards:{card_id}"))
@@ -812,6 +932,11 @@ def card_profile(
             if use is not None:
                 powers.append(use)
             continue
+        if effect.get("kind") == "exhaust_other" and _keeps_exhausted_damage(effect):
+            # Thrash: the ``then`` is valued on the damage below.
+            effect = growth = {k: v for k, v in effect.items() if k != "then"}
+        if effect.get("kind") == "upgrade_cards" and isinstance(effect.get("upgraded"), Mapping):
+            effect = _upgrade_branch(effect, upgraded)
         reason = effect_unsupported({k: v for k, v in effect.items() if k != "count_upgrade"})
         if reason:
             gaps.append(f"card_effect_unsupported:{card_id}:{reason}")
@@ -845,7 +970,17 @@ def card_profile(
         if upgraded and effect.get("hits_upgrade"):
             # Some upgrades add hits rather than damage (e.g. Sword Boomerang).
             resolved["hits"] = float(effect.get("hits") or 1) + float(effect["hits_upgrade"])
+        if effect is growth:
+            resolved["grows_own_damage"] = True
         effects.append(resolved)
+    if any(e.get("grows_own_damage") for e in effects):
+        damage = [e for e in effects if e.get("kind") == "damage"]
+        if len(damage) == 1 and "scale" not in damage[0]:
+            # The kept damage is added to Damage.BaseValue: every hit of the
+            # card's later plays (see ``_Engine._exhausted_damage``).
+            damage[0]["scale"] = {"per": "own_exhausted_damage", "factor": 1.0}
+        else:
+            gaps.append(f"card_effect_unsupported:{card_id}:exhaust_growth")
     cost_rule = _cost_rule(fact.get("cost_modifier")) if fact.get("cost_modifier") else None
     if fact.get("cost_modifier") and cost_rule is None:
         gaps.append(f"card_effect_unsupported:{card_id}:cost_modifier")
@@ -869,6 +1004,12 @@ def card_profile(
         keywords |= set(changes.get("add") or ())
     for keyword in sorted(keywords - MODELED_KEYWORDS):
         gaps.append(f"card_keyword_unmodeled:{card_id}:{keyword}")
+    upgraded_profile = None
+    if not upgraded and _depth == 0 and str(fact.get("card_type") or "") not in NOT_UPGRADABLE_TYPES:
+        # Used when an in-fight upgrade picks this card. What only the
+        # upgraded card cannot convert is disclosed with it.
+        upgraded_profile, upgraded_gaps = card_profile(repository, card_id, 1)
+        gaps.extend(f"upgraded:{gap}" for gap in upgraded_gaps if gap not in gaps)
     return CardProfile(
         card_id=card_id,
         cost=None if cost is None or cost == "X" else float(cost),
@@ -887,6 +1028,7 @@ def card_profile(
         generates=tuple(generates),
         star_cost=star_cost,
         cost_rule=cost_rule,
+        upgraded_profile=upgraded_profile,
     ), tuple(dict.fromkeys(gaps))  # a card may repeat one unsupported effect
 
 
@@ -926,7 +1068,9 @@ def enchant(profile: CardProfile, fact: Optional[Mapping], amount: float) -> tup
                 effects.append(added)
                 continue
         gaps.append(f"enchantment_unsupported:{profile.card_id}:{name or m.get('when')}")
-    return replace(profile, effects=tuple(effects)), tuple(gaps)
+    # An in-fight upgrade keeps the enchantment on the card.
+    upgraded = enchant(profile.upgraded_profile, fact, amount)[0] if profile.upgraded_profile else None
+    return replace(profile, effects=tuple(effects), upgraded_profile=upgraded), tuple(gaps)
 
 
 def relic_profile(
@@ -1029,6 +1173,43 @@ def _poison_dealt(amount: float, turns: float) -> float:
     return turns * amount - turns * (turns - 1.0) / 2.0
 
 
+def _upgrades_in_fight(cards: Sequence[CardProfile], relics: Sequence[RelicProfile]) -> bool:
+    """Whether a card, a card it creates, a power it applies or a relic
+    upgrades cards during a fight."""
+
+    effects = [e for c in cards for e in c.effects] + [
+        e for c in cards for g in c.generates for e in g.profile.effects
+    ] + [
+        m.get("effect") or {} for c in cards for use in c.powers for m in use.mechanics
+    ] + [m.get("effect") or {} for relic in relics for m in relic.mechanics]
+    return any(e.get("kind") == "upgrade_cards" for e in effects)
+
+
+def _expected_taken(count: float, mean: float) -> float:
+    """E[min(count, X)] for X ~ Poisson(mean): cards an effect taking up to
+    ``count`` matching cards finds, when ``mean`` match on average."""
+
+    return sum(_poisson_at_least(mean, k) for k in range(1, int(count) + 1))
+
+
+def _held_share(rate: float, turns: float, delay: float = 0.0) -> float:
+    """Fight-average share of a pool converted at ``rate`` (share per turn).
+
+    What is converted on one turn pays off from the next turn on, ``delay``
+    turns later still: on turn t the share is min(1, rate * (t - 1 - delay)).
+    Averaged over the fight (continuous in t); with no delay and no cap this
+    is the usual half-built-up ``rate * (turns - 1) / 2``.
+    """
+
+    span = max(0.0, turns - 1.0)
+    active = span - delay
+    if rate <= 0 or active <= 0:
+        return 0.0
+    if rate * active <= 1.0:
+        return rate * active * active / 2.0 / span
+    return (active - 0.5 / rate) / span
+
+
 _MISSING = object()
 
 
@@ -1042,9 +1223,19 @@ class _Engine:
     ):
         self.known = [card for card in cards if card is not None]
         self.size = max(1, len(cards))
+        # In-fight upgrades: an upgradable deck card's upgraded profile is a
+        # virtual card taking the upgraded share of its draws (``run``).
+        self.upgradable = [
+            c for c in self.known if c.upgraded_profile is not None
+        ] if _upgrades_in_fight(self.known, relics) else []
+        # Unknown cards take a deck slot and may take a random upgrade too:
+        # counted as targets that gain nothing from it.
+        self.upgrade_pool = float(len(self.upgradable) + len(cards) - len(self.known))
+        upgraded = list({id(c.upgraded_profile): c.upgraded_profile for c in self.upgradable}.values())
+        owners = [*self.known, *upgraded]
         # Generated cards are extra card instances whose play rate follows
         # their source's plays (previous pass); kept stable for ``id`` keys.
-        self.sources = [(c, g) for c in self.known for g in c.generates]
+        self.sources = [(c, g) for c in owners for g in c.generates]
         self.virtual = list({id(g.profile): g.profile for _, g in self.sources}.values())
         # ForgeCmd: with no Sovereign Blade in combat the first forge creates
         # one in hand; it has Retain, so once made it is there every turn.
@@ -1057,7 +1248,7 @@ class _Engine:
         self.forge_bonus = 0.0
         self.mechanic_made: Dict[int, tuple] = {}
         mechanic_sources = [m for relic in relics for m in relic.mechanics] + [
-            m for card in self.known for use in card.powers for m in use.mechanics
+            m for card in owners for use in card.powers for m in use.mechanics
         ]
         for mechanic in mechanic_sources:
             effect = mechanic.get("effect") or {}
@@ -1066,7 +1257,20 @@ class _Engine:
                 if id(profile) not in self.mechanic_made:
                     self.mechanic_made[id(profile)] = (profile, effect["destination"])
                     self.virtual.append(profile)
+        self.virtual.extend(upgraded)
         self.cards = [*self.known, *self.virtual]
+        # Cards that exhaust every Status card in combat (Flak Cannon).
+        self.status_clearers = {
+            id(c) for c in self.cards if any(
+                e.get("kind") == "exhaust_other" and e.get("choice") == "all"
+                and (e.get("filter") or {}).get("card_type") == "Status"
+                for e in c.effects
+            )
+        }
+        self.status_pool = 0.0          # Status cards of a whole fight (``_estimate``)
+        self.status_clear_plays = 0.0   # plays per turn of the cards above
+        self.pass_size = float(self.size)   # deck plus piled copies (this pass)
+        self.pass_drawn = 0.0               # cards drawn per turn (this pass)
         self.situation = situation
         self.params = params
         # (mechanic, weight): relics always apply; powers by how much of the
@@ -1244,9 +1448,12 @@ class _Engine:
                 previous.generated.get(key, 0.0) * elapsed
                 for key, (_, destination) in self.mechanic_made.items() if destination != "hand"
             ) + self.situation.status_cards * elapsed
+            if previous.status_exhausts > 0:
+                piled -= self._status_removed(previous, previous_plays, elapsed)
             size = self.size + piled
             drawn = min(size, hand + (0.0 if no_draw else extra_draw))
             per_turn = min(1.0, drawn / size)
+            self.pass_size, self.pass_drawn = size, drawn
             supply = base_energy + extra_energy
             self.supply = supply
             rates = {
@@ -1274,6 +1481,15 @@ class _Engine:
             if self.blade is not None and previous.forge_events > 0:
                 # Chance a forge has happened by a random turn of the fight.
                 rates[id(self.blade)] = 1.0 - math.exp(-previous.forge_events * max(1.0, elapsed))
+            upgraded_share = self._upgraded_share(previous, drawn, size)
+            if upgraded_share > 0:
+                # The upgraded copy plays that share of each upgradable card's
+                # draws (copies sharing one profile each move their own).
+                moved = {id(c): rates[id(c)] * upgraded_share for c in self.upgradable}
+                for c in self.upgradable:
+                    rates[id(c.upgraded_profile)] += moved[id(c)]
+                for key, value in moved.items():
+                    rates[key] -= value
             self.forge_bonus = previous.forged * max(1.0, elapsed)
             self.rates = rates
             self._cost_cache = {}
@@ -1380,6 +1596,134 @@ class _Engine:
             tuple(dict.fromkeys(totals.gaps)),
         )
 
+    def _status_removed(self, previous: "_Totals", previous_plays: Mapping[int, float], elapsed: float) -> float:
+        """Status cards exhausted from the piles by an average moment.
+
+        Exhausted Status cards (Flak Cannon) stop diluting the other cards'
+        draws: as many as were exhausted by then, at most the Status cards
+        that sit in the piles (the deck's own and those piled during the
+        fight; Status cards made in hand were never counted as piled).
+        """
+
+        held = float(sum(1 for c in self.known if c.card_type == "Status")) + (
+            self.situation.status_cards * elapsed
+        ) + sum(
+            previous_plays.get(id(c), 0.0) * g.count * elapsed
+            for c, g in self.sources if g.destination != "hand" and g.profile.card_type == "Status"
+        ) + sum(
+            previous.generated.get(key, 0.0) * elapsed
+            for key, (profile, destination) in self.mechanic_made.items()
+            if destination != "hand" and profile.card_type == "Status"
+        )
+        return min(held, previous.status_exhausts * elapsed)
+
+    def _upgraded_share(self, previous: "_Totals", drawn: float, size: float) -> float:
+        """Fight-average share of upgradable card instances already upgraded
+        when one of them is played (CardCmd.Upgrade lasts the whole fight).
+
+        Upgrades are counted in instances out of ``upgrade_pool`` (every
+        upgradable deck card, plus unknown cards that may take a random
+        upgrade but gain nothing here): those held from the start of the
+        fight count in full; those made per turn build up (``_held_share``),
+        usable from the next turn, or for cards upgraded in the discard pile
+        (Drain Power) only once it is reshuffled, on average half a pass
+        through the deck later. Capped at every upgradable card.
+        """
+
+        pool = self.upgrade_pool
+        if not self.upgradable or pool <= 0:
+            return 0.0
+        turns = self.situation.fight_turns
+        cycle = size / max(drawn, 1e-9)   # turns to draw through the deck
+        return min(1.0, previous.upgraded_held / pool
+                   + _held_share(previous.upgrades / pool, turns)
+                   + _held_share(previous.upgrades_discard / pool, turns, cycle / 2.0))
+
+    def _upgrade_instances(self, effect: Mapping, moment: str, card: Optional[CardProfile] = None) -> float:
+        """Upgradable instances one ``upgrade_cards`` effect upgrades.
+
+        Its pile holds upgradable cards in proportion to the deck: at combat
+        start every card is in the draw pile; on the opening turn the hand
+        holds the cards drawn and the discard pile is empty; at other turn
+        starts the hand is full; at a card play the hand holds the other
+        cards still there (``hand_size``) and the draw and discard piles half
+        of the rest each. ``all`` upgrades every one of them, a count picks
+        up to that many (``choose`` is valued as a random pick, a lower
+        bound), ``all_combat`` upgrades every upgradable instance.
+
+        A played card is in the play pile while it resolves, so it is not
+        one of its own targets. (It still takes the common upgraded share
+        that other copies or sources give it: a small overestimate.)
+        """
+
+        own = 1.0 if (
+            card is not None and id(card) in self.known_set and card.upgraded_profile is not None
+        ) else 0.0
+        pool = self.upgrade_pool - own
+        if pool <= 0:
+            return 0.0
+        scope = effect.get("scope")
+        if scope == "all_combat":
+            return pool
+        size, drawn = self.pass_size - own, self.pass_drawn
+        estimates = self.estimates
+        if moment == "combat_start":
+            held = {"hand": 0.0, "draw": size, "discard": 0.0}
+        elif moment == "opening_turn":
+            held = {"hand": drawn, "draw": max(0.0, size - drawn), "discard": 0.0}
+        else:
+            held = {
+                "hand": drawn if moment == "turn_start" else estimates["hand_size"],
+                "draw": estimates["draw_pile"], "discard": estimates["discard_pile"],
+            }
+        mean = held[scope] * pool / max(size, 1.0)
+        count = effect.get("count")
+        return mean if count == "all" else _expected_taken(float(count), mean)
+
+    def _hand_takes(self, effect: Mapping, card: CardProfile) -> float:
+        """Cards a filtered exhaust/discard of a fixed count takes from hand.
+
+        The other cards in hand at a random play (``hand_size``) match the
+        card-type filter in proportion to the rest of the deck; it takes up
+        to ``count`` of them (Thrash: one random Attack, if there is one).
+        """
+
+        card_type = effect["filter"]["card_type"]
+        matching = sum(1 for c in self.known if c.card_type == card_type)
+        if card.card_type == card_type and id(card) in self.known_set:
+            matching -= 1   # the card itself is in the play pile
+        mean = self.estimates["hand_size"] * max(0, matching) / max(1.0, self.pass_size - 1.0)
+        return _expected_taken(float(effect.get("count") or 0.0), mean)
+
+    def _exhausted_damage(self, card: CardProfile) -> float:
+        """Damage per hit one play adds to the card's later plays by keeping
+        the damage of the card it exhausts (Thrash).
+
+        The exhausted card is a random matching card from hand: the expected
+        number taken (``_hand_takes``) times the average per-hit damage of the
+        deck's other matching cards (first damage effect; 0 without one). The
+        game adds that card's damage through Hook.ModifyDamage, so the owner's
+        Strength is in it too; that part is left out (a lower bound). Losing
+        the exhausted card for the rest of the fight is not counted, as for
+        every other exhaust of a card from hand.
+        """
+
+        exhaust = next((e for e in card.effects if e.get("grows_own_damage")), None)
+        if exhaust is None:
+            return 0.0
+        card_type = exhaust["filter"]["card_type"]
+
+        def damage(c: CardProfile) -> float:
+            return next((float(e.get("amount") or 0.0) for e in c.effects if e.get("kind") == "damage"), 0.0)
+
+        pool = [damage(c) for c in self.known if c.card_type == card_type]
+        total, count = sum(pool), len(pool)
+        if card.card_type == card_type and id(card) in self.known_set:
+            total, count = total - damage(card), count - 1
+        if count <= 0:
+            return 0.0
+        return self._hand_takes(exhaust, card) * total / count
+
     def _estimate(self, previous: "_Totals", plays: Mapping[int, float], drawn: float) -> None:
         """Per-play estimates of the game state amounts may scale with.
 
@@ -1416,6 +1760,9 @@ class _Engine:
             previous.generated.get(key, 0.0) for key, (profile, _) in self.mechanic_made.items()
             if profile.card_type == "Status"
         )
+        status_deck = float(sum(1 for c in self.known if c.card_type == "Status"))
+        self.status_pool = status_deck + self.status_made * turns
+        self.status_clear_plays = sum(last.get(id(c), 0.0) for c in self.cards if id(c) in self.status_clearers)
         doom = (previous.doom_single + previous.doom_all) * max(1.0, elapsed)
         generated = sum(last.get(id(c), 0.0) * g.count for c, g in self.sources) + sum(
             previous.generated.values()
@@ -1430,11 +1777,12 @@ class _Engine:
             "cards_drawn_this_turn_outside_hand_draw": previous.draw,
             "target_doom": doom,
             "target_doom_div_10": float(int(doom // 10)),
-            "status_cards_in_combat": float(sum(1 for c in self.known if c.card_type == "Status"))
-            + sum(
-                last.get(id(c), 0.0) * g.count * elapsed
-                for c, g in self.sources if g.profile.card_type == "Status"
-            ),
+            # The deck's Status cards plus those made so far (by enemies, the
+            # deck's cards and powers); a card exhausting them all sees fewer
+            # (see ``_resolve``). Status cards that exhaust themselves
+            # (Ethereal Dazed, a played Slimed) are not taken off: the
+            # enemies' cards are only known as a count.
+            "status_cards_in_combat": status_deck + self.status_made * elapsed,
             # Half the cards outside the hand sit in the discard pile on average.
             "discard_pile": max(0.0, self.size - drawn) / 2.0,
             "cards_generated_this_combat": generated * elapsed,
@@ -1502,10 +1850,15 @@ class _Engine:
 
         if (
             "scale" not in effect and "hits_scale" not in effect and "count_scale" not in effect
+            and "filter" not in effect and effect.get("kind") != "upgrade_cards"
             and not effect.get("condition") and card.card_id != "SOVEREIGN_BLADE"
         ):
             return effect, 1.0  # nothing depends on the fight's state
         resolved = dict(effect)
+        if effect.get("kind") == "upgrade_cards":
+            resolved["instances"] = self._upgrade_instances(effect, "play", card)
+        elif effect.get("filter") and "count_scale" not in effect:
+            resolved["count"] = self._hand_takes(effect, card)
         if card.card_id == "SOVEREIGN_BLADE" and effect.get("kind") == "damage":
             resolved["amount"] = float(effect.get("amount") or 0.0) + self.forge_bonus
         estimates = dict(self.estimates)
@@ -1528,6 +1881,15 @@ class _Engine:
         estimates["x_value"] = self.x_value
         # Energy left after paying for this card, at an average moment.
         estimates["energy_after_cost"] = max(0.0, self.supply - (self._cost(card) or 0.0)) / 2.0
+        # Damage kept from the cards its earlier plays exhausted (Thrash).
+        estimates["own_exhausted_damage"] = estimates["own_previous_plays"] * self._exhausted_damage(card)
+        if id(card) in self.status_clearers:
+            # It exhausts every Status card it counts: its plays share the
+            # fight's Status cards, at most the count at an average moment.
+            plays = max(1.0, self.status_clear_plays * self.situation.fight_turns)
+            estimates["status_cards_in_combat"] = min(
+                estimates["status_cards_in_combat"], self.status_pool / plays
+            )
         scale = effect.get("scale")
         if scale:
             value = estimates[scale["per"]]
@@ -1570,6 +1932,16 @@ class _Engine:
         if x_value is not None and effect.get("per_x"):
             amount *= x_value + float(effect.get("x_bonus") or 0.0)
         kind = effect.get("kind")
+        if kind == "upgrade_cards":
+            # Upgraded instances (resolved by ``_resolve`` / ``_apply_events``).
+            instances = float(effect.get("instances") or 0.0)
+            if persist_share is not None:
+                totals.upgraded_held += instances * persist_share
+            elif times > 0 and effect.get("scope") == "discard":
+                totals.upgrades_discard += instances * times
+            elif times > 0:
+                totals.upgrades += instances * times
+            return
         if kind == "apply_power" and effect.get("target") == "self" and persist_share is not None:
             name = SELF_POWERS[effect["power"]]
             if name != "vigor":
@@ -1629,11 +2001,16 @@ class _Engine:
             elif kind == "hp_loss":
                 totals.self_damage_events += times
         elif kind == "exhaust_other":
-            totals.exhausts += float(effect.get("count") or 1) * times
+            # A resolved count may be 0 (no matching card in hand).
+            count = float(effect.get("count") if effect.get("count") is not None else 1)
+            totals.exhausts += count * times
+            if (effect.get("filter") or {}).get("card_type") == "Status":
+                totals.status_exhausts += count * times
         elif kind == "discard":
-            totals.discards += float(effect.get("count") or 1) * times
+            count = float(effect.get("count") if effect.get("count") is not None else 1)
+            totals.discards += count * times
             if effect.get("choice") == "choose":
-                totals.chosen_discards += float(effect.get("count") or 1) * times
+                totals.chosen_discards += count * times
         elif kind == "apply_power":
             power, target = effect["power"], effect["target"]
             if target in {"damaged_creature", "damaged enemy"}:
@@ -1805,6 +2182,12 @@ class _Engine:
             share = weight * self._fight_share(mechanic.get("filter"))
             share *= self._condition(mechanic.get("condition") or {}, plays, drawn, played, totals)
             effect = mechanic["effect"]
+            if effect.get("kind") == "upgrade_cards":
+                when = mechanic["when"]
+                moment = "play" if when not in {"combat_start", "turn_start"} else (
+                    "opening_turn" if when == "turn_start" and mechanic.get("turns") == [1] else when
+                )
+                effect = {**effect, "instances": self._upgrade_instances(effect, moment)}
             if mechanic["when"] == "combat_start":
                 self._apply(totals, effect, share / turns, None, persist_share=share)
                 continue
