@@ -133,6 +133,7 @@ def best_upgrade_opportunity(
         return DeckEditOpportunity("upgrade", None, None, gaps)
     best_id = None
     best_value = -1.0
+    unknown = 0
     for target in targets:
         if target["upgrades"] > 0:
             return DeckEditOpportunity("upgrade", None, None, ("deck_edit:repeat_upgrade_unmodeled",))
@@ -141,11 +142,17 @@ def best_upgrade_opportunity(
             return DeckEditOpportunity("upgrade", None, None, (f"unknown_card:{target['card']}",))
         value = _upgrade_value(card)
         if value is None:
-            return DeckEditOpportunity("upgrade", None, None, ("deck_edit:upgrade_delta_unknown",))
+            unknown += 1
+            continue
         if value > best_value:
             best_id = target["card"]
             best_value = value
-    return DeckEditOpportunity("upgrade", best_id, best_value)
+    if best_id is None:
+        return DeckEditOpportunity("upgrade", None, None, ("deck_edit:upgrade_delta_unknown",))
+    # The best upgrade is at least the best one that can be valued: a lower
+    # bound, disclosed when some targets could not be valued.
+    partial = (f"deck_edit:upgrade_delta_partial:{unknown}",) if unknown else ()
+    return DeckEditOpportunity("upgrade", best_id, best_value, partial)
 
 
 def _removal_value(
@@ -359,6 +366,8 @@ def _apply_opportunity(
         for gap in opportunity.data_gaps:
             draft.gap(gap)
         return
+    for gap in opportunity.data_gaps:
+        draft.gap(gap, blocking=False)   # a lower bound: still scored
     if opportunity.operation == "upgrade":
         draft.add(
             "deck_upgrade_opportunity",

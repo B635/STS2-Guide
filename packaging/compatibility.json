@@ -1,6 +1,6 @@
 {
   "manifest_version": 2,
-  "release_fingerprint": "0d02267651a5848a5714d20c549fb2669231bcce1fc656ec84a3e5015b810b05",
+  "release_fingerprint": "956b9c6ef6e6b104a1ae3eb36d55e1f773c1226988b5d041f9a3492aae0fc2b2",
   "status": "enabled",
   "guide": {
     "version": "0.3.12-alpha.0"
@@ -21,7 +21,7 @@
   },
   "sqlite": {
     "schema_version": 9,
-    "snapshot_id": "knowledge-77836ab475f92ba7-facts-c3e70745acbde75f-params-cc5395c479d5ea5b",
+    "snapshot_id": "knowledge-77836ab475f92ba7-facts-c3e70745acbde75f-params-28476487132a59c0",
     "knowledge_sha256": "77836ab475f92ba706788fadf6ac99e0d341ac92c82165b20495c3af3560e5be",
     "community_scores_sha256": "37d7975a8a85cf00b6b37a28bbac892ab1cf0863cd252f085dff83258e0f524f"
   },

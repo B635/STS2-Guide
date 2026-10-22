@@ -28,7 +28,7 @@ DEFAULT_GUIDE_PARAMETERS_PATH = (
     Path(__file__).resolve().parents[1] / "data" / "guide_mechanics.json"
 )
 # Guide-owned parameters loaded directly (not via the catalog snapshot).
-GUIDE_PARAMETER_KEYS = ("deck_fitness_v1", "route_risk_profile_v1")
+GUIDE_PARAMETER_KEYS = ("campfire_rest_rule_v1", "deck_fitness_v1", "route_risk_profile_v1")
 
 RELEASE_IDENTITY_KEYS = (
     "schema_version",
