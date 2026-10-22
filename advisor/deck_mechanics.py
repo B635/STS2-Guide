@@ -772,18 +772,16 @@ def _transformed(
     CardCmd.Transform puts a newly created card in the place of the chosen
     one for the rest of the fight. It is scored as copies of the result card
     made where the replaced cards sit (the hand: playable this turn; the
-    draw pile: drawn later), like ``add_card``, but the deck keeps its size,
-    so the copies do not dilute the other cards' draws.
+    draw pile: drawn later), like ``add_card``.
 
-    Approximation: the replaced card's own draws are not taken away, as if
-    it were worth nothing. The player chooses the card they need least (a
-    Status, a Curse, a card the turn cannot pay for), and while the turn is
-    short of energy, as it usually is, one card fewer drawn costs little
-    while the free result card adds all of its value. The engine does not
-    rank cards, so this overstates the gain by the replaced card's value
-    when the deck has nothing weak to give up and energy to spare. The
-    thinner deck once a result exhausts is not counted either, nor are the
-    removed cards taken out of other estimates (Status cards in combat).
+    Approximation: the replaced cards are not taken out of the deck; the
+    results that stay in the fight dilute every card's draws instead, which
+    amounts to each result replacing an average card. The player gives up
+    the card they need least (a Status, a Curse, a card the turn cannot pay
+    for), so this leans low. A result that exhausts (all the Minion cards)
+    leaves the fight after its play and is not diluting; its replaced card is
+    simply gone, and the thinner deck that follows is not counted, nor are
+    the removed cards taken out of other estimates (Status cards in combat).
     Every card is taken to be transformable (``IsTransformable`` is not
     recorded in the facts).
 
@@ -1336,10 +1334,16 @@ class _Engine:
             elapsed = max(0.0, turns - 1.0) / 2.0
             # Copies sent to a pile stay for the rest of the fight: on average
             # half built up, they dilute every other card's draws. A
-            # transform's copies take the place of cards already there.
+            # transform's results stay too (wherever they are made, unless
+            # they exhaust); the replaced cards are still counted at full
+            # value, so the dilution is what stands for losing them: each
+            # result takes the place of an average card.
             piled = sum(
                 previous_plays.get(id(c), 0.0) * g.count * elapsed
                 for c, g in self.sources if g.destination != "hand" and g.targets is None
+            ) + sum(
+                previous_plays.get(id(c), 0.0) * self._made(g) * elapsed
+                for c, g in self.sources if g.targets is not None and not g.profile.once_per_fight
             ) + sum(
                 previous.generated.get(key, 0.0) * elapsed
                 for key, (_, destination) in self.mechanic_made.items() if destination != "hand"

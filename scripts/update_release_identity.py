@@ -1,7 +1,8 @@
 """Refresh the release identity after the catalog, assembly facts or Guide
 parameters changed.
 
-``sqlite.snapshot_id`` in packaging/compatibility.json names the hashes of
+The data hashes in packaging/compatibility.json (``sqlite.knowledge_sha256``,
+``sqlite.community_scores_sha256``) and ``sqlite.snapshot_id``, which names the hashes of
 data/knowledge.json, data/assembly/facts.json and data/guide_mechanics.json,
 and the release fingerprint covers it. This script recomputes both and
 writes the new fingerprint everywhere the old one is pinned (the Mod's
@@ -58,6 +59,7 @@ def main() -> int:
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
     old = manifest["release_fingerprint"]
     manifest["sqlite"]["knowledge_sha256"] = _sha256(ROOT_DIR / "data" / "knowledge.json")
+    manifest["sqlite"]["community_scores_sha256"] = _sha256(ROOT_DIR / "data" / "community_scores.json")
     manifest["sqlite"]["snapshot_id"] = compatibility.sqlite_snapshot_id(
         manifest["sqlite"]["knowledge_sha256"],
         _sha256(ROOT_DIR / "data" / "assembly" / "facts.json"),

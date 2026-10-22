@@ -1,0 +1,7 @@
+# Data files whose exact bytes are hashed into the release identity
+# (packaging/compatibility.json): never convert their line endings, or a
+# fresh checkout would no longer match the manifest.
+data/knowledge.json -text
+data/community_scores.json -text
+data/guide_mechanics.json -text
+data/assembly/*.json -text
