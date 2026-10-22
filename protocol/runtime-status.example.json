@@ -2,7 +2,7 @@
   "schema_version": 2,
   "session_id": "1234567890abcdef1234567890abcdef",
   "heartbeat_sequence": 2,
-  "release_fingerprint": "716e9a49d39176de0d2bd2090e1716fc7be76a99249f1a8a3d3769fac55a8b52",
+  "release_fingerprint": "8802100b0764a1ae6a0d0247e14eec7b567c9aa84a01d4fdaaff264264f0a5d0",
   "state": "RUNNING",
   "game_running": true,
   "worker_running": true,
