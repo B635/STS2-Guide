@@ -155,6 +155,12 @@ ADD_CARD_DESTINATIONS = frozenset({"hand", "draw", "discard"})
 MOVE_TO_HAND_KEYS = frozenset({
     "kind", "choice", "count", "count_upgrade", "destination", "to", "from", "source", "position",
 })
+# Transforms (CardCmd.Transform): cards of the hand or draw pile replaced by
+# a named card for the rest of the fight (see ``_transformed``).
+TRANSFORM_KEYS = frozenset({
+    "kind", "choice", "count", "filter", "into", "scope",
+    "upgraded_if_self_upgraded", "upgraded_result_if_upgraded",
+})
 
 
 @dataclass(frozen=True)
@@ -170,11 +176,18 @@ class PowerUse:
 
 @dataclass(frozen=True)
 class Generated:
-    """Copies of a named card one play of the source card creates."""
+    """Copies of a named card one play of the source card creates.
+
+    A transform (``targets`` set) replaces cards instead of adding them: the
+    deck keeps its size, and the copies made per play are the cards found to
+    replace, estimated by the engine under the ``targets`` key, at most
+    ``count`` (``None``: all of them).
+    """
 
     profile: "CardProfile"
-    count: float
+    count: Optional[float]
     destination: str                # hand | draw | discard
+    targets: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -747,6 +760,80 @@ def _generated(
     )
 
 
+def _transformed(
+    repository: RelationalRepository,
+    effect: Mapping,
+    upgraded: bool,
+    card_id: str,
+    depth: int,
+) -> tuple[Optional[Generated], tuple[str, ...]]:
+    """Resolve one ``transform_cards`` effect to the card it turns cards into.
+
+    CardCmd.Transform puts a newly created card in the place of the chosen
+    one for the rest of the fight. It is scored as copies of the result card
+    made where the replaced cards sit (the hand: playable this turn; the
+    draw pile: drawn later), like ``add_card``, but the deck keeps its size,
+    so the copies do not dilute the other cards' draws.
+
+    Approximation: the replaced card's own draws are not taken away, as if
+    it were worth nothing. The player chooses the card they need least (a
+    Status, a Curse, a card the turn cannot pay for), and while the turn is
+    short of energy, as it usually is, one card fewer drawn costs little
+    while the free result card adds all of its value. The engine does not
+    rank cards, so this overstates the gain by the replaced card's value
+    when the deck has nothing weak to give up and energy to spare. The
+    thinner deck once a result exhausts is not counted either, nor are the
+    removed cards taken out of other estimates (Status cards in combat).
+    Every card is taken to be transformable (``IsTransformable`` is not
+    recorded in the facts).
+
+    How many cards one play replaces (estimates of the engine, ``_estimate``):
+
+    * choose N in hand: N, at most the other cards of the turn's hand;
+    * choose N in the draw pile: N, at most the average draw pile;
+    * all Status cards in hand (Compact): the Status cards drawn per turn;
+    * any number in hand (Guards): the cards the turn leaves unplayed. Each
+      of them would do nothing this turn, so a player gives them up for a
+      free result card at least; playable cards worse than the result are
+      not counted, which leans low.
+
+    The result is upgraded when this card is and the fact says it follows.
+    Random results (Entropy), whole card types the turn would have played
+    (Primal Force: every Attack in hand) and other shapes stay gaps.
+    """
+
+    def gap(reason: str) -> tuple[None, tuple[str, ...]]:
+        return None, (f"card_effect_unsupported:{card_id}:transform_cards:{reason}",)
+
+    extra = {key for key in set(effect) - TRANSFORM_KEYS if not key.endswith("_text")}
+    if extra:
+        return gap(f"key:{sorted(extra)[0]}")
+    into, scope = str(effect.get("into") or ""), effect.get("scope")
+    choice, count, flt = effect.get("choice"), effect.get("count"), effect.get("filter") or {}
+    fixed = isinstance(count, (int, float)) and not isinstance(count, bool)
+    if not into or into == "random":
+        return gap(f"into:{into or 'missing'}")
+    if choice == "choose" and fixed and not flt and scope in {"hand", "draw"}:
+        targets = "other_cards_in_hand" if scope == "hand" else "draw_pile"
+    elif choice == "choose" and count == "any" and not flt and scope == "hand":
+        targets = "unplayed_cards_in_hand"
+    elif choice == "all" and count is None and flt == {"card_type": "Status"} and scope == "hand":
+        targets = "status_cards_in_hand"
+    else:
+        shape = f"filter:{flt.get('card_type')}" if flt else f"{choice or count}"
+        return gap(f"{scope}:{shape}")
+    if depth > 0:
+        return gap("generated_chain_truncated")
+    follows = effect.get("upgraded_if_self_upgraded") or effect.get("upgraded_result_if_upgraded")
+    result_id = into if into.isupper() else class_to_entity_id(into)
+    profile, gaps = card_profile(repository, result_id, 1 if follows and upgraded else 0, _depth=depth + 1)
+    if profile is None:
+        return None, (f"generated_card_fact_missing:{card_id}:{result_id}", *gaps)
+    return Generated(profile, float(count) if fixed else None, str(scope), targets), tuple(
+        f"generated:{card_id}:{g}" for g in gaps
+    )
+
+
 def card_profile(
     repository: RelationalRepository,
     card_id: str,
@@ -789,8 +876,9 @@ def card_profile(
             if moved is not None:
                 effects.append(moved)
                 continue
-        if isinstance(effect, Mapping) and effect.get("kind") == "add_card":
-            generated, generated_gaps = _generated(repository, effect, upgraded, card_id, _depth)
+        if isinstance(effect, Mapping) and effect.get("kind") in {"add_card", "transform_cards"}:
+            resolve = _generated if effect["kind"] == "add_card" else _transformed
+            generated, generated_gaps = resolve(repository, effect, upgraded, card_id, _depth)
             gaps.extend(generated_gaps)
             if generated is not None:
                 generates.append(generated)
@@ -1079,6 +1167,7 @@ class _Engine:
         self.status_made = 0.0   # Status cards created for the player per turn
         self.damage_dealt = 0.0  # damage per turn over all enemies (previous pass)
         self.supply = 0.0        # energy per turn (this pass)
+        self.per_turn = 0.0      # chance a deck card is drawn on a turn (this pass)
         self.energy_spent = 0.0  # energy the turn's plays use (this pass)
         self.orb_evokes: Dict[str, float] = {}   # evokes per turn by orb (previous pass)
         self.known_set = {id(c) for c in self.known}
@@ -1218,6 +1307,16 @@ class _Engine:
                 return False
         return True
 
+    def _made(self, generated: Generated) -> float:
+        """Copies one play of the source makes: the printed count, or for a
+        transform the cards it finds to replace (previous pass), at most its
+        count."""
+
+        if generated.targets is None:
+            return float(generated.count or 0.0)
+        found = self.estimates.get(generated.targets, 0.0)
+        return found if generated.count is None else min(generated.count, found)
+
     def run(self) -> tuple[Dict[str, float], tuple[str, ...]]:
         params, turns = self.params, self.situation.fight_turns
         extra_draw = extra_energy = block_estimate = star_supply = 0.0
@@ -1236,10 +1335,11 @@ class _Engine:
             )
             elapsed = max(0.0, turns - 1.0) / 2.0
             # Copies sent to a pile stay for the rest of the fight: on average
-            # half built up, they dilute every other card's draws.
+            # half built up, they dilute every other card's draws. A
+            # transform's copies take the place of cards already there.
             piled = sum(
                 previous_plays.get(id(c), 0.0) * g.count * elapsed
-                for c, g in self.sources if g.destination != "hand"
+                for c, g in self.sources if g.destination != "hand" and g.targets is None
             ) + sum(
                 previous.generated.get(key, 0.0) * elapsed
                 for key, (_, destination) in self.mechanic_made.items() if destination != "hand"
@@ -1247,6 +1347,7 @@ class _Engine:
             size = self.size + piled
             drawn = min(size, hand + (0.0 if no_draw else extra_draw))
             per_turn = min(1.0, drawn / size)
+            self.per_turn = per_turn
             supply = base_energy + extra_energy
             self.supply = supply
             rates = {
@@ -1285,7 +1386,7 @@ class _Engine:
                     held = created * elapsed * per_turn
                     rates[key] += min(created, held) if profile.once_per_fight else held
             for source, g in self.sources:
-                created = previous_plays.get(id(source), 0.0) * g.count
+                created = previous_plays.get(id(source), 0.0) * self._made(g)
                 if g.destination == "hand":
                     rates[id(g.profile)] += created
                 else:
@@ -1410,15 +1511,31 @@ class _Engine:
             "Skill": sum(last.get(id(c), 0.0) for c in self.cards if c.card_type == "Skill"),
             "OstyAttack": sum(last.get(id(c), 0.0) for c in self.cards if "OstyAttack" in c.tags),
         }
+        # A transform is not counted as a generated card (no IL evidence
+        # that CardCmd.Transform records a generation).
         self.status_made = self.situation.status_cards + sum(
-            last.get(id(c), 0.0) * g.count for c, g in self.sources if g.profile.card_type == "Status"
+            last.get(id(c), 0.0) * g.count for c, g in self.sources
+            if g.profile.card_type == "Status" and g.targets is None
         ) + sum(
             previous.generated.get(key, 0.0) for key, (profile, _) in self.mechanic_made.items()
             if profile.card_type == "Status"
         )
         doom = (previous.doom_single + previous.doom_all) * max(1.0, elapsed)
-        generated = sum(last.get(id(c), 0.0) * g.count for c, g in self.sources) + sum(
-            previous.generated.values()
+        generated = sum(
+            last.get(id(c), 0.0) * g.count for c, g in self.sources if g.targets is None
+        ) + sum(previous.generated.values())
+        # Cards a transform can find (see ``_transformed``). Status cards
+        # enemies push into the piles are drawn like the deck's own, half
+        # built up; a card drawn this turn is taken to be in hand when the
+        # transform is played.
+        rates = self.rates
+        enemy_status = self.situation.status_cards * elapsed * self.per_turn
+        others = max(0.0, drawn - 1.0)
+        status_in_hand = enemy_status + sum(
+            rates.get(id(c), 0.0) for c in self.cards if c.card_type == "Status"
+        )
+        unplayed = enemy_status + sum(
+            max(0.0, rates.get(id(c), 0.0) - plays[id(c)]) for c in self.cards
         )
         self.estimates = {
             "orb_count": previous.orbs_held,
@@ -1432,9 +1549,14 @@ class _Engine:
             "target_doom_div_10": float(int(doom // 10)),
             "status_cards_in_combat": float(sum(1 for c in self.known if c.card_type == "Status"))
             + sum(
-                last.get(id(c), 0.0) * g.count * elapsed
+                last.get(id(c), 0.0) * self._made(g) * elapsed
                 for c, g in self.sources if g.profile.card_type == "Status"
             ),
+            # Other cards in hand when the turn starts; Status cards drawn this
+            # turn; drawn cards the turn leaves unplayed (all within the hand).
+            "other_cards_in_hand": others,
+            "status_cards_in_hand": min(others, status_in_hand),
+            "unplayed_cards_in_hand": min(others, unplayed),
             # Half the cards outside the hand sit in the discard pile on average.
             "discard_pile": max(0.0, self.size - drawn) / 2.0,
             "cards_generated_this_combat": generated * elapsed,

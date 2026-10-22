@@ -1373,3 +1373,136 @@ class MissingMechanicTests(IndependentReviewFixTests):
         # The moved card is also upgraded: that part is not valued, and said so.
         self.assertEqual(gaps, ("power_mechanic_unsupported:AGGRESSION:move_rider:upgrade_moved",))
 
+
+class TransformTests(IndependentReviewFixTests):
+    """transform_cards: chosen cards become a named card for the rest of the fight."""
+
+    # card -> (result card, where the results go, capability the result adds to)
+    MODELED = {
+        "BEGONE": ("MINION_STRIKE", "hand", "frontload"),
+        "CHARGE": ("MINION_DIVE_BOMB", "draw", "frontload"),
+        "GUARDS": ("MINION_SACRIFICE", "hand", "defense"),
+        "COMPACT": ("FUEL", "hand", "energy"),
+        "SEANCE": ("SOUL", "draw", "cycle"),
+    }
+
+    def without_transform(self, card):
+        from dataclasses import replace
+
+        return replace(card, generates=())
+
+    def with_enemy_status(self, cards, status_cards):
+        from advisor.deck_fitness import PARAMETERS_KEY
+        from advisor.deck_mechanics import Situation, deck_capabilities
+
+        params = self.repository.mechanic_constant(PARAMETERS_KEY)
+        situation = Situation(6.0, 0.0, 10.0, {"MONSTER": 1.0}, 1.0, 0, status_cards=status_cards)
+        return deck_capabilities(cards, (), situation, params)[0]
+
+    def test_modeled_transforms_convert_without_a_gap(self):
+        for card_id, (result, destination, _) in self.MODELED.items():
+            for upgrades in (0, 1):
+                card, gaps = self.profile(card_id, upgrades)
+                self.assertEqual(gaps, (), (card_id, upgrades))
+                self.assertEqual(
+                    [(g.profile.card_id, g.destination) for g in card.generates], [(result, destination)],
+                )
+                self.assertEqual(self.profile(result, upgrades)[1], (), result)
+
+    def test_each_transform_adds_capability(self):
+        wounds = [self.profile("WOUND")[0] for _ in range(3)]
+        for card_id, (_, _, dimension) in self.MODELED.items():
+            # Compact needs Status cards in hand to transform.
+            deck = self.starter("REGENT") + (wounds if card_id == "COMPACT" else [])
+            card = self.profile(card_id)[0]
+            with_results = self.capabilities(deck + [card])[dimension]
+            without = self.capabilities(deck + [self.without_transform(card)])[dimension]
+            self.assertGreater(with_results, without, card_id)
+
+    def test_the_upgraded_result_is_used_when_the_transform_says_so(self):
+        for card_id, kind, plain, upgraded in (
+            ("BEGONE", "damage", 6.0, 9.0),
+            ("CHARGE", "damage", 13.0, 16.0),
+            ("GUARDS", "block", 7.0, 10.0),     # written upgraded_result_if_upgraded
+            ("COMPACT", "energy", 1.0, 2.0),
+        ):
+            for upgrades, amount in ((0, plain), (1, upgraded)):
+                result = self.profile(card_id, upgrades)[0].generates[0].profile
+                self.assertEqual(result.upgraded, upgrades == 1, card_id)
+                self.assertEqual([e["amount"] for e in result.effects if e["kind"] == kind], [amount], card_id)
+        # Seance's upgrade only lowers its cost: the Soul stays plain.
+        self.assertFalse(self.profile("SEANCE", 1)[0].generates[0].profile.upgraded)
+        deck = self.starter("REGENT")
+        for card_id, dimension in (("BEGONE", "frontload"), ("CHARGE", "frontload"), ("GUARDS", "defense")):
+            plain = self.capabilities(deck + [self.profile(card_id, 0)[0]])[dimension]
+            better = self.capabilities(deck + [self.profile(card_id, 1)[0]])[dimension]
+            self.assertGreater(better, plain, card_id)
+
+    def test_compact_transforms_the_status_cards_drawn(self):
+        deck = self.starter("DEFECT")
+        compact = self.profile("COMPACT")[0]
+        # No Status card anywhere: nothing to transform.
+        self.assertEqual(
+            self.with_enemy_status(deck + [compact], 0.0),
+            self.with_enemy_status(deck + [self.without_transform(compact)], 0.0),
+        )
+        # Status cards enemies push into the piles are drawn and become Fuel.
+        self.assertGreater(
+            self.with_enemy_status(deck + [compact], 1.0)["energy"],
+            self.with_enemy_status(deck + [self.without_transform(compact)], 1.0)["energy"],
+        )
+
+    def test_guards_takes_only_the_cards_the_turn_leaves_unplayed(self):
+        from dataclasses import replace
+
+        guards = self.profile("GUARDS")[0]
+        # Free cards are all played: nothing is left in hand to give up.
+        free = [replace(self.profile("DEFEND_REGENT")[0], cost=0.0) for _ in range(10)]
+        self.assertAlmostEqual(
+            self.capabilities(free + [guards])["defense"],
+            self.capabilities(free + [self.without_transform(guards)])["defense"],
+            places=9,
+        )
+        # The starter cannot pay for its whole hand: those cards become Minion Sacrifices.
+        deck = self.starter("REGENT")
+        self.assertGreater(
+            self.capabilities(deck + [guards])["defense"],
+            self.capabilities(deck + [self.without_transform(guards)])["defense"],
+        )
+
+    def test_a_transform_does_not_dilute_the_deck(self):
+        # The Dive Bombs take the place of cards in the draw pile: the Defends
+        # are drawn as often as before (Boost Away's added Dazed lower it).
+        defends = [self.profile("DEFEND_REGENT")[0] for _ in range(9)]
+        charge = self.profile("CHARGE")[0]
+        self.assertAlmostEqual(
+            self.capabilities(defends + [charge])["defense"],
+            self.capabilities(defends + [self.without_transform(charge)])["defense"],
+            places=9,
+        )
+
+    def test_other_transforms_stay_gaps(self):
+        from advisor.deck_mechanics import _transformed, power_use
+
+        # Every Attack in hand, which the turn would have played.
+        self.assertEqual(
+            self.profile("PRIMAL_FORCE")[1],
+            ("card_effect_unsupported:PRIMAL_FORCE:transform_cards:hand:filter:Attack",),
+        )
+        # A random result.
+        self.assertEqual(
+            power_use(self.repository, "Entropy", 1)[1],
+            ("power_mechanic_unsupported:ENTROPY:effect:transform_cards",),
+        )
+        base = {"kind": "transform_cards", "choice": "choose", "count": 1, "into": "MINION_STRIKE", "scope": "hand"}
+        for change, reason in (
+            ({"into": "random"}, "into:random"),
+            ({"count": "any", "scope": "draw"}, "draw:choose"),
+            ({"scope": "discard"}, "discard:choose"),
+            ({"filter": {"card_type": "Skill"}}, "hand:filter:Skill"),
+            ({"position": "top"}, "key:position"),
+        ):
+            generated, gaps = _transformed(self.repository, {**base, **change}, False, "TEST", 0)
+            self.assertIsNone(generated)
+            self.assertEqual(gaps, (f"card_effect_unsupported:TEST:transform_cards:{reason}",))
+
