@@ -1506,3 +1506,175 @@ class TransformTests(IndependentReviewFixTests):
             self.assertIsNone(generated)
             self.assertEqual(gaps, (f"card_effect_unsupported:TEST:transform_cards:{reason}",))
 
+
+class FilteredExhaustAndUpgradeTests(IndependentReviewFixTests):
+    """Exhausts restricted to one card type (Flak Cannon, Thrash) and cards
+    upgraded during a fight (Drain Power, Armaments, Apotheosis, relics)."""
+
+    def fight(self, cards, relics=(), status_cards=0.0, turns=6.0):
+        from advisor.deck_fitness import PARAMETERS_KEY
+        from advisor.deck_mechanics import Situation, deck_capabilities
+
+        params = self.repository.mechanic_constant(PARAMETERS_KEY)
+        situation = Situation(turns, 0.0, 10.0, {"MONSTER": 1.0}, 1.0, 0, status_cards=status_cards)
+        return deck_capabilities(list(cards), list(relics), situation, params)[0]
+
+    def relic(self, relic_id):
+        from advisor.deck_mechanics import relic_profile
+
+        return relic_profile(self.repository, relic_id)
+
+    @staticmethod
+    def without(card, kind):
+        from dataclasses import replace
+
+        return replace(card, effects=tuple(e for e in card.effects if e["kind"] != kind))
+
+    def assertSameFight(self, first, second):
+        for dimension, value in first.items():
+            self.assertAlmostEqual(value, second[dimension], places=9, msg=dimension)
+
+    def test_flak_cannon_hits_once_per_status_card_and_shares_them_between_plays(self):
+        for upgrades in (0, 1):
+            self.assertEqual(self.profile("FLAK_CANNON", upgrades)[1], ())
+        flak, upgraded = self.profile("FLAK_CANNON", 0)[0], self.profile("FLAK_CANNON", 1)[0]
+        wounds = [self.profile("WOUND")[0] for _ in range(3)]
+        # Drawn and played every turn: the first play exhausts the three
+        # Wounds, one hit each; later plays find none. 3 hits over 6 turns.
+        self.assertAlmostEqual(self.fight([flak] + wounds)["frontload"], 8.0 * 3 / 6.0, places=6)
+        self.assertAlmostEqual(self.fight([upgraded] + wounds)["frontload"], 11.0 * 3 / 6.0, places=6)
+        self.assertEqual(self.fight([flak])["frontload"], 0.0)
+        # Status cards the enemies add count too: more of them, more hits.
+        deck = self.starter("DEFECT")
+        gains = [
+            self.fight(deck + [flak], status_cards=s)["frontload"] - self.fight(deck, status_cards=s)["frontload"]
+            for s in (0.0, 1.0, 2.0)
+        ]
+        self.assertLess(gains[0], gains[1])
+        self.assertLess(gains[1], gains[2])
+
+    def test_status_cards_flak_cannon_exhausts_trigger_exhausts_and_stop_diluting_draws(self):
+        flak = self.profile("FLAK_CANNON")[0]
+        kept = self.without(flak, "exhaust_other")
+        # Energy to spare: every Defend drawn is played.
+        deck = [self.profile("DEFEND_IRONCLAD")[0] for _ in range(3)] + [
+            self.profile("WOUND")[0] for _ in range(6)
+        ]
+        # Gone from the piles, the Wounds no longer take draws from Defends.
+        self.assertGreater(self.fight(deck + [flak])["defense"], self.fight(deck + [kept])["defense"])
+        # Each exhausted Status card is an exhaust event (Feel No Pain).
+        pain = self.profile("FEEL_NO_PAIN")[0]
+        plain_gain = self.fight(deck + [flak])["defense"] - self.fight(deck + [kept])["defense"]
+        pain_gain = self.fight(deck + [flak, pain])["defense"] - self.fight(deck + [kept, pain])["defense"]
+        self.assertGreater(pain_gain, plain_gain)
+
+    def test_thrash_exhausts_an_attack_and_keeps_its_damage(self):
+        from dataclasses import replace
+
+        for upgrades in (0, 1):
+            self.assertEqual(self.profile("THRASH", upgrades)[1], ())
+        thrash = self.profile("THRASH")[0]
+        pain = self.profile("FEEL_NO_PAIN")[0]
+        deck = self.starter("IRONCLAD")
+        # The random Attack it exhausts from hand is an exhaust event.
+        self.assertGreater(
+            self.fight(deck + [thrash, pain])["defense"],
+            self.fight(deck + [self.without(thrash, "exhaust_other"), pain])["defense"],
+        )
+        # Later plays keep the exhausted card's damage.
+        flat = replace(thrash, effects=tuple(
+            {k: v for k, v in e.items() if k != "scale"} for e in thrash.effects
+        ))
+        self.assertGreater(self.fight(deck + [thrash])["frontload"], self.fight(deck + [flat])["frontload"])
+        # With no other Attack there is nothing to exhaust or keep.
+        defends = [self.profile("DEFEND_IRONCLAD")[0] for _ in range(8)]
+        self.assertSameFight(
+            self.fight(defends + [thrash, pain]),
+            self.fight(defends + [self.without(thrash, "exhaust_other"), pain]),
+        )
+
+    def test_drain_power_upgrades_cards_only_when_the_deck_has_upgradable_ones(self):
+        for upgrades in (0, 1):
+            self.assertEqual(self.profile("DRAIN_POWER", upgrades)[1], ())
+        drain = self.profile("DRAIN_POWER")[0]
+        plain = self.without(drain, "upgrade_cards")
+        deck = self.starter("NECROBINDER")
+        upgrading, flat = self.fight(deck + [drain]), self.fight(deck + [plain])
+        self.assertGreater(upgrading["frontload"], flat["frontload"])
+        self.assertGreater(upgrading["defense"], flat["defense"])
+        # Upgrading three cards a play is worth more than two.
+        upgraded_drain = self.profile("DRAIN_POWER", 1)[0]
+        self.assertGreater(
+            self.fight(deck + [upgraded_drain])["defense"],
+            self.fight(deck + [self.without(upgraded_drain, "upgrade_cards")])["defense"]
+            + upgrading["defense"] - flat["defense"],
+        )
+        # Every other card already upgraded (and Drain Power is not its own
+        # target): nothing to gain.
+        done = [self.profile("STRIKE_NECROBINDER", 1)[0] for _ in range(5)] + [
+            self.profile("DEFEND_NECROBINDER", 1)[0] for _ in range(5)
+        ]
+        self.assertSameFight(self.fight(done + [drain]), self.fight(done + [plain]))
+
+    def test_upgrades_build_up_over_the_fight_and_stop_at_every_card(self):
+        from advisor.deck_mechanics import _held_share
+
+        # Half built up on average, as Strength gained during a fight.
+        self.assertAlmostEqual(_held_share(0.1, 6.0), 0.1 * 5 / 2)
+        # Never more than every card, and later when they must come back first.
+        self.assertLessEqual(_held_share(10.0, 6.0), 1.0)
+        self.assertLess(_held_share(0.1, 6.0, delay=2.0), _held_share(0.1, 6.0))
+        self.assertEqual(_held_share(0.5, 1.0), 0.0)
+        # Many Drain Powers in a small deck cannot upgrade beyond it.
+        drains = [self.profile("DRAIN_POWER")[0] for _ in range(6)]
+        strikes = [self.profile("STRIKE_NECROBINDER")[0] for _ in range(3)]
+        everything = [self.profile("STRIKE_NECROBINDER", 1)[0] for _ in range(3)] + [
+            self.profile("DRAIN_POWER", 1)[0] for _ in range(6)
+        ]
+        self.assertLessEqual(self.fight(strikes + drains)["frontload"], self.fight(everything)["frontload"])
+
+    def test_other_in_fight_upgrades_that_fit_are_valued(self):
+        deck = self.starter("IRONCLAD")
+        for card_id in ("ARMAMENTS", "APOTHEOSIS"):
+            for upgrades in (0, 1):
+                card, gaps = self.profile(card_id, upgrades)
+                self.assertEqual(gaps, (), card_id)
+                self.assertGreater(
+                    self.fight(deck + [card])["frontload"],
+                    self.fight(deck + [self.without(card, "upgrade_cards")])["frontload"], card_id,
+                )
+        # Upgraded Armaments upgrades every card in hand instead of one.
+        self.assertEqual(
+            [e["count"] for e in self.profile("ARMAMENTS", 1)[0].effects if e["kind"] == "upgrade_cards"], ["all"],
+        )
+        for relic_id in ("STONE_CRACKER", "BELLOWS"):
+            relic, gaps = self.relic(relic_id)
+            self.assertEqual(gaps, (), relic_id)
+            self.assertGreater(self.fight(deck, [relic])["frontload"], self.fight(deck)["frontload"], relic_id)
+
+    def test_variants_the_engine_cannot_value_stay_gaps(self):
+        from advisor.deck_mechanics import effect_unsupported, unsupported_reason
+
+        # A relic or power picking a filtered card from hand: not resolved
+        # per event, so it would always find one.
+        self.assertEqual(unsupported_reason({"when": "turn_start", "effect": {
+            "kind": "exhaust_other", "choice": "random", "count": 1, "filter": {"card_type": "Status"},
+        }}), "effect_filter:mechanic")
+        # A type filter the count does not already apply.
+        self.assertEqual(effect_unsupported({
+            "kind": "exhaust_other", "choice": "all", "count_scale": {"per": "hand_size"},
+            "filter": {"card_type": "Attack"},
+        }), "effect_filter:count_scale")
+        # "all" with no count source, any other ``then``, other filters.
+        self.assertEqual(effect_unsupported({"kind": "exhaust_other", "choice": "all", "count": None}),
+                         "effect_choice:all")
+        self.assertEqual(effect_unsupported({
+            "kind": "exhaust_other", "choice": "random", "count": 1, "then": "something else",
+        }), "effect_key:then")
+        self.assertIn("card_effect_unsupported:SCRAPE:effect_filter:unsupported", self.profile("SCRAPE")[1])
+        self.assertIn("relic_mechanic_unsupported:POWER_CELL:effect_key:filter", self.relic("POWER_CELL")[1])
+        # Upgrades of the played card or of a generated card, limited uses.
+        self.assertEqual(effect_unsupported({"kind": "upgrade_cards", "scope": "played_card", "count": 1}),
+                         "upgrade_cards:scope:played_card")
+        self.assertTrue(self.relic("RAZOR_TOOTH")[1])
+        self.assertEqual(self.relic("BONE_TEA")[1], ("relic_mechanic_unsupported:BONE_TEA:key:uses",))
