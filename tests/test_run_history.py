@@ -75,6 +75,18 @@ class RunHistoryTests(unittest.TestCase):
             {("STRIKE", 1): 1, ("DEFEND", 0): 1, ("BASH", 0): 1},
         )
 
+    def test_the_first_ancient_choice_is_seen_before_the_relic_is_taken(self):
+        data = run()
+        data["players"][0]["relics"].append({"id": "RELIC.GIFT", "floor_added_to_deck": 1})
+        data["map_point_history"][0][0]["player_stats"] = stats(ancient_choice=[
+            {"TextKey": "RELIC.GIFT", "was_chosen": True}, {"TextKey": "RELIC.OTHER", "was_chosen": False},
+        ])
+        decision = next(d for d in replay_run(data, STARTER, "1")["decisions"] if d["kind"] == "ancient_relic")
+        self.assertEqual((decision["chosen"], decision["options"]), ("GIFT", ["GIFT", "OTHER"]))
+        state = decision["scoring_view"]["state"]
+        self.assertEqual(state["relics"], ["START"])
+        self.assertEqual([s["relic"] for s in state["relic_states"]], ["START"])
+
     def test_relics_and_the_path_ahead_are_those_of_that_moment(self):
         first, second = replay_run(run(), STARTER, "1")["situations"]
         self.assertEqual(first["scoring_view"]["state"]["relics"], ["START"])

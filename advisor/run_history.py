@@ -313,11 +313,19 @@ def replay_run(run: Mapping, starting_deck: Iterable[str], run_key: str) -> dict
                 })
             options = [o for o in stats.get("ancient_choice") or () if isinstance(o, Mapping) and o.get("TextKey")]
             if len(options) >= 2 and sum(bool(o.get("was_chosen")) for o in options) == 1:
+                chosen = next(bare_id(o["TextKey"]) for o in options if o.get("was_chosen"))
+                ancient_view = view("ancient", stats.get("current_hp"), [])
+                # The state before the choice: on floor 1 every relic of the
+                # point counts as owned (see ``relics_now``), the chosen one too.
+                state = ancient_view["state"]
+                if chosen in state["relics"]:
+                    state["relics"] = [r for r in state["relics"] if r != chosen]
+                    state["relic_states"] = [s for s in state["relic_states"] if s["relic"] != chosen]
                 decisions.append({
                     **common, "kind": "ancient_relic",
                     "options": [bare_id(o["TextKey"]) for o in options],
-                    "chosen": next(bare_id(o["TextKey"]) for o in options if o.get("was_chosen")),
-                    "scoring_view": view("ancient", stats.get("current_hp"), []),
+                    "chosen": chosen,
+                    "scoring_view": ancient_view,
                 })
             # Deck changes of this point, in the order the game applies them.
             for change in stats.get("cards_transformed") or ():

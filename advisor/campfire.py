@@ -188,10 +188,13 @@ class CampfirePolicy:
                 item["code"] == "deck_upgrade_opportunity" and item["delta"] > 0
                 for item in smith.factors
             ):
+                partial = any(g.startswith("deck_edit:upgrade_delta_partial:") for g in smith.data_gaps)
                 smith.add(
                     "campfire_rest_rule_not_applied",
                     0.0,
-                    f"生命 {percent}%，不低于 {threshold}%，但没有能变强的升级：按效果比较。",
+                    f"生命 {percent}%，不低于 {threshold}%，但"
+                    + ("可估值的升级都不能变强" if partial else "没有能变强的升级")
+                    + "：按效果比较。",
                     "resource_efficiency",
                 )
                 return

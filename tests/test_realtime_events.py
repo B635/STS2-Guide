@@ -1428,15 +1428,58 @@ class RealtimeEventTests(unittest.TestCase):
         )
         self.assertIsNone(self.checkpoint.load()["map_context"])
 
+    def test_shipped_card_policy_gets_no_checkpointed_map(self):
+        map_payload = _event_payload(1, "map_choice")
+        map_payload["map_context"] = {
+            "map_name": "Act_1",
+            "player_row": 0,
+            "current_node_id": "0:0",
+            "available_next_node_ids": ["1:0"],
+            "boss_node_ids": [],
+            "boss_encounter_ids": ["VANTOM_BOSS"],
+            "node_count": 2,
+            "nodes": [
+                {
+                    "node_id": "0:0",
+                    "kind": "MONSTER",
+                    "row": 0,
+                    "col": 0,
+                    "edges": ["1:0"],
+                },
+                {
+                    "node_id": "1:0",
+                    "kind": "ELITE",
+                    "row": 1,
+                    "col": 0,
+                    "edges": [],
+                },
+            ],
+        }
+        self.processor.process(
+            GameStateEvent.model_validate(map_payload)
+        )
+
+        # The shipped card policy: the request it gets carries no map.
+        shipped = self.processor.policies._policies["card_reward"]
+        seen = []
+        original = shipped.recommend
+        with patch.object(shipped, "recommend", lambda request: seen.append(request) or original(request)):
+            self.processor.process(GameStateEvent.model_validate(_event_payload(2)))
+        self.assertEqual(len(seen), 1)
+        self.assertIsNone(seen[0].world.map)
+
     def test_card_reward_respects_cannot_skip_context(self):
         payload = _event_payload()
         payload["decision"]["can_skip"] = False
         result = self.processor.process(
             GameStateEvent.model_validate(payload)
         )
-        # Skip is either absent or not selectable, and never recommended.
-        skip = [row for row in result["recommendation"]["candidates"] if row["candidate_id"] == "skip"]
-        self.assertTrue(all(not row["eligible"] and row["score"] is None for row in skip))
+        # No skip row reaches the policy (the fixture has no deck facts, so
+        # the answer itself is "uncertain"; the scored case is covered by
+        # test_deck_fitness ... test_without_skip_a_card_is_recommended).
+        rows = result["recommendation"]["candidates"]
+        self.assertTrue(rows)
+        self.assertNotIn("skip", [row["candidate_id"] for row in rows])
         self.assertNotEqual(result["recommendation"]["recommended_candidate_id"], "skip")
 
     def test_schema_v3_run_end_saves_only_final_summary(self):

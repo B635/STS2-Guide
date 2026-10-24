@@ -8,6 +8,10 @@ from advisor.decision_core import (
     WorldState,
 )
 from advisor.event_policy import EVENT_OPTION, EventPolicy
+from storage.release_database import (
+    DEFAULT_GUIDE_PARAMETERS_PATH,
+    GUIDE_PARAMETER_KEYS,
+)
 from storage.relational import RelationalRepository
 
 
@@ -15,7 +19,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EVENT_ID = "ABYSSAL_BATHS"
 
 
-def _world(*, hp=60):
+def _world(*, hp=60, deck=None):
     return WorldState.create(
         run_id="event-run",
         sequence=8,
@@ -27,7 +31,7 @@ def _world(*, hp=60):
             "max_hp": 80,
             "gold": 100,
             "energy": 3,
-            "deck": [
+            "deck": deck or [
                 {"card": "STRIKE_IRONCLAD", "count": 5},
                 {"card": "DEFEND_IRONCLAD", "count": 4},
             ],
@@ -89,6 +93,12 @@ class EventPolicyTests(unittest.TestCase):
         )
         cls.repository.sync_catalog(
             os.path.join(ROOT, "data", "knowledge.json")
+        )
+        # Guide-owned parameters reach the release database the same way.
+        cls.repository.sync_guide_parameters(
+            str(DEFAULT_GUIDE_PARAMETERS_PATH),
+            GUIDE_PARAMETER_KEYS,
+            "test",
         )
         cls.policy = EventPolicy(cls.repository)
 
@@ -221,6 +231,31 @@ class EventPolicyTests(unittest.TestCase):
                     _candidate("ABSTAIN", [_effect("no_op")]),
                 ]))
                 self.assertEqual(result.status, "uncertain")
+
+    def test_upgrade_option_with_unvalued_cards_is_a_disclosed_lower_bound(self):
+        # The smith lower bound reaches events too (score_effect_bundle).
+        result = self.policy.recommend(_request(
+            [
+                _candidate("IMMERSE", [{
+                    "kind": "upgrade_card",
+                    "entity_type": "cards",
+                    "target_mode": "choose",
+                    "source_code": "catalog:event_effect_fixture",
+                }], deck_edit_targets={
+                    "operation": "upgrade", "source_code": "fixture:event_upgrade", "targets": [
+                        {"target_id": "fixture:0", "card": "STRIKE_IRONCLAD", "upgrades": 0},
+                        {"target_id": "fixture:1", "card": "BASH", "upgrades": 0},
+                    ],
+                }),
+                _candidate("ABSTAIN", [_effect("no_op")]),
+            ],
+            world=_world(deck=[{"card": "STRIKE_IRONCLAD", "count": 1}, {"card": "BASH", "count": 1}]),
+        ))
+        row = next(c for c in result.candidates if c.candidate_id == "IMMERSE")
+        self.assertIsNotNone(row.score, row.data_gaps)
+        self.assertIn("deck_edit:upgrade_delta_partial:1", row.data_gaps)
+        upgrade = [f for f in row.factors if f["code"] == "deck_upgrade_opportunity"]
+        self.assertTrue(upgrade and "未估值" in upgrade[0]["message"])
 
     def test_known_gold_effect_is_deterministic(self):
         request = _request([

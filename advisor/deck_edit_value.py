@@ -358,6 +358,12 @@ def _specific_removal(
     return DeckEditOpportunity("remove", effect.entity_id, value)
 
 
+def _unvalued_upgrades(gaps: tuple[str, ...]) -> int:
+    """Cards left out of a lower-bound upgrade value (0: none)."""
+    prefix = "deck_edit:upgrade_delta_partial:"
+    return sum(int(g[len(prefix):]) for g in gaps if g.startswith(prefix))
+
+
 def _apply_opportunity(
     draft: AssessmentDraft,
     opportunity: DeckEditOpportunity,
@@ -369,10 +375,13 @@ def _apply_opportunity(
     for gap in opportunity.data_gaps:
         draft.gap(gap, blocking=False)   # a lower bound: still scored
     if opportunity.operation == "upgrade":
+        unvalued = _unvalued_upgrades(opportunity.data_gaps)
         draft.add(
             "deck_upgrade_opportunity",
             opportunity.value,
-            f"当前最佳升级目标为 {opportunity.target_id}。",
+            # With unvalued cards the best target is not known, only a bound.
+            f"可估值的升级中最好的是 {opportunity.target_id}，另有 {unvalued} 张牌的升级未估值，"
+            "锻造至少值这么多。" if unvalued else f"当前最佳升级目标为 {opportunity.target_id}。",
             "long_term_growth",
         )
     else:

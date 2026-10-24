@@ -214,10 +214,11 @@ class CampfirePolicyTests(unittest.TestCase):
                 smith = result.candidates[1]
                 self.assertIsNotNone(smith.score)
                 self.assertIn("deck_edit:upgrade_delta_partial:1", smith.data_gaps)
-                self.assertTrue(any(
-                    factor["code"] == "deck_upgrade_opportunity"
-                    for factor in smith.factors
-                ))
+                upgrade = [f for f in smith.factors if f["code"] == "deck_upgrade_opportunity"]
+                self.assertTrue(upgrade)
+                # A bound, not the best target: the next screen cannot rank it either.
+                self.assertIn("1 张牌的升级未估值", upgrade[0]["message"])
+                self.assertNotIn("最佳升级目标", upgrade[0]["message"])
                 self.assertEqual(result.status, "recommend")
 
     def test_smith_with_no_valued_target_stays_unknown(self):

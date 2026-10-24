@@ -804,6 +804,22 @@ class ConfidenceAndNearTieTests(unittest.TestCase):
         view = self.golden[situation_id]["scoring_view"]
         return PolicyRegistry([DeckFitnessPolicy(self.helper.repository)]).recommend(card_reward_request(view))
 
+    def test_without_skip_a_card_is_recommended(self):
+        # A reward that cannot be skipped: the Mod sends no skip row. Every
+        # golden situation whose answer is skip then gets a card.
+        situations = [s for s in self.golden.values() if s["best"] == ["skip"]]
+        self.assertTrue(situations)
+        policy = PolicyRegistry([DeckFitnessPolicy(self.helper.repository)])
+        for situation in situations:
+            view = copy.deepcopy(situation["scoring_view"])
+            view["decision"]["can_skip"] = False
+            view["candidates"] = [c for c in view["candidates"] if c["candidate_id"] != "skip"]
+            with self.subTest(situation=situation["id"]):
+                result = policy.recommend(card_reward_request(view))
+                self.assertEqual(result.status, "recommend")
+                self.assertNotIn("skip", [row.candidate_id for row in result.candidates])
+                self.assertIn(result.recommended_candidate_id, [c["candidate_id"] for c in view["candidates"]])
+
     def test_a_clear_lead_is_medium_even_with_gaps_on_the_pick_itself(self):
         self.assertEqual(self.confidence({"a": 60.0, "skip": 58.0, "b": 57.0}), "medium")
         # Missing effects only add value: a gap on the pick cannot overturn it.
