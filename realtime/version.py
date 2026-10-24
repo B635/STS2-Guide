@@ -1,3 +1,3 @@
 """Independent identity of the packaged STS2 Guide Host."""
 
-GUIDE_VERSION = "0.3.13-alpha.0"
+GUIDE_VERSION = "0.3.14-alpha.0"

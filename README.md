@@ -9,7 +9,7 @@ STS2 Guide 是《Slay the Spire 2》的本地、只读、状态驱动策略副�
 
 ## 玩家：当前可测试范围
 
-当前开发候选 **Guide 0.3.13-alpha.0 / Mod 0.3.13** 对应 **Windows、STS2 0.111.0、单人原版内容**。
+当前开发候选 **Guide 0.3.14-alpha.0 / Mod 0.3.14** 对应 **Windows、STS2 0.111.0、单人原版内容**。
 精确身份以 [`packaging/compatibility.json`](packaging/compatibility.json) 为准；游戏更新后
 需要重新验证并更新 Guide，不要绕过兼容检查。这不是已公开验收的稳定版。
 

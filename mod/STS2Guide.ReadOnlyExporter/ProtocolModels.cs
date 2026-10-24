@@ -6,10 +6,10 @@ internal sealed class StateEvent
 {
     internal const int CurrentSchemaVersion = 9;
     internal const string ProducerId = "STS2GuideReadOnlyExporter";
-    internal const string ProducerVersion = "0.3.13";
+    internal const string ProducerVersion = "0.3.14";
     internal const string ProducerSource = "sts2-guide-readonly-mod";
     internal const string ReleaseFingerprint =
-        "a2ef51b94999e227064efbcc7e20acec042b1bc40daa36d31e430853a5d7b43b";
+        "141d9babd42024f9e7e67d3383d17d6c4c757505774ba56a5bf2aa128d38581f";
 
     [JsonPropertyName("schema_version")]
     public int SchemaVersion { get; init; } = CurrentSchemaVersion;
