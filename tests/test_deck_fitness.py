@@ -777,6 +777,86 @@ class EnemyStrengthTests(unittest.TestCase):
         self.assertGreater(with_wail["defense"], without["defense"])
 
 
+class ConfidenceAndNearTieTests(unittest.TestCase):
+    """Confidence is low only when gaps could change the pick; near ties are disclosed."""
+
+    PARAMS = {"confidence_gap_allowance": 1.0, "near_tie_points": 0.5}
+
+    @classmethod
+    def setUpClass(cls):
+        DeckFitnessPolicyTests.setUpClass()
+        cls.helper = DeckFitnessPolicyTests()
+        cls.golden = {s["id"]: s for s in load_golden_set()}
+
+    @classmethod
+    def tearDownClass(cls):
+        DeckFitnessPolicyTests.tearDownClass()
+
+    def confidence(self, shown, partly=(), unscored=False, warnings=False):
+        from advisor.deck_fitness import _recommendation_confidence
+
+        ranked = sorted(shown, key=lambda cid: -shown[cid])
+        return _recommendation_confidence(shown, ranked, list(partly), unscored, warnings, self.PARAMS)
+
+    def recommend(self, situation_id):
+        view = self.golden[situation_id]["scoring_view"]
+        return PolicyRegistry([DeckFitnessPolicy(self.helper.repository)]).recommend(card_reward_request(view))
+
+    def test_a_clear_lead_is_medium_even_with_gaps_on_the_pick_itself(self):
+        self.assertEqual(self.confidence({"a": 60.0, "skip": 58.0, "b": 57.0}), "medium")
+        # Missing effects only add value: a gap on the pick cannot overturn it.
+        self.assertEqual(self.confidence({"a": 60.0, "skip": 58.0}, partly=["a"]), "medium")
+        # A partly scored rival out of reach of the allowance does not lower it.
+        self.assertEqual(self.confidence({"a": 60.0, "skip": 58.0, "b": 58.9}, partly=["b"]), "medium")
+
+    def test_gaps_that_could_change_the_pick_make_it_low(self):
+        self.assertEqual(self.confidence({"a": 60.0, "skip": 59.6}), "low")          # near tie
+        self.assertEqual(self.confidence({"a": 60.0, "skip": 58.0, "b": 59.0}, partly=["b"]), "low")
+        self.assertEqual(self.confidence({"a": 60.0, "skip": 58.0}, unscored=True), "low")
+        self.assertEqual(self.confidence({"a": 60.0, "skip": 58.0}, warnings=True), "low")
+        self.assertEqual(self.confidence({}), "low")
+
+    def test_near_tie_note_on_both_top_rows(self):
+        # ADRENALINE 61.9 against skip 61.5 (with the act's pick margin).
+        result = self.recommend("silent-f17-adrenaline")
+        rows = {row.candidate_id: row for row in result.candidates}
+        best = result.recommended_candidate_id
+        runner = next(r.candidate_id for r in result.candidates if r.rank == 2)
+        gap = round(rows[best].score - rows[runner].score, 1)
+        self.assertLess(gap, 0.5)
+        self.assertEqual(result.confidence, "low")
+        for cid in (best, runner):
+            note = rows[cid].factors[0]
+            self.assertEqual((note["code"], note["delta"]), ("deck_fitness:near_tie", 0.0))
+            self.assertIn(f"{gap:.1f} 分", note["message"])
+            self.assertNotIn("ADRENALINE", note["message"])           # card names, not ids
+        self.assertIn("跳过", rows[best].factors[0]["message"])
+        for row in result.candidates:
+            if row.candidate_id not in (best, runner):
+                self.assertFalse(any(f["code"] == "deck_fitness:near_tie" for f in row.factors))
+
+    def test_a_clear_lead_has_no_near_tie_note_and_medium_confidence(self):
+        result = self.recommend("defect-8080-f17-skip")
+        self.assertTrue(result.data_gaps)           # gaps exist, yet none can change the pick
+        self.assertEqual(result.confidence, "medium")
+        self.assertFalse(any(
+            f["code"] == "deck_fitness:near_tie" for row in result.candidates for f in row.factors
+        ))
+
+    def test_confidence_parameters_are_required_and_non_negative(self):
+        from advisor.deck_fitness import PARAMETERS_KEY, _parameter_gaps
+
+        params = dict(self.helper.repository.mechanic_constant(PARAMETERS_KEY))
+        self.assertEqual(_parameter_gaps(params), ())
+        for key in ("confidence_gap_allowance", "near_tie_points"):
+            missing = {k: v for k, v in params.items() if k != key}
+            self.assertEqual(_parameter_gaps(missing), (f"deck_fitness_parameter_missing:{key}",))
+            for bad in (-0.1, "1"):
+                self.assertEqual(
+                    _parameter_gaps({**params, key: bad}), (f"deck_fitness_parameter_invalid:{key}",)
+                )
+
+
 class LookaheadAndSynergyTests(unittest.TestCase):
     """Spec 2.8 addendum (2026-10-09): lookahead and synergy notes."""
 

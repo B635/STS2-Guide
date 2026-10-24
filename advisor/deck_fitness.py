@@ -112,7 +112,7 @@ class Fitness:
 SCALAR_PARAMETERS = (
     "hand_size", "base_energy", "block_share", "low_hp_defense_pressure", "scaling_onset_turns",
     "cycle_need", "vulnerable_damage_bonus", "weak_damage_reduction", "frail_block_reduction",
-    "surplus_slope", "satisfaction_cap",
+    "surplus_slope", "satisfaction_cap", "confidence_gap_allowance", "near_tie_points",
 )
 TABLE_PARAMETERS = {
     "fight_turns": FIGHT_KINDS,
@@ -172,6 +172,9 @@ def _parameter_gaps(params: object) -> tuple[str, ...]:
         return ("deck_fitness_parameter_invalid:lookahead",)
     if float(params["surplus_slope"]) < 0:
         return ("deck_fitness_parameter_invalid:surplus_slope",)
+    for key in ("confidence_gap_allowance", "near_tie_points"):
+        if float(params[key]) < 0:
+            return (f"deck_fitness_parameter_invalid:{key}",)
     if any(float(params["fight_turns"][kind]) <= 0 for kind in FIGHT_KINDS):
         return ("deck_fitness_parameter_invalid:fight_turns",)
     if sum(float(params["fight_importance"][kind]) for kind in FIGHT_KINDS) <= 0:
@@ -764,6 +767,50 @@ def _pick_margin(params: Mapping, act: Optional[int]) -> float:
     return float(table[str(chosen)])
 
 
+def _recommendation_confidence(
+    shown: Mapping[str, float],
+    ranked: Sequence[str],
+    partly_scored: Sequence[str],
+    unscored_cards: bool,
+    capture_warnings: bool,
+    params: Mapping,
+) -> str:
+    """"low" only when what is not scored could change the recommendation.
+
+    ``shown`` is each scored option's displayed score (one decimal, skip's
+    pick margin included) and ``ranked`` the options best first. Missing
+    effects only ever add value, so a gap on the recommended option itself
+    cannot overturn it; a gap on a rival can. The rule:
+
+    * "low" when the state cannot be trusted or judged: no recommendation,
+      a capture warning, or an eligible card that could not be scored at all
+      (it could be worth anything);
+    * "low" when the lead over the runner-up is below ``near_tie_points``
+      (a near tie is not a firm call whatever the data);
+    * "low" when any rival that is only partly scored (its own data gaps,
+      ``partly_scored``) could catch up, i.e. its displayed score plus
+      ``confidence_gap_allowance`` reaches the recommended option's;
+    * "medium" otherwise. "high" is never given.
+
+    Gaps in the owned deck, relics and fight needs are left out of the
+    bound: they are part of every option, skip included, so they shift all
+    scores alike (their interaction with one candidate is the known blind
+    spot of this rule).
+    """
+
+    if not ranked or unscored_cards or capture_warnings:
+        return "low"
+    best = shown[ranked[0]]
+    if len(ranked) > 1 and best - shown[ranked[1]] < float(params["near_tie_points"]):
+        return "low"
+    allowance = float(params["confidence_gap_allowance"])
+    if any(
+        shown[cid] + allowance >= best for cid in ranked[1:] if cid in partly_scored
+    ):
+        return "low"
+    return "medium"
+
+
 def _scenario_seed(decision_id: str) -> int:
     return int(hashlib.sha256(decision_id.encode("utf-8")).hexdigest()[:12], 16)
 
@@ -1057,6 +1104,10 @@ class DeckFitnessPolicy:
 
         engine_gap_count = len(gaps)
         baseline = evaluate(deck)
+        baseline_engine_gaps = set(gaps[engine_gap_count:])
+        # Options scored only in part: their own fact gaps or an engine gap
+        # that adding them brings (the confidence bound counts these).
+        partly_scored: List[str] = []
         notes = _gap_notes(
             unknown_cards, unmodeled_relics, partial_cards, self._card_name, self._relic_name,
         )
@@ -1115,7 +1166,10 @@ class DeckFitnessPolicy:
                 legacy_rows.append((candidate, None))
                 continue
             profile = adjust_added_card(profile, relics, self.repository)
+            before_gaps = len(gaps)
             after = evaluate([*deck, profile])
+            if profile_gaps or set(gaps[before_gaps:]) - baseline_engine_gaps:
+                partly_scored.append(candidate.candidate_id)
             raw_by_id[candidate.candidate_id] = after.raw
             added_by_id[candidate.candidate_id] = profile
             name = self._card_name(card_id)
@@ -1216,6 +1270,38 @@ class DeckFitnessPolicy:
         any_card_scored = any(cid != "skip" for cid in raw_by_id)
         best = ranked[0] if ranked and any_card_scored else None
         status = "uncertain" if best is None else ("skip" if best == "skip" else "recommend")
+        shown = {cid: round(value, 1) for cid, value in raw_by_id.items()}
+        # Explanation only: when the top two are within a fraction of a point
+        # both rows say so (first), so the highlight is not read as firm.
+        if best is not None and len(ranked) > 1:
+            runner = ranked[1]
+            gap = round(shown[best] - shown[runner], 1)
+            if gap < float(params["near_tie_points"]):
+                def option_name(cid: str) -> str:
+                    return "跳过" if cid == "skip" else self._card_name(added_by_id[cid].card_id)
+                def tie_note(other: str) -> dict:
+                    return {
+                        "code": "deck_fitness:near_tie",
+                        "delta": 0.0,
+                        "message": (
+                            f"与{option_name(other)}" + (f"只差 {gap:.1f} 分" if gap > 0 else "同分")
+                            + "，两者差不多，按自己的打法选择即可。"
+                        ),
+                    }
+                notes_by_id = {best: tie_note(runner), runner: tie_note(best)}
+                assessments = [
+                    replace(a, factors=(notes_by_id[a.candidate_id], *a.factors))
+                    if a.candidate_id in notes_by_id else a
+                    for a in assessments
+                ]
+        confidence = "low" if best is None else _recommendation_confidence(
+            shown, ranked, partly_scored,
+            unscored_cards=any(
+                a.eligible and a.score is None and a.candidate_id != "skip" for a in assessments
+            ),
+            capture_warnings=bool(request.world.capture_warnings),
+            params=params,
+        )
         data_gaps = tuple(dict.fromkeys((
             *gaps,
             *(gap for row in assessments for gap in row.data_gaps),
@@ -1245,7 +1331,7 @@ class DeckFitnessPolicy:
             candidates=tuple(assessments),
             recommended_candidate_id=best,
             status=status,
-            confidence="low" if data_gaps else "medium",
+            confidence=confidence,
             data_gaps=data_gaps,
         )
 

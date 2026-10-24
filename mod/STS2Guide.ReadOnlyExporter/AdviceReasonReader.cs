@@ -14,7 +14,7 @@ internal static class AdviceReasonReader
             || !candidate.TryGetProperty("factors", out var factors)
             || factors.ValueKind != JsonValueKind.Array)
             return [];
-        var reasons = new List<(bool Limitation, double Weight, int Index, string Message)>();
+        var reasons = new List<(bool NearTie, bool Limitation, double Weight, int Index, string Message)>();
         var index = 0;
         foreach (var factor in factors.EnumerateArray())
         {
@@ -26,16 +26,18 @@ internal static class AdviceReasonReader
                 && delta.ValueKind == JsonValueKind.Number && delta.TryGetDouble(out var numeric)
                 && double.IsFinite(numeric))
             {
+                var code = factor.TryGetProperty("code", out var codeValue)
+                    && codeValue.ValueKind == JsonValueKind.String ? codeValue.GetString() : null;
+                // A near tie says the highlight is not firm: it is shown before everything else.
+                var nearTie = numeric == 0 && code == "deck_fitness:near_tie";
                 var limitation = numeric == 0
-                    && factor.TryGetProperty("code", out var code)
-                    && code.ValueKind == JsonValueKind.String
-                    && code.GetString() is "unmodeled_mechanic" or "estimate_scope" or "deck_fitness:synergy";
-                if (numeric != 0 || limitation)
-                    reasons.Add((limitation, Math.Abs(numeric), index, message.GetString()!.Trim()));
+                    && code is "unmodeled_mechanic" or "estimate_scope" or "deck_fitness:synergy";
+                if (numeric != 0 || limitation || nearTie)
+                    reasons.Add((nearTie, limitation, Math.Abs(numeric), index, message.GetString()!.Trim()));
             }
             index++;
         }
-        return reasons.OrderByDescending(reason => reason.Limitation)
+        return reasons.OrderByDescending(reason => reason.NearTie).ThenByDescending(reason => reason.Limitation)
             .ThenByDescending(reason => reason.Weight).ThenBy(reason => reason.Index)
             .Select(reason => reason.Message.Length > 240 ? reason.Message[..240] + "…" : reason.Message)
             .Distinct(StringComparer.Ordinal).Take(3).ToArray();

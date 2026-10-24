@@ -10,7 +10,7 @@
   "producer_id": "STS2GuideReadOnlyExporter",
   "producer_version": "0.3.13",
   "game_assembly_sha256": "0861bfa1df347538d932f22d580e75420f08082792eb914e53b4882764acdbe9",
-  "release_fingerprint": "2763b7a1bda7063feeb4d0904e49be442aeb92c63b507a44ae873e2ead98f081",
+  "release_fingerprint": "fa5efb3a634a8d8911bf4f3437695271debaf5e8ef832b9597110867516178fd",
   "guide_preferences": {
     "route_mode": "balanced"
   },
