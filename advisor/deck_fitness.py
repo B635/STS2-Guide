@@ -865,6 +865,7 @@ class DeckFitnessPolicy:
         self.preferences = preferences
         self.route_policy = RoutePolicy(repository)
         self._pools: Dict[str, Dict[str, List[CardProfile]]] = {}
+        self._names: Dict[tuple, str] = {}
         # Facts are fixed for one release database: resolve each card, relic
         # and orb once per policy instead of once per request.
         self._cards: Dict[tuple, tuple] = {}
@@ -877,13 +878,19 @@ class DeckFitnessPolicy:
             self._cards[key] = card_profile(self.repository, card_id, upgrades)
         return self._cards[key]
 
+    def _name(self, entity_type: str, entity_id: str) -> str:
+        # Cached like the profiles: the release data does not change.
+        key = (entity_type, str(entity_id).upper())
+        if key not in self._names:
+            entity = self.repository.find_entity(entity_type, key[1])
+            self._names[key] = str((entity or {}).get("name") or entity_id)
+        return self._names[key]
+
     def _card_name(self, card_id: str) -> str:
-        entity = self.repository.find_entity("cards", str(card_id).upper())
-        return str((entity or {}).get("name") or card_id)
+        return self._name("cards", card_id)
 
     def _relic_name(self, relic_id: str) -> str:
-        entity = self.repository.find_entity("relics", str(relic_id).upper())
-        return str((entity or {}).get("name") or relic_id)
+        return self._name("relics", relic_id)
 
     def warm_up(self) -> None:
         """Build what the first decision would otherwise pay for: every
@@ -1195,9 +1202,16 @@ class DeckFitnessPolicy:
             ))
             legacy_rows.append((candidate, after.score))
 
+        # The engine's result depends only on which cards are in the deck,
+        # not their order, and the lookahead meets the same deck many times.
+        scored: Dict[tuple, float] = {}
+
         def score_deck(cards: List[Optional[CardProfile]]) -> float:
-            capabilities, _ = deck_capabilities(cards, relics, situation, params)
-            return fitness(capabilities, needs, params).raw
+            key = tuple(sorted(map(id, cards)))
+            if key not in scored:
+                capabilities, _ = deck_capabilities(cards, relics, situation, params)
+                scored[key] = fitness(capabilities, needs, params).raw
+            return scored[key]
 
         # Explanation only (spec 2.8 addendum): which owned cards make each
         # candidate stronger. The engine already scores these interactions,

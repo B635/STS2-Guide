@@ -346,6 +346,14 @@ class RoutePolicy:
         self._risk_profile = dict(risk_profile) if risk_profile is not None else None
         self.max_search_expansions = max(1, int(max_search_expansions))
         self._encounter_pool_cache: dict[tuple[tuple[str, ...], int], Mapping[str, Mapping[str, float]]] = {}
+        self._entity_cache: dict[tuple[str, str], Mapping[str, Any] | None] = {}
+
+    def _find(self, entity_type: str, identifier: str) -> Mapping[str, Any] | None:
+        # The release data does not change while the policy lives.
+        key = (entity_type, identifier)
+        if key not in self._entity_cache:
+            self._entity_cache[key] = self.repository.find_entity(entity_type, identifier)
+        return self._entity_cache[key]
 
     def _profile(self) -> Mapping[str, Any] | None:
         if self._risk_profile is not None:
@@ -362,7 +370,7 @@ class RoutePolicy:
             return entity.get("_effect_tags") or {}
 
         for card_state in request.world.deck:
-            card = self.repository.find_card(card_state.card)
+            card = self._find("cards", card_state.card)
             if card is None:
                 gaps.append(f"unknown_card:{card_state.card}")
                 continue
@@ -443,7 +451,7 @@ class RoutePolicy:
         relic_ids = list(request.world.relic_ids)
         relic_ids.extend(relic.relic for relic in request.world.relics)
         for relic_id in _unique(relic_ids):
-            relic = self.repository.find_relic(relic_id)
+            relic = self._find("relics", relic_id)
             if relic is None:
                 gaps.append(f"unknown_relic:{relic_id}")
                 continue
@@ -459,7 +467,7 @@ class RoutePolicy:
             resources += _number(tags.get("supports_draw")) + _number(tags.get("supports_energy"))
 
         for potion_state in request.world.potions:
-            potion = self.repository.find_entity("potions", potion_state.potion)
+            potion = self._find("potions", potion_state.potion)
             if potion is None:
                 gaps.append(f"unknown_potion:{potion_state.potion}")
                 continue

@@ -1353,6 +1353,12 @@ class _Engine:
                     self.virtual.append(profile)
         self.virtual.extend(upgraded)
         self.cards = [*self.known, *self.virtual]
+        # Copies share one profile: (profile, number of copies), for sums
+        # that are linear in the copies.
+        grouped: Dict[int, list] = {}
+        for card in self.cards:
+            grouped.setdefault(id(card), [card, 0])[1] += 1
+        self.copies = [(card, float(n)) for card, n in grouped.values()]
         # Cards that exhaust every Status card in combat (Flak Cannon).
         self.status_clearers = {
             id(c) for c in self.cards if any(
@@ -1620,20 +1626,20 @@ class _Engine:
                 else:
                     held = created * elapsed * per_turn
                     rates[id(g.profile)] += min(created, held) if g.profile.once_per_fight else held
-            demand = sum(rates[id(c)] * cost for c in self.cards if (cost := self._cost(c)) is not None)
+            demand = sum(n * rates[id(c)] * cost for c, n in self.copies if (cost := self._cost(c)) is not None)
             self.energy_spent = min(supply, demand)
             playable = min(1.0, supply / demand) if demand > 0 else 1.0
             # A retained card waits in hand until it can be paid for, so it is
             # paid first; the other cards share what is left.
             kept_demand = sum(
-                rates[id(c)] * cost for c in self.cards
+                n * rates[id(c)] * cost for c, n in self.copies
                 if c.retain and (cost := self._cost(c)) is not None
             )
             kept_share = min(1.0, supply / kept_demand) if kept_demand > 0 else 1.0
             if kept_demand > 0 and demand > supply:
                 rest = demand - kept_demand
                 playable = max(0.0, supply - kept_demand * kept_share) / rest if rest > 0 else 1.0
-            x_rate = sum(rates[id(c)] for c in self.cards if c.x_cost)
+            x_rate = sum(n * rates[id(c)] for c, n in self.copies if c.x_cost)
             # X cards spend what the other plays leave, shared between them.
             x_value = max(0.0, supply - demand) / max(1.0, x_rate) if x_rate else 0.0
             self.x_value = x_value
@@ -1645,11 +1651,11 @@ class _Engine:
                     )
                     if c.x_cost or self._cost(c) is not None else 0.0
                 )
-                for c in self.cards
+                for c, _ in self.copies
             }
             # Stars carry over between turns (PlayerCombatState keeps them;
             # only death resets them): star cards share the fight's stars.
-            star_demand = sum(plays[id(c)] * c.star_cost for c in self.cards if c.star_cost)
+            star_demand = sum(n * plays[id(c)] * c.star_cost for c, n in self.copies if c.star_cost)
             if star_demand > 0:
                 star_playable = min(1.0, star_supply / star_demand)
                 # Copies share one profile (and one entry in ``plays``).
@@ -1685,13 +1691,15 @@ class _Engine:
                 plays = {k: v * scale for k, v in plays.items()}
                 played = play_limit
             totals.ethereal_exhausts = sum(
-                max(0.0, rates[id(c)] - plays[id(c)]) for c in self.cards if c.ethereal
+                n * max(0.0, rates[id(c)] - plays[id(c)]) for c, n in self.copies if c.ethereal
             )
             self._estimate(previous, plays, drawn)
-            for card in self.cards:
+            # Copies share one profile: resolved once, applied for each copy
+            # (``_apply`` is linear in the number of applications).
+            for card, copies in self.copies:
                 for effect in card.effects:
                     resolved, chance = self._resolve(effect, card, plays[id(card)])
-                    self._apply(totals, resolved, plays[id(card)] * chance, x_value if card.x_cost else None)
+                    self._apply(totals, resolved, plays[id(card)] * chance * copies, x_value if card.x_cost else None)
             self._apply_damage_modifiers(totals, plays, x_value)
             self._apply_block_modifiers(totals, plays)
             self._apply_events(totals, plays, drawn, played, block_estimate, x_value)
@@ -1846,7 +1854,7 @@ class _Engine:
 
         turns = self.situation.fight_turns
         elapsed = max(0.0, turns - 1.0) / 2.0
-        exhausts = previous.exhausts + sum(plays[id(c)] for c in self.cards if c.exhausts_self)
+        exhausts = previous.exhausts + sum(n * plays[id(c)] for c, n in self.copies if c.exhausts_self)
         known = max(1, len(self.known))
         attacks = sum(1 for c in self.known if c.card_type == "Attack") / known
         hand = max(0.0, drawn - 1.0) / 2.0  # other cards still in hand at a random play
@@ -1863,9 +1871,9 @@ class _Engine:
         )
         # Per-type play totals of the previous pass, shared by every card.
         self.play_totals = {
-            "Attack": sum(last.get(id(c), 0.0) for c in self.cards if c.card_type == "Attack"),
-            "Skill": sum(last.get(id(c), 0.0) for c in self.cards if c.card_type == "Skill"),
-            "OstyAttack": sum(last.get(id(c), 0.0) for c in self.cards if "OstyAttack" in c.tags),
+            "Attack": sum(n * last.get(id(c), 0.0) for c, n in self.copies if c.card_type == "Attack"),
+            "Skill": sum(n * last.get(id(c), 0.0) for c, n in self.copies if c.card_type == "Skill"),
+            "OstyAttack": sum(n * last.get(id(c), 0.0) for c, n in self.copies if "OstyAttack" in c.tags),
         }
         # A transform is not counted as a generated card (no IL evidence
         # that CardCmd.Transform records a generation).
@@ -1878,7 +1886,7 @@ class _Engine:
         )
         status_deck = float(sum(1 for c in self.known if c.card_type == "Status"))
         self.status_pool = status_deck + self.status_made * turns
-        self.status_clear_plays = sum(last.get(id(c), 0.0) for c in self.cards if id(c) in self.status_clearers)
+        self.status_clear_plays = sum(n * last.get(id(c), 0.0) for c, n in self.copies if id(c) in self.status_clearers)
         doom = (previous.doom_single + previous.doom_all) * max(1.0, elapsed)
         generated = sum(
             last.get(id(c), 0.0) * g.count for c, g in self.sources if g.targets is None
@@ -1891,16 +1899,16 @@ class _Engine:
         enemy_status = self.situation.status_cards * elapsed * self.per_turn
         others = max(0.0, drawn - 1.0)
         status_in_hand = enemy_status + sum(
-            rates.get(id(c), 0.0) for c in self.cards if c.card_type == "Status"
+            n * rates.get(id(c), 0.0) for c, n in self.copies if c.card_type == "Status"
         )
         unplayed = enemy_status + sum(
-            max(0.0, rates.get(id(c), 0.0) - plays[id(c)]) for c in self.cards
+            n * max(0.0, rates.get(id(c), 0.0) - plays[id(c)]) for c, n in self.copies
         )
         self.estimates = {
             "orb_count": previous.orbs_held,
             "distinct_orb_types": previous.orb_kinds,
             "ethereal_cards_played_this_combat": sum(
-                last.get(id(c), 0.0) for c in self.cards if c.ethereal
+                n * last.get(id(c), 0.0) for c, n in self.copies if c.ethereal
             ) * elapsed,
             "stars_gained_this_turn": previous.stars,
             "cards_drawn_this_turn_outside_hand_draw": previous.draw,
@@ -1921,8 +1929,8 @@ class _Engine:
             "discard_pile": max(0.0, self.size - drawn) / 2.0,
             "cards_generated_this_combat": generated * elapsed,
             "prior_hits_on_target_this_turn": sum(
-                last.get(id(c), 0.0) * self._hits(e)
-                for c in self.cards for e in c.effects if e.get("kind") == "damage"
+                n * last.get(id(c), 0.0) * self._hits(e)
+                for c, n in self.copies for e in c.effects if e.get("kind") == "damage"
             ) / 2.0,
             "osty_alive": alive,
             "osty_current_hp": alive * previous.summoned * max(1.0, elapsed),
@@ -1956,7 +1964,7 @@ class _Engine:
             "enemy_count": 1.0 + self.situation.extra_enemies,
             "orbs_channeled_this_combat": sum(previous.channels.values()) * elapsed,
             "lightning_channeled_this_combat": previous.channels.get(ORB_TYPES["Lightning"], 0.0) * elapsed,
-            "cards_played_this_combat": sum(last.get(id(c), 0.0) for c in self.cards) * (elapsed + 0.5),
+            "cards_played_this_combat": sum(n * last.get(id(c), 0.0) for c, n in self.copies) * (elapsed + 0.5),
             "energy_spent_this_turn": self.energy_spent / 2.0,
             "skills_in_hand": hand * sum(1 for c in self.known if c.card_type == "Skill") / known,
         }

@@ -112,7 +112,8 @@
       "DEFECT": 3
     },
     "lookahead": {
-      "scenarios": 6,
+      "note": "Budget, not fitted: 2026-10-25 the real-time P95 needed headroom. 4 scenarios against 6 on the golden set (79) and the run history (483): best-choice hits 34/79 and 206/483 against 34/79 and 203/483, 19 of 562 picks changed, 24% less CPU.",
+      "scenarios": 4,
       "max_rewards": 3
     },
     "card_reward_odds": {

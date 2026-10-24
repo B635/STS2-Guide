@@ -495,7 +495,9 @@ class GeneratedCardTests(unittest.TestCase):
         from advisor.deck_fitness import PARAMETERS_KEY
         from advisor.deck_mechanics import Situation, card_profile, deck_capabilities
 
-        params = self.helper.repository.mechanic_constant(PARAMETERS_KEY)
+        # Enough energy for every draw: an energy-bound deck plays the same
+        # number of Strikes however diluted its draws are.
+        params = {**self.helper.repository.mechanic_constant(PARAMETERS_KEY), "base_energy": 10}
         boost, _ = card_profile(self.helper.repository, "BOOST_AWAY", 0)
         self.assertEqual([g.profile.card_id for g in boost.generates], ["DAZED"])
         self.assertEqual(boost.generates[0].destination, "discard")
@@ -817,8 +819,8 @@ class ConfidenceAndNearTieTests(unittest.TestCase):
         self.assertEqual(self.confidence({}), "low")
 
     def test_near_tie_note_on_both_top_rows(self):
-        # ADRENALINE 61.9 against skip 61.5 (with the act's pick margin).
-        result = self.recommend("silent-f17-adrenaline")
+        # Skip 0.3 ahead of CRESCENT_SPEAR (with the act's pick margin).
+        result = self.recommend("regent-f7-alignment")
         rows = {row.candidate_id: row for row in result.candidates}
         best = result.recommended_candidate_id
         runner = next(r.candidate_id for r in result.candidates if r.rank == 2)
@@ -829,8 +831,9 @@ class ConfidenceAndNearTieTests(unittest.TestCase):
             note = rows[cid].factors[0]
             self.assertEqual((note["code"], note["delta"]), ("deck_fitness:near_tie", 0.0))
             self.assertIn(f"{gap:.1f} 分", note["message"])
-            self.assertNotIn("ADRENALINE", note["message"])           # card names, not ids
-        self.assertIn("跳过", rows[best].factors[0]["message"])
+            self.assertNotIn("CRESCENT_SPEAR", note["message"])       # card names, not ids
+        card_row = runner if best == "skip" else best             # the note on the card names skip
+        self.assertIn("跳过", rows[card_row].factors[0]["message"])
         for row in result.candidates:
             if row.candidate_id not in (best, runner):
                 self.assertFalse(any(f["code"] == "deck_fitness:near_tie" for f in row.factors))
