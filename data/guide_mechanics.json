@@ -50,6 +50,7 @@
       "units": "frontload/aoe/scaling: damage per turn; defense: block per turn; cycle: extra cards drawn per turn beyond the base hand (deck size acts through every card's draw rate, not here); energy: energy supply / energy demand",
       "needs": "derived per upcoming fight from real encounter-pool HP/attack facts; only the ratios below are Guide-owned parameters",
       "fight_tempo": "expected fight length relative to fight_turns = damage need / (frontload + scaling), bounded to [min, max]; the unblocked share of the defense need is multiplied by it (a faster deck takes less damage, a slower one more)",
+      "confidence": "card-reward confidence is low only when gaps could change the pick: a lead under near_tie_points, or a partly scored rival within confidence_gap_allowance points of the pick (each unscored part assumed worth up to that much); also low for capture warnings or an unscorable eligible card. Set by hand, not fitted. Below near_tie_points both top rows also carry a near-tie note (explanation only)",
       "pick_margin": "a card is recommended only when its score beats skipping by more than pick_margin_by_act (added to skip's score). Set by hand from the player's run history (13 winning runs: skip rate 25% / 51% / 73% in acts 1 / 2 / 3) and checked on runs it was not set on; see scripts/analyze_skip_choices.py",
       "energy": "energy limits how many drawn cards are played (a cap on every other dimension); its own weight is 0 so it is not counted twice",
       "orb_slots": "assembly: Defect.get_BaseOrbSlotCount = 3, CharacterModel default 0; OrbCmd.Channel adds 1 slot when a player with none channels",
@@ -105,6 +106,8 @@
     },
     "surplus_slope": 0.25,
     "satisfaction_cap": 3.0,
+    "confidence_gap_allowance": 1.0,
+    "near_tie_points": 0.5,
     "base_orb_slots": {
       "DEFECT": 3
     },

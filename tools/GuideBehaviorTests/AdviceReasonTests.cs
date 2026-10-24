@@ -64,5 +64,20 @@ internal static class AdviceReasonTests
             throw new Exception("Deck-fitness reasons must show limits and synergy before capability changes.");
         if (Read("""{"score":null,"factors":[{"code":"estimate_scope","message":"stale estimate","delta":0}]}""").Length != 0)
             throw new Exception("Unscored candidate retained stale estimate boundary.");
+        // A near tie with the runner-up goes before the limitations: the highlight is not firm.
+        var nearTie = Read("""
+            {"score":57.7,"factors":[
+            {"code":"unmodeled_mechanic","message":"part of FLATTEN is not scored","delta":0},
+            {"code":"deck_fitness:cycle","message":"cycle falls","delta":-1.35},
+            {"code":"deck_fitness:synergy","message":"Bodyguard makes FLATTEN stronger","delta":0},
+            {"code":"deck_fitness:near_tie","message":"only 0.3 ahead of skip","delta":0}]}
+            """);
+        if (!nearTie.SequenceEqual(new[] { "only 0.3 ahead of skip", "part of FLATTEN is not scored", "Bodyguard makes FLATTEN stronger" }))
+            throw new Exception("A near-tie note must be shown before limitations and capability changes.");
+        if (Read("""{"score":50,"factors":[{"code":"deck_fitness:near_tie","message":"scored tie","delta":0.5}]}""")
+                .SequenceEqual(new[] { "scored tie" }) is false)
+            throw new Exception("A near-tie code with a delta is an ordinary scored reason.");
+        if (Read("""{"score":null,"factors":[{"code":"deck_fitness:near_tie","message":"stale tie","delta":0}]}""").Length != 0)
+            throw new Exception("Unscored candidate retained a stale near-tie note.");
     }
 }
