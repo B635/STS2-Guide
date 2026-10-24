@@ -1,9 +1,9 @@
 {
   "manifest_version": 2,
-  "release_fingerprint": "956b9c6ef6e6b104a1ae3eb36d55e1f773c1226988b5d041f9a3492aae0fc2b2",
+  "release_fingerprint": "cc4fa09e3fb60b21524748d51d51869641b55eaea1264870b1205f63b7853d15",
   "status": "enabled",
   "guide": {
-    "version": "0.3.12-alpha.0"
+    "version": "0.3.13-alpha.0"
   },
   "game": {
     "version": "0.111.0",
@@ -11,7 +11,7 @@
   },
   "mod": {
     "id": "STS2GuideReadOnlyExporter",
-    "version": "0.3.12",
+    "version": "0.3.13",
     "producer": "sts2-guide-readonly-mod"
   },
   "protocol": {
@@ -26,11 +26,11 @@
     "community_scores_sha256": "37d7975a8a85cf00b6b37a28bbac892ab1cf0863cd252f085dff83258e0f524f"
   },
   "policy": {
-    "bundle_version": "extended-decision-policy-v7",
-    "card_reward_version": "card_reward:deck_fitness_1",
+    "bundle_version": "extended-decision-policy-v8",
+    "card_reward_version": "card_reward:deck_fitness_2",
     "route_version": "route:mode_aware_risk_v4",
     "merchant_version": "merchant_structured_v6",
-    "campfire_version": "campfire_structured_v4",
+    "campfire_version": "campfire_structured_v5",
     "neow_version": "neow_structured_v4",
     "event_version": "event_structured_allowlist_v4",
     "deck_edit_version": "deck_edit:structured_targets_v4"

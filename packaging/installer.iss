@@ -1,5 +1,5 @@
 #ifndef AppVersion
-  #define AppVersion "0.3.12-alpha.0"
+  #define AppVersion "0.3.13-alpha.0"
 #endif
 #ifndef ExpectedGameVersion
   #define ExpectedGameVersion "0.111.0"

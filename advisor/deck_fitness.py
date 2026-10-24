@@ -701,7 +701,7 @@ def _legacy_payload(
         for index, (candidate, score) in enumerate(rows)
     ] or [{"card_id": "none", "option_index": 0, "score": 0.0, "known": False}]
     return {
-        "method": "deck_fitness_1",
+        "method": "deck_fitness_2",
         "decision_status": status,
         "recommendations": cards,
         "skip_candidate": {
