@@ -29356,7 +29356,7 @@
      "orb": "Lightning",
      "scale": {
       "factor": 1,
-      "per": "orbs_channeled_this_combat"
+      "per": "lightning_channeled_this_combat"
      },
      "upgrade": 0
     }
@@ -29368,7 +29368,8 @@
     "CanonicalVars CalculationBaseVar(0), CalculationExtraVar(1), CalculatedVar('CalculatedChannels').WithMultiplier(lambda: CombatHistory.Entries.OfType<OrbChanneledEntry>().Count(e => e.Actor.Player == card.Owner && e.Orb is LightningOrb))",
     "OnPlay <OnPlay>d__8: TriggerAnim Cast; n = (int)CalculatedChannels.Calculate(target); for i < n: OrbCmd.Channel<LightningOrb>(owner)",
     "Catalog: channel Lightning equal to Lightning channeled this combat; agrees",
-    "2026-10-22: the value stated in this effect's reviewed text (checked against the IL) is now also written as a structured scale with the source named in docs/dev/mechanic-facts.md."
+    "2026-10-22: the value stated in this effect's reviewed text (checked against the IL) is now also written as a structured scale with the source named in docs/dev/mechanic-facts.md.",
+    "2026-10-25 review: the count is of Lightning channels only (OrbChanneledEntry of LightningOrb), so the scale source is lightning_channeled_this_combat."
    ],
    "fingerprint": "d228be0af2e13b3f9b12a6c56f2756318b313e3dfa5aea2b3b91856867d73857",
    "hook_tokens": {

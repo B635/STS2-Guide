@@ -1354,25 +1354,51 @@ class MissingMechanicTests(IndependentReviewFixTests):
         names = ["STRIKE_REGENT"] * 4 + ["DEFEND_REGENT"] * 4 + ["FALLING_STAR", "VENERATE", "GLOW"]
         return [self.profile(name)[0] for name in names]
 
-    def test_a_card_that_returns_after_play_is_there_again_later(self):
+    def test_a_card_put_back_on_top_is_there_again_later(self):
         from dataclasses import replace
 
-        for card_id, back in (("PARTICLE_WALL", "hand"), ("SHINING_STRIKE", "top")):
-            card, gaps = self.profile(card_id)
-            self.assertEqual((card.returns, gaps), (back, ()))
-            once = self.capabilities(self.regent() + [replace(card, returns=None)])
-            again = self.capabilities(self.regent() + [card])
-            dimension = "defense" if card_id == "PARTICLE_WALL" else "frontload"
-            self.assertGreater(again[dimension], once[dimension], card_id)
+        card, gaps = self.profile("SHINING_STRIKE")
+        self.assertEqual((card.returns, gaps), ("top", ()))
+        once = self.capabilities(self.regent() + [replace(card, returns=None)])
+        again = self.capabilities(self.regent() + [card])
+        self.assertGreater(again["frontload"], once["frontload"])
+        # Copies share one profile: the boost is not applied once per copy.
+        shared = self.capabilities(self.regent() + [card] * 3)
+        separate = self.capabilities(self.regent() + [self.profile("SHINING_STRIKE")[0] for _ in range(3)])
+        for dimension in shared:
+            self.assertAlmostEqual(shared[dimension], separate[dimension], places=6, msg=dimension)
 
-    def test_a_power_moving_a_card_into_the_hand_draws_it(self):
+    def test_a_card_back_in_hand_is_a_gap(self):
+        # Particle Wall returns to the hand but is still discarded at the end
+        # of the turn; its gain (replays the same turn) is not modeled.
+        card, gaps = self.profile("PARTICLE_WALL")
+        self.assertIsNone(card.returns)
+        self.assertEqual(gaps, ("card_effect_unsupported:PARTICLE_WALL:returns_to_hand_replays",))
+
+    def test_a_power_moving_only_some_cards_is_not_a_plain_draw(self):
         from advisor.deck_mechanics import power_use
 
         use, gaps = power_use(self.repository, "Aggression", 1)
-        self.assertEqual([m["effect"] for m in use.mechanics], [{"kind": "draw", "amount": 1.0}])
-        # The moved card is also upgraded: that part is not valued, and said so.
-        self.assertEqual(gaps, ("power_mechanic_unsupported:AGGRESSION:move_rider:upgrade_moved",))
+        self.assertEqual(use.mechanics, ())
+        self.assertTrue(any("AGGRESSION" in gap for gap in gaps))
 
+    def test_counts_of_played_cards_and_lightning_follow_the_game(self):
+        base = self.starter("IRONCLAD")
+        axe = self.profile("GOLD_AXE")[0]
+        shared = self.capabilities(base + [axe] * 3)
+        separate = self.capabilities(base + [self.profile("GOLD_AXE")[0] for _ in range(3)])
+        self.assertAlmostEqual(shared["frontload"], separate["frontload"], places=6)
+        defect = [self.profile(c)[0] for c in ["STRIKE_DEFECT"] * 4 + ["DEFEND_DEFECT"] * 4]
+        frost = [self.profile("COOLHEADED")[0] for _ in range(4)]
+        voltaic = self.profile("VOLTAIC")[0]
+        # Frost channels do not feed Voltaic (it counts Lightning only).
+        self.assertAlmostEqual(
+            self.capabilities(defect + frost + [voltaic])["frontload"]
+            - self.capabilities(defect + frost)["frontload"],
+            self.capabilities(defect + [self.profile("DEFEND_DEFECT")[0]] * 4 + [voltaic])["frontload"]
+            - self.capabilities(defect + [self.profile("DEFEND_DEFECT")[0]] * 4)["frontload"],
+            delta=1.0,
+        )
 
 class TransformTests(IndependentReviewFixTests):
     """transform_cards: chosen cards become a named card for the rest of the fight."""

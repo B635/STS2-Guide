@@ -80,7 +80,8 @@ SCALE_SOURCES = frozenset({
     "enemies_killed_by_this_card", "energy_after_cost", "own_exhausted_damage",
     # From the previous pass at an average moment (see ``_estimate``).
     "cards_drawn_this_combat", "draw_pile", "target_debuff_types", "discards_this_turn",
-    "hand_space", "enemy_count", "orbs_channeled_this_combat", "cards_played_this_combat",
+    "hand_space", "enemy_count", "orbs_channeled_this_combat", "lightning_channeled_this_combat",
+    "cards_played_this_combat",
     "energy_spent_this_turn", "skills_in_hand",
 })
 EFFECT_CONDITIONS = frozenset({
@@ -784,7 +785,9 @@ def _move_as_draw(effect: Mapping) -> tuple[Optional[dict], tuple[str, ...]]:
     known = {"kind", "from", "source", "to", "destination", "amount", "count", "choice", "filter", "upgrade_moved"}
     if set(k for k in effect if not k.endswith("_text")) - known:
         return None, ()
-    if set(effect.get("filter") or {}) - {"card_type"}:
+    if effect.get("filter"):
+        # Only some cards can be moved (Aggression: an Attack from the discard
+        # pile, empty on turn 1): not a plain draw.
         return None, ()
     gaps = ("move_rider:upgrade_moved",) if effect.get("upgrade_moved") else ()
     return {"kind": "draw", "amount": float(amount)}, gaps
@@ -987,6 +990,11 @@ def card_profile(
             continue
         if isinstance(effect, Mapping) and effect.get("kind") == "move_card":
             back = _returns_after_play(effect)
+            if back == "hand":
+                # Back in the hand it is still discarded at the end of the
+                # turn: the gain is replays within the turn, not modeled.
+                gaps.append(f"card_effect_unsupported:{card_id}:returns_to_hand_replays")
+                continue
             if back is not None:
                 returns = back
                 continue
@@ -1573,7 +1581,7 @@ class _Engine:
                         1.0 / turns if c.once_per_fight
                         else min(1.0, per_turn + (1.0 - per_turn) / turns)
                     )
-            for c in self.known:
+            for c in {id(card): card for card in self.known}.values():   # copies share one rate
                 if c.returns and not c.once_per_fight:
                     # Seen by turn t with chance 1-(1-p)^t, then every turn.
                     # (A card put back on top also takes one of the turn's
@@ -1713,7 +1721,7 @@ class _Engine:
         held = float(sum(1 for c in self.known if c.card_type == "Status")) + (
             self.situation.status_cards * elapsed
         ) + sum(
-            previous_plays.get(id(c), 0.0) * g.count * elapsed
+            previous_plays.get(id(c), 0.0) * self._made(g) * elapsed
             for c, g in self.sources if g.destination != "hand" and g.profile.card_type == "Status"
         ) + sum(
             previous.generated.get(key, 0.0) * elapsed
@@ -1947,7 +1955,8 @@ class _Engine:
             "hand_space": max(0.0, 10.0 - hand),
             "enemy_count": 1.0 + self.situation.extra_enemies,
             "orbs_channeled_this_combat": sum(previous.channels.values()) * elapsed,
-            "cards_played_this_combat": sum(last.values()) * (elapsed + 0.5),
+            "lightning_channeled_this_combat": previous.channels.get(ORB_TYPES["Lightning"], 0.0) * elapsed,
+            "cards_played_this_combat": sum(last.get(id(c), 0.0) for c in self.cards) * (elapsed + 0.5),
             "energy_spent_this_turn": self.energy_spent / 2.0,
             "skills_in_hand": hand * sum(1 for c in self.known if c.card_type == "Skill") / known,
         }
