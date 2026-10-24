@@ -127,7 +127,9 @@
 - 卡牌字段：`upgrade_keywords: {"add": [...], "remove": [...]}`（升级增减关键词）、`multiplayer_only: true`、`star_cost`（星辉费用，写法同 `cost`）、`can_be_generated_in_combat: false`（战斗中不能被生成）、
   `cost_modifier`（按局面改变自身费用，如每打出一张攻击牌费用 −1）。
 - 能力字段：`duration`：`{"kind": "combat" | "turns_decrement" | "this_turn" | "until_triggered", ...}`。
-- 效果（暂不计分）：`auto_play`、`auto_play_card`、`auto_play_from_draw`、`transform_cards`、`gain_max_hp`、
+- `transform_cards`（2026-10-22 起计分）：`into` 结果牌、`scope` `hand` / `draw`、`choice` `choose`（`count` 为数字或 `any`）或 `all` 配 `filter: {card_type: Status}`；结果升级标记 `upgraded_if_self_upgraded` / `upgraded_result_if_upgraded`。随机结果与按类型整批变形仍不计分。
+- `exhaust_other` / `discard` 可带 `filter: {card_type}`；`upgrade_cards` 的 `scope` 另支持 `discard`、`filter: {upgradable: true}`，并可用 `upgraded` 记录升级后分支（如 Armaments）。
+- 效果（暂不计分）：`auto_play`、`auto_play_card`、`auto_play_from_draw`、`gain_max_hp`、
   `add_keyword`（给牌临时加关键词）、`remove_block`、`remove_power`、`trigger_power`（立即结算一次能力，如中毒）、`extra_card_reward`（局外收益）、`evoke_orb`（激发充能球，`orbs` + `times`）、`shuffle`（弃牌堆洗入抽牌堆）、`doom_kill`（斩杀生命不高于灾厄层数的敌人）、`kill_osty`、`spread_debuffs`（把目标的减益复制给其他敌人）、`add_replay`（让选中的牌多结算一次）、`end_turn`（立即结束回合）、`gain_gold`（局外收益）、`stun`（眩晕目标）、`lose_max_hp`。
 - 时机（暂不计分）：`on_chosen`（状态牌被选入牌组时），局外的 `combat_end`、`rest_site`、`room_entered`、`map_generated`、`quest_complete`；效果 `remove_from_deck`、`rest_site_option`、`force_event`；修正 `play_lock`（手牌中时禁止打出其他牌）。卡牌字段 `card_type_text`：类型由事件决定时的说明（如 MAD_SCIENCE）。
 - Osty 造成的伤害：`damage` 加 `source: "osty"` 和条件 `osty_alive`（暂不计分）。
