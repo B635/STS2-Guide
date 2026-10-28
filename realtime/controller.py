@@ -187,12 +187,14 @@ class PystrayTrayBackend:
         title: str = "STS2 Guide",
         open_logs: Callable[[], None] | None = None,
         export_diagnostics: Callable[[], None] | None = None,
+        export_run_records: Callable[[], None] | None = None,
         version_lines: Mapping[str, str] | None = None,
         icon_path: str | Path | None = None,
     ) -> None:
         self.title = title
         self._open_logs = open_logs
         self._export_diagnostics = export_diagnostics
+        self._export_run_records = export_run_records
         self._version_lines = tuple(
             (str(key), str(value))
             for key, value in (version_lines or {}).items()
@@ -278,6 +280,7 @@ class PystrayTrayBackend:
             ),
             pystray.Menu.SEPARATOR,
             pystray.MenuItem("打开日志目录", invoke(self._open_logs)),
+            pystray.MenuItem("导出对局记录", invoke(self._export_run_records)),
             pystray.MenuItem("导出脱敏诊断", invoke(self._export_diagnostics)),
             pystray.MenuItem("完全退出", exit_handler),
         ]

@@ -17,6 +17,7 @@ from realtime.controller import (
     WindowsGuideController,
 )
 from realtime.diagnostics import DiagnosticSnapshot, export_diagnostics_zip
+from realtime.run_records import export_run_records as write_run_records
 from realtime.file_bridge import default_exchange_dir
 from realtime.installation import (
     InstallReceipt,
@@ -274,10 +275,17 @@ def build_public_beta_controller(args) -> WindowsGuideController:
         )
         _open_directory(output_dir)
 
+    def export_run_records() -> None:
+        # The game's own run history, for the Guide's author (see run_records).
+        output_dir = default_exchange_dir() / "run-records"
+        write_run_records(output_dir, default_exchange_dir(), manifest.guide.version)
+        _open_directory(output_dir)
+
     graphical = PystrayTrayBackend(
         title="STS2 Guide",
         open_logs=lambda: _open_directory(args.log_file.parent),
         export_diagnostics=export_diagnostics,
+        export_run_records=export_run_records,
         version_lines={
             "Guide": manifest.guide.version,
             "Game": manifest.game.version,

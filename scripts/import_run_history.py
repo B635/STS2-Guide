@@ -27,6 +27,7 @@ sys.path.insert(0, str(ROOT_DIR))
 
 from advisor.golden_set import GOLDEN_SET_SCHEMA_VERSION  # noqa: E402
 from advisor.run_history import RunHistoryError, bare_id, load_run, replay_run  # noqa: E402
+from realtime.run_records import unpack_collected  # noqa: E402
 
 DEFAULT_HISTORY_ROOT = Path(os.environ.get("APPDATA", "")) / "SlayTheSpire2" / "steam"
 DEFAULT_OUTPUT = ROOT_DIR / "build" / "history"
@@ -50,6 +51,11 @@ def main() -> int:
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--all-runs", action="store_true", help="include lost runs (default: wins only)")
     parser.add_argument("--knowledge", type=Path, default=ROOT_DIR / "data" / "knowledge.json")
+    parser.add_argument(
+        "--collected", type=Path, action="append", default=[],
+        help="a folder of run-record zips exported by other players (tray menu: 导出对局记录); repeatable",
+    )
+    parser.add_argument("--no-local", action="store_true", help="only the collected runs, not this machine's")
     args = parser.parse_args()
 
     decks = starting_decks(args.knowledge)
@@ -61,16 +67,31 @@ def main() -> int:
         str(encounter["id"]).upper()
         for encounter in json.loads(args.knowledge.read_text(encoding="utf-8"))["encounters"]
     }
-    files = sorted(args.history_root.glob("**/history/*.run"))
+    # (file, run key): this machine's runs, then each collected player's,
+    # keyed by their collector ID so file names cannot clash.
+    files = [] if args.no_local else [(path, path.stem) for path in sorted(args.history_root.glob("**/history/*.run"))]
+    unpacked = ROOT_DIR / "build" / "collected-runs"
+    for folder in args.collected:
+        for path in sorted(unpack_collected(sorted(folder.glob("*.zip")), unpacked)):
+            files.append((path, f"{path.relative_to(unpacked).parts[0][:8]}-{path.stem}"))
     counts = collections.Counter()
     situations, fights, decisions, rejected = [], [], [], []
-    for path in files:
+    seen_runs = set()
+    for path, run_key in files:
         counts["files"] += 1
         try:
             run = load_run(path)
         except RunHistoryError as exc:
             rejected.append(f"{path.name}: {exc}")
             continue
+        identity = (run.get("seed"), run.get("start_time"))
+        if None in identity:
+            identity = (str(path), None)   # no way to tell: kept
+        if identity in seen_runs:
+            # The same run sent twice, or by two players who shared it.
+            counts["duplicates"] += 1
+            continue
+        seen_runs.add(identity)
         if len(run.get("players") or ()) != 1:
             counts["multiplayer"] += 1
             continue
@@ -85,7 +106,7 @@ def main() -> int:
             rejected.append(f"{path.name}: unknown character {character}")
             continue
         try:
-            result = replay_run(run, decks[character], path.stem)
+            result = replay_run(run, decks[character], run_key)
         except (AttributeError, KeyError, TypeError, ValueError, RunHistoryError) as exc:
             # One malformed file must not stop the import.
             rejected.append(f"{path.name}: unreadable run ({type(exc).__name__}: {exc})")
