@@ -6,20 +6,26 @@ import path from "node:path";
 import { REPO_ROOT } from "./engine.js";
 
 interface Named {
+  id?: string;
   name?: string;
 }
 
 let cached: Set<string> | undefined;
+let knowledge: Record<string, Named[]> | undefined;
+
+function load(): Record<string, Named[]> {
+  knowledge ??= JSON.parse(readFileSync(path.join(REPO_ROOT, "data", "knowledge.json"), "utf-8")) as Record<string, Named[]>;
+  return knowledge;
+}
+
+export function characterName(id: string): string {
+  return load()["characters"]?.find((c) => c.id === id)?.name ?? id;
+}
 
 export function entityNames(): ReadonlySet<string> {
   if (!cached) {
-    const knowledge = JSON.parse(readFileSync(path.join(REPO_ROOT, "data", "knowledge.json"), "utf-8")) as Record<
-      string,
-      Named[]
-    >;
-    cached = new Set(
-      ["cards", "relics", "potions"].flatMap((kind) => (knowledge[kind] ?? []).map((e) => e.name ?? "")).filter(Boolean),
-    );
+    const all = load();
+    cached = new Set(["cards", "relics", "potions"].flatMap((kind) => (all[kind] ?? []).map((e) => e.name ?? "")).filter(Boolean));
   }
   return cached;
 }

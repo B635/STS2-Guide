@@ -1,19 +1,17 @@
 #!/usr/bin/env node
-// coach review <file.run> [--no-llm] [--json] [--model M] [--trace F]
-//   score one finished run, list its flags and (unless --no-llm) explain them
+// coach review <file.run> [--no-llm] [--model M] [--thinking] [--out DIR] [--json]
+//   score one finished run, explain its flags and write the HTML report
 
+import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { parseArgs } from "node:util";
-import { explainFlag } from "./agent.js";
-import type { FlagResult } from "./agent.js";
 import { Engine } from "./engine.js";
-import { DEFAULT_MODEL, createClient } from "./llm.js";
-import { entityNames } from "./names.js";
-import { prepass } from "./prepass.js";
+import { DEFAULT_MODEL } from "./llm.js";
 import type { Prepass } from "./prepass.js";
-import { Trace } from "./trace.js";
+import { renderReport } from "./report.js";
+import { runReview } from "./review.js";
 
-const USAGE = "usage: coach review <file.run> [--no-llm] [--json] [--model M] [--thinking] [--trace F]";
+const USAGE = "usage: coach review <file.run> [--no-llm] [--model M] [--thinking] [--out DIR] [--json]";
 
 function printPrepass({ summary, decisions, flags }: Prepass): void {
   const s = summary;
@@ -42,8 +40,8 @@ async function main(argv: string[]): Promise<number> {
       json: { type: "boolean", default: false },
       "no-llm": { type: "boolean", default: false },
       model: { type: "string", default: DEFAULT_MODEL },
-      trace: { type: "string" },
       thinking: { type: "boolean", default: false },
+      out: { type: "string", default: "out" },
     },
   });
   const [command, runFile] = positionals;
@@ -53,25 +51,25 @@ async function main(argv: string[]): Promise<number> {
   }
   const engine = await Engine.start();
   try {
-    const result = await prepass(engine, path.resolve(runFile));
-    const explained: FlagResult[] = [];
-    if (!values["no-llm"] && result.flags.length > 0) {
-      const ctx = {
-        engine, llm: createClient(), model: values.model, tools: await engine.agentTools(),
-        names: entityNames(), trace: new Trace(values.trace), thinking: values.thinking,
-      };
-      // Flags are independent: explain them in parallel.
-      explained.push(...(await Promise.all(result.flags.map((f) => explainFlag(ctx, result.summary, f)))));
+    const run = path.basename(runFile, path.extname(runFile));
+    const review = await runReview(engine, path.resolve(runFile), {
+      model: values["no-llm"] ? null : values.model,
+      thinking: values.thinking,
+      traceFile: path.join(values.out, "traces", `${run}.jsonl`),
+    });
+    if (values.json) {
+      console.log(JSON.stringify({ ...review.pre, explained: review.explained, summary: review.summary, meta: review.meta }, null, 1));
+      return 0;
     }
-    if (values.json) console.log(JSON.stringify({ ...result, explained }, null, 1));
-    else {
-      printPrepass(result);
-      for (const r of explained) {
-        console.log(`\n${r.flag}: ${r.status} (tools ${r.toolCalls}, repairs ${r.repairs}, $${r.usage.cost_usd.toFixed(4)})`);
-        if (r.finding) console.log(JSON.stringify(r.finding, null, 1));
-        else console.log(r.errors.join("\n"));
-      }
+    printPrepass(review.pre);
+    for (const r of review.explained) {
+      console.log(`${r.flag}: ${r.status} (tools ${r.toolCalls}, repairs ${r.repairs}, $${r.usage.cost_usd.toFixed(4)})${r.status === "verified" ? "" : " " + r.errors.join("; ")}`);
     }
+    const file = path.join(values.out, "reports", `${run}.html`);
+    mkdirSync(path.dirname(file), { recursive: true });
+    writeFileSync(file, renderReport(review.pre, review.explained, review.summary, review.meta), "utf-8");
+    console.log(`summary (${review.summary.source}): ${review.summary.text}`);
+    console.log(`report: ${path.resolve(file)}  ($${review.meta.cost_usd.toFixed(4)}, ${review.meta.seconds.toFixed(0)} s)`);
     return 0;
   } finally {
     await engine.close();

@@ -114,15 +114,28 @@ export function verifyFinding(
 
   for (const { where, text, cites } of texts) {
     const results = cites.map((id) => byId.get(id)?.result).filter((r) => r !== undefined);
-    const numbers = evidenceNumbers(results);
-    for (const n of numbersIn(text)) {
-      if (!numbers.has(n)) errors.push(`${where}: the number ${n} is not in ${cites.join("/")}`);
-    }
-    const cited = results.map((r) => JSON.stringify(r)).join("\n");
-    for (const name of mentionedNames(text, entityNames)) {
-      if (!cited.includes(name)) errors.push(`${where}: "${name}" is not in ${cites.join("/")}`);
-    }
-    for (const word of BANNED_WORDS) if (text.includes(word)) errors.push(`${where}: do not use "${word}"`);
+    errors.push(...checkText(where, text, results, entityNames, cites.join("/")));
   }
   return { ok: errors.length === 0, errors };
+}
+
+/** Numbers and names in a text must appear in the given results; banned words are not allowed. */
+export function checkText(
+  where: string,
+  text: string,
+  results: unknown[],
+  entityNames: ReadonlySet<string>,
+  source = "the cited results",
+): string[] {
+  const errors: string[] = [];
+  const numbers = evidenceNumbers(results);
+  for (const n of numbersIn(text)) {
+    if (!numbers.has(n)) errors.push(`${where}: the number ${n} is not in ${source}`);
+  }
+  const cited = results.map((r) => JSON.stringify(r)).join("\n");
+  for (const name of mentionedNames(text, entityNames)) {
+    if (!cited.includes(name)) errors.push(`${where}: "${name}" is not in ${source}`);
+  }
+  for (const word of BANNED_WORDS) if (text.includes(word)) errors.push(`${where}: do not use "${word}"`);
+  return errors;
 }
