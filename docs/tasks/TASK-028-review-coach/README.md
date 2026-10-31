@@ -74,3 +74,9 @@
   - TS：`coach/`（`engine.ts` MCP 客户端、`prepass.ts`、`cli.ts`、`schemas.ts`），`coach review <file.run>`；`test/engine.test.ts`。
   - 评估集：`scripts/select_coach_eval_runs.py` 一次性选定（种子 28，未看标记）：可复盘 41 局，测试 15（含 3 局 0.111.0）、开发 10、其余 16；`coach/eval/split.json`。
   - 验收：开发集 10 局全部跑通，每局严格标记 0–5 条（共 26 条），每条都能查到细节；整局约 4 秒，敏感度测试每次约 30 ms。
+- 2026-11-01 第 2 周主体完成：
+  - `coach/src/agent.ts` 每条标记一个循环（最多 6 次工具调用、1 次修正）；`finding.ts` 结论格式；`verifier.ts` 程序验证（因子须是两选项差距最大的前 3 项、引用的结果须含该因子、数字和卡名须出现在引用结果中、禁用词）；`summary.ts` 一句话总结（同样核对，失败改用程序生成的句子）；`report.ts` 单文件 HTML（评分按钮、“复制评分”）；`trace.ts` JSONL。
+  - DeepSeek 的 `deepseek-flash` 默认开思考模式，思考模式不支持强制 tool_choice、也不支持 temperature：主线关闭思考（`thinking: {type: "disabled"}`），`--thinking` 留给模型比较。
+  - 调整：模型自己写的“不确定之处”会猜引擎内部（例如“未计入升级”），程序无法核对，改为由程序根据引擎的部分计分写出。
+  - 开发集试跑：一局 3–5 条标记全部通过验证，约 $0.01、10 秒；验证器实际拦下过编造的数字，修正一次后通过。
+  - 待做：`coach trace` HTML 时间轴（可砍项）、评分导入（第 3 周）。
