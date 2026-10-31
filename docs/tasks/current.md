@@ -7,3 +7,4 @@
 - 额度授权（2026-09-25）：用户最新允许本次额度实际降到 0 后使用一张重置卡；覆盖此前禁止使用的指令。不提前使用、不连续兑换多张；截至本次记录尚未使用。
 - 并行任务（2026-10-13，用户决定另开）：[`TASK-026-route-shop-and-combat-floor.md`](TASK-026-route-shop-and-combat-floor.md)，状态：待真机验收（审查发现已返修，随 0.3.12 发行）。路线评分修正，不属于 TASK-025 范围。
 - 新任务（2026-10-28，用户决定）：[`TASK-027-relic-choice-and-shop/README.md`](TASK-027-relic-choice-and-shop/README.md)：Neow／古神遗物选择 → 金币与生命换算 → 商店 v2。状态：暂停（2026-10-31，用户决定在引擎删牌校准收尾后暂停 Mod 开发）。
+- 新任务（2026-11-01，用户决定）：[`TASK-028-review-coach/README.md`](TASK-028-review-coach/README.md)：赛后复盘教练（TypeScript Agent + Python MCP 引擎工具，求职作品集）。状态：进行中（第 1 周）。
