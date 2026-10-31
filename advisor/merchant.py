@@ -223,10 +223,19 @@ class _Scoring:
 
     def removal(self, targets) -> tuple:
         removable = {(t["card"].upper(), int(t["upgrades"])) for t in targets}
+        positions = [
+            i for i, card in enumerate(self.context.deck)
+            if card is not None and (card.card_id, 1 if card.upgraded else 0) in removable
+        ]
+        # A card valued only in part is undervalued, so removing it looks
+        # better than it is: it is chosen only when no fully valued card can be.
+        whole = [i for i in positions
+                 if not self.policy._card(self.context.deck[i].card_id, 1 if self.context.deck[i].upgraded else 0)[1]]
+        positions = set(whole or positions)
         best_value, best_cards, best_name = None, None, ""
         seen = set()
         for i, card in enumerate(self.context.deck):
-            if card is None or id(card) in seen or (card.card_id, 1 if card.upgraded else 0) not in removable:
+            if i not in positions or id(card) in seen:
                 continue
             seen.add(id(card))
             cards = [*self.context.deck[:i], *self.context.deck[i + 1:]]

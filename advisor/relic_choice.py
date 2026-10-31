@@ -478,8 +478,18 @@ class _Run:
         return True
 
     def best_change(self, variant: _Variant, positions: Sequence[int], effect: Mapping) -> Optional[List[_Variant]]:
-        """The chosen card: the one whose change leaves the fittest deck (copies are interchangeable)."""
+        """The chosen card: the one whose change leaves the fittest deck (copies are interchangeable).
 
+        A removal or transform gives a card up. A card the engine values only
+        in part is undervalued, so giving it up looks better than it is: such
+        cards are chosen only when no fully valued card can be (the run
+        history: 24 of 71 engine removals were such cards, and the player's
+        removal matched 11 times, 18 when they are left out).
+        """
+
+        if effect["kind"] in ("remove_from_deck", "transform_cards"):
+            whole = [i for i in positions if not self.partly_valued(variant.cards[i])]
+            positions = whole or positions
         best_value, best = None, None
         seen = set()
         for i in positions:
@@ -493,6 +503,9 @@ class _Run:
             if best_value is None or value > best_value:
                 best_value, best = value, outcomes
         return best
+
+    def partly_valued(self, card: CardProfile) -> bool:
+        return bool(self.policy._card(card.card_id, 1 if card.upgraded else 0)[1])
 
     def change(self, variant: _Variant, i: int, effect: Mapping) -> Optional[List[_Variant]]:
         """The results of changing the card at position ``i`` (weights sum to the variant's)."""

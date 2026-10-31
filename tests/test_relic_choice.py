@@ -59,7 +59,10 @@ class RelicChoiceValuerTests(unittest.TestCase):
         baseline, values, _ = self.valuer.evaluate(world_request(view), [(relic, params or {})])
         return baseline, values[relic]
 
-    def test_a_chosen_removal_takes_the_card_the_engine_values_least(self):
+    def test_a_chosen_removal_takes_the_fully_valued_card_the_engine_values_least(self):
+        # DOUBT's end-of-turn Weak is not valued yet: removing it is not
+        # weighed against fully valued cards (its removal gain is understated
+        # or overstated by what is missing), so the choice is among the others.
         deck = [card("STRIKE_IRONCLAD", 5), card("DEFEND_IRONCLAD", 4), card("BASH"), card("DOUBT")]
         _, value = self.evaluate("PRECISE_SCISSORS", deck=deck)
         view = copy.deepcopy(self.view)
@@ -67,9 +70,12 @@ class RelicChoiceValuerTests(unittest.TestCase):
         context, _ = self.valuer.policy.deck_context(world_request(view))
         gains = {}
         for i, profile in enumerate(context.deck):
+            if self.valuer.policy._card(profile.card_id, 0)[1]:
+                continue
             gains.setdefault(profile.card_id, context.score(context.deck[:i] + context.deck[i + 1:])[0].raw)
         best = max(gains, key=gains.get)
         self.assertIn("移除 " + self.valuer.policy._card_name(best), value.notes)
+        self.assertNotIn("移除 " + self.valuer.policy._card_name("DOUBT"), value.notes)
 
     def test_gold_and_max_hp_come_back_as_resources(self):
         _, pearl = self.evaluate("GOLDEN_PEARL")
