@@ -40,3 +40,4 @@ logs/
 data/advisor_eval_report.json
 data/guides.json
 .mcp.json
+.venv-coach/
