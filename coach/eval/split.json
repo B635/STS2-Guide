@@ -1,0 +1,258 @@
+{
+ "note": "Chosen once by scripts/select_coach_eval_runs.py before any prompt work; never tune on test.",
+ "seed": 28,
+ "test": [
+  "1772814009",
+  "1772819860",
+  "1772895979",
+  "1772898707",
+  "1773037084",
+  "1773057317",
+  "1773853598",
+  "1773983149",
+  "1774199215",
+  "1774202131",
+  "1775753122",
+  "1782142555",
+  "1791474137",
+  "1791820890",
+  "1791823702"
+ ],
+ "dev": [
+  "1772783591",
+  "1772790145",
+  "1772816067",
+  "1772975275",
+  "1773034032",
+  "1773317604",
+  "1773664471",
+  "1773939462",
+  "1773984305",
+  "1774030566"
+ ],
+ "other": [
+  "1772775790",
+  "1772779247",
+  "1772782606",
+  "1772785657",
+  "1772818666",
+  "1772820927",
+  "1772823373",
+  "1772894462",
+  "1772899435",
+  "1772900314",
+  "1773073604",
+  "1773847380",
+  "1773854988",
+  "1773941954",
+  "1773944673",
+  "1774028802"
+ ],
+ "runs": {
+  "1772775790": {
+   "character": "IRONCLAD",
+   "build_id": "v0.98.1",
+   "win": true
+  },
+  "1772779247": {
+   "character": "SILENT",
+   "build_id": "v0.98.1",
+   "win": false
+  },
+  "1772782606": {
+   "character": "REGENT",
+   "build_id": "v0.98.1",
+   "win": false
+  },
+  "1772783591": {
+   "character": "NECROBINDER",
+   "build_id": "v0.98.1",
+   "win": false
+  },
+  "1772785657": {
+   "character": "DEFECT",
+   "build_id": "v0.98.1",
+   "win": true
+  },
+  "1772790145": {
+   "character": "REGENT",
+   "build_id": "v0.98.1",
+   "win": false
+  },
+  "1772814009": {
+   "character": "SILENT",
+   "build_id": "v0.98.1",
+   "win": false
+  },
+  "1772816067": {
+   "character": "IRONCLAD",
+   "build_id": "v0.98.1",
+   "win": true
+  },
+  "1772818666": {
+   "character": "REGENT",
+   "build_id": "v0.98.1",
+   "win": false
+  },
+  "1772819860": {
+   "character": "REGENT",
+   "build_id": "v0.98.1",
+   "win": false
+  },
+  "1772820927": {
+   "character": "REGENT",
+   "build_id": "v0.98.1",
+   "win": false
+  },
+  "1772823373": {
+   "character": "NECROBINDER",
+   "build_id": "v0.98.1",
+   "win": false
+  },
+  "1772894462": {
+   "character": "REGENT",
+   "build_id": "v0.98.2",
+   "win": false
+  },
+  "1772895979": {
+   "character": "REGENT",
+   "build_id": "v0.98.2",
+   "win": true
+  },
+  "1772898707": {
+   "character": "NECROBINDER",
+   "build_id": "v0.98.2",
+   "win": false
+  },
+  "1772899435": {
+   "character": "NECROBINDER",
+   "build_id": "v0.98.2",
+   "win": false
+  },
+  "1772900314": {
+   "character": "NECROBINDER",
+   "build_id": "v0.98.2",
+   "win": true
+  },
+  "1772975275": {
+   "character": "NECROBINDER",
+   "build_id": "v0.98.2",
+   "win": false
+  },
+  "1773034032": {
+   "character": "IRONCLAD",
+   "build_id": "v0.98.2",
+   "win": false
+  },
+  "1773037084": {
+   "character": "IRONCLAD",
+   "build_id": "v0.98.2",
+   "win": true
+  },
+  "1773057317": {
+   "character": "DEFECT",
+   "build_id": "v0.98.2",
+   "win": true
+  },
+  "1773073604": {
+   "character": "REGENT",
+   "build_id": "v0.98.2",
+   "win": false
+  },
+  "1773317604": {
+   "character": "SILENT",
+   "build_id": "v0.98.3",
+   "win": false
+  },
+  "1773664471": {
+   "character": "REGENT",
+   "build_id": "v0.98.3",
+   "win": false
+  },
+  "1773847380": {
+   "character": "REGENT",
+   "build_id": "v0.99.1",
+   "win": true
+  },
+  "1773853598": {
+   "character": "NECROBINDER",
+   "build_id": "v0.99.1",
+   "win": false
+  },
+  "1773854988": {
+   "character": "NECROBINDER",
+   "build_id": "v0.99.1",
+   "win": false
+  },
+  "1773939462": {
+   "character": "DEFECT",
+   "build_id": "v0.99.1",
+   "win": false
+  },
+  "1773941954": {
+   "character": "DEFECT",
+   "build_id": "v0.99.1",
+   "win": true
+  },
+  "1773944673": {
+   "character": "DEFECT",
+   "build_id": "v0.99.1",
+   "win": true
+  },
+  "1773983149": {
+   "character": "DEFECT",
+   "build_id": "v0.100.0",
+   "win": false
+  },
+  "1773984305": {
+   "character": "DEFECT",
+   "build_id": "v0.100.0",
+   "win": false
+  },
+  "1774028802": {
+   "character": "NECROBINDER",
+   "build_id": "v0.100.0",
+   "win": false
+  },
+  "1774030566": {
+   "character": "SILENT",
+   "build_id": "v0.100.0",
+   "win": true
+  },
+  "1774199215": {
+   "character": "DEFECT",
+   "build_id": "v0.100.0",
+   "win": false
+  },
+  "1774202131": {
+   "character": "IRONCLAD",
+   "build_id": "v0.100.0",
+   "win": true
+  },
+  "1775753122": {
+   "character": "IRONCLAD",
+   "build_id": "v0.99.1",
+   "win": true
+  },
+  "1782142555": {
+   "character": "SILENT",
+   "build_id": "v0.107.1",
+   "win": false
+  },
+  "1791474137": {
+   "character": "NECROBINDER",
+   "build_id": "v0.111.0",
+   "win": false
+  },
+  "1791820890": {
+   "character": "SILENT",
+   "build_id": "v0.111.0",
+   "win": false
+  },
+  "1791823702": {
+   "character": "NECROBINDER",
+   "build_id": "v0.111.0",
+   "win": false
+  }
+ }
+}

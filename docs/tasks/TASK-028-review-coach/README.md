@@ -68,3 +68,9 @@
 ## 进度
 
 - 2026-11-01：规格确认，开分支。
+- 2026-11-01 第 1 周完成：
+  - Python：`review/`（`run_review.py` 预处理与分层、`tools.py` 查询与敏感度测试、`mcp_server.py` 9 个 MCP 工具），`tests/test_review.py`。官方 `mcp` 包要求 Python ≥ 3.10，引擎原环境是 3.9，所以 MCP 服务器跑在 `uv venv .venv-coach --python 3.12`（`review/requirements.txt`）；引擎代码两边都能跑。
+  - 顺带修正：只读校验连接改为显式关闭（3.12 下无法替换数据库文件）；商店／休息点请求与“无法评分”判断移到 `advisor/history_requests.py`，脚本共用（导入结果与改动前逐条相同）。
+  - TS：`coach/`（`engine.ts` MCP 客户端、`prepass.ts`、`cli.ts`、`schemas.ts`），`coach review <file.run>`；`test/engine.test.ts`。
+  - 评估集：`scripts/select_coach_eval_runs.py` 一次性选定（种子 28，未看标记）：可复盘 41 局，测试 15（含 3 局 0.111.0）、开发 10、其余 16；`coach/eval/split.json`。
+  - 验收：开发集 10 局全部跑通，每局严格标记 0–5 条（共 26 条），每条都能查到细节；整局约 4 秒，敏感度测试每次约 30 ms。

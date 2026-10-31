@@ -10,7 +10,7 @@ from review.run_review import STRICT_GAP, ReviewError, RunReview, _tier, review_
 
 
 ROOT = Path(__file__).resolve().parents[1]
-RUN = ROOT / "coach" / "eval" / "runs" / "1791474137.run"
+RUN = ROOT / "coach" / "eval" / "runs" / "test" / "1791474137.run"
 
 
 def option(option_id, deck_score, fully_scored=True):
