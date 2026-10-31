@@ -1,13 +1,19 @@
 #!/usr/bin/env node
-// coach review <file.run> [--json]   score one finished run and list its flags
+// coach review <file.run> [--no-llm] [--json] [--model M] [--trace F]
+//   score one finished run, list its flags and (unless --no-llm) explain them
 
 import path from "node:path";
 import { parseArgs } from "node:util";
+import { explainFlag } from "./agent.js";
+import type { FlagResult } from "./agent.js";
 import { Engine } from "./engine.js";
+import { DEFAULT_MODEL, createClient } from "./llm.js";
+import { entityNames } from "./names.js";
 import { prepass } from "./prepass.js";
 import type { Prepass } from "./prepass.js";
+import { Trace } from "./trace.js";
 
-const USAGE = "usage: coach review <file.run> [--json]";
+const USAGE = "usage: coach review <file.run> [--no-llm] [--json] [--model M] [--thinking] [--trace F]";
 
 function printPrepass({ summary, decisions, flags }: Prepass): void {
   const s = summary;
@@ -32,7 +38,13 @@ async function main(argv: string[]): Promise<number> {
   const { values, positionals } = parseArgs({
     args: argv,
     allowPositionals: true,
-    options: { json: { type: "boolean", default: false } },
+    options: {
+      json: { type: "boolean", default: false },
+      "no-llm": { type: "boolean", default: false },
+      model: { type: "string", default: DEFAULT_MODEL },
+      trace: { type: "string" },
+      thinking: { type: "boolean", default: false },
+    },
   });
   const [command, runFile] = positionals;
   if (command !== "review" || !runFile) {
@@ -42,8 +54,24 @@ async function main(argv: string[]): Promise<number> {
   const engine = await Engine.start();
   try {
     const result = await prepass(engine, path.resolve(runFile));
-    if (values.json) console.log(JSON.stringify(result, null, 1));
-    else printPrepass(result);
+    const explained: FlagResult[] = [];
+    if (!values["no-llm"] && result.flags.length > 0) {
+      const ctx = {
+        engine, llm: createClient(), model: values.model, tools: await engine.agentTools(),
+        names: entityNames(), trace: new Trace(values.trace), thinking: values.thinking,
+      };
+      // Flags are independent: explain them in parallel.
+      explained.push(...(await Promise.all(result.flags.map((f) => explainFlag(ctx, result.summary, f)))));
+    }
+    if (values.json) console.log(JSON.stringify({ ...result, explained }, null, 1));
+    else {
+      printPrepass(result);
+      for (const r of explained) {
+        console.log(`\n${r.flag}: ${r.status} (tools ${r.toolCalls}, repairs ${r.repairs}, $${r.usage.cost_usd.toFixed(4)})`);
+        if (r.finding) console.log(JSON.stringify(r.finding, null, 1));
+        else console.log(r.errors.join("\n"));
+      }
+    }
     return 0;
   } finally {
     await engine.close();
