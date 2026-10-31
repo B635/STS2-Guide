@@ -239,7 +239,7 @@ def _validate_template(path: Path) -> dict[str, str]:
     if not path.is_file():
         raise ReleaseDatabaseError(f"release database template is missing: {path}")
     try:
-        with _readonly_connection(path) as connection:
+        with closing(_readonly_connection(path)) as connection:
             _validate_integrity(connection)
             metadata = _read_metadata(connection)
             _validate_hash_metadata(metadata)
@@ -273,7 +273,7 @@ def _read_runtime_state(
     runtime_path: Path,
 ) -> tuple[dict[str, str], list[tuple], bool]:
     try:
-        with _readonly_connection(runtime_path) as connection:
+        with closing(_readonly_connection(runtime_path)) as connection:
             _validate_integrity(connection)
             metadata = _read_metadata(connection)
             # A pre-Public-Beta runtime DB may not yet have release hashes or
@@ -642,7 +642,7 @@ def _validate_runtime_upgrade(
     expected_summary_count: int,
 ) -> dict[str, str]:
     try:
-        with _readonly_connection(path) as connection:
+        with closing(_readonly_connection(path)) as connection:
             _validate_integrity(connection)
             metadata = _read_metadata(connection)
             if _database_identity(metadata) != _database_identity(

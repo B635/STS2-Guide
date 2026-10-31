@@ -27,68 +27,10 @@ from pathlib import Path
 ROOT_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT_DIR))
 
-from advisor.decision_core import DecisionCandidate, DecisionRequest  # noqa: E402
-from advisor.golden_set import world_request  # noqa: E402
-from advisor.merchant import MERCHANT_CHOICE, MerchantPolicy  # noqa: E402
+from advisor.history_requests import bought_ids, rarities, shop_request  # noqa: E402
+from advisor.merchant import MerchantPolicy  # noqa: E402
 from storage.release_database import build_release_database  # noqa: E402
 from storage.relational import RelationalRepository  # noqa: E402
-
-CARD_PRICE = {"common": 50, "uncommon": 75, "rare": 150}
-RELIC_PRICE = {"common": 175, "uncommon": 225, "rare": 275, "shop": 200}
-POTION_PRICE = {"common": 50, "uncommon": 75, "rare": 100}
-
-
-def shop_request(row: dict, rarity: dict) -> DecisionRequest:
-    world = world_request(row["scoring_view"]).world
-    gold = row["gold_before"]
-    high = int(row["scoring_view"]["state"].get("ascension") or 0) >= 6
-    candidates = []
-
-    def offer(candidate_id, kind, entity, price, **extra):
-        payload = {
-            "candidate_kind": "merchant_offer", "offer_kind": kind, "is_stocked": True, "entity_id": entity,
-            "costs": [{"kind": "gold", "amount": price, "resource_id": None}], **extra,
-        }
-        candidates.append(DecisionCandidate.create(
-            candidate_id, payload, label=entity or kind, display_index=len(candidates), eligible=price <= gold,
-        ))
-
-    for i, entry in enumerate(row["offers"]["cards"]):
-        price = CARD_PRICE.get(rarity["cards"].get(entry["card"], ""))
-        if price is not None:
-            offer(f"card:{i}:{entry['card']}", "card", entry["card"], price, upgrades=entry["upgrades"])
-    for i, relic in enumerate(row["offers"]["relics"]):
-        price = RELIC_PRICE.get(rarity["relics"].get(relic, ""))
-        if price is not None:
-            offer(f"relic:{i}:{relic}", "relic", relic, price)
-    for i, potion in enumerate(row["offers"]["potions"]):
-        price = POTION_PRICE.get(rarity["potions"].get(potion, ""))
-        if price is not None:
-            offer(f"potion:{i}:{potion}", "potion", potion, price)
-    removal = (100 + 50 * row["removals_before"]) if high else (75 + 25 * row["removals_before"])
-    targets = []
-    for entry in row["scoring_view"]["state"]["deck"]:
-        for _ in range(entry["count"]):
-            targets.append({"target_id": f"history:{len(targets)}", "card": entry["card"], "upgrades": entry["upgrades"]})
-    offer("removal", "card_removal", None, removal,
-          deck_edit_targets={"operation": "remove", "source_code": "history:any_card", "targets": targets})
-    candidates.append(DecisionCandidate.create(
-        "leave", {"candidate_kind": "leave", "costs": []}, label="leave", display_index=len(candidates),
-    ))
-    return DecisionRequest.create(
-        decision_id=f"{row['run']}:shop:{row['floor']}", decision_type=MERCHANT_CHOICE, world=world,
-        candidates=candidates,
-    )
-
-
-def bought_ids(row: dict, request: DecisionRequest) -> set:
-    bought = row["bought"]
-    names = {c["card"] for c in bought["cards"]} | set(bought["relics"]) | set(bought["potions"])
-    ids = {c.candidate_id for c in request.candidates if c.label in names}
-    if bought["removed"]:
-        ids.add("removal")
-    return ids or {"leave"}
-
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
@@ -97,8 +39,7 @@ def main() -> int:
     args = parser.parse_args()
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
     knowledge = json.loads((ROOT_DIR / "data" / "knowledge.json").read_text(encoding="utf-8"))
-    rarity = {kind: {e["id"]: str(e.get("rarity_key") or "").lower() for e in knowledge[kind]}
-              for kind in ("cards", "relics", "potions")}
+    rarity = rarities(knowledge)
     rows = [d for d in json.loads(args.decisions.read_text(encoding="utf-8"))["decisions"] if d["kind"] == "shop"]
     with tempfile.TemporaryDirectory() as temp:
         database = Path(temp) / "release.db"
