@@ -99,17 +99,6 @@ class DeckTargetEligibilityTests(unittest.TestCase):
                 self.assertIn(f"deck_edit:no_{operation}_target", result.data_gaps)
                 self.assertNotIn("deck_edit:targets_unknown", result.data_gaps)
 
-    def test_removal_does_not_choose_excluded_high_value_card(self):
-        result = self._recommend(
-            "remove", targets=_targets("remove", ("STRIKE_IRONCLAD", 0))
-        )
-        self.assertEqual(result.data_gaps, ())
-        factor = next(f for f in result.candidates[0].factors
-                      if f["code"] == "merchant_remove_opportunity")
-        self.assertEqual(factor["delta"], 6.0)
-        self.assertIn("STRIKE_IRONCLAD", factor["message"])
-        self.assertNotIn("WOUND", factor["message"])
-
     def test_smith_ignores_unmodeled_cards_outside_verified_targets(self):
         result = self._recommend(
             "upgrade", targets=_targets("upgrade", ("STRIKE_IRONCLAD", 0)),
@@ -151,8 +140,9 @@ class DeckTargetEligibilityTests(unittest.TestCase):
             "remove", targets=targets,
             deck=[{"card": "STRIKE_IRONCLAD", "count": 1}], sequence=2,
         )
-        self.assertEqual(valid.data_gaps, ())
-        self.assertIsNotNone(valid.candidates[0].score)
+        # Two Strikes in the deck: both targets are valid (shop v2 needs the
+        # full engine to score the removal itself; see test_merchant_decision).
+        self.assertFalse([g for g in valid.data_gaps if g.startswith("deck_edit:")])
         self.assertIsNone(stale.candidates[0].score)
         self.assertIn("deck_edit:targets_state_mismatch", stale.data_gaps)
 

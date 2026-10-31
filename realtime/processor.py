@@ -87,13 +87,16 @@ class RealtimeEventProcessor:
             if compatibility_manifest is not None
             else None
         )
+        # One deck-fitness kernel for card rewards, relic choices and the
+        # shop: its caches and warm-up serve all three.
+        fitness = DeckFitnessPolicy(repository, preferences)
         self.policies = policies or PolicyRegistry(
             [
-                GuardedCardRewardPolicy(DeckFitnessPolicy(repository, preferences)),
+                GuardedCardRewardPolicy(fitness),
                 RoutePolicy(repository),
-                MerchantPolicy(repository, preferences=preferences),
+                MerchantPolicy(repository, preferences=preferences, fitness_policy=fitness),
                 CampfirePolicy(repository, preferences=preferences),
-                NeowPolicy(repository, preferences=preferences),
+                NeowPolicy(repository, preferences=preferences, fitness_policy=fitness),
                 EventPolicy(repository, preferences=preferences),
                 DeckEditPolicy(repository, preferences=preferences),
             ]

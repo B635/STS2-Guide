@@ -86,6 +86,10 @@ foreach (var typeName in typeNames)
         Console.WriteLine("TYPE NOT FOUND");
         continue;
     }
+    for (var baseType = type.BaseType; baseType is not null; baseType = baseType.BaseType)
+    {
+        Console.WriteLine($"BASE {baseType.FullName}");
+    }
     foreach (var property in type.GetProperties(flags)
         .OrderBy(property => property.Name))
     {

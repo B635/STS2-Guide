@@ -132,6 +132,23 @@ def card_reward_request(view: Mapping):
     return RealtimeEventProcessor.build_card_reward_request(event, world)
 
 
+def world_request(view: Mapping):
+    """A request carrying a history view's world state, for scoring something
+    other than its card reward (a relic choice, a rest site, a shop).
+
+    The history views of those decisions have only a skip row and the request
+    builder needs a card row; callers read only the world, so a placeholder
+    card row is added."""
+
+    view = dict(view)
+    placeholder = dict(view["candidates"][-1])
+    first = view["state"]["deck"][0]["card"]
+    placeholder.update(candidate_id=f"0:{first}", kind="card", entity_id=first, label=first,
+                       payload={**placeholder["payload"], "card": first, "upgrades": 0})
+    view["candidates"] = [placeholder, *view["candidates"]]
+    return card_reward_request(view)
+
+
 def situation_warnings(situation: Mapping) -> List[str]:
     """Known limits of a situation that a reader of the report must see."""
 

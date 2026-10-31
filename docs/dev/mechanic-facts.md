@@ -122,6 +122,60 @@
   `hp_loss_per_turn_cap`、`hp_loss_reduce`、`power_gain`、`auto_play_turn`、`no_potions`、`card_reward_*`（暂不计分）。
 - 只改变“提供哪些卡牌奖励”的遗物（卡池、额外选项）不影响对已提供候选的评分，归为 `irrelevant`，行为写进证据。
 
+## 遗物的拾起与局外效果（TASK-027 票 01，2026-10-28）
+
+选遗物（Neow、古神、商店、宝箱、事件）时，遗物的价值往往就是拾起那一刻的改动（删牌、加金币……）和之后每场战斗外的效果。
+这些写在两个新字段里；牌组引擎只读 `mechanics`，所以已拥有的遗物照旧（拾起的改动已在当前牌组状态里）。
+
+```json
+{
+  "obtain": [ OBTAIN, ... ],            // AfterObtained（以及选项准备时 SetupForPlayer 决定的参数）按执行顺序
+  "between_fights": [ MECHANIC, ... ],  // 战斗外的持续效果：战斗结束、进房间、篝火、卡牌奖励、商店、地图……
+  "obtain_params": {"card": "...", "relic": "...", "character": "..."}   // 选项生成时才确定的参数（如海玻璃对应的角色）
+}
+```
+
+### OBTAIN（拾起时的一次性效果）
+
+| kind | 字段 | 说明 |
+|---|---|---|
+| `gain_gold` / `lose_gold` | `amount`（或 `amount_from`） | `PlayerCmd.GainGold` / `LoseGold` |
+| `gain_max_hp` / `lose_max_hp` | `amount` | `CreatureCmd.GainMaxHp` / `LoseMaxHp` |
+| `heal` | `amount` 或 `amount_from: "full"` | `CreatureCmd.Heal` |
+| `hp_loss` | `amount` | 战斗外 `CreatureCmd.Damage`（没有格挡） |
+| `set_hp` | `amount` 或 `amount_from` | `CreatureCmd.SetCurrentHp` |
+| `remove_from_deck` | `count`、`choice`（`choose` / `random` / `all`）、`filter` | `CardSelectCmd.FromDeckForRemoval` + `CardPileCmd.RemoveFromDeck` |
+| `transform_cards` | `scope: "deck"`、`count`、`choice`、`filter`、`into` | `into`：结果牌 ID，或 `{"pool": ..., "rarity": ..., "same_type": true}` 写明 `CreateRandomCardForTransform` 的取牌规则；结果升级写 `upgraded` |
+| `upgrade_cards` | `scope: "deck"`、`count`（数字或 `"all"`）、`choice`（`choose` / `random` / `all`）、`filter` | `CardCmd.Upgrade`；`filter` 可用 `card_type`、`tag`、`card` |
+| `add_card` | `destination: "deck"`，`card` 或 `pool`，`count`，`choose_from`，`upgraded` | `pool`：`{"source": "character" / "colorless" / "character_of"（配 `obtain_params.character`）, "rarity": ..., "card_type": ...}`；从 N 张里选 k 张写 `choose_from: N` + `count: k`；可以不选写 `skippable: true` |
+| `enchant_cards` | `enchantment`、`amount`、`count`、`choice`、`filter` | `CardCmd.Enchant`；附魔 ID 去掉命名空间 |
+| `gain_potion` | `potion`（ID）或 `"random"`、`count` | `PotionCmd.TryToProcure`；栏满时是否丢弃写进证据 |
+| `potion_slots` | `amount` | `PlayerCmd.GainMaxPotionCount` |
+| `gain_relic` | `count`、`source`（`"next_in_pool"`，或 `rarity`） | `RelicFactory.PullNextRelicFromFront` + `RelicCmd.Obtain` |
+| `offer_rewards` | `rewards: [{"type": "card", "options": 3, "pool": {...}}, {"type": "relic"}, {"type": "potion"}, {"type": "gold", "amount": n}]` | `RewardsCmd.OfferCustom`：照构造的奖励逐项写 |
+| `replace_relic` | `from`、`to` | `RelicCmd.Replace`（如把初始遗物换成升级版） |
+| `remove_relic` | `relic` 或 `which` | `RelicCmd.Melt` 等 |
+| `add_pet` | `monster` | `PlayerCmd.AddPet` |
+| `apply_power` | 同 EFFECT | 拾起时施加、整局保留的能力，写明 `persist` |
+
+- `choice` 另可写 `first`：游戏按牌组顺序取第一张符合条件的牌（`FirstOrDefault`），结果确定。
+- 变化的 `into` 另可写 `"pool": "original"`（被变化那张牌自己的卡池，即它的颜色）与 `"exclude_original": true`；
+  `rarity` 可为列表（如 `["Common", "Uncommon", "Rare"]`）。加牌的 `pool` 另可写 `"source": "colorless"` 与 `tag`
+  （如 `{"source": "character", "rarity": "Basic", "tag": "Strike"}` 表示该角色的基础打击）。
+- `filter` 键：`card_type`、`tag`、`card`、`rarity`、`transformable` / `removable`（`CardModel.IsRemovable`：没有永恒关键词；
+  牌组中的牌 `IsTransformable` 与之相同）、`upgradable`。估值程序遇到其他键会报缺口，不会当作“所有牌”。
+- 数值来自 `get_CanonicalVars`（`CardsVar` → `count`、`GoldVar` → `amount`……），写数值，不写变量名。
+- 随机结果写清分布来源（卡池、稀有度、是否排除初始牌），不要估概率；做不到的写 `open_questions`。
+- 只改变“之后会提供什么”（卡池、奖励数量）的写进 `between_fights` 的修正，不要写成 OBTAIN。
+
+### between_fights（战斗外的持续效果）
+
+用 MECHANIC 结构，`when` 取：`combat_end`（`filter.fight_kind` 可限定 `MONSTER` / `ELITE` / `BOSS`）、`room_entered`（`filter.room_type` 用 RoomType 名）、
+`rest_site`、`card_reward`、`merchant`、`treasure`、`map_generated`、`gold_gained`、`potion_procured`；效果用 OBTAIN 的 kind（如每场战斗后 `heal`）。
+修正（`modifier`）：`card_reward_options`（`add`）、`card_reward_rarity`、`card_reward_upgraded`、`rest_site_heal`（`add` / `multiply`）、`rest_site_option`（`option`）、
+`merchant_price`（`multiply`）、`gold_gained`（`multiply`）、`potion_drop`、`no_potions`、`free_travel`、`unknown_room_types`、`map_change`（写 `amount_text` 说明）。
+有次数或时限的写 `limit`（如 `{"combats": 3}`）。
+
 ## 卡牌与能力审核扩充（票 05）
 
 - 卡牌字段：`upgrade_keywords: {"add": [...], "remove": [...]}`（升级增减关键词）、`multiplayer_only: true`、`star_cost`（星辉费用，写法同 `cost`）、`can_be_generated_in_combat: false`（战斗中不能被生成）、

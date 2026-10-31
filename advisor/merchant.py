@@ -1,35 +1,42 @@
-"""Deterministic merchant policy over real inventory candidates."""
+"""Merchant policy v2 (TASK-027 ticket 06): every offer on the deck-fitness scale.
+
+Each stocked, affordable offer is scored as 50 plus what it does to the deck
+(the same engine, needs and lookahead over the act's coming rewards as a card
+reward) minus the gold it costs, priced with ``resource_exchange``:
+
+* a card: the deck with it (relic modifiers on added cards applied);
+* a relic: ``RelicChoiceValuer`` (pickup changes, combat mechanics, gold / HP);
+* card removal: the best of the cards the game lets the player remove
+  (``deck_edit_targets``, verified by the Mod), removed;
+* a potion: no reviewed potion facts yet, so it stays unscored (shown, never
+  ranked) without blocking the other offers.
+
+Leaving keeps the gold (50). Buying one offer changes the shop's state and the
+Mod sends it again, so the next purchase is scored on the new deck and gold.
+No community prior is used.
+"""
 from __future__ import annotations
 
-from typing import Any, Mapping
+from dataclasses import replace
+from typing import Dict, List, Optional, Sequence
 
-from advisor.card_reward import recommend_card_reward
-from advisor.choice_effects import (
-    AssessmentDraft,
-    ChoiceEffect,
-    EffectBundle,
-    actual_gold_cost,
-    finalize_recommendation,
-)
-from advisor.deck_edit_value import best_remove_opportunity
+from advisor.choice_effects import AssessmentDraft, actual_gold_cost, factor, finalize_recommendation
+from advisor.deck_edit_value import verified_targets
+from advisor.deck_fitness import PARAMETERS_KEY as FITNESS_PARAMETERS_KEY
+from advisor.deck_fitness import DeckFitnessPolicy
+from advisor.deck_mechanics import CardProfile, adjust_added_card
 from advisor.decision_core import DecisionRequest, Recommendation
-from advisor.resource_budget import (
-    build_resource_budget,
-    score_price,
-    score_resource_effects,
-)
+from advisor.relic_choice import RelicChoiceValuer
+from advisor.resource_exchange import CAMPFIRE_KEY
+from advisor.resource_exchange import PARAMETERS_KEY as EXCHANGE_KEY
+from advisor.resource_exchange import gold_points, parameter_gaps, resource_points
 from advisor.scoring_preferences import DEFAULT_SCORING_PREFERENCES, ScoringPreferences
 from advisor.versions import MERCHANT_POLICY_VERSION
 from storage.relational import RelationalRepository
 
 
 MERCHANT_CHOICE = "merchant_choice"
-_OFFER_KINDS = frozenset({
-    "card",
-    "relic",
-    "potion",
-    "card_removal",
-})
+_OFFER_KINDS = frozenset({"card", "relic", "potion", "card_removal"})
 
 
 class MerchantPolicy:
@@ -38,316 +45,205 @@ class MerchantPolicy:
     def __init__(
         self, repository: RelationalRepository,
         preferences: ScoringPreferences = DEFAULT_SCORING_PREFERENCES,
+        fitness_policy: DeckFitnessPolicy | None = None,
     ):
         self.repository = repository
         self.preferences = preferences
+        self.fitness_policy = fitness_policy or DeckFitnessPolicy(repository, preferences)
+        self.valuer = RelicChoiceValuer(self.fitness_policy)
 
     def recommend(self, request: DecisionRequest) -> Recommendation:
         if request.decision_type != self.decision_type:
             raise ValueError("merchant policy received another decision type")
-        budget = build_resource_budget(request.world)
-        drafts = []
-        for candidate in request.candidates:
-            draft = AssessmentDraft(candidate, preferences=self.preferences)
-            drafts.append(draft)
+        drafts = [AssessmentDraft(candidate, preferences=self.preferences) for candidate in request.candidates]
+        # The candidate's own shape first: a malformed offer reports its own gap.
+        offers: List[tuple] = []
+        for draft in drafts:
+            candidate = draft.candidate
             if not candidate.eligible:
                 continue
-            payload = candidate.payload
-            candidate_kind = str(
-                payload.get("candidate_kind") or ""
-            ).strip()
-            if candidate_kind == "leave":
-                draft.add(
-                    "merchant_leave_flexibility",
-                    0.0,
-                    "离开商店会保留当前资源。",
-                    "resource_efficiency",
-                )
+            kind = _kind(draft)
+            if kind == "leave":
+                draft.factors.append(factor("merchant_leave", 0.0, "离开商店，保留金币。", "resource_efficiency"))
                 continue
-            if candidate_kind != "merchant_offer":
-                draft.gap(
-                    "merchant:unknown_candidate_kind:"
-                    + (candidate_kind or "missing")
-                )
+            if kind != "merchant_offer":
+                draft.gap(f"merchant:unknown_candidate_kind:{kind or 'missing'}")
                 continue
-            kind = str(payload.get("offer_kind") or "").strip()
-            if kind not in _OFFER_KINDS:
-                draft.gap(
-                    f"merchant:unknown_offer_kind:{kind or 'missing'}"
-                )
+            offer = str(candidate.payload.get("offer_kind") or "").strip()
+            if offer not in _OFFER_KINDS:
+                draft.gap(f"merchant:unknown_offer_kind:{offer or 'missing'}")
                 continue
-            if payload.get("is_stocked") is not True:
+            if candidate.payload.get("is_stocked") is not True:
                 draft.gap("merchant:eligible_offer_not_stocked")
                 continue
-
-            entity_id = str(payload.get("entity_id") or "").strip()
-            if kind != "card_removal" and not entity_id:
+            if offer != "card_removal" and not _entity(draft):
                 draft.gap("merchant:entity_id_missing")
                 continue
-            if kind == "card":
-                self._score_card(draft, request, entity_id)
-            elif kind == "relic":
-                self._score_relic(draft, request, entity_id)
-            elif kind == "potion":
-                self._score_potion(draft, request, payload, entity_id)
-            else:
-                self._score_removal(draft, request)
             try:
-                price = actual_gold_cost(payload)
+                price = actual_gold_cost(candidate.payload)
             except ValueError as exc:
                 draft.gap(f"merchant:costs_invalid:{_gap_token(exc)}")
                 continue
-            score_price(draft, budget, price)
-        return finalize_recommendation(
-            request,
-            drafts,
-            policy_version=MERCHANT_POLICY_VERSION,
-        )
-
-    def _score_card(
-        self,
-        draft: AssessmentDraft,
-        request: DecisionRequest,
-        entity_id: str,
-    ) -> None:
-        if self.repository.find_card(entity_id) is None:
-            draft.gap(f"unknown_card:{entity_id}")
-            return
-        upgrades = draft.candidate.payload.get("upgrades")
-        if type(upgrades) is not int or not 0 <= upgrades <= 9:
-            draft.gap("merchant:card_upgrades_unknown")
-            return
-        if upgrades > 1:
-            draft.gap("merchant:repeat_upgrade_unmodeled")
-            return
-        advice = recommend_card_reward(
-            request.world.scoring_state(),
-            [{"card": entity_id, "upgrades": upgrades}],
-            self.repository,
-            can_skip=False,
-        )
-        row = advice["recommendations"][0]
-        if not row.get("known"):
-            draft.gap(f"unknown_card:{entity_id}")
-            return
-        contextual = max(
-            -10.0,
-            min(14.0, (float(row["state_score"]) - 50.0) * 0.55),
-        )
-        draft.add(
-            "merchant_card_access",
-            10.0,
-            "商店卡牌是一次确定的牌组补强机会。",
-            "long_term_growth",
-        )
-        draft.add(
-            "merchant_card_context_fit",
-            contextual,
-            "按当前牌组、角色机制和真实路线计算卡牌适配。",
-            "synergy",
-        )
-        # The inner score already includes numerical card factors. Forward
-        # only explicit zero-contribution scope/coverage disclosures.
-        for factor in row.get("factors") or ():
-            if (
-                factor.get("code") in {"estimate_scope", "unmodeled_mechanic"}
-                and factor.get("delta") == 0.0
-                and str(factor.get("message") or "").strip()
-            ):
-                draft.add(
-                    factor["code"], 0.0, factor["message"], "data_completeness",
-                )
-        for gap in row.get("data_gaps") or ():
-            draft.gap(str(gap))
-
-    def _score_relic(
-        self,
-        draft: AssessmentDraft,
-        request: DecisionRequest,
-        entity_id: str,
-    ) -> None:
-        relic = self.repository.find_relic(entity_id)
-        if relic is None:
-            draft.gap(f"unknown_relic:{entity_id}")
-            return
-        effects = relic.get("_effect_tags") or {}
-        if not effects:
-            draft.gap(f"merchant:relic_mechanism_unmodeled:{entity_id}")
-            return
-        draft.add(
-            "merchant_relic_permanence",
-            14.0,
-            "遗物是持续生效的长期资源。",
-            "long_term_growth",
-        )
-        if relic.get("id") == "TOUGH_BANDAGES":
-            # Verified 0.111.0 AfterCardDiscarded requires the owner's card
-            # and the owner's side to be active. Existing discard tags mark
-            # active providers, not discard-pile nouns or Sly payoffs.
-            if not request.world.deck or request.world.capture_warnings:
-                draft.gap("merchant:relic_trigger_deck_unknown:TOUGH_BANDAGES")
-                return
-            has_discard_source = False
-            for entry in request.world.deck:
-                if (entry.count < 1 or entry.upgrades not in (0, 1)
-                        or entry.enchantment or entry.affliction):
-                    draft.gap("merchant:relic_trigger_deck_unmodeled:TOUGH_BANDAGES")
+            if offer == "card_removal":
+                # The game's own removable set, checked before anything is scored.
+                targets, target_gaps = verified_targets(request.world, "remove", candidate.payload.get("deck_edit_targets"))
+                if target_gaps:
+                    for gap in target_gaps:
+                        draft.gap(gap)
                     continue
-                card = self.repository.find_card(entry.card)
-                if card is None:
-                    draft.gap(f"unknown_card:{entry.card}")
-                    continue
-                if (card.get("_effect_tags") or {}).get("discard", 0) > 0:
-                    has_discard_source = True
-            if draft.blocking_unknown:
-                return
-            draft.add(
-                "estimate_scope",
-                0.0,
-                (
-                    "已有主动弃牌来源，仅表示潜在配合；还需弃掉自己的牌且轮到己方，"
-                    "未预测触发频率、每回合格挡或完整遗物价值。"
-                    if has_discard_source else
-                    "当前牌组未观察到主动弃牌来源，本次不给予生存适配分；"
-                    "未预测未来来源、触发频率或完整遗物价值。"
-                ),
-                "data_completeness",
-            )
-            if not has_discard_source:
-                return
-        # Relic tags indicate qualitative support, not guaranteed per-turn
-        # output.  Do not invent a numeric block/heal amount or activation rate.
-        if any(tag in effects for tag in ("supports_block", "healing")):
-            draft.add(
-                "merchant_relic_survival",
-                3.0,
-                "该遗物具有生存相关标签，实际触发仍取决于遗物条件。",
-                "survival",
-            )
-            budget = build_resource_budget(request.world)
-            if not budget.health.known:
-                draft.gap("resource:hp_missing")
-                return
-            missing_ratio = 1.0 - int(budget.health.hp or 0) / max(
-                1, int(budget.health.max_hp or 1)
-            )
-            if missing_ratio > 0:
-                draft.add(
-                    "merchant_relic_survival_urgency",
-                    round(min(3.0, missing_ratio * 4.0), 4),
-                    "当前生命缺口提高生存型遗物的相对价值，并非承诺立即恢复生命。",
-                    "survival",
-                )
-            if "supports_block" in effects:
-                total_cards = 0
-                block_cards = 0
-                for row in request.world.deck:
-                    card = self.repository.find_card(row.card)
-                    if card is None:
-                        draft.gap(f"unknown_card:{row.card}")
-                        continue
-                    total_cards += row.count
-                    if (card.get("_effect_tags") or {}).get("block", 0) > 0:
-                        block_cards += row.count
-                if total_cards and block_cards / total_cards < 0.3:
-                    draft.add(
-                        "merchant_relic_defense_gap",
-                        round(2.0 * (1.0 - block_cards / total_cards / 0.3), 4),
-                        "牌组中直接格挡牌占比较低，有限提高防御相关遗物的价值。",
-                        "survival",
-                    )
-
-    def _score_potion(
-        self,
-        draft: AssessmentDraft,
-        request: DecisionRequest,
-        payload: Mapping[str, Any],
-        entity_id: str,
-    ) -> None:
-        potion = self.repository.find_entity("potions", entity_id)
-        if potion is None:
-            draft.gap(f"unknown_potion:{entity_id}")
-            return
-        budget = build_resource_budget(request.world)
-        if not budget.potions.known:
-            draft.gap("resource:potion_slots_missing")
-            return
-        if int(budget.potions.free_slots or 0) <= 0:
-            if payload.get("replacement_supported") is not True:
-                draft.gap("resource:potion_replacement_unresolved")
-                return
-            draft.add(
-                "merchant_potion_replacement",
-                -3.0,
-                "药水槽已满，计入替换机会成本。",
+                offers.append((draft, offer, price, targets))
+                continue
+            if offer == "potion":
+                draft.unscored = True
+                draft.gap(f"merchant:potion_unmodeled:{_entity(draft)}", blocking=False)
+                draft.factors.append(factor(
+                    "insufficient_data", 0.0, "药水还没有经程序集核对的效果事实，暂不评分。", "data_completeness",
+                ))
+                continue
+            offers.append((draft, offer, price, None))
+        context, context_gaps = self.fitness_policy.deck_context(request) if offers else (None, ())
+        exchange = self.repository.mechanic_constant(EXCHANGE_KEY)
+        campfire = self.repository.mechanic_constant(CAMPFIRE_KEY)
+        setup_gaps = (
+            *(() if context is not None else (tuple(context_gaps) or ("merchant:situation_unscored",))),
+            *parameter_gaps(exchange, campfire),
+        )
+        if offers and setup_gaps:
+            for draft, _, _, _ in offers:
+                for gap in setup_gaps:
+                    draft.gap(gap)
+            offers = []
+        if offers:
+            scoring = _Scoring(self.fitness_policy, request, context)
+            relic_ids = [(_entity(d), {}) for d, offer, _, _ in offers if offer == "relic"]
+            relic_values = self.valuer.evaluate(request, relic_ids)[1] if relic_ids else {}
+            held = float(request.world.gold) if request.world.gold is not None else None
+        partly: List[str] = []
+        for draft, offer, price, targets in offers:
+            candidate = draft.candidate
+            if offer == "card":
+                value, note, gaps = scoring.card(_entity(draft), candidate.payload.get("upgrades"))
+            elif offer == "relic":
+                value, note, gaps = scoring.relic(relic_values.get(_entity(draft)), draft, exchange, campfire)
+            else:
+                value, note, gaps = scoring.removal(targets)
+            if value is None:
+                for gap in gaps:
+                    draft.gap(gap)
+                continue
+            draft.factors.append(factor("merchant:deck", value, note, "long_term_growth"))
+            if held is None:
+                draft.gap("resource:gold_missing")
+                continue
+            draft.factors.append(factor(
+                "merchant:price", gold_points(held, -price, request.world, exchange),
+                f"花 {price} 金币（现有 {held:g}）：这些金币在之后的商店能买到的价值；金币越多每枚越不值钱",
                 "resource_efficiency",
-            )
-        # Only this exact mechanic is verified in the release-bound assembly.
-        # Do not infer other potion effects from their names or prose.
-        if potion.get("id") != "BLOOD_POTION":
-            draft.gap(f"merchant:potion_mechanism_unmodeled:{entity_id}")
-            return
-        tag = "potion_heal_max_hp_percent"
-        percent = (potion.get("_effect_tags") or {}).get(tag)
-        source = (potion.get("_effect_tag_sources") or {}).get(tag)
-        if (
-            type(percent) not in (int, float)
-            or percent != 20
-            or source != "assembly:0.111.0:BloodPotion.CanonicalVars.HealPercent"
-        ):
-            draft.gap(f"merchant:potion_mechanism_unmodeled:{entity_id}")
-            return
-        if not budget.health.known:
-            draft.gap("resource:hp_missing")
-            return
-        # Creature.SetCurrentHpInternal caps at MaxHp then casts decimal to
-        # int (truncation). Current HP is integral, so truncate this gain first.
-        amount = int(budget.health.max_hp or 0) * int(percent) // 100
-        recoverable = min(
-            amount,
-            int(budget.health.max_hp or 0) - int(budget.health.hp or 0),
-        )
-        factor_start = len(draft.factors)
-        score_resource_effects(
-            draft,
-            budget,
-            EffectBundle((ChoiceEffect(
-                kind="hp_delta", amount=amount, source_code=source,
-            ),)),
-        )
-        for factor in draft.factors[factor_start:]:
-            factor["message"] = (
-                f"按当前生命计算，鲜血药水当前可恢复{recoverable}点生命，"
-                "恢复价值沿用近期真实路线压力。"
-            )
-        draft.add(
-            "estimate_scope",
-            0.0,
-            f"购买不等于饮用；仅评估当前可恢复{recoverable}点生命的机会，"
-            "未计入未来保留价值或战斗用药联动。",
-            "data_completeness",
-        )
+            ))
+            if gaps:
+                partly.append(candidate.candidate_id)
+                for gap in gaps:
+                    draft.gap(gap, blocking=False)
+                draft.factors.append(factor(
+                    "unmodeled_mechanic", 0.0, "部分效果尚未计入评分（见数据缺口），分数只反映已计入的部分。",
+                    "data_completeness",
+                ))
+        for draft, _, _, _ in offers:
+            if draft.score is not None:
+                for gap in context_gaps:
+                    draft.gap(gap, blocking=False)
+        recommendation = finalize_recommendation(request, drafts, policy_version=MERCHANT_POLICY_VERSION)
+        return replace(recommendation, confidence=self._confidence(recommendation, partly))
 
-    def _score_removal(
-        self,
-        draft: AssessmentDraft,
-        request: DecisionRequest,
-    ) -> None:
-        opportunity = best_remove_opportunity(
-            request.world,
-            self.repository,
-            draft.candidate.payload.get("deck_edit_targets"),
+    def _confidence(self, recommendation: Recommendation, partly: Sequence[str]) -> str:
+        """As for relic choices: "low" on a near tie or when an option within
+        reach (the recommended one included) is only partly scored."""
+
+        if recommendation.recommended_candidate_id is None:
+            return "low"
+        params = self.repository.mechanic_constant(FITNESS_PARAMETERS_KEY) or {}
+        allowance, near_tie = params.get("confidence_gap_allowance"), params.get("near_tie_points")
+        if not isinstance(allowance, (int, float)) or not isinstance(near_tie, (int, float)):
+            return "low"
+        scored = sorted((c for c in recommendation.candidates if c.score is not None), key=lambda c: -c.score)
+        best = scored[0]
+        if len(scored) > 1 and best.score - scored[1].score < near_tie:
+            return "low"
+        if any(c.candidate_id in partly and best.score - c.score <= allowance for c in scored):
+            return "low"
+        return "medium"
+
+
+class _Scoring:
+    """Deck values for one shop screen, all against the same lookahead base."""
+
+    def __init__(self, policy: DeckFitnessPolicy, request: DecisionRequest, context):
+        self.policy = policy
+        self.request = request
+        self.context = context
+        self.cache: Dict[tuple, float] = {}
+        self.base = self.ahead(context.deck)
+
+    def score(self, cards: Sequence[Optional[CardProfile]]) -> float:
+        key = tuple(sorted(map(id, cards)))
+        if key not in self.cache:
+            self.cache[key] = self.context.score(cards)[0].raw
+        return self.cache[key]
+
+    def ahead(self, cards: Sequence[Optional[CardProfile]]) -> float:
+        values, _ = self.policy._lookahead(
+            self.request, {"deck": list(cards)}, self.score, self.context.needs, self.context.params,
         )
-        if opportunity.value is None:
-            for gap in opportunity.data_gaps:
-                draft.gap(gap)
-            return
-        draft.add(
-            "merchant_remove_opportunity",
-            opportunity.value,
-            f"当前最佳移除目标为 {opportunity.target_id}。",
-            "deck_burden",
-        )
+        return values.get("deck", self.score(cards))
+
+    def card(self, card_id: str, upgrades) -> tuple:
+        if type(upgrades) is not int or not 0 <= upgrades <= 9:
+            return None, "", ("merchant:card_upgrades_unknown",)
+        profile, profile_gaps = self.policy._card(card_id.upper(), upgrades)
+        if profile is None:
+            return None, "", (f"unknown_card:{card_id}",)
+        profile = adjust_added_card(profile, self.context.relics, self.policy.repository)
+        value = self.ahead([*self.context.deck, profile]) - self.base
+        return value, f"加入 {self.policy._card_name(card_id)} 后的牌组适合度（计入本幕后续选牌）", tuple(profile_gaps)
+
+    def relic(self, value, draft: AssessmentDraft, exchange, campfire) -> tuple:
+        if value is None or value.raw is None:
+            return None, "", tuple(value.gaps if value else ("merchant:relic_unscored",))
+        name = self.policy._relic_name(value.relic_id)
+        note = f"拿 {name} 后的牌组适合度（计入本幕后续选牌）" + ("：" + "，".join(value.notes) if value.notes else "")
+        total = value.raw - self.base
+        gaps = list(value.gaps)
+        if value.resources:
+            points, reasons, resource_gaps = resource_points(value.resources, self.request.world, exchange, campfire)
+            if resource_gaps:
+                return None, "", resource_gaps
+            for reason in reasons:
+                draft.factors.append(factor(**reason))
+        return total, note, tuple(gaps)
+
+    def removal(self, targets) -> tuple:
+        removable = {(t["card"].upper(), int(t["upgrades"])) for t in targets}
+        best_value, best_cards, best_name = None, None, ""
+        seen = set()
+        for i, card in enumerate(self.context.deck):
+            if card is None or id(card) in seen or (card.card_id, 1 if card.upgraded else 0) not in removable:
+                continue
+            seen.add(id(card))
+            cards = [*self.context.deck[:i], *self.context.deck[i + 1:]]
+            value = self.score(cards)
+            if best_value is None or value > best_value:
+                best_value, best_cards, best_name = value, cards, self.policy._card_name(card.card_id)
+        if best_cards is None:
+            return None, "", ("merchant:no_scorable_removal_target",)
+        return self.ahead(best_cards) - self.base, f"移除 {best_name}（可移除的牌中估值最好的一张）", ()
+
+
+def _kind(draft: AssessmentDraft) -> str:
+    return str(draft.candidate.payload.get("candidate_kind") or "").strip()
+
+
+def _entity(draft: AssessmentDraft) -> str:
+    return str(draft.candidate.payload.get("entity_id") or "").strip().upper()
 
 
 def _gap_token(error: Exception) -> str:

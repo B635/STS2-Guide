@@ -65,14 +65,6 @@ class EventEffectPipelineTests(unittest.TestCase):
                            first["recommendation"]["candidates"][0]["score"])
         self.assertEqual(second["recommendation"]["recommended_candidate_id"], "event:unchanged-id")
 
-    def test_neow_golden_pearl_uses_observed_amount(self):
-        processor = RealtimeEventProcessor(self.repository)
-        first = processor.process(self._event(100, neow=True))
-        second = processor.process(self._event(150, sequence=2, neow=True))
-        self.assertEqual(second["recommendation"]["status"], "recommend")
-        self.assertGreater(second["recommendation"]["candidates"][0]["score"],
-                           first["recommendation"]["candidates"][0]["score"])
-
     def test_failed_effect_after_checkpoint_cannot_reuse_known_result(self):
         with tempfile.TemporaryDirectory() as directory:
             checkpoint = ActiveRunCheckpointStore(Path(directory) / "active-run.json")

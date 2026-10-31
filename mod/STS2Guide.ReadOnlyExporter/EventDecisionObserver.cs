@@ -34,7 +34,9 @@ internal static class EventDecisionObserver
             // weak, reward-object-scoped context below.
             Sessions.Clear();
             Bindings.Clear();
-            var capability = model is Neow
+            // Neow and the other ancients (AncientEventModel, verified in the
+            // 0.111.0 assembly) offer relic options: one relic-choice decision.
+            var capability = model is AncientEventModel
                 ? "neow_choice"
                 : "event_choice";
             // Keep the verified owner/model lifecycle even when the
@@ -107,8 +109,8 @@ internal static class EventDecisionObserver
                 );
                 return true;
             }
-            var isNeow = active[0].Key is Neow;
-            capability = isNeow ? "neow_choice" : "event_choice";
+            var isAncient = active[0].Key is AncientEventModel;
+            capability = isAncient ? "neow_choice" : "event_choice";
             sourceType = capability;
             CapturedCardRewards.Add(
                 reward,
@@ -175,7 +177,7 @@ internal static class EventDecisionObserver
                 foreach (var pair in Sessions.Where(pair =>
                     ReferenceEquals(pair.Value.Owner, binding.Owner)))
                 {
-                    var sourceType = pair.Key is Neow
+                    var sourceType = pair.Key is AncientEventModel
                         ? "neow_choice"
                         : "event_choice";
                     pair.Value.CardRewardParent =
@@ -249,7 +251,7 @@ internal static class EventDecisionObserver
 
     private static void TryObserveLocked(EventModel model)
     {
-        var capability = model is Neow
+        var capability = model is AncientEventModel
             ? "neow_choice"
             : "event_choice";
         if (!ReleaseCapabilityGate.IsEnabled(capability))
@@ -296,8 +298,8 @@ internal static class EventDecisionObserver
             session.PageSource = new object();
         }
         RemoveBindingsForOwner(session.Owner);
-        var isNeow = model is Neow;
-        var eventType = isNeow
+        var isAncient = model is AncientEventModel;
+        var eventType = isAncient
             ? "neow_choice"
             : "event_choice";
         var candidates = new List<DecisionCandidateEnvelope>();
@@ -318,7 +320,7 @@ internal static class EventDecisionObserver
                 eventId,
                 pageId,
                 optionId,
-                isNeow
+                isAncient
             );
             candidates.Add(candidate);
             Bindings[option] = new OptionBinding(
@@ -338,7 +340,7 @@ internal static class EventDecisionObserver
             {
                 CanSkip = false,
                 CanReroll = false,
-                RewardSource = isNeow ? "NEOW" : "EVENT",
+                RewardSource = isAncient ? "NEOW" : "EVENT",
             },
             session.PageSource
         );
@@ -350,7 +352,7 @@ internal static class EventDecisionObserver
         GenericAdviceController.Show(
             session.Owner,
             pending,
-            isNeow ? "祝福建议" : "事件建议"
+            model is Neow ? "祝福建议" : isAncient ? "古神建议" : "事件建议"
         );
     }
 
@@ -361,7 +363,7 @@ internal static class EventDecisionObserver
         string eventId,
         string pageId,
         string optionId,
-        bool isNeow)
+        bool isAncient)
     {
         var label = option.Title.GetFormattedText();
         if (string.IsNullOrWhiteSpace(label))
@@ -369,13 +371,18 @@ internal static class EventDecisionObserver
             label = optionId;
         }
         var effect = VerifiedEventEffectReader.Read(model, option);
-        if (isNeow)
+        // The relic the option gives (EventOption.Relic, verified in the
+        // 0.111.0 assembly); its effects come from the reviewed facts.
+        var relicId = option.Relic is null
+            ? null
+            : StableIds.FromType(option.Relic.GetType(), "Relic", "Model");
+        if (isAncient)
         {
             return new DecisionCandidateEnvelope
             {
                 CandidateId = candidateId,
                 Kind = "neow_blessing",
-                EntityId = null,
+                EntityId = relicId,
                 Label = label,
                 Eligible = !option.IsLocked,
                 UnavailableReason = option.IsLocked
@@ -395,7 +402,7 @@ internal static class EventDecisionObserver
         {
             CandidateId = candidateId,
             Kind = "event_option",
-            EntityId = null,
+            EntityId = relicId,
             Label = label,
             Eligible = !option.IsLocked,
             UnavailableReason = option.IsLocked

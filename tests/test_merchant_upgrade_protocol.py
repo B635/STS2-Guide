@@ -10,7 +10,9 @@ from pydantic import ValidationError
 
 from realtime.protocol import GameStateEvent
 from realtime.processor import RealtimeEventProcessor
+from advisor.golden_set import load_golden_set
 from storage.relational import RelationalRepository
+from storage.release_database import build_release_database
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -66,11 +68,17 @@ class MerchantUpgradeProtocolTests(unittest.TestCase):
 
     def test_same_inventory_slot_upgrade_revision_recomputes_and_missing_clears(self):
         with tempfile.TemporaryDirectory() as directory:
-            repository = RelationalRepository(str(Path(directory) / "catalog.db"))
-            repository.sync_catalog(ROOT / "data/knowledge.json")
+            database = Path(directory) / "release.db"
+            build_release_database(database, ROOT / "data/knowledge.json", ROOT / "data/community_scores.json")
+            repository = RelationalRepository(str(database))
             processor = RealtimeEventProcessor(repository)
             payload = self._offer(upgrades=0)
             payload["candidates"] = [payload["candidates"][0], payload["candidates"][-1]]
+            # Shop v2 scores on the deck-fitness engine, which needs the route to
+            # the boss: a real state and map from the golden set.
+            view = next(s for s in load_golden_set() if s["id"] == "ironclad-f15-pommel-havoc-unrelenting")["scoring_view"]
+            payload["state"] = copy.deepcopy(view["state"])
+            payload["map_context"] = copy.deepcopy(view["map_context"])
             first = processor.process(GameStateEvent.model_validate(payload))
             payload.update(sequence=2, state_revision=2, event_id="example-target-run:2")
             payload["candidates"][0]["payload"]["upgrades"] = 1

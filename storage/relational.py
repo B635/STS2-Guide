@@ -1603,6 +1603,37 @@ class RelationalRepository:
                 pool.append((str(row["external_id"]).upper(), rarity))
         return sorted(pool)
 
+    def character_cards(self, color: str) -> List[tuple]:
+        """(card id, rarity) of every card of a color (a character or ``colorless``), any rarity."""
+
+        with self.connect() as connection:
+            rows = connection.execute(
+                "SELECT external_id, payload_json FROM catalog_entities WHERE entity_type = 'cards'"
+            ).fetchall()
+        cards = []
+        for row in rows:
+            payload = json.loads(row["payload_json"])
+            if str(payload.get("color") or "").lower() == color.lower():
+                cards.append((str(row["external_id"]).upper(), str(payload.get("rarity_key") or "").lower()))
+        return sorted(cards)
+
+    def relic_catalog(self) -> List[tuple]:
+        """(relic id, rarity, pool) of every relic, lower case."""
+
+        with self.connect() as connection:
+            rows = connection.execute(
+                "SELECT external_id, payload_json FROM catalog_entities WHERE entity_type = 'relics'"
+            ).fetchall()
+        relics = []
+        for row in rows:
+            payload = json.loads(row["payload_json"])
+            relics.append((
+                str(row["external_id"]).upper(),
+                str(payload.get("rarity_key") or "").lower(),
+                str(payload.get("pool") or "").lower(),
+            ))
+        return sorted(relics)
+
     def next_act_boss_ids(self, boss_identifiers: Iterable[str]) -> List[str]:
         """Possible bosses of the act after the one these bosses belong to.
 

@@ -169,10 +169,16 @@ class RunHistoryTests(unittest.TestCase):
         points[2]["player_stats"][0]["cards_removed"] = []
         points[3]["map_point_type"] = "shop"
         points[3]["player_stats"][0]["cards_removed"] = [{"id": "CARD.STRIKE", "floor_added_to_deck": 1}]
+        points[3]["player_stats"][0].update(current_gold=40, gold_spent=75)
         result = replay_run(data, STARTER, "1")
-        rest, removal = result["decisions"]
+        rest, removal, shop = result["decisions"]
         self.assertEqual((rest["kind"], rest["chosen"], rest["upgraded"]), ("rest", "SMITH", "STRIKE"))
         self.assertEqual((removal["kind"], removal["chosen"], removal["chosen_upgrades"]), ("remove", "STRIKE", 0))
+        # The whole visit: what was on sale, what was bought, the gold it started with.
+        self.assertEqual(shop["kind"], "shop")
+        self.assertEqual([c["card"] for c in shop["offers"]["cards"]], ["CLEAVE", "ANGER", "SHRUG"])
+        self.assertEqual([c["card"] for c in shop["bought"]["removed"]], ["STRIKE"])
+        self.assertEqual((shop["gold_before"], shop["gold_spent"], shop["removals_before"]), (115, 75, 0))
         # The deck of the moment, before the point's own changes.
         before = {(r["card"], r["upgrades"]): r["count"] for r in rest["scoring_view"]["state"]["deck"]}
         self.assertEqual(before, {("STRIKE", 0): 2, ("DEFEND", 0): 1, ("BASH", 0): 1})

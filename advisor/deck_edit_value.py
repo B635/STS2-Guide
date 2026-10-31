@@ -88,7 +88,7 @@ def _upgrade_value(card: Mapping[str, Any]) -> float | None:
     return round(max(0.0, min(18.0, value)), 4)
 
 
-def _verified_targets(world: WorldState, operation: str, facts):
+def verified_targets(world: WorldState, operation: str, facts):
     """Validate complete snapshot-scoped facts; never infer game eligibility."""
     if facts is None:
         return (), ("deck_edit:targets_unknown",)
@@ -128,7 +128,7 @@ def best_upgrade_opportunity(
     repository: RelationalRepository,
     target_facts=None,
 ) -> DeckEditOpportunity:
-    targets, gaps = _verified_targets(world, "upgrade", target_facts)
+    targets, gaps = verified_targets(world, "upgrade", target_facts)
     if gaps:
         return DeckEditOpportunity("upgrade", None, None, gaps)
     best_id = None
@@ -196,7 +196,7 @@ def best_remove_opportunity(
     repository: RelationalRepository,
     target_facts=None,
 ) -> DeckEditOpportunity:
-    targets, gaps = _verified_targets(world, "remove", target_facts)
+    targets, gaps = verified_targets(world, "remove", target_facts)
     if gaps:
         return DeckEditOpportunity("remove", None, None, gaps)
     rows, gaps = _resolved_deck(world, repository)

@@ -6,7 +6,6 @@ from advisor.card_reward import recommend_card_reward
 from advisor.decision_core import (
     CARD_REWARD, DecisionCandidate, DecisionRequest, WorldState,
 )
-from advisor.merchant import MERCHANT_CHOICE, MerchantPolicy
 from advisor.policies import CardRewardPolicy
 from storage.release_database import build_release_database
 from storage.relational import RelationalRepository
@@ -179,43 +178,6 @@ class LiveCardMechanicsTests(unittest.TestCase):
             factor for factor in result.candidates[0].factors
             if factor["code"] == "unmodeled_mechanic" and factor["delta"] == 0.0
         ]), 1)
-
-    def test_merchant_card_adaptation_preserves_scope_and_gap(self):
-        for card, code in (("TRUE_GRIT", "estimate_scope"),
-                           ("UNRELENTING", "unmodeled_mechanic")):
-            for upgrades in (0, 1):
-                with self.subTest(card=card, upgrades=upgrades):
-                    request = DecisionRequest.create(
-                        decision_id="merchant:live-card", decision_type=MERCHANT_CHOICE,
-                        world=WorldState.create(
-                            run_id="live-mechanics", sequence=1, state=self.state(),
-                        ),
-                        candidates=[DecisionCandidate.create("offer:0", {
-                            "candidate_kind": "merchant_offer", "offer_kind": "card",
-                            "entity_id": card, "upgrades": upgrades, "is_stocked": True,
-                            "costs": [{"kind": "gold", "amount": 30, "resource_id": None}],
-                        })],
-                    )
-                    result = MerchantPolicy(self.repository).recommend(request)
-                    row = result.candidates[0]
-                    direct = self.card_row(card, upgrades=upgrades)
-                    expected = next(factor for factor in direct["factors"]
-                                    if factor["code"] == code)
-                    disclosures = [factor for factor in row.factors
-                                   if factor["code"] == code]
-                    self.assertEqual(len(disclosures), 1)
-                    self.assertEqual(disclosures[0]["delta"], 0.0)
-                    self.assertEqual(disclosures[0]["message"], expected["message"])
-                    if card == "UNRELENTING":
-                        # Merchant's existing safety policy blocks unknown
-                        # effect value, while retaining the scored factors.
-                        self.assertIsNone(row.score)
-                        self.assertEqual(result.status, "uncertain")
-                    else:
-                        self.assertIsNotNone(row.score)
-                    for gap in direct["data_gaps"]:
-                        self.assertIn(gap, row.data_gaps)
-                        self.assertIn(gap, result.data_gaps)
 
     def test_unchanged_catalog_rebuilds_v7_true_grit_tags(self):
         # Prepare a real old-tag catalog fixture; the public sync must notice

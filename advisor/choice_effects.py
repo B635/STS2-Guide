@@ -333,6 +333,9 @@ class AssessmentDraft:
     data_gaps: list[str] = field(default_factory=list)
     blocking_unknown: bool = False
     safety_violation: bool = False
+    # Left without a score but not blocking the others (a shop potion with
+    # no reviewed fact): shown as unscored, never ranked.
+    unscored: bool = False
     preferences: ScoringPreferences = DEFAULT_SCORING_PREFERENCES
 
     def add(
@@ -355,7 +358,7 @@ class AssessmentDraft:
 
     @property
     def score(self) -> float | None:
-        if not self.candidate.eligible or self.blocking_unknown:
+        if not self.candidate.eligible or self.blocking_unknown or self.unscored:
             return None
         total = self.base_score + sum(
             float(item["delta"]) for item in self.factors
@@ -370,7 +373,7 @@ class AssessmentDraft:
             dimension = str(item["dimension"])
             values[dimension] += float(item["delta"])
         values["data_completeness"] = (
-            0.0 if self.blocking_unknown else 1.0
+            0.0 if self.blocking_unknown or self.unscored else 1.0
         )
         return {
             name: round(float(value), 4)

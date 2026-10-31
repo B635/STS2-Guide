@@ -205,6 +205,7 @@ def replay_run(run: Mapping, starting_deck: Iterable[str], run_key: str) -> dict
     decisions: List[dict] = []   # rest sites, shop removals, ancient relic choices
     fights: List[dict] = []
     floor = 0
+    shop_removals = 0   # removals bought so far: each raises the next one's price
     for act_index, points in enumerate(run.get("map_point_history") or ()):
         for index, point in enumerate(points):
             floor += 1
@@ -311,6 +312,33 @@ def replay_run(run: Mapping, starting_deck: Iterable[str], run_key: str) -> dict
                     **common, "kind": "remove", "chosen": card["card"], "chosen_upgrades": card["upgrades"],
                     "scoring_view": view("remove", stats.get("current_hp"), []),
                 })
+            if kind == "shop":
+                # What was on sale and what was bought. The record has no
+                # prices; colorless cards appear only when bought.
+                bought_cards = [_entry(c["card"]) for c in stats.get("card_choices") or () if c.get("was_picked")]
+                decisions.append({
+                    **common, "kind": "shop",
+                    "offers": {
+                        "cards": [_entry(c["card"]) for c in stats.get("card_choices") or ()],
+                        "relics": [bare_id(r["choice"]) for r in stats.get("relic_choices") or ()],
+                        "potions": [bare_id(p["choice"]) for p in stats.get("potion_choices") or ()],
+                    },
+                    "bought": {
+                        "cards": bought_cards,
+                        "colorless": [bare_id(c) for c in stats.get("bought_colorless") or ()],
+                        "relics": [bare_id(r) for r in stats.get("bought_relics") or ()],
+                        "potions": [bare_id(p) for p in stats.get("bought_potions") or ()],
+                        "removed": [_entry(c) for c in removed],
+                    },
+                    "gold_before": (
+                        int(stats.get("current_gold") or 0) + int(stats.get("gold_spent") or 0)
+                        + int(stats.get("gold_lost") or 0) - int(stats.get("gold_gained") or 0)
+                    ),
+                    "gold_spent": int(stats.get("gold_spent") or 0),
+                    "removals_before": shop_removals,
+                    "scoring_view": view("shop", hp_before, []),
+                })
+                shop_removals += len(removed)
             options = [o for o in stats.get("ancient_choice") or () if isinstance(o, Mapping) and o.get("TextKey")]
             if len(options) >= 2 and sum(bool(o.get("was_chosen")) for o in options) == 1:
                 chosen = next(bare_id(o["TextKey"]) for o in options if o.get("was_chosen"))

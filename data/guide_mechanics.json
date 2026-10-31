@@ -161,5 +161,87 @@
       "2": 2
     },
     "frail_block_reduction": 0.25
+  },
+  "relic_choice_v1": {
+    "note": "TASK-027 tickets 02 and 05, set by hand 2026-10-31. samples / max_variants: random pickup results (a transformed card, a card from a pool, a reward screen, a relic) are averaged over this many seeded samples, keeping at most this many results per option (budget for the real-time limit, not fitted; 2026-10-31 raised from 6 / 12: with 6 samples of an 80-card pool the mean of a transform swung by about two points). Every option of a decision draws the same samples from the same pool (common random numbers), so options are compared on the same random results. Between-fight effects count over the rest of the run: a deck change now counts once; one made later counts by the horizon left after it (the rest of its act plus later acts weighted by reaching them) over the horizon from now. Expected occurrences: the route's remaining fights this act, then fights_per_act (run history means per finished act: Monster 5.35 / 4.14 / 4.62, Elite 0.90 / 0.64 / 0.62, Boss 1). gold_income_per_act: gold gained per finished act in the run history (means 288 / 438 / 148), for effects that stop gold income. relic_rarity_odds: the relic rarity roll read from the IL by the TASK-027 fact reviewers (below 0.5 Common, below 0.83 Uncommon, else Rare); a random relic comes from the shared pool and the player's own. Floors per act, reaching the next act and rest heals per act come from resource_exchange_v1.",
+    "samples": 16,
+    "max_variants": 24,
+    "gold_income_per_act": {
+      "1": 288,
+      "2": 438,
+      "3": 148
+    },
+    "relic_rarity_odds": {
+      "common": 0.5,
+      "uncommon": 0.33,
+      "rare": 0.17
+    },
+    "fights_per_act": {
+      "1": {
+        "MONSTER": 5.35,
+        "ELITE": 0.9,
+        "BOSS": 1.0
+      },
+      "2": {
+        "MONSTER": 4.14,
+        "ELITE": 0.64,
+        "BOSS": 1.0
+      },
+      "3": {
+        "MONSTER": 4.62,
+        "ELITE": 0.62,
+        "BOSS": 1.0
+      }
+    }
+  },
+  "resource_exchange_v1": {
+    "note": "TASK-027 ticket 03, set by hand 2026-10-30 from anchors measured with the engine on the run history, not fitted to the player's choices; gains are on the policies' scale (fitness looking ahead over the act's coming rewards). Gold (scripts/analyze_gold_curve.py): at each history shop the offers' gain per gold, best deals first; gold_marginal_points_per_100_by_act is the median marginal value per band of gold_band gold spent (cards at base price and the best removal; relic deals are not in it yet and are to be added with the shop relic facts). Gold is worth what it buys at the shops ahead: shops_per_act (history means 1.20 / 1.32 / 1.25 shop visits per finished act), later acts weighted by reach_next_act (history: 40 of 46 runs finished act 1, 22 of 40 act 2), the current act by the share of its act_floors floors left. HP (scripts/analyze_resource_exchange.py): at the campfire threshold a rest heal of 30% max HP is worth about the best upgrade (median 0.06 points per HP over 234 rest sites); each HP is worth threshold / HP ratio times that, within hp_value_scale. Max HP: the heal GainMaxHp brings, plus rest_heal_share (0.3: HealRestSiteOption.GetBaseHealAmount is MaxHp x 0.3) of each point at every rest heal left in the run (rest_heals_per_act from the run history: 1.02 / 1.23 / 1.12 per finished act, later acts weighted by reach_next_act), priced at the threshold rate.",
+    "gold_band": 50,
+    "gold_marginal_points_per_100_by_act": {
+      "1": [
+        4.16,
+        2.58,
+        1.74,
+        1.11,
+        0.55,
+        0.05
+      ],
+      "2": [
+        3.55,
+        3.1,
+        1.89,
+        1.21,
+        0.56,
+        0.38
+      ],
+      "3": [
+        1.55,
+        1.07,
+        1.07,
+        1.01,
+        0.14
+      ]
+    },
+    "shops_per_act": {
+      "1": 1.2,
+      "2": 1.32,
+      "3": 1.25
+    },
+    "reach_next_act": {
+      "1": 0.87,
+      "2": 0.55
+    },
+    "act_floors": 17,
+    "hp_points_at_threshold": 0.06,
+    "hp_value_scale": {
+      "min": 0.5,
+      "max": 3.0
+    },
+    "rest_heal_share": 0.3,
+    "rest_heals_per_act": {
+      "1": 1.02,
+      "2": 1.23,
+      "3": 1.12
+    }
   }
 }

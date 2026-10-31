@@ -64,6 +64,23 @@ MODIFIERS = {
     "sovereign_blade_block", "add_keyword", "start_position",
 }
 CATEGORIES = {"baseline", "trigger", "irrelevant"}
+# Relic pickup and between-fight effects (TASK-027 ticket 01): read when a
+# relic is being chosen, never by the deck engine for an owned relic.
+OBTAIN_KINDS = {
+    "gain_gold", "lose_gold", "gain_max_hp", "lose_max_hp", "heal", "hp_loss", "set_hp",
+    "remove_from_deck", "transform_cards", "upgrade_cards", "add_card", "enchant_cards",
+    "gain_potion", "potion_slots", "gain_relic", "offer_rewards", "replace_relic", "remove_relic",
+    "add_pet", "apply_power",
+}
+BETWEEN_WHEN = {
+    "combat_end", "room_entered", "rest_site", "card_reward", "merchant", "treasure",
+    "map_generated", "gold_gained", "potion_procured",
+}
+BETWEEN_MODIFIERS = {
+    "card_reward_options", "card_reward_rarity", "card_reward_upgraded", "rest_site_heal",
+    "rest_site_option", "merchant_price", "gold_gained", "potion_drop", "no_potions",
+    "free_travel", "unknown_room_types", "map_change",
+}
 REVIEW_FIELDS = {
     "status", "category", "cost", "card_type", "tags", "keywords", "effects",
     "mechanics", "unknowable", "evidence", "open_questions", "reviewed_by",
@@ -71,6 +88,7 @@ REVIEW_FIELDS = {
     "star_cost", "can_be_generated_in_combat", "card_type_text", "passive", "evoke",
     "state", "can_enchant", "adds_keywords", "removes_keywords",
     "hp", "innate", "moves", "pattern", "room_type", "is_weak", "variants",
+    "obtain", "between_fights", "obtain_params",
 }
 
 
@@ -83,6 +101,38 @@ def _effect_problems(effect: object, where: str) -> list[str]:
     if amount is not None and not isinstance(amount, (int, float)):
         return [f"{where}: amount must be a number (use amount_from for derived amounts)"]
     return []
+
+
+def _obtain_problems(entry: dict, key: str) -> list[str]:
+    problems: list[str] = []
+    if (entry.get("obtain") or entry.get("between_fights") or entry.get("obtain_params")) and not key.startswith("relics:"):
+        problems.append(f"{key}: obtain / between_fights are relic fields")
+    for i, effect in enumerate(entry.get("obtain") or ()):
+        where = f"{key} obtain[{i}]"
+        if not isinstance(effect, dict) or effect.get("kind") not in OBTAIN_KINDS:
+            problems.append(f"{where}: unknown obtain kind {effect.get('kind') if isinstance(effect, dict) else effect!r}")
+            continue
+        amount = effect.get("amount")
+        if amount is not None and not isinstance(amount, (int, float)):
+            problems.append(f"{where}: amount must be a number (use amount_from for derived amounts)")
+        count = effect.get("count")
+        if count is not None and not isinstance(count, (int, float)) and count != "all":
+            problems.append(f"{where}: count must be a number or \"all\"")
+    for i, mechanic in enumerate(entry.get("between_fights") or ()):
+        where = f"{key} between_fights[{i}]"
+        if not isinstance(mechanic, dict):
+            problems.append(f"{where}: not an object")
+        elif "modifier" in mechanic:
+            if mechanic["modifier"] not in BETWEEN_MODIFIERS:
+                problems.append(f"{where}: unknown modifier {mechanic['modifier']!r}")
+        elif mechanic.get("when") not in BETWEEN_WHEN:
+            problems.append(f"{where}: unknown when {mechanic.get('when')!r}")
+        elif not isinstance(mechanic.get("effect"), dict) or mechanic["effect"].get("kind") not in OBTAIN_KINDS:
+            problems.append(f"{where}: effect needs an obtain kind")
+    params = entry.get("obtain_params")
+    if params is not None and not isinstance(params, dict):
+        problems.append(f"{key}: obtain_params must be an object")
+    return problems
 
 
 def codex_conflicts(entry: dict, catalog: dict) -> list[str]:
@@ -195,6 +245,7 @@ def validate_entry(entry: dict, index: dict, facts_by_key: dict) -> list[str]:
         # Monster hooks are descriptive; what is computed (moves, pattern) is
         # checked for structure instead of the player-side vocabulary.
         return problems + _monster_problems(entry, key)
+    problems.extend(_obtain_problems(entry, key))
     for i, effect in enumerate(entry.get("effects") or ()):
         problems.extend(_effect_problems(effect, f"{key} effects[{i}]"))
     for i, mechanic in enumerate(entry.get("mechanics") or ()):
@@ -252,7 +303,8 @@ def main() -> int:
 
     for entry in entries:
         target = by_key[entry["entity_key"]]
-        for field in ("mechanics", "effects", "unknowable", "open_questions", "category"):
+        for field in ("mechanics", "effects", "unknowable", "open_questions", "category",
+                      "obtain", "between_fights", "obtain_params"):
             target.pop(field, None)
         target.update({k: v for k, v in entry.items() if k != "class"})
     with DEFAULT_FACTS_PATH.open("w", encoding="utf-8", newline="\n") as stream:
