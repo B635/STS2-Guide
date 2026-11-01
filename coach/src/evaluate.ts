@@ -96,9 +96,19 @@ export function importRatings(text: string): string {
   const data = JSON.parse(text.slice(start + marker.length).trim().split("\n")[0]!) as { run_id: string; ratings: Record<string, unknown> };
   const dir = path.join(EVAL_DIR, "ratings");
   mkdirSync(dir, { recursive: true });
-  const file = path.join(dir, `${data.run_id}.json`);
-  writeFileSync(file, JSON.stringify(data, null, 1) + "\n", "utf-8");
-  return file;
+  // A rating sheet keys its ratings "<run>/<flag>": keep one file per run.
+  const byRun = new Map<string, Record<string, unknown>>();
+  for (const [key, rating] of Object.entries(data.ratings)) {
+    const [run, flag] = key.includes("/") ? (key.split("/") as [string, string]) : [data.run_id, key];
+    byRun.set(run, { ...(byRun.get(run) ?? {}), [flag]: rating });
+  }
+  const files: string[] = [];
+  for (const [run, ratings] of byRun) {
+    const file = path.join(dir, `${run}.json`);
+    writeFileSync(file, JSON.stringify({ ...data, run_id: run, ratings }, null, 1) + "\n", "utf-8");
+    files.push(file);
+  }
+  return files.join(", ");
 }
 
 export interface Metrics {

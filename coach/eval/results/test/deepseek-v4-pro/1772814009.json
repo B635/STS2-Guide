@@ -1,0 +1,412 @@
+{
+ "run": "1772814009",
+ "set": "test",
+ "model": "deepseek-v4-pro",
+ "prompt_version": "p3",
+ "pre": {
+  "summary": {
+   "run_id": "1772814009",
+   "character": "SILENT",
+   "ascension": 0,
+   "build_id": "v0.98.1",
+   "win": false,
+   "killed_by": "一个孤单的电球头",
+   "acts_reached": 3,
+   "last_scored_floor": 33,
+   "final_deck_size": 25,
+   "decisions_scored": {
+    "card_reward": 13,
+    "shop": 3,
+    "rest": 7
+   },
+   "decisions_skipped": {
+    "no_boss": 2
+   },
+   "agreement": {
+    "agree": 16,
+    "judged": 23,
+    "rate": 0.696
+   },
+   "tier1": [],
+   "tier2": [
+    "F04-card",
+    "F08-card",
+    "F11-card",
+    "F15-shop",
+    "F17-card",
+    "F20-card",
+    "F33-card"
+   ],
+   "warnings": []
+  },
+  "decisions": {
+   "decisions": [
+    {
+     "id": "F02-card",
+     "kind": "card_reward",
+     "floor": 2,
+     "act": 1,
+     "chosen": "0:INFINITE_BLADES",
+     "chosen_name": "无尽刀刃",
+     "engine_top": "0:INFINITE_BLADES",
+     "engine_top_name": "无尽刀刃",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F04-card",
+     "kind": "card_reward",
+     "floor": 4,
+     "act": 1,
+     "chosen": "0:BLADE_DANCE",
+     "chosen_name": "刀刃之舞",
+     "engine_top": "1:RICOCHET",
+     "engine_top_name": "连续反弹",
+     "confidence": "low",
+     "tier": 2,
+     "gap": 0.8,
+     "not_strict_because": [
+      "low_confidence",
+      "small_gap"
+     ]
+    },
+    {
+     "id": "F05-shop",
+     "kind": "shop",
+     "floor": 5,
+     "act": 1,
+     "chosen": "card:5:DRAMATIC_ENTRANCE",
+     "chosen_name": "闪亮登场",
+     "engine_top": "card:5:DRAMATIC_ENTRANCE",
+     "engine_top_name": "闪亮登场",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F06-card",
+     "kind": "card_reward",
+     "floor": 6,
+     "act": 1,
+     "chosen": "0:ACROBATICS",
+     "chosen_name": "杂技",
+     "engine_top": "0:ACROBATICS",
+     "engine_top_name": "杂技",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F07-rest",
+     "kind": "rest",
+     "floor": 7,
+     "act": 1,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F08-card",
+     "kind": "card_reward",
+     "floor": 8,
+     "act": 1,
+     "chosen": "0:LEADING_STRIKE",
+     "chosen_name": "先制打击",
+     "engine_top": "1:DAGGER_SPRAY",
+     "engine_top_name": "匕首雨",
+     "confidence": "low",
+     "tier": 2,
+     "gap": 1.2,
+     "not_strict_because": [
+      "low_confidence"
+     ]
+    },
+    {
+     "id": "F09-card",
+     "kind": "card_reward",
+     "floor": 9,
+     "act": 1,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F11-card",
+     "kind": "card_reward",
+     "floor": 11,
+     "act": 1,
+     "chosen": "0:WELL_LAID_PLANS",
+     "chosen_name": "计划妥当",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": 1.1,
+     "not_strict_because": [
+      "partly_scored"
+     ]
+    },
+    {
+     "id": "F12-rest",
+     "kind": "rest",
+     "floor": 12,
+     "act": 1,
+     "chosen": "rest:HEAL",
+     "chosen_name": "休息",
+     "engine_top": "rest:HEAL",
+     "engine_top_name": "休息",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F13-card",
+     "kind": "card_reward",
+     "floor": 13,
+     "act": 1,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F14-card",
+     "kind": "card_reward",
+     "floor": 14,
+     "act": 1,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F15-shop",
+     "kind": "shop",
+     "floor": 15,
+     "act": 1,
+     "chosen": "card:6:MURDER",
+     "chosen_name": "谋杀",
+     "engine_top": "leave",
+     "engine_top_name": "离开商店",
+     "confidence": "low",
+     "tier": 2,
+     "gap": 4.87,
+     "not_strict_because": [
+      "low_confidence"
+     ]
+    },
+    {
+     "id": "F16-rest",
+     "kind": "rest",
+     "floor": 16,
+     "act": 1,
+     "chosen": "rest:HEAL",
+     "chosen_name": "休息",
+     "engine_top": "rest:HEAL",
+     "engine_top_name": "休息",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F17-card",
+     "kind": "card_reward",
+     "floor": 17,
+     "act": 1,
+     "chosen": "0:GRAND_FINALE",
+     "chosen_name": "华丽收场",
+     "engine_top": "2:ABRASIVE",
+     "engine_top_name": "磨蚀",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": 2.6,
+     "not_strict_because": [
+      "partly_scored"
+     ]
+    },
+    {
+     "id": "F19-card",
+     "kind": "card_reward",
+     "floor": 19,
+     "act": 2,
+     "chosen": "0:PREPARED",
+     "chosen_name": "早有准备",
+     "engine_top": "0:PREPARED",
+     "engine_top_name": "早有准备",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F20-card",
+     "kind": "card_reward",
+     "floor": 20,
+     "act": 2,
+     "chosen": "0:PIERCING_WAIL",
+     "chosen_name": "尖啸",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": -0.6,
+     "not_strict_because": [
+      "small_gap"
+     ]
+    },
+    {
+     "id": "F23-rest",
+     "kind": "rest",
+     "floor": 23,
+     "act": 2,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F24-shop",
+     "kind": "shop",
+     "floor": 24,
+     "act": 2,
+     "chosen": "card:5:THE_GAMBIT",
+     "chosen_name": "孤注一掷",
+     "engine_top": "card:5:THE_GAMBIT",
+     "engine_top_name": "孤注一掷",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F25-card",
+     "kind": "card_reward",
+     "floor": 25,
+     "act": 2,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F27-rest",
+     "kind": "rest",
+     "floor": 27,
+     "act": 2,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F29-rest",
+     "kind": "rest",
+     "floor": 29,
+     "act": 2,
+     "chosen": "rest:HEAL",
+     "chosen_name": "休息",
+     "engine_top": "rest:HEAL",
+     "engine_top_name": "休息",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F32-rest",
+     "kind": "rest",
+     "floor": 32,
+     "act": 2,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F33-card",
+     "kind": "card_reward",
+     "floor": 33,
+     "act": 2,
+     "chosen": "0:AFTERIMAGE",
+     "chosen_name": "余像",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "low",
+     "tier": 2,
+     "gap": -1.8,
+     "not_strict_because": [
+      "low_confidence",
+      "small_gap"
+     ]
+    }
+   ],
+   "skipped": [
+    {
+     "id": "F35-card",
+     "kind": "card_reward",
+     "floor": 35,
+     "reason": "no_boss"
+    },
+    {
+     "id": "F36-card",
+     "kind": "card_reward",
+     "floor": 36,
+     "reason": "no_boss"
+    }
+   ]
+  },
+  "flags": []
+ },
+ "explained": [],
+ "summary": {
+  "text": "这局没有引擎有把握的分歧：你的选择和引擎的看法没有明显差距。",
+  "source": "program",
+  "cost_usd": 0
+ },
+ "meta": {
+  "model": "deepseek-v4-pro",
+  "cost_usd": 0,
+  "seconds": 2.011,
+  "generated_at": "2026-11-01 14:45"
+ }
+}

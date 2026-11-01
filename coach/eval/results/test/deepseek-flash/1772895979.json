@@ -1,0 +1,3645 @@
+{
+ "run": "1772895979",
+ "set": "test",
+ "model": "deepseek-flash",
+ "prompt_version": "p3",
+ "pre": {
+  "summary": {
+   "run_id": "1772895979",
+   "character": "REGENT",
+   "ascension": 0,
+   "build_id": "v0.98.2",
+   "win": true,
+   "killed_by": null,
+   "acts_reached": 3,
+   "last_scored_floor": 33,
+   "final_deck_size": 17,
+   "decisions_scored": {
+    "card_reward": 13,
+    "rest": 8,
+    "shop": 2
+   },
+   "decisions_skipped": {
+    "unknown_boss": 9
+   },
+   "agreement": {
+    "agree": 14,
+    "judged": 23,
+    "rate": 0.609
+   },
+   "tier1": [
+    "F11-card",
+    "F30-card",
+    "F04-card"
+   ],
+   "tier2": [
+    "F02-card",
+    "F03-card",
+    "F17-card",
+    "F19-card",
+    "F28-card",
+    "F33-card"
+   ],
+   "warnings": [
+    "floor 32: 5 potions replayed for 3 slots",
+    "floor 41: 5 potions replayed for 3 slots"
+   ]
+  },
+  "decisions": {
+   "decisions": [
+    {
+     "id": "F02-card",
+     "kind": "card_reward",
+     "floor": 2,
+     "act": 1,
+     "chosen": "0:REFINE_BLADE",
+     "chosen_name": "淬炼刀刃",
+     "engine_top": "2:PHOTON_CUT",
+     "engine_top_name": "光子切割",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": 4.4,
+     "not_strict_because": [
+      "partly_scored"
+     ]
+    },
+    {
+     "id": "F03-card",
+     "kind": "card_reward",
+     "floor": 3,
+     "act": 1,
+     "chosen": "0:KNOCKOUT_BLOW",
+     "chosen_name": "决胜一击",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "low",
+     "tier": 2,
+     "gap": -0.2,
+     "not_strict_because": [
+      "partly_scored",
+      "low_confidence",
+      "small_gap"
+     ]
+    },
+    {
+     "id": "F04-card",
+     "kind": "card_reward",
+     "floor": 4,
+     "act": 1,
+     "chosen": "0:WROUGHT_IN_WAR",
+     "chosen_name": "战火铸就",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 1,
+     "gap": 2,
+     "not_strict_because": []
+    },
+    {
+     "id": "F06-rest",
+     "kind": "rest",
+     "floor": 6,
+     "act": 1,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F07-card",
+     "kind": "card_reward",
+     "floor": 7,
+     "act": 1,
+     "chosen": "0:GUARDS",
+     "chosen_name": "护驾！！！",
+     "engine_top": "0:GUARDS",
+     "engine_top_name": "护驾！！！",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F09-rest",
+     "kind": "rest",
+     "floor": 9,
+     "act": 1,
+     "chosen": "rest:HEAL",
+     "chosen_name": "休息",
+     "engine_top": "rest:HEAL",
+     "engine_top_name": "休息",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F11-card",
+     "kind": "card_reward",
+     "floor": 11,
+     "act": 1,
+     "chosen": "0:WROUGHT_IN_WAR",
+     "chosen_name": "战火铸就",
+     "engine_top": "2:GLOW",
+     "engine_top_name": "辉光",
+     "confidence": "medium",
+     "tier": 1,
+     "gap": 2.8,
+     "not_strict_because": []
+    },
+    {
+     "id": "F12-rest",
+     "kind": "rest",
+     "floor": 12,
+     "act": 1,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F13-card",
+     "kind": "card_reward",
+     "floor": 13,
+     "act": 1,
+     "chosen": "0:GLITTERSTREAM",
+     "chosen_name": "流光溢彩",
+     "engine_top": "0:GLITTERSTREAM",
+     "engine_top_name": "流光溢彩",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F15-card",
+     "kind": "card_reward",
+     "floor": 15,
+     "act": 1,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F16-rest",
+     "kind": "rest",
+     "floor": 16,
+     "act": 1,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F17-card",
+     "kind": "card_reward",
+     "floor": 17,
+     "act": 1,
+     "chosen": "0:VOID_FORM",
+     "chosen_name": "虚空形态",
+     "engine_top": "1:I_AM_INVINCIBLE",
+     "engine_top_name": "所向无敌",
+     "confidence": "low",
+     "tier": 2,
+     "gap": 4.5,
+     "not_strict_because": [
+      "partly_scored",
+      "low_confidence"
+     ]
+    },
+    {
+     "id": "F19-card",
+     "kind": "card_reward",
+     "floor": 19,
+     "act": 2,
+     "chosen": "0:CONQUEROR",
+     "chosen_name": "征服者",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": 2.7,
+     "not_strict_because": [
+      "partly_scored"
+     ]
+    },
+    {
+     "id": "F20-shop",
+     "kind": "shop",
+     "floor": 20,
+     "act": 2,
+     "chosen": "card:2:GLOW",
+     "chosen_name": "辉光",
+     "engine_top": "card:2:GLOW",
+     "engine_top_name": "辉光",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F23-rest",
+     "kind": "rest",
+     "floor": 23,
+     "act": 2,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F24-card",
+     "kind": "card_reward",
+     "floor": 24,
+     "act": 2,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F25-rest",
+     "kind": "rest",
+     "floor": 25,
+     "act": 2,
+     "chosen": "rest:HEAL",
+     "chosen_name": "休息",
+     "engine_top": "rest:HEAL",
+     "engine_top_name": "休息",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F27-rest",
+     "kind": "rest",
+     "floor": 27,
+     "act": 2,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F28-card",
+     "kind": "card_reward",
+     "floor": 28,
+     "act": 2,
+     "chosen": "0:SUMMON_FORTH",
+     "chosen_name": "征召上前",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "low",
+     "tier": 2,
+     "gap": 1.5,
+     "not_strict_because": [
+      "partly_scored",
+      "low_confidence",
+      "small_gap"
+     ]
+    },
+    {
+     "id": "F30-card",
+     "kind": "card_reward",
+     "floor": 30,
+     "act": 2,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "0:KNOW_THY_PLACE",
+     "engine_top_name": "何人僭越",
+     "confidence": "medium",
+     "tier": 1,
+     "gap": 2.7,
+     "not_strict_because": []
+    },
+    {
+     "id": "F31-shop",
+     "kind": "shop",
+     "floor": 31,
+     "act": 2,
+     "chosen": "card:6:MASTER_OF_STRATEGY",
+     "chosen_name": "战略大师",
+     "engine_top": "card:6:MASTER_OF_STRATEGY",
+     "engine_top_name": "战略大师",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F32-rest",
+     "kind": "rest",
+     "floor": 32,
+     "act": 2,
+     "chosen": "rest:HEAL",
+     "chosen_name": "休息",
+     "engine_top": "rest:HEAL",
+     "engine_top_name": "休息",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F33-card",
+     "kind": "card_reward",
+     "floor": 33,
+     "act": 2,
+     "chosen": "0:THE_SMITH",
+     "chosen_name": "铸剑者",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "low",
+     "tier": 2,
+     "gap": -0.2,
+     "not_strict_because": [
+      "low_confidence",
+      "small_gap"
+     ]
+    }
+   ],
+   "skipped": [
+    {
+     "id": "F35-card",
+     "kind": "card_reward",
+     "floor": 35,
+     "reason": "unknown_boss:DOORMAKER_BOSS"
+    },
+    {
+     "id": "F36-card",
+     "kind": "card_reward",
+     "floor": 36,
+     "reason": "unknown_boss:DOORMAKER_BOSS"
+    },
+    {
+     "id": "F37-card",
+     "kind": "card_reward",
+     "floor": 37,
+     "reason": "unknown_boss:DOORMAKER_BOSS"
+    },
+    {
+     "id": "F40-shop",
+     "kind": "shop",
+     "floor": 40,
+     "reason": "unknown_boss:DOORMAKER_BOSS"
+    },
+    {
+     "id": "F42-rest",
+     "kind": "rest",
+     "floor": 42,
+     "reason": "unknown_boss:DOORMAKER_BOSS"
+    },
+    {
+     "id": "F43-card",
+     "kind": "card_reward",
+     "floor": 43,
+     "reason": "unknown_boss:DOORMAKER_BOSS"
+    },
+    {
+     "id": "F44-rest",
+     "kind": "rest",
+     "floor": 44,
+     "reason": "unknown_boss:DOORMAKER_BOSS"
+    },
+    {
+     "id": "F45-card",
+     "kind": "card_reward",
+     "floor": 45,
+     "reason": "unknown_boss:DOORMAKER_BOSS"
+    },
+    {
+     "id": "F47-rest",
+     "kind": "rest",
+     "floor": 47,
+     "reason": "unknown_boss:DOORMAKER_BOSS"
+    }
+   ]
+  },
+  "flags": [
+   {
+    "id": "F11-card",
+    "kind": "card_reward",
+    "floor": 11,
+    "act": 1,
+    "hp": 61,
+    "max_hp": 75,
+    "gold": 112,
+    "engine_top": "2:GLOW",
+    "confidence": "medium",
+    "chosen": "0:WROUGHT_IN_WAR",
+    "tier": 1,
+    "gap": 2.8,
+    "pick_margin": 1,
+    "options": [
+     {
+      "id": "2:GLOW",
+      "kind": "card",
+      "entity_id": "GLOW",
+      "name": "辉光",
+      "score": 41.6,
+      "deck_score": 41.6,
+      "rank": 1,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 1 张牌、2 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 1 张牌（决胜一击）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 星系尘埃、爬行动物饰品 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:cycle",
+        "delta": 2.41,
+        "message": "拿辉光后循环：每回合额外抽牌 0.00 → 0.21（需求 1.0）"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -0.72,
+        "message": "拿辉光后防御：每回合 4.3 → 4.2（需求 7.0）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": -0.53,
+        "message": "拿辉光后前期输出：每回合 30.1 → 29.0（需求 33.7）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 护驾！！！、熔炉 让辉光更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": 0.52,
+        "message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": -0.5317,
+       "survival": -0.7174,
+       "long_term_growth": 2.4111,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "skip",
+      "kind": "skip",
+      "entity_id": null,
+      "name": "跳过",
+      "score": 40.9,
+      "deck_score": 39.9,
+      "rank": 2,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 1 张牌、2 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 1 张牌（决胜一击）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 星系尘埃、爬行动物饰品 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": 0,
+        "message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "code": "deck_fitness:pick_margin",
+        "delta": 1,
+        "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0,
+       "survival": 0,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "0:WROUGHT_IN_WAR",
+      "kind": "card",
+      "entity_id": "WROUGHT_IN_WAR",
+      "name": "战火铸就",
+      "score": 38.8,
+      "deck_score": 38.8,
+      "rank": 3,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 1 张牌、2 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 1 张牌（决胜一击）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 星系尘埃、爬行动物饰品 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -1.12,
+        "message": "拿战火铸就后防御：每回合 4.3 → 4.0（需求 7.0）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": 0.23,
+        "message": "拿战火铸就后前期输出：每回合 30.1 → 30.5（需求 33.7）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 熔炉 让战火铸就更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": -0.2,
+        "message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0.2276,
+       "survival": -1.1221,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "1:KNOCKOUT_BLOW",
+      "kind": "card",
+      "entity_id": "KNOCKOUT_BLOW",
+      "name": "决胜一击",
+      "score": 38.1,
+      "deck_score": 38.1,
+      "rank": 4,
+      "eligible": true,
+      "fully_scored": false,
+      "gaps": [
+       "card_effect_unsupported:KNOCKOUT_BLOW:condition:target_killed"
+      ],
+      "factors": [
+       {
+        "code": "unmodeled_mechanic",
+        "delta": 0,
+        "message": "决胜一击的部分效果尚未计入评分；牌组中 1 张牌、2 件遗物未完整计入评分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 1 张牌（决胜一击）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 星系尘埃、爬行动物饰品 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -1.73,
+        "message": "拿决胜一击后防御：每回合 4.3 → 3.9（需求 7.0）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": -0.32,
+        "message": "拿决胜一击后前期输出：每回合 30.1 → 29.4（需求 33.7）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 决胜一击、护驾！！！ 让决胜一击更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": 0.2,
+        "message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": -0.3193,
+       "survival": -1.7275,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     }
+    ]
+   },
+   {
+    "id": "F30-card",
+    "kind": "card_reward",
+    "floor": 30,
+    "act": 2,
+    "hp": 25,
+    "max_hp": 75,
+    "gold": 296,
+    "engine_top": "0:KNOW_THY_PLACE",
+    "confidence": "medium",
+    "chosen": "skip",
+    "tier": 1,
+    "gap": 2.7,
+    "pick_margin": 2,
+    "options": [
+     {
+      "id": "0:KNOW_THY_PLACE",
+      "kind": "card",
+      "entity_id": "KNOW_THY_PLACE",
+      "name": "何人僭越",
+      "score": 55.5,
+      "deck_score": 55.5,
+      "rank": 1,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 4 张牌、3 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 4 张牌（决胜一击、征召上前、征服者、虚空形态）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 怀表、星系尘埃、爬行动物饰品 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": 1.95,
+        "message": "拿何人僭越后防御：每回合 7.3 → 7.7（需求 9.8）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": 0.74,
+        "message": "拿何人僭越后前期输出：每回合 35.2 → 37.3（需求 45.9）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 征服者、决胜一击 让何人僭越更有价值（说明，不另加分）"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0.7433,
+       "survival": 1.953,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "skip",
+      "kind": "skip",
+      "entity_id": null,
+      "name": "跳过",
+      "score": 54.8,
+      "deck_score": 52.8,
+      "rank": 2,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 4 张牌、3 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 4 张牌（决胜一击、征召上前、征服者、虚空形态）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 怀表、星系尘埃、爬行动物饰品 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:pick_margin",
+        "delta": 2,
+        "message": "第 2 幕：候选要比跳过高出 2 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0,
+       "survival": 0,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "2:SPOILS_OF_BATTLE",
+      "kind": "card",
+      "entity_id": "SPOILS_OF_BATTLE",
+      "name": "战利品",
+      "score": 52.5,
+      "deck_score": 52.5,
+      "rank": 3,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 4 张牌、3 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 4 张牌（决胜一击、征召上前、征服者、虚空形态）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 怀表、星系尘埃、爬行动物饰品 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -1.33,
+        "message": "拿战利品后防御：每回合 7.3 → 7.0（需求 9.8）"
+       },
+       {
+        "code": "deck_fitness:cycle",
+        "delta": 1.11,
+        "message": "拿战利品后循环：每回合额外抽牌 0.00 → 0.11（需求 1.0）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": -0.13,
+        "message": "拿战利品后前期输出：每回合 35.2 → 34.8（需求 45.9）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 熔炉、陨星 让战利品更有价值（说明，不另加分）"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": -0.1335,
+       "survival": -1.327,
+       "long_term_growth": 1.1115,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "1:SUMMON_FORTH",
+      "kind": "card",
+      "entity_id": "SUMMON_FORTH",
+      "name": "征召上前",
+      "score": 51.4,
+      "deck_score": 51.4,
+      "rank": 4,
+      "eligible": true,
+      "fully_scored": false,
+      "gaps": [
+       "card_effect_unsupported:SUMMON_FORTH:effect:move_card"
+      ],
+      "factors": [
+       {
+        "code": "unmodeled_mechanic",
+        "delta": 0,
+        "message": "征召上前的部分效果尚未计入评分；牌组中 4 张牌、3 件遗物未完整计入评分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 4 张牌（决胜一击、征召上前、征服者、虚空形态）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 怀表、星系尘埃、爬行动物饰品 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -1.52,
+        "message": "拿征召上前后防御：每回合 7.3 → 6.9（需求 9.8）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": 0.07,
+        "message": "拿征召上前后前期输出：每回合 35.2 → 35.4（需求 45.9）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 熔炉 让征召上前更有价值（说明，不另加分）"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0.0661,
+       "survival": -1.525,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     }
+    ]
+   },
+   {
+    "id": "F04-card",
+    "kind": "card_reward",
+    "floor": 4,
+    "act": 1,
+    "hp": 71,
+    "max_hp": 75,
+    "gold": 155,
+    "engine_top": "skip",
+    "confidence": "medium",
+    "chosen": "0:WROUGHT_IN_WAR",
+    "tier": 1,
+    "gap": 2,
+    "pick_margin": 1,
+    "options": [
+     {
+      "id": "skip",
+      "kind": "skip",
+      "entity_id": null,
+      "name": "跳过",
+      "score": 42.8,
+      "deck_score": 41.8,
+      "rank": 1,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 1 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 1 张牌（决胜一击）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 星系尘埃 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": 0,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "code": "deck_fitness:pick_margin",
+        "delta": 1,
+        "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0,
+       "survival": 0,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "2:SPOILS_OF_BATTLE",
+      "kind": "card",
+      "entity_id": "SPOILS_OF_BATTLE",
+      "name": "战利品",
+      "score": 41,
+      "deck_score": 41,
+      "rank": 2,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 1 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 1 张牌（决胜一击）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 星系尘埃 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -2.8,
+        "message": "拿战利品后防御：每回合 5.2 → 4.6（需求 7.0）"
+       },
+       {
+        "code": "deck_fitness:cycle",
+        "delta": 2.73,
+        "message": "拿战利品后循环：每回合额外抽牌 0.00 → 0.24（需求 1.0）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": 0.06,
+        "message": "拿战利品后前期输出：每回合 21.0 → 21.1（需求 27.9）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 陨星、淬炼刀刃 让战利品更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": -0.76,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0.0647,
+       "survival": -2.7982,
+       "long_term_growth": 2.7302,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "0:WROUGHT_IN_WAR",
+      "kind": "card",
+      "entity_id": "WROUGHT_IN_WAR",
+      "name": "战火铸就",
+      "score": 39.8,
+      "deck_score": 39.8,
+      "rank": 3,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 1 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 1 张牌（决胜一击）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 星系尘埃 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -2.36,
+        "message": "拿战火铸就后防御：每回合 5.2 → 4.5（需求 7.0）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": 0.93,
+        "message": "拿战火铸就后前期输出：每回合 21.0 → 22.3（需求 27.9）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 淬炼刀刃 让战火铸就更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": -0.58,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0.9296,
+       "survival": -2.3641,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "1:DEVASTATE",
+      "kind": "card",
+      "entity_id": "DEVASTATE",
+      "name": "葬送",
+      "score": 39.4,
+      "deck_score": 39.4,
+      "rank": 4,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 1 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 1 张牌（决胜一击）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 星系尘埃 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -2.48,
+        "message": "拿葬送后防御：每回合 5.2 → 4.6（需求 7.0）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": 0.41,
+        "message": "拿葬送后前期输出：每回合 21.0 → 21.6（需求 27.9）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 崇拜、决胜一击 让葬送更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": -0.4,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0.4149,
+       "survival": -2.4792,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "explained": [
+  {
+   "flag": "F11-card",
+   "status": "verified",
+   "errors": [
+    "reasons[2]: deck_fitness:defense is not one of the largest differences here (deck_fitness:cycle, deck_fitness:frontload, deck_fitness:lookahead)"
+   ],
+   "evidence": [
+    {
+     "id": "T0",
+     "tool": "get_decision",
+     "result": {
+      "id": "F11-card",
+      "kind": "card_reward",
+      "floor": 11,
+      "act": 1,
+      "hp": 61,
+      "max_hp": 75,
+      "gold": 112,
+      "engine_top": "2:GLOW",
+      "confidence": "medium",
+      "chosen": "0:WROUGHT_IN_WAR",
+      "tier": 1,
+      "gap": 2.8,
+      "pick_margin": 1,
+      "options": [
+       {
+        "id": "2:GLOW",
+        "kind": "card",
+        "entity_id": "GLOW",
+        "name": "辉光",
+        "score": 41.6,
+        "deck_score": 41.6,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌、2 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（决胜一击）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 星系尘埃、爬行动物饰品 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": 2.41,
+          "message": "拿辉光后循环：每回合额外抽牌 0.00 → 0.21（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.72,
+          "message": "拿辉光后防御：每回合 4.3 → 4.2（需求 7.0）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.53,
+          "message": "拿辉光后前期输出：每回合 30.1 → 29.0（需求 33.7）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 护驾！！！、熔炉 让辉光更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0.52,
+          "message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       },
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 40.9,
+        "deck_score": 39.9,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌、2 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（决胜一击）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 星系尘埃、爬行动物饰品 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0,
+          "message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 1,
+          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ]
+       },
+       {
+        "id": "0:WROUGHT_IN_WAR",
+        "kind": "card",
+        "entity_id": "WROUGHT_IN_WAR",
+        "name": "战火铸就",
+        "score": 38.8,
+        "deck_score": 38.8,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌、2 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（决胜一击）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 星系尘埃、爬行动物饰品 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -1.12,
+          "message": "拿战火铸就后防御：每回合 4.3 → 4.0（需求 7.0）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.23,
+          "message": "拿战火铸就后前期输出：每回合 30.1 → 30.5（需求 33.7）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 熔炉 让战火铸就更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.2,
+          "message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       },
+       {
+        "id": "1:KNOCKOUT_BLOW",
+        "kind": "card",
+        "entity_id": "KNOCKOUT_BLOW",
+        "name": "决胜一击",
+        "score": 38.1,
+        "deck_score": 38.1,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": false,
+        "gaps": [
+         "card_effect_unsupported:KNOCKOUT_BLOW:condition:target_killed"
+        ],
+        "factors": [
+         {
+          "code": "unmodeled_mechanic",
+          "delta": 0,
+          "message": "决胜一击的部分效果尚未计入评分；牌组中 1 张牌、2 件遗物未完整计入评分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（决胜一击）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 星系尘埃、爬行动物饰品 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -1.73,
+          "message": "拿决胜一击后防御：每回合 4.3 → 3.9（需求 7.0）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.32,
+          "message": "拿决胜一击后前期输出：每回合 30.1 → 29.4（需求 33.7）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 决胜一击、护驾！！！ 让决胜一击更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0.2,
+          "message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "id": "T1",
+     "tool": "get_decision",
+     "result": {
+      "id": "F11-card",
+      "kind": "card_reward",
+      "floor": 11,
+      "act": 1,
+      "hp": 61,
+      "max_hp": 75,
+      "gold": 112,
+      "engine_top": "2:GLOW",
+      "confidence": "medium",
+      "policy_status": "recommend",
+      "pick_margin": 1,
+      "options": [
+       {
+        "id": "2:GLOW",
+        "kind": "card",
+        "entity_id": "GLOW",
+        "name": "辉光",
+        "score": 41.6,
+        "deck_score": 41.6,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌、2 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（决胜一击）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 星系尘埃、爬行动物饰品 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": 2.41,
+          "message": "拿辉光后循环：每回合额外抽牌 0.00 → 0.21（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.72,
+          "message": "拿辉光后防御：每回合 4.3 → 4.2（需求 7.0）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.53,
+          "message": "拿辉光后前期输出：每回合 30.1 → 29.0（需求 33.7）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 护驾！！！、熔炉 让辉光更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0.52,
+          "message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": -0.5317,
+         "survival": -0.7174,
+         "long_term_growth": 2.4111,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 40.9,
+        "deck_score": 39.9,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌、2 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（决胜一击）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 星系尘埃、爬行动物饰品 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0,
+          "message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 1,
+          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0,
+         "survival": 0,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "0:WROUGHT_IN_WAR",
+        "kind": "card",
+        "entity_id": "WROUGHT_IN_WAR",
+        "name": "战火铸就",
+        "score": 38.8,
+        "deck_score": 38.8,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌、2 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（决胜一击）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 星系尘埃、爬行动物饰品 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -1.12,
+          "message": "拿战火铸就后防御：每回合 4.3 → 4.0（需求 7.0）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.23,
+          "message": "拿战火铸就后前期输出：每回合 30.1 → 30.5（需求 33.7）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 熔炉 让战火铸就更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.2,
+          "message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0.2276,
+         "survival": -1.1221,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "1:KNOCKOUT_BLOW",
+        "kind": "card",
+        "entity_id": "KNOCKOUT_BLOW",
+        "name": "决胜一击",
+        "score": 38.1,
+        "deck_score": 38.1,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": false,
+        "gaps": [
+         "card_effect_unsupported:KNOCKOUT_BLOW:condition:target_killed"
+        ],
+        "factors": [
+         {
+          "code": "unmodeled_mechanic",
+          "delta": 0,
+          "message": "决胜一击的部分效果尚未计入评分；牌组中 1 张牌、2 件遗物未完整计入评分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（决胜一击）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 星系尘埃、爬行动物饰品 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -1.73,
+          "message": "拿决胜一击后防御：每回合 4.3 → 3.9（需求 7.0）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.32,
+          "message": "拿决胜一击后前期输出：每回合 30.1 → 29.4（需求 33.7）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 决胜一击、护驾！！！ 让决胜一击更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0.2,
+          "message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": -0.3193,
+         "survival": -1.7275,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       }
+      ],
+      "chosen": "0:WROUGHT_IN_WAR",
+      "tier": 1,
+      "gap": 2.8,
+      "not_strict_because": []
+     }
+    },
+    {
+     "id": "T2",
+     "tool": "get_deck",
+     "result": {
+      "decision_id": "F11-card",
+      "floor": 11,
+      "act": 1,
+      "hp": 61,
+      "max_hp": 75,
+      "gold": 112,
+      "deck_size": 16,
+      "deck": [
+       {
+        "card": "DEFEND_REGENT",
+        "name": "防御",
+        "upgrades": 0,
+        "count": 5
+       },
+       {
+        "card": "FALLING_STAR",
+        "name": "陨星",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "FURNACE",
+        "name": "熔炉",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "GUARDS",
+        "name": "护驾！！！",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "KNOCKOUT_BLOW",
+        "name": "决胜一击",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "REFINE_BLADE",
+        "name": "淬炼刀刃",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "STRIKE_REGENT",
+        "name": "打击",
+        "upgrades": 0,
+        "count": 3
+       },
+       {
+        "card": "STRIKE_REGENT",
+        "name": "打击",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "VENERATE",
+        "name": "崇拜",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "WROUGHT_IN_WAR",
+        "name": "战火铸就",
+        "upgrades": 1,
+        "count": 1
+       }
+      ],
+      "relics": [
+       {
+        "relic": "DIVINE_RIGHT",
+        "name": "天赋君权"
+       },
+       {
+        "relic": "LARGE_CAPSULE",
+        "name": "巨大扭蛋"
+       },
+       {
+        "relic": "KUSARIGAMA",
+        "name": "锁镰"
+       },
+       {
+        "relic": "GALACTIC_DUST",
+        "name": "星系尘埃"
+       },
+       {
+        "relic": "WHETSTONE",
+        "name": "磨刀石"
+       },
+       {
+        "relic": "REPTILE_TRINKET",
+        "name": "爬行动物饰品"
+       }
+      ],
+      "potions": [
+       {
+        "potion": "BLESSING_OF_THE_FORGE",
+        "name": "熔炉的祝福"
+       }
+      ]
+     }
+    },
+    {
+     "id": "T3",
+     "tool": "compare_options",
+     "result": {
+      "decision_id": "F11-card",
+      "a": {
+       "id": "2:GLOW",
+       "name": "辉光",
+       "deck_score": 41.6,
+       "fully_scored": true
+      },
+      "b": {
+       "id": "0:WROUGHT_IN_WAR",
+       "name": "战火铸就",
+       "deck_score": 38.8,
+       "fully_scored": true
+      },
+      "deck_score_difference": 2.8,
+      "factors": [
+       {
+        "factor": "deck_fitness:cycle",
+        "a": 2.41,
+        "b": 0,
+        "difference": 2.41,
+        "a_message": "拿辉光后循环：每回合额外抽牌 0.00 → 0.21（需求 1.0）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:frontload",
+        "a": -0.53,
+        "b": 0.23,
+        "difference": -0.76,
+        "a_message": "拿辉光后前期输出：每回合 30.1 → 29.0（需求 33.7）",
+        "b_message": "拿战火铸就后前期输出：每回合 30.1 → 30.5（需求 33.7）"
+       },
+       {
+        "factor": "deck_fitness:lookahead",
+        "a": 0.52,
+        "b": -0.2,
+        "difference": 0.72,
+        "a_message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度",
+        "b_message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "factor": "deck_fitness:defense",
+        "a": -0.72,
+        "b": -1.12,
+        "difference": 0.4,
+        "a_message": "拿辉光后防御：每回合 4.3 → 4.2（需求 7.0）",
+        "b_message": "拿战火铸就后防御：每回合 4.3 → 4.0（需求 7.0）"
+       },
+       {
+        "factor": "deck_fitness:synergy",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组里的 护驾！！！、熔炉 让辉光更有价值（说明，不另加分）",
+        "b_message": "牌组里的 熔炉 让战火铸就更有价值（说明，不另加分）"
+       },
+       {
+        "factor": "estimate_scope",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 1 张牌、2 件遗物未完整计入评分，分数只反映已计入的部分。",
+        "b_message": "牌组中 1 张牌、2 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "factor": "partially_modeled_deck_cards",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 1 张牌（决胜一击）有部分效果尚未计入评分。",
+        "b_message": "牌组中 1 张牌（决胜一击）有部分效果尚未计入评分。"
+       },
+       {
+        "factor": "unmodeled_relics",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "遗物 星系尘埃、爬行动物饰品 尚未计入评分。",
+        "b_message": "遗物 星系尘埃、爬行动物饰品 尚未计入评分。"
+       }
+      ],
+      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
+     }
+    },
+    {
+     "id": "T4",
+     "tool": "get_card",
+     "result": {
+      "id": "GLOW",
+      "name": "辉光",
+      "description": "获得。\n抽1张牌。\n下一回合抽1张牌。",
+      "cost": 1,
+      "type": "技能",
+      "rarity": "普通",
+      "color": "regent",
+      "target": "Self",
+      "cards_draw": 1,
+      "upgrade_description": "获得。\n抽1张牌。\n下一回合抽1张牌。"
+     }
+    },
+    {
+     "id": "T5",
+     "tool": "what_if_choices",
+     "result": {
+      "remove": [
+       "DEFEND_REGENT",
+       "FALLING_STAR",
+       "FURNACE",
+       "GUARDS",
+       "KNOCKOUT_BLOW",
+       "REFINE_BLADE",
+       "STRIKE_REGENT",
+       "VENERATE",
+       "WROUGHT_IN_WAR"
+      ],
+      "upgrade": [
+       "DEFEND_REGENT",
+       "FALLING_STAR",
+       "FURNACE",
+       "GUARDS",
+       "REFINE_BLADE",
+       "STRIKE_REGENT",
+       "VENERATE"
+      ],
+      "add": [
+       {
+        "card": "ALIGNMENT",
+        "name": "星位序列"
+       },
+       {
+        "card": "CELESTIAL_MIGHT",
+        "name": "天穹之力"
+       },
+       {
+        "card": "CONVERGENCE",
+        "name": "汇流"
+       },
+       {
+        "card": "DEVASTATE",
+        "name": "葬送"
+       },
+       {
+        "card": "GUARDS",
+        "name": "护驾！！！"
+       },
+       {
+        "card": "KNOCKOUT_BLOW",
+        "name": "决胜一击"
+       },
+       {
+        "card": "PALE_BLUE_DOT",
+        "name": "暗淡蓝点"
+       },
+       {
+        "card": "PHOTON_CUT",
+        "name": "光子切割"
+       },
+       {
+        "card": "PILLAR_OF_CREATION",
+        "name": "创世之柱"
+       },
+       {
+        "card": "REFINE_BLADE",
+        "name": "淬炼刀刃"
+       },
+       {
+        "card": "SPOILS_OF_BATTLE",
+        "name": "战利品"
+       },
+       {
+        "card": "WROUGHT_IN_WAR",
+        "name": "战火铸就"
+       }
+      ]
+     }
+    },
+    {
+     "id": "T6",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F11-card",
+      "changes": [
+       {
+        "operation": "remove",
+        "card": "STRIKE_REGENT",
+        "name": "打击"
+       }
+      ],
+      "engine_top_before": "2:GLOW",
+      "engine_top_after": "2:GLOW",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 3,
+      "options_after": [
+       {
+        "id": "2:GLOW",
+        "name": "辉光",
+        "deck_score": 42.8,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 41,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "0:WROUGHT_IN_WAR",
+        "name": "战火铸就",
+        "deck_score": 39.8,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "1:KNOCKOUT_BLOW",
+        "name": "决胜一击",
+        "deck_score": 38.9,
+        "rank": 4,
+        "fully_scored": false
+       }
+      ]
+     }
+    }
+   ],
+   "toolCalls": 6,
+   "repairs": 1,
+   "usage": {
+    "prompt_tokens": 34062,
+    "completion_tokens": 1044,
+    "cost_usd": 0.004547111999999999,
+    "llm_calls": 6
+   },
+   "finding": {
+    "decision_id": "F11-card",
+    "reasons": [
+     {
+      "factor": "deck_fitness:cycle",
+      "evidence": "T3",
+      "text": "辉光让每回合额外抽牌从 0.00 升到 0.21（需求 1.0），这是两者差距最大的一项，战火铸就在这项没有贡献。"
+     },
+     {
+      "factor": "deck_fitness:frontload",
+      "evidence": "T3",
+      "text": "战火铸就前期输出 30.1 → 30.5，辉光则降到 29.0（需求 33.7），这一项玩家选得更贴合当前输出缺口。"
+     },
+     {
+      "factor": "deck_fitness:lookahead",
+      "evidence": "T3",
+      "text": "计入后续 2 次选牌后，辉光仍为正 0.52，战火铸就为负 0.2，引擎认为辉光后续更好接。"
+     }
+    ],
+    "what_if_evidence": "T6",
+    "what_if_text": "即使去掉一张打击，引擎仍首选辉光，差距还从 2.8 扩大到 3，说明这不是打击数量造成的。",
+    "advice": "牌组只有 16 张、抽牌几乎为零，若之后想补循环，辉光这类抽牌牌值得优先考虑；当前更缺的是防御（需求 7.0）。"
+   }
+  },
+  {
+   "flag": "F30-card",
+   "status": "verified",
+   "errors": [
+    "reasons[2]: deck_fitness:pick_margin is not one of the largest differences here (deck_fitness:defense, deck_fitness:frontload)"
+   ],
+   "evidence": [
+    {
+     "id": "T0",
+     "tool": "get_decision",
+     "result": {
+      "id": "F30-card",
+      "kind": "card_reward",
+      "floor": 30,
+      "act": 2,
+      "hp": 25,
+      "max_hp": 75,
+      "gold": 296,
+      "engine_top": "0:KNOW_THY_PLACE",
+      "confidence": "medium",
+      "chosen": "skip",
+      "tier": 1,
+      "gap": 2.7,
+      "pick_margin": 2,
+      "options": [
+       {
+        "id": "0:KNOW_THY_PLACE",
+        "kind": "card",
+        "entity_id": "KNOW_THY_PLACE",
+        "name": "何人僭越",
+        "score": 55.5,
+        "deck_score": 55.5,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 4 张牌、3 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 4 张牌（决胜一击、征召上前、征服者、虚空形态）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 怀表、星系尘埃、爬行动物饰品 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": 1.95,
+          "message": "拿何人僭越后防御：每回合 7.3 → 7.7（需求 9.8）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.74,
+          "message": "拿何人僭越后前期输出：每回合 35.2 → 37.3（需求 45.9）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 征服者、决胜一击 让何人僭越更有价值（说明，不另加分）"
+         }
+        ]
+       },
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 54.8,
+        "deck_score": 52.8,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 4 张牌、3 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 4 张牌（决胜一击、征召上前、征服者、虚空形态）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 怀表、星系尘埃、爬行动物饰品 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 2,
+          "message": "第 2 幕：候选要比跳过高出 2 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ]
+       },
+       {
+        "id": "2:SPOILS_OF_BATTLE",
+        "kind": "card",
+        "entity_id": "SPOILS_OF_BATTLE",
+        "name": "战利品",
+        "score": 52.5,
+        "deck_score": 52.5,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 4 张牌、3 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 4 张牌（决胜一击、征召上前、征服者、虚空形态）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 怀表、星系尘埃、爬行动物饰品 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -1.33,
+          "message": "拿战利品后防御：每回合 7.3 → 7.0（需求 9.8）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": 1.11,
+          "message": "拿战利品后循环：每回合额外抽牌 0.00 → 0.11（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.13,
+          "message": "拿战利品后前期输出：每回合 35.2 → 34.8（需求 45.9）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 熔炉、陨星 让战利品更有价值（说明，不另加分）"
+         }
+        ]
+       },
+       {
+        "id": "1:SUMMON_FORTH",
+        "kind": "card",
+        "entity_id": "SUMMON_FORTH",
+        "name": "征召上前",
+        "score": 51.4,
+        "deck_score": 51.4,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": false,
+        "gaps": [
+         "card_effect_unsupported:SUMMON_FORTH:effect:move_card"
+        ],
+        "factors": [
+         {
+          "code": "unmodeled_mechanic",
+          "delta": 0,
+          "message": "征召上前的部分效果尚未计入评分；牌组中 4 张牌、3 件遗物未完整计入评分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 4 张牌（决胜一击、征召上前、征服者、虚空形态）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 怀表、星系尘埃、爬行动物饰品 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -1.52,
+          "message": "拿征召上前后防御：每回合 7.3 → 6.9（需求 9.8）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.07,
+          "message": "拿征召上前后前期输出：每回合 35.2 → 35.4（需求 45.9）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 熔炉 让征召上前更有价值（说明，不另加分）"
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "id": "T1",
+     "tool": "get_decision",
+     "result": {
+      "id": "F30-card",
+      "kind": "card_reward",
+      "floor": 30,
+      "act": 2,
+      "hp": 25,
+      "max_hp": 75,
+      "gold": 296,
+      "engine_top": "0:KNOW_THY_PLACE",
+      "confidence": "medium",
+      "policy_status": "recommend",
+      "pick_margin": 2,
+      "options": [
+       {
+        "id": "0:KNOW_THY_PLACE",
+        "kind": "card",
+        "entity_id": "KNOW_THY_PLACE",
+        "name": "何人僭越",
+        "score": 55.5,
+        "deck_score": 55.5,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 4 张牌、3 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 4 张牌（决胜一击、征召上前、征服者、虚空形态）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 怀表、星系尘埃、爬行动物饰品 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": 1.95,
+          "message": "拿何人僭越后防御：每回合 7.3 → 7.7（需求 9.8）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.74,
+          "message": "拿何人僭越后前期输出：每回合 35.2 → 37.3（需求 45.9）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 征服者、决胜一击 让何人僭越更有价值（说明，不另加分）"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0.7433,
+         "survival": 1.953,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 54.8,
+        "deck_score": 52.8,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 4 张牌、3 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 4 张牌（决胜一击、征召上前、征服者、虚空形态）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 怀表、星系尘埃、爬行动物饰品 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 2,
+          "message": "第 2 幕：候选要比跳过高出 2 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0,
+         "survival": 0,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "2:SPOILS_OF_BATTLE",
+        "kind": "card",
+        "entity_id": "SPOILS_OF_BATTLE",
+        "name": "战利品",
+        "score": 52.5,
+        "deck_score": 52.5,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 4 张牌、3 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 4 张牌（决胜一击、征召上前、征服者、虚空形态）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 怀表、星系尘埃、爬行动物饰品 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -1.33,
+          "message": "拿战利品后防御：每回合 7.3 → 7.0（需求 9.8）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": 1.11,
+          "message": "拿战利品后循环：每回合额外抽牌 0.00 → 0.11（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.13,
+          "message": "拿战利品后前期输出：每回合 35.2 → 34.8（需求 45.9）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 熔炉、陨星 让战利品更有价值（说明，不另加分）"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": -0.1335,
+         "survival": -1.327,
+         "long_term_growth": 1.1115,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "1:SUMMON_FORTH",
+        "kind": "card",
+        "entity_id": "SUMMON_FORTH",
+        "name": "征召上前",
+        "score": 51.4,
+        "deck_score": 51.4,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": false,
+        "gaps": [
+         "card_effect_unsupported:SUMMON_FORTH:effect:move_card"
+        ],
+        "factors": [
+         {
+          "code": "unmodeled_mechanic",
+          "delta": 0,
+          "message": "征召上前的部分效果尚未计入评分；牌组中 4 张牌、3 件遗物未完整计入评分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 4 张牌（决胜一击、征召上前、征服者、虚空形态）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 怀表、星系尘埃、爬行动物饰品 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -1.52,
+          "message": "拿征召上前后防御：每回合 7.3 → 6.9（需求 9.8）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.07,
+          "message": "拿征召上前后前期输出：每回合 35.2 → 35.4（需求 45.9）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 熔炉 让征召上前更有价值（说明，不另加分）"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0.0661,
+         "survival": -1.525,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       }
+      ],
+      "chosen": "skip",
+      "tier": 1,
+      "gap": 2.7,
+      "not_strict_because": []
+     }
+    },
+    {
+     "id": "T2",
+     "tool": "get_deck",
+     "result": {
+      "decision_id": "F30-card",
+      "floor": 30,
+      "act": 2,
+      "hp": 25,
+      "max_hp": 75,
+      "gold": 296,
+      "deck_size": 20,
+      "deck": [
+       {
+        "card": "CLOAK_OF_STARS",
+        "name": "群星斗篷",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "CONQUEROR",
+        "name": "征服者",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "DEFEND_REGENT",
+        "name": "防御",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "DEFEND_REGENT",
+        "name": "防御",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "FALLING_STAR",
+        "name": "陨星",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "FURNACE",
+        "name": "熔炉",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "GLITTERSTREAM",
+        "name": "流光溢彩",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "GUARDS",
+        "name": "护驾！！！",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "KNOCKOUT_BLOW",
+        "name": "决胜一击",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "REFINE_BLADE",
+        "name": "淬炼刀刃",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "SHINING_STRIKE",
+        "name": "明耀打击",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "STRIKE_REGENT",
+        "name": "打击",
+        "upgrades": 0,
+        "count": 3
+       },
+       {
+        "card": "STRIKE_REGENT",
+        "name": "打击",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "SUMMON_FORTH",
+        "name": "征召上前",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "ULTIMATE_DEFEND",
+        "name": "究极防御",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "VENERATE",
+        "name": "崇拜",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "VOID_FORM",
+        "name": "虚空形态",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "WROUGHT_IN_WAR",
+        "name": "战火铸就",
+        "upgrades": 1,
+        "count": 1
+       }
+      ],
+      "relics": [
+       {
+        "relic": "DIVINE_RIGHT",
+        "name": "天赋君权"
+       },
+       {
+        "relic": "LARGE_CAPSULE",
+        "name": "巨大扭蛋"
+       },
+       {
+        "relic": "KUSARIGAMA",
+        "name": "锁镰"
+       },
+       {
+        "relic": "GALACTIC_DUST",
+        "name": "星系尘埃"
+       },
+       {
+        "relic": "WHETSTONE",
+        "name": "磨刀石"
+       },
+       {
+        "relic": "REPTILE_TRINKET",
+        "name": "爬行动物饰品"
+       },
+       {
+        "relic": "PAELS_TOOTH",
+        "name": "佩尔之牙"
+       },
+       {
+        "relic": "POCKETWATCH",
+        "name": "怀表"
+       }
+      ],
+      "potions": [
+       {
+        "potion": "WEAK_POTION",
+        "name": "虚弱药水"
+       },
+       {
+        "potion": "GAMBLERS_BREW",
+        "name": "赌徒特酿"
+       },
+       {
+        "potion": "BLESSING_OF_THE_FORGE",
+        "name": "熔炉的祝福"
+       }
+      ]
+     }
+    },
+    {
+     "id": "T3",
+     "tool": "compare_options",
+     "result": {
+      "decision_id": "F30-card",
+      "a": {
+       "id": "0:KNOW_THY_PLACE",
+       "name": "何人僭越",
+       "deck_score": 55.5,
+       "fully_scored": true
+      },
+      "b": {
+       "id": "skip",
+       "name": "跳过",
+       "deck_score": 52.8,
+       "fully_scored": true
+      },
+      "deck_score_difference": 2.7,
+      "factors": [
+       {
+        "factor": "deck_fitness:defense",
+        "a": 1.95,
+        "b": 0,
+        "difference": 1.95,
+        "a_message": "拿何人僭越后防御：每回合 7.3 → 7.7（需求 9.8）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:frontload",
+        "a": 0.74,
+        "b": 0,
+        "difference": 0.74,
+        "a_message": "拿何人僭越后前期输出：每回合 35.2 → 37.3（需求 45.9）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:synergy",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组里的 征服者、决胜一击 让何人僭越更有价值（说明，不另加分）",
+        "b_message": null
+       },
+       {
+        "factor": "estimate_scope",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 4 张牌、3 件遗物未完整计入评分，分数只反映已计入的部分。",
+        "b_message": "牌组中 4 张牌、3 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "factor": "partially_modeled_deck_cards",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 4 张牌（决胜一击、征召上前、征服者、虚空形态）有部分效果尚未计入评分。",
+        "b_message": "牌组中 4 张牌（决胜一击、征召上前、征服者、虚空形态）有部分效果尚未计入评分。"
+       },
+       {
+        "factor": "unmodeled_relics",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "遗物 怀表、星系尘埃、爬行动物饰品 尚未计入评分。",
+        "b_message": "遗物 怀表、星系尘埃、爬行动物饰品 尚未计入评分。"
+       }
+      ],
+      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
+     }
+    },
+    {
+     "id": "T4",
+     "tool": "get_card",
+     "result": {
+      "id": "KNOW_THY_PLACE",
+      "name": "何人僭越",
+      "description": "给予1层虚弱。\n给予1层易伤。",
+      "cost": 0,
+      "type": "技能",
+      "rarity": "普通",
+      "color": "regent",
+      "target": "AnyEnemy",
+      "keywords": [
+       "消耗"
+      ]
+     }
+    },
+    {
+     "id": "T5",
+     "tool": "what_if_choices",
+     "result": {
+      "remove": [
+       "CLOAK_OF_STARS",
+       "CONQUEROR",
+       "DEFEND_REGENT",
+       "FALLING_STAR",
+       "FURNACE",
+       "GLITTERSTREAM",
+       "GUARDS",
+       "KNOCKOUT_BLOW",
+       "REFINE_BLADE",
+       "SHINING_STRIKE",
+       "STRIKE_REGENT",
+       "SUMMON_FORTH",
+       "ULTIMATE_DEFEND",
+       "VENERATE",
+       "VOID_FORM",
+       "WROUGHT_IN_WAR"
+      ],
+      "upgrade": [
+       "DEFEND_REGENT",
+       "FALLING_STAR",
+       "SHINING_STRIKE",
+       "STRIKE_REGENT",
+       "VENERATE"
+      ],
+      "add": [
+       {
+        "card": "ALIGNMENT",
+        "name": "星位序列"
+       },
+       {
+        "card": "CELESTIAL_MIGHT",
+        "name": "天穹之力"
+       },
+       {
+        "card": "CHILD_OF_THE_STARS",
+        "name": "群星之子"
+       },
+       {
+        "card": "COLLISION_COURSE",
+        "name": "碰撞轨迹"
+       },
+       {
+        "card": "CONQUEROR",
+        "name": "征服者"
+       },
+       {
+        "card": "CONVERGENCE",
+        "name": "汇流"
+       },
+       {
+        "card": "CRESCENT_SPEAR",
+        "name": "新月长矛"
+       },
+       {
+        "card": "DEVASTATE",
+        "name": "葬送"
+       },
+       {
+        "card": "FOREGONE_CONCLUSION",
+        "name": "既定事项"
+       },
+       {
+        "card": "GLITTERSTREAM",
+        "name": "流光溢彩"
+       },
+       {
+        "card": "GLOW",
+        "name": "辉光"
+       },
+       {
+        "card": "GUARDS",
+        "name": "护驾！！！"
+       },
+       {
+        "card": "GUIDING_STAR",
+        "name": "引导之星"
+       },
+       {
+        "card": "I_AM_INVINCIBLE",
+        "name": "所向无敌"
+       },
+       {
+        "card": "KINGLY_PUNCH",
+        "name": "王者之拳"
+       },
+       {
+        "card": "KNOCKOUT_BLOW",
+        "name": "决胜一击"
+       },
+       {
+        "card": "MANIFEST_AUTHORITY",
+        "name": "君权自授"
+       },
+       {
+        "card": "PALE_BLUE_DOT",
+        "name": "暗淡蓝点"
+       },
+       {
+        "card": "PARTICLE_WALL",
+        "name": "粒子墙"
+       },
+       {
+        "card": "PHOTON_CUT",
+        "name": "光子切割"
+       },
+       {
+        "card": "PILLAR_OF_CREATION",
+        "name": "创世之柱"
+       },
+       {
+        "card": "REFINE_BLADE",
+        "name": "淬炼刀刃"
+       },
+       {
+        "card": "RESONANCE",
+        "name": "共鸣"
+       },
+       {
+        "card": "ROLLING_BOULDER",
+        "name": "滚石"
+       },
+       {
+        "card": "SPOILS_OF_BATTLE",
+        "name": "战利品"
+       },
+       {
+        "card": "SUMMON_FORTH",
+        "name": "征召上前"
+       },
+       {
+        "card": "THE_BOMB",
+        "name": "炸弹"
+       },
+       {
+        "card": "VOID_FORM",
+        "name": "虚空形态"
+       },
+       {
+        "card": "WROUGHT_IN_WAR",
+        "name": "战火铸就"
+       }
+      ]
+     }
+    },
+    {
+     "id": "T6",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F30-card",
+      "changes": [
+       {
+        "operation": "remove",
+        "card": "STRIKE_REGENT",
+        "name": "打击"
+       }
+      ],
+      "engine_top_before": "0:KNOW_THY_PLACE",
+      "engine_top_after": "0:KNOW_THY_PLACE",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 2.5,
+      "options_after": [
+       {
+        "id": "0:KNOW_THY_PLACE",
+        "name": "何人僭越",
+        "deck_score": 56.7,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 54.2,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "2:SPOILS_OF_BATTLE",
+        "name": "战利品",
+        "deck_score": 53.9,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "1:SUMMON_FORTH",
+        "name": "征召上前",
+        "deck_score": 52.7,
+        "rank": 4,
+        "fully_scored": false
+       }
+      ]
+     }
+    }
+   ],
+   "toolCalls": 6,
+   "repairs": 1,
+   "usage": {
+    "prompt_tokens": 34107,
+    "completion_tokens": 897,
+    "cost_usd": 0.004497108,
+    "llm_calls": 6
+   },
+   "finding": {
+    "decision_id": "F30-card",
+    "reasons": [
+     {
+      "factor": "deck_fitness:defense",
+      "evidence": "T3",
+      "text": "拿何人僭越后防御每回合 7.3 → 7.7，需求 9.8，是两边差距最大的一项。"
+     },
+     {
+      "factor": "deck_fitness:frontload",
+      "evidence": "T3",
+      "text": "前期输出每回合 35.2 → 37.3，需求 45.9，输出也略有补足。"
+     }
+    ],
+    "what_if_evidence": "T6",
+    "what_if_text": "假设少一张打击，引擎首选仍是何人僭越，差距从 2.7 变为 2.5，结论不变。",
+    "advice": "血量 25/75 偏低时，可优先考虑这种 0 费、给虚弱和易伤的防御型技能，而不是直接跳过。"
+   }
+  },
+  {
+   "flag": "F04-card",
+   "status": "verified",
+   "errors": [],
+   "evidence": [
+    {
+     "id": "T0",
+     "tool": "get_decision",
+     "result": {
+      "id": "F04-card",
+      "kind": "card_reward",
+      "floor": 4,
+      "act": 1,
+      "hp": 71,
+      "max_hp": 75,
+      "gold": 155,
+      "engine_top": "skip",
+      "confidence": "medium",
+      "chosen": "0:WROUGHT_IN_WAR",
+      "tier": 1,
+      "gap": 2,
+      "pick_margin": 1,
+      "options": [
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 42.8,
+        "deck_score": 41.8,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（决胜一击）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 星系尘埃 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 1,
+          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ]
+       },
+       {
+        "id": "2:SPOILS_OF_BATTLE",
+        "kind": "card",
+        "entity_id": "SPOILS_OF_BATTLE",
+        "name": "战利品",
+        "score": 41,
+        "deck_score": 41,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（决胜一击）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 星系尘埃 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -2.8,
+          "message": "拿战利品后防御：每回合 5.2 → 4.6（需求 7.0）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": 2.73,
+          "message": "拿战利品后循环：每回合额外抽牌 0.00 → 0.24（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.06,
+          "message": "拿战利品后前期输出：每回合 21.0 → 21.1（需求 27.9）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 陨星、淬炼刀刃 让战利品更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.76,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       },
+       {
+        "id": "0:WROUGHT_IN_WAR",
+        "kind": "card",
+        "entity_id": "WROUGHT_IN_WAR",
+        "name": "战火铸就",
+        "score": 39.8,
+        "deck_score": 39.8,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（决胜一击）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 星系尘埃 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -2.36,
+          "message": "拿战火铸就后防御：每回合 5.2 → 4.5（需求 7.0）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.93,
+          "message": "拿战火铸就后前期输出：每回合 21.0 → 22.3（需求 27.9）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 淬炼刀刃 让战火铸就更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.58,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       },
+       {
+        "id": "1:DEVASTATE",
+        "kind": "card",
+        "entity_id": "DEVASTATE",
+        "name": "葬送",
+        "score": 39.4,
+        "deck_score": 39.4,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（决胜一击）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 星系尘埃 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -2.48,
+          "message": "拿葬送后防御：每回合 5.2 → 4.6（需求 7.0）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.41,
+          "message": "拿葬送后前期输出：每回合 21.0 → 21.6（需求 27.9）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 崇拜、决胜一击 让葬送更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.4,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "id": "T1",
+     "tool": "get_decision",
+     "result": {
+      "id": "F04-card",
+      "kind": "card_reward",
+      "floor": 4,
+      "act": 1,
+      "hp": 71,
+      "max_hp": 75,
+      "gold": 155,
+      "engine_top": "skip",
+      "confidence": "medium",
+      "policy_status": "skip",
+      "pick_margin": 1,
+      "options": [
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 42.8,
+        "deck_score": 41.8,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（决胜一击）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 星系尘埃 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 1,
+          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0,
+         "survival": 0,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "2:SPOILS_OF_BATTLE",
+        "kind": "card",
+        "entity_id": "SPOILS_OF_BATTLE",
+        "name": "战利品",
+        "score": 41,
+        "deck_score": 41,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（决胜一击）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 星系尘埃 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -2.8,
+          "message": "拿战利品后防御：每回合 5.2 → 4.6（需求 7.0）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": 2.73,
+          "message": "拿战利品后循环：每回合额外抽牌 0.00 → 0.24（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.06,
+          "message": "拿战利品后前期输出：每回合 21.0 → 21.1（需求 27.9）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 陨星、淬炼刀刃 让战利品更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.76,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0.0647,
+         "survival": -2.7982,
+         "long_term_growth": 2.7302,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "0:WROUGHT_IN_WAR",
+        "kind": "card",
+        "entity_id": "WROUGHT_IN_WAR",
+        "name": "战火铸就",
+        "score": 39.8,
+        "deck_score": 39.8,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（决胜一击）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 星系尘埃 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -2.36,
+          "message": "拿战火铸就后防御：每回合 5.2 → 4.5（需求 7.0）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.93,
+          "message": "拿战火铸就后前期输出：每回合 21.0 → 22.3（需求 27.9）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 淬炼刀刃 让战火铸就更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.58,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0.9296,
+         "survival": -2.3641,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "1:DEVASTATE",
+        "kind": "card",
+        "entity_id": "DEVASTATE",
+        "name": "葬送",
+        "score": 39.4,
+        "deck_score": 39.4,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（决胜一击）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 星系尘埃 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -2.48,
+          "message": "拿葬送后防御：每回合 5.2 → 4.6（需求 7.0）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.41,
+          "message": "拿葬送后前期输出：每回合 21.0 → 21.6（需求 27.9）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 崇拜、决胜一击 让葬送更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.4,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0.4149,
+         "survival": -2.4792,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       }
+      ],
+      "chosen": "0:WROUGHT_IN_WAR",
+      "tier": 1,
+      "gap": 2,
+      "not_strict_because": []
+     }
+    },
+    {
+     "id": "T2",
+     "tool": "get_deck",
+     "result": {
+      "decision_id": "F04-card",
+      "floor": 4,
+      "act": 1,
+      "hp": 71,
+      "max_hp": 75,
+      "gold": 155,
+      "deck_size": 14,
+      "deck": [
+       {
+        "card": "DEFEND_REGENT",
+        "name": "防御",
+        "upgrades": 0,
+        "count": 5
+       },
+       {
+        "card": "FALLING_STAR",
+        "name": "陨星",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "KNOCKOUT_BLOW",
+        "name": "决胜一击",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "REFINE_BLADE",
+        "name": "淬炼刀刃",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "STRIKE_REGENT",
+        "name": "打击",
+        "upgrades": 0,
+        "count": 5
+       },
+       {
+        "card": "VENERATE",
+        "name": "崇拜",
+        "upgrades": 0,
+        "count": 1
+       }
+      ],
+      "relics": [
+       {
+        "relic": "DIVINE_RIGHT",
+        "name": "天赋君权"
+       },
+       {
+        "relic": "LARGE_CAPSULE",
+        "name": "巨大扭蛋"
+       },
+       {
+        "relic": "KUSARIGAMA",
+        "name": "锁镰"
+       },
+       {
+        "relic": "GALACTIC_DUST",
+        "name": "星系尘埃"
+       }
+      ],
+      "potions": [
+       {
+        "potion": "BLESSING_OF_THE_FORGE",
+        "name": "熔炉的祝福"
+       }
+      ]
+     }
+    },
+    {
+     "id": "T3",
+     "tool": "compare_options",
+     "result": {
+      "decision_id": "F04-card",
+      "a": {
+       "id": "skip",
+       "name": "跳过",
+       "deck_score": 41.8,
+       "fully_scored": true
+      },
+      "b": {
+       "id": "0:WROUGHT_IN_WAR",
+       "name": "战火铸就",
+       "deck_score": 39.8,
+       "fully_scored": true
+      },
+      "deck_score_difference": 2,
+      "factors": [
+       {
+        "factor": "deck_fitness:defense",
+        "a": 0,
+        "b": -2.36,
+        "difference": 2.36,
+        "a_message": null,
+        "b_message": "拿战火铸就后防御：每回合 5.2 → 4.5（需求 7.0）"
+       },
+       {
+        "factor": "deck_fitness:frontload",
+        "a": 0,
+        "b": 0.93,
+        "difference": -0.93,
+        "a_message": null,
+        "b_message": "拿战火铸就后前期输出：每回合 21.0 → 22.3（需求 27.9）"
+       },
+       {
+        "factor": "deck_fitness:lookahead",
+        "a": 0,
+        "b": -0.58,
+        "difference": 0.58,
+        "a_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度",
+        "b_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "factor": "deck_fitness:synergy",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": null,
+        "b_message": "牌组里的 淬炼刀刃 让战火铸就更有价值（说明，不另加分）"
+       },
+       {
+        "factor": "estimate_scope",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 1 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。",
+        "b_message": "牌组中 1 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "factor": "partially_modeled_deck_cards",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 1 张牌（决胜一击）有部分效果尚未计入评分。",
+        "b_message": "牌组中 1 张牌（决胜一击）有部分效果尚未计入评分。"
+       },
+       {
+        "factor": "unmodeled_relics",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "遗物 星系尘埃 尚未计入评分。",
+        "b_message": "遗物 星系尘埃 尚未计入评分。"
+       }
+      ],
+      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
+     }
+    },
+    {
+     "id": "T4",
+     "tool": "what_if_choices",
+     "result": {
+      "remove": [
+       "DEFEND_REGENT",
+       "FALLING_STAR",
+       "KNOCKOUT_BLOW",
+       "REFINE_BLADE",
+       "STRIKE_REGENT",
+       "VENERATE"
+      ],
+      "upgrade": [
+       "DEFEND_REGENT",
+       "FALLING_STAR",
+       "KNOCKOUT_BLOW",
+       "REFINE_BLADE",
+       "STRIKE_REGENT",
+       "VENERATE"
+      ],
+      "add": [
+       {
+        "card": "ALIGNMENT",
+        "name": "星位序列"
+       },
+       {
+        "card": "KNOCKOUT_BLOW",
+        "name": "决胜一击"
+       },
+       {
+        "card": "PALE_BLUE_DOT",
+        "name": "暗淡蓝点"
+       },
+       {
+        "card": "PHOTON_CUT",
+        "name": "光子切割"
+       },
+       {
+        "card": "PILLAR_OF_CREATION",
+        "name": "创世之柱"
+       },
+       {
+        "card": "REFINE_BLADE",
+        "name": "淬炼刀刃"
+       }
+      ]
+     }
+    },
+    {
+     "id": "T5",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F04-card",
+      "changes": [
+       {
+        "operation": "remove",
+        "card": "STRIKE_REGENT",
+        "name": "打击"
+       }
+      ],
+      "engine_top_before": "skip",
+      "engine_top_after": "skip",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 2.2,
+      "options_after": [
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 42.9,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "2:SPOILS_OF_BATTLE",
+        "name": "战利品",
+        "deck_score": 42,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "0:WROUGHT_IN_WAR",
+        "name": "战火铸就",
+        "deck_score": 40.7,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "1:DEVASTATE",
+        "name": "葬送",
+        "deck_score": 40.2,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    }
+   ],
+   "toolCalls": 5,
+   "repairs": 0,
+   "usage": {
+    "prompt_tokens": 20496,
+    "completion_tokens": 598,
+    "cost_usd": 0.002200032,
+    "llm_calls": 4
+   },
+   "finding": {
+    "decision_id": "F04-card",
+    "reasons": [
+     {
+      "factor": "deck_fitness:defense",
+      "evidence": "T3",
+      "text": "差距最大的是防御：拿战火铸就后每回合防御 5.2 → 4.5，而需求是 7.0，本来就偏低的防御更吃紧。"
+     },
+     {
+      "factor": "deck_fitness:frontload",
+      "evidence": "T3",
+      "text": "它换来的是前期输出 21.0 → 22.3，离需求 27.9 仍有距离，补得不够多。"
+     },
+     {
+      "factor": "deck_fitness:lookahead",
+      "evidence": "T3",
+      "text": "计入后续 3 次选牌后，这张牌还让牌组适合度略降，所以引擎更倾向先跳过。"
+     }
+    ],
+    "what_if_evidence": "T5",
+    "what_if_text": "试过少一张打击，引擎首选仍是跳过，差距 2.2，说明不是某张牌占位的问题。",
+    "advice": "第 1 幕防御只有 5.2、需求 7.0，下次选牌可优先考虑能补防御的选项，而不是再加输出。"
+   }
+  }
+ ],
+ "summary": {
+  "text": "这些决定都反复低估防御（7.0、9.8、7.0），下次选牌优先补防御而非再加输出。",
+  "source": "model",
+  "cost_usd": 0.00021119999999999998
+ },
+ "meta": {
+  "model": "deepseek-flash",
+  "cost_usd": 0.011455452,
+  "seconds": 9.545,
+  "generated_at": "2026-11-01 14:43"
+ }
+}

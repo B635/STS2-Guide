@@ -14,11 +14,12 @@ import type { EvalSet } from "./evaluate.js";
 import { DEFAULT_MODEL } from "./llm.js";
 import type { Prepass } from "./prepass.js";
 import { renderReport } from "./report.js";
+import { renderSheet } from "./sheet.js";
 import { runReview } from "./review.js";
 
 const USAGE = [
   "usage: coach review <file.run> [--no-llm] [--model M] [--thinking] [--out DIR] [--json]",
-  "       coach eval run|metrics <dev|test> [--model M] [--thinking]",
+  "       coach eval run|metrics|sheet <dev|test> [--model M] [--thinking]",
   "       coach ratings import <file>",
 ].join("\n");
 
@@ -57,7 +58,12 @@ async function main(argv: string[]): Promise<number> {
   if (command === "eval" && (positionals[2] === "dev" || positionals[2] === "test")) {
     const set = positionals[2] as EvalSet;
     if (runFile === "run") await record(set, values.model, values.thinking);
-    else if (runFile !== "metrics") {
+    else if (runFile === "sheet") {
+      const file = path.join(EVAL_DIR, `rating-sheet-${set}.html`);
+      writeFileSync(file, renderSheet(loadRecorded(set, values.model)), "utf-8");
+      console.log(`rating sheet: ${file}`);
+      return 0;
+    } else if (runFile !== "metrics") {
       console.error(USAGE);
       return 2;
     }

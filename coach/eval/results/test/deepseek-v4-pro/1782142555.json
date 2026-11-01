@@ -1,0 +1,1496 @@
+{
+ "run": "1782142555",
+ "set": "test",
+ "model": "deepseek-v4-pro",
+ "prompt_version": "p3",
+ "pre": {
+  "summary": {
+   "run_id": "1782142555",
+   "character": "SILENT",
+   "ascension": 1,
+   "build_id": "v0.107.1",
+   "win": false,
+   "killed_by": "同族小队",
+   "acts_reached": 1,
+   "last_scored_floor": 16,
+   "final_deck_size": 16,
+   "decisions_scored": {
+    "card_reward": 3,
+    "rest": 3,
+    "shop": 1
+   },
+   "decisions_skipped": {},
+   "agreement": {
+    "agree": 4,
+    "judged": 7,
+    "rate": 0.571
+   },
+   "tier1": [
+    "F07-card",
+    "F12-card"
+   ],
+   "tier2": [
+    "F02-card"
+   ],
+   "warnings": []
+  },
+  "decisions": {
+   "decisions": [
+    {
+     "id": "F02-card",
+     "kind": "card_reward",
+     "floor": 2,
+     "act": 1,
+     "chosen": "0:RICOCHET",
+     "chosen_name": "连续反弹",
+     "engine_top": "2:ESCAPE_PLAN",
+     "engine_top_name": "逃脱计划",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": 1.4,
+     "not_strict_because": [
+      "partly_scored"
+     ]
+    },
+    {
+     "id": "F07-card",
+     "kind": "card_reward",
+     "floor": 7,
+     "act": 1,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "1:FLICK_FLACK",
+     "engine_top_name": "翻越撑击",
+     "confidence": "medium",
+     "tier": 1,
+     "gap": 3.6,
+     "not_strict_because": []
+    },
+    {
+     "id": "F09-rest",
+     "kind": "rest",
+     "floor": 9,
+     "act": 1,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F12-card",
+     "kind": "card_reward",
+     "floor": 12,
+     "act": 1,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "2:RICOCHET",
+     "engine_top_name": "连续反弹",
+     "confidence": "medium",
+     "tier": 1,
+     "gap": 1.9,
+     "not_strict_because": []
+    },
+    {
+     "id": "F13-rest",
+     "kind": "rest",
+     "floor": 13,
+     "act": 1,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F14-shop",
+     "kind": "shop",
+     "floor": 14,
+     "act": 1,
+     "chosen": "card:0:RICOCHET",
+     "chosen_name": "连续反弹",
+     "engine_top": "card:0:RICOCHET",
+     "engine_top_name": "连续反弹",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F16-rest",
+     "kind": "rest",
+     "floor": 16,
+     "act": 1,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    }
+   ],
+   "skipped": []
+  },
+  "flags": [
+   {
+    "id": "F07-card",
+    "kind": "card_reward",
+    "floor": 7,
+    "act": 1,
+    "hp": 61,
+    "max_hp": 70,
+    "gold": 242,
+    "engine_top": "1:FLICK_FLACK",
+    "confidence": "medium",
+    "chosen": "skip",
+    "tier": 1,
+    "gap": 3.6,
+    "pick_margin": 1,
+    "options": [
+     {
+      "id": "1:FLICK_FLACK",
+      "kind": "card",
+      "entity_id": "FLICK_FLACK",
+      "name": "翻越撑击",
+      "score": 54,
+      "deck_score": 54,
+      "rank": 1,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "deck_fitness:aoe",
+        "delta": 3.62,
+        "message": "拿翻越撑击后群伤：每回合 0.0 → 5.9（需求 22.9）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": 1.55,
+        "message": "拿翻越撑击后前期输出：每回合 19.0 → 21.5（需求 35.9）"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -0.25,
+        "message": "拿翻越撑击后防御：每回合 8.6 → 8.2（需求 6.9）"
+       },
+       {
+        "code": "deck_fitness:cycle",
+        "delta": -0.24,
+        "message": "拿翻越撑击后循环：每回合额外抽牌 0.87 → 0.83（需求 1.0）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 早有准备、生存者 让翻越撑击更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": -1.05,
+        "message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 5.1655,
+       "survival": -0.2526,
+       "long_term_growth": -0.2378,
+       "resource_efficiency": 0,
+       "data_completeness": 1
+      }
+     },
+     {
+      "id": "2:PREDATOR",
+      "kind": "card",
+      "entity_id": "PREDATOR",
+      "name": "猎杀者",
+      "score": 51.7,
+      "deck_score": 51.7,
+      "rank": 2,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "deck_fitness:cycle",
+        "delta": 1.14,
+        "message": "拿猎杀者后循环：每回合额外抽牌 0.87 → 1.21（需求 1.0）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": 0.81,
+        "message": "拿猎杀者后前期输出：每回合 19.0 → 20.3（需求 35.9）"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -0.49,
+        "message": "拿猎杀者后防御：每回合 8.6 → 7.7（需求 6.9）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 中和、生存者 让猎杀者更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": -0.16,
+        "message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0.8091,
+       "survival": -0.4857,
+       "long_term_growth": 1.1354,
+       "resource_efficiency": 0,
+       "data_completeness": 1
+      }
+     },
+     {
+      "id": "skip",
+      "kind": "skip",
+      "entity_id": null,
+      "name": "跳过",
+      "score": 51.4,
+      "deck_score": 50.4,
+      "rank": 3,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": 0,
+        "message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "code": "deck_fitness:pick_margin",
+        "delta": 1,
+        "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0,
+       "survival": 0,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 1
+      }
+     },
+     {
+      "id": "0:RICOCHET",
+      "kind": "card",
+      "entity_id": "RICOCHET",
+      "name": "连续反弹",
+      "score": 51.3,
+      "deck_score": 51.3,
+      "rank": 4,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "deck_fitness:frontload",
+        "delta": 2.58,
+        "message": "拿连续反弹后前期输出：每回合 19.0 → 23.3（需求 35.9）"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -0.49,
+        "message": "拿连续反弹后防御：每回合 8.6 → 7.7（需求 6.9）"
+       },
+       {
+        "code": "deck_fitness:cycle",
+        "delta": -0.33,
+        "message": "拿连续反弹后循环：每回合额外抽牌 0.87 → 0.82（需求 1.0）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 早有准备、生存者 让连续反弹更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": -0.91,
+        "message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 2.5842,
+       "survival": -0.4882,
+       "long_term_growth": -0.3256,
+       "resource_efficiency": 0,
+       "data_completeness": 1
+      }
+     }
+    ]
+   },
+   {
+    "id": "F12-card",
+    "kind": "card_reward",
+    "floor": 12,
+    "act": 1,
+    "hp": 60,
+    "max_hp": 70,
+    "gold": 149,
+    "engine_top": "2:RICOCHET",
+    "confidence": "medium",
+    "chosen": "skip",
+    "tier": 1,
+    "gap": 1.9,
+    "pick_margin": 1,
+    "options": [
+     {
+      "id": "2:RICOCHET",
+      "kind": "card",
+      "entity_id": "RICOCHET",
+      "name": "连续反弹",
+      "score": 49.6,
+      "deck_score": 49.6,
+      "rank": 1,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "1 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 彩虹戒指 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": 2.56,
+        "message": "拿连续反弹后前期输出：每回合 18.1 → 23.0（需求 43.9）"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -0.49,
+        "message": "拿连续反弹后防御：每回合 9.2 → 8.2（需求 7.8）"
+       },
+       {
+        "code": "deck_fitness:cycle",
+        "delta": -0.13,
+        "message": "拿连续反弹后循环：每回合额外抽牌 1.91 → 1.75（需求 1.0）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 中和、生存者 让连续反弹更有价值（说明，不另加分）"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 2.565,
+       "survival": -0.4948,
+       "long_term_growth": -0.1337,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "skip",
+      "kind": "skip",
+      "entity_id": null,
+      "name": "跳过",
+      "score": 48.7,
+      "deck_score": 47.7,
+      "rank": 2,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "1 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 彩虹戒指 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:pick_margin",
+        "delta": 1,
+        "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0,
+       "survival": 0,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "1:UNTOUCHABLE",
+      "kind": "card",
+      "entity_id": "UNTOUCHABLE",
+      "name": "触不可及",
+      "score": 47.4,
+      "deck_score": 47.4,
+      "rank": 3,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "1 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 彩虹戒指 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": -0.99,
+        "message": "拿触不可及后前期输出：每回合 18.1 → 16.3（需求 43.9）"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": 0.89,
+        "message": "拿触不可及后防御：每回合 9.2 → 11.3（需求 7.8）"
+       },
+       {
+        "code": "deck_fitness:cycle",
+        "delta": -0.13,
+        "message": "拿触不可及后循环：每回合额外抽牌 1.91 → 1.75（需求 1.0）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 早有准备 让触不可及更有价值（说明，不另加分）"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": -0.9858,
+       "survival": 0.8902,
+       "long_term_growth": -0.1337,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "0:DODGE_AND_ROLL",
+      "kind": "card",
+      "entity_id": "DODGE_AND_ROLL",
+      "name": "闪躲翻滚",
+      "score": 47.4,
+      "deck_score": 47.4,
+      "rank": 4,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "1 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 彩虹戒指 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": -0.62,
+        "message": "拿闪躲翻滚后前期输出：每回合 18.1 → 17.0（需求 43.9）"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": 0.4,
+        "message": "拿闪躲翻滚后防御：每回合 9.2 → 10.1（需求 7.8）"
+       },
+       {
+        "code": "deck_fitness:cycle",
+        "delta": -0.09,
+        "message": "拿闪躲翻滚后循环：每回合额外抽牌 1.91 → 1.80（需求 1.0）"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": -0.6242,
+       "survival": 0.4048,
+       "long_term_growth": -0.0889,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "explained": [
+  {
+   "flag": "F07-card",
+   "status": "verified",
+   "errors": [
+    "reasons[2]: deck_fitness:defense is not one of the largest differences here (deck_fitness:aoe, deck_fitness:frontload, deck_fitness:lookahead)"
+   ],
+   "evidence": [
+    {
+     "id": "T0",
+     "tool": "get_decision",
+     "result": {
+      "id": "F07-card",
+      "kind": "card_reward",
+      "floor": 7,
+      "act": 1,
+      "hp": 61,
+      "max_hp": 70,
+      "gold": 242,
+      "engine_top": "1:FLICK_FLACK",
+      "confidence": "medium",
+      "chosen": "skip",
+      "tier": 1,
+      "gap": 3.6,
+      "pick_margin": 1,
+      "options": [
+       {
+        "id": "1:FLICK_FLACK",
+        "kind": "card",
+        "entity_id": "FLICK_FLACK",
+        "name": "翻越撑击",
+        "score": 54,
+        "deck_score": 54,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:aoe",
+          "delta": 3.62,
+          "message": "拿翻越撑击后群伤：每回合 0.0 → 5.9（需求 22.9）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 1.55,
+          "message": "拿翻越撑击后前期输出：每回合 19.0 → 21.5（需求 35.9）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.25,
+          "message": "拿翻越撑击后防御：每回合 8.6 → 8.2（需求 6.9）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.24,
+          "message": "拿翻越撑击后循环：每回合额外抽牌 0.87 → 0.83（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 早有准备、生存者 让翻越撑击更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -1.05,
+          "message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       },
+       {
+        "id": "2:PREDATOR",
+        "kind": "card",
+        "entity_id": "PREDATOR",
+        "name": "猎杀者",
+        "score": 51.7,
+        "deck_score": 51.7,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:cycle",
+          "delta": 1.14,
+          "message": "拿猎杀者后循环：每回合额外抽牌 0.87 → 1.21（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.81,
+          "message": "拿猎杀者后前期输出：每回合 19.0 → 20.3（需求 35.9）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.49,
+          "message": "拿猎杀者后防御：每回合 8.6 → 7.7（需求 6.9）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 中和、生存者 让猎杀者更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.16,
+          "message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       },
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 51.4,
+        "deck_score": 50.4,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0,
+          "message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 1,
+          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ]
+       },
+       {
+        "id": "0:RICOCHET",
+        "kind": "card",
+        "entity_id": "RICOCHET",
+        "name": "连续反弹",
+        "score": 51.3,
+        "deck_score": 51.3,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 2.58,
+          "message": "拿连续反弹后前期输出：每回合 19.0 → 23.3（需求 35.9）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.49,
+          "message": "拿连续反弹后防御：每回合 8.6 → 7.7（需求 6.9）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.33,
+          "message": "拿连续反弹后循环：每回合额外抽牌 0.87 → 0.82（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 早有准备、生存者 让连续反弹更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.91,
+          "message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "id": "T1",
+     "tool": "get_deck",
+     "result": {
+      "decision_id": "F07-card",
+      "floor": 7,
+      "act": 1,
+      "hp": 61,
+      "max_hp": 70,
+      "gold": 242,
+      "deck_size": 17,
+      "deck": [
+       {
+        "card": "ASSASSINATE",
+        "name": "刺杀",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "DAGGER_THROW",
+        "name": "投掷匕首",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "DEFEND_SILENT",
+        "name": "防御",
+        "upgrades": 0,
+        "count": 5
+       },
+       {
+        "card": "NEUTRALIZE",
+        "name": "中和",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "PIERCING_WAIL",
+        "name": "尖啸",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "PREPARED",
+        "name": "早有准备",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "RICOCHET",
+        "name": "连续反弹",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "STRIKE_SILENT",
+        "name": "打击",
+        "upgrades": 0,
+        "count": 3
+       },
+       {
+        "card": "STRIKE_SILENT",
+        "name": "打击",
+        "upgrades": 1,
+        "count": 2
+       },
+       {
+        "card": "SURVIVOR",
+        "name": "生存者",
+        "upgrades": 0,
+        "count": 1
+       }
+      ],
+      "relics": [
+       {
+        "relic": "RING_OF_THE_SNAKE",
+        "name": "蛇之戒指"
+       },
+       {
+        "relic": "ARCANE_SCROLL",
+        "name": "奥术卷轴"
+       },
+       {
+        "relic": "WHETSTONE",
+        "name": "磨刀石"
+       }
+      ],
+      "potions": [
+       {
+        "potion": "REGEN_POTION",
+        "name": "再生药水"
+       }
+      ]
+     }
+    },
+    {
+     "id": "T2",
+     "tool": "get_card",
+     "result": {
+      "id": "FLICK_FLACK",
+      "name": "翻越撑击",
+      "description": "对所有敌人造成7点伤害。",
+      "cost": 1,
+      "type": "攻击",
+      "rarity": "普通",
+      "color": "silent",
+      "target": "AllEnemies",
+      "damage": 7,
+      "keywords": [
+       "奇巧"
+      ],
+      "upgrade_description": "对所有敌人造成9点伤害。"
+     }
+    },
+    {
+     "id": "T3",
+     "tool": "compare_options",
+     "result": {
+      "decision_id": "F07-card",
+      "a": {
+       "id": "1:FLICK_FLACK",
+       "name": "翻越撑击",
+       "deck_score": 54,
+       "fully_scored": true
+      },
+      "b": {
+       "id": "skip",
+       "name": "跳过",
+       "deck_score": 50.4,
+       "fully_scored": true
+      },
+      "deck_score_difference": 3.6,
+      "factors": [
+       {
+        "factor": "deck_fitness:aoe",
+        "a": 3.62,
+        "b": 0,
+        "difference": 3.62,
+        "a_message": "拿翻越撑击后群伤：每回合 0.0 → 5.9（需求 22.9）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:frontload",
+        "a": 1.55,
+        "b": 0,
+        "difference": 1.55,
+        "a_message": "拿翻越撑击后前期输出：每回合 19.0 → 21.5（需求 35.9）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:lookahead",
+        "a": -1.05,
+        "b": 0,
+        "difference": -1.05,
+        "a_message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度",
+        "b_message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "factor": "deck_fitness:defense",
+        "a": -0.25,
+        "b": 0,
+        "difference": -0.25,
+        "a_message": "拿翻越撑击后防御：每回合 8.6 → 8.2（需求 6.9）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:cycle",
+        "a": -0.24,
+        "b": 0,
+        "difference": -0.24,
+        "a_message": "拿翻越撑击后循环：每回合额外抽牌 0.87 → 0.83（需求 1.0）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:synergy",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组里的 早有准备、生存者 让翻越撑击更有价值（说明，不另加分）",
+        "b_message": null
+       }
+      ],
+      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
+     }
+    },
+    {
+     "id": "T4",
+     "tool": "what_if_choices",
+     "result": {
+      "remove": [
+       "ASSASSINATE",
+       "DAGGER_THROW",
+       "DEFEND_SILENT",
+       "NEUTRALIZE",
+       "PIERCING_WAIL",
+       "PREPARED",
+       "RICOCHET",
+       "STRIKE_SILENT",
+       "SURVIVOR"
+      ],
+      "upgrade": [
+       "ASSASSINATE",
+       "DAGGER_THROW",
+       "DEFEND_SILENT",
+       "NEUTRALIZE",
+       "PIERCING_WAIL",
+       "PREPARED",
+       "RICOCHET",
+       "STRIKE_SILENT",
+       "SURVIVOR"
+      ],
+      "add": [
+       {
+        "card": "ESCAPE_PLAN",
+        "name": "逃脱计划"
+       },
+       {
+        "card": "RICOCHET",
+        "name": "连续反弹"
+       },
+       {
+        "card": "UNTOUCHABLE",
+        "name": "触不可及"
+       }
+      ]
+     }
+    },
+    {
+     "id": "T5",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F07-card",
+      "changes": [
+       {
+        "operation": "remove",
+        "card": "STRIKE_SILENT",
+        "name": "打击"
+       }
+      ],
+      "engine_top_before": "1:FLICK_FLACK",
+      "engine_top_after": "1:FLICK_FLACK",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 3.9,
+      "options_after": [
+       {
+        "id": "1:FLICK_FLACK",
+        "name": "翻越撑击",
+        "deck_score": 54.8,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "2:PREDATOR",
+        "name": "猎杀者",
+        "deck_score": 52.1,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 50.9,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "0:RICOCHET",
+        "name": "连续反弹",
+        "deck_score": 51.9,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    }
+   ],
+   "toolCalls": 5,
+   "repairs": 1,
+   "usage": {
+    "prompt_tokens": 23919,
+    "completion_tokens": 824,
+    "cost_usd": 0.008050328,
+    "llm_calls": 6
+   },
+   "finding": {
+    "decision_id": "F07-card",
+    "reasons": [
+     {
+      "factor": "deck_fitness:aoe",
+      "evidence": "T3",
+      "text": "翻越撑击让群伤从每回合 0.0 升到 5.9，这是牌组目前完全没有的维度，也是差距最大的因子。"
+     },
+     {
+      "factor": "deck_fitness:frontload",
+      "evidence": "T3",
+      "text": "翻越撑击把前期输出从每回合 19.0 提到 21.5，对第 1 幕清怪有帮助。"
+     },
+     {
+      "factor": "deck_fitness:lookahead",
+      "evidence": "T3",
+      "text": "翻越撑击的后续选牌展望是 -1.05，是拖累项，但不足以抵消群伤和前期输出的提升。"
+     }
+    ],
+    "advice": "牌组目前没有任何群伤，遇到多敌人战斗会吃力，下次看到范围攻击牌可以优先考虑。"
+   }
+  },
+  {
+   "flag": "F12-card",
+   "status": "verified",
+   "errors": [],
+   "evidence": [
+    {
+     "id": "T0",
+     "tool": "get_decision",
+     "result": {
+      "id": "F12-card",
+      "kind": "card_reward",
+      "floor": 12,
+      "act": 1,
+      "hp": 60,
+      "max_hp": 70,
+      "gold": 149,
+      "engine_top": "2:RICOCHET",
+      "confidence": "medium",
+      "chosen": "skip",
+      "tier": 1,
+      "gap": 1.9,
+      "pick_margin": 1,
+      "options": [
+       {
+        "id": "2:RICOCHET",
+        "kind": "card",
+        "entity_id": "RICOCHET",
+        "name": "连续反弹",
+        "score": 49.6,
+        "deck_score": 49.6,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "1 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 彩虹戒指 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 2.56,
+          "message": "拿连续反弹后前期输出：每回合 18.1 → 23.0（需求 43.9）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.49,
+          "message": "拿连续反弹后防御：每回合 9.2 → 8.2（需求 7.8）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.13,
+          "message": "拿连续反弹后循环：每回合额外抽牌 1.91 → 1.75（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 中和、生存者 让连续反弹更有价值（说明，不另加分）"
+         }
+        ]
+       },
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 48.7,
+        "deck_score": 47.7,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "1 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 彩虹戒指 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 1,
+          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ]
+       },
+       {
+        "id": "1:UNTOUCHABLE",
+        "kind": "card",
+        "entity_id": "UNTOUCHABLE",
+        "name": "触不可及",
+        "score": 47.4,
+        "deck_score": 47.4,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "1 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 彩虹戒指 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.99,
+          "message": "拿触不可及后前期输出：每回合 18.1 → 16.3（需求 43.9）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": 0.89,
+          "message": "拿触不可及后防御：每回合 9.2 → 11.3（需求 7.8）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.13,
+          "message": "拿触不可及后循环：每回合额外抽牌 1.91 → 1.75（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 早有准备 让触不可及更有价值（说明，不另加分）"
+         }
+        ]
+       },
+       {
+        "id": "0:DODGE_AND_ROLL",
+        "kind": "card",
+        "entity_id": "DODGE_AND_ROLL",
+        "name": "闪躲翻滚",
+        "score": 47.4,
+        "deck_score": 47.4,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "1 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 彩虹戒指 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.62,
+          "message": "拿闪躲翻滚后前期输出：每回合 18.1 → 17.0（需求 43.9）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": 0.4,
+          "message": "拿闪躲翻滚后防御：每回合 9.2 → 10.1（需求 7.8）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.09,
+          "message": "拿闪躲翻滚后循环：每回合额外抽牌 1.91 → 1.80（需求 1.0）"
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "id": "T1",
+     "tool": "get_deck",
+     "result": {
+      "decision_id": "F12-card",
+      "floor": 12,
+      "act": 1,
+      "hp": 60,
+      "max_hp": 70,
+      "gold": 149,
+      "deck_size": 17,
+      "deck": [
+       {
+        "card": "ACROBATICS",
+        "name": "杂技",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "ASSASSINATE",
+        "name": "刺杀",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "DAGGER_THROW",
+        "name": "投掷匕首",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "DEFEND_SILENT",
+        "name": "防御",
+        "upgrades": 0,
+        "count": 5
+       },
+       {
+        "card": "NEUTRALIZE",
+        "name": "中和",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "PIERCING_WAIL",
+        "name": "尖啸",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "PREPARED",
+        "name": "早有准备",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "RICOCHET",
+        "name": "连续反弹",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "STRIKE_SILENT",
+        "name": "打击",
+        "upgrades": 0,
+        "count": 2
+       },
+       {
+        "card": "STRIKE_SILENT",
+        "name": "打击",
+        "upgrades": 1,
+        "count": 2
+       },
+       {
+        "card": "SURVIVOR",
+        "name": "生存者",
+        "upgrades": 0,
+        "count": 1
+       }
+      ],
+      "relics": [
+       {
+        "relic": "RING_OF_THE_SNAKE",
+        "name": "蛇之戒指"
+       },
+       {
+        "relic": "ARCANE_SCROLL",
+        "name": "奥术卷轴"
+       },
+       {
+        "relic": "WHETSTONE",
+        "name": "磨刀石"
+       },
+       {
+        "relic": "RAINBOW_RING",
+        "name": "彩虹戒指"
+       }
+      ],
+      "potions": [
+       {
+        "potion": "REGEN_POTION",
+        "name": "再生药水"
+       },
+       {
+        "potion": "EXPLOSIVE_AMPOULE",
+        "name": "爆炸安瓿"
+       }
+      ]
+     }
+    },
+    {
+     "id": "T2",
+     "tool": "compare_options",
+     "result": {
+      "decision_id": "F12-card",
+      "a": {
+       "id": "2:RICOCHET",
+       "name": "连续反弹",
+       "deck_score": 49.6,
+       "fully_scored": true
+      },
+      "b": {
+       "id": "skip",
+       "name": "跳过",
+       "deck_score": 47.7,
+       "fully_scored": true
+      },
+      "deck_score_difference": 1.9,
+      "factors": [
+       {
+        "factor": "deck_fitness:frontload",
+        "a": 2.56,
+        "b": 0,
+        "difference": 2.56,
+        "a_message": "拿连续反弹后前期输出：每回合 18.1 → 23.0（需求 43.9）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:defense",
+        "a": -0.49,
+        "b": 0,
+        "difference": -0.49,
+        "a_message": "拿连续反弹后防御：每回合 9.2 → 8.2（需求 7.8）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:cycle",
+        "a": -0.13,
+        "b": 0,
+        "difference": -0.13,
+        "a_message": "拿连续反弹后循环：每回合额外抽牌 1.91 → 1.75（需求 1.0）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:synergy",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组里的 中和、生存者 让连续反弹更有价值（说明，不另加分）",
+        "b_message": null
+       },
+       {
+        "factor": "estimate_scope",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "1 件遗物未完整计入评分，分数只反映已计入的部分。",
+        "b_message": "1 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "factor": "unmodeled_relics",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "遗物 彩虹戒指 尚未计入评分。",
+        "b_message": "遗物 彩虹戒指 尚未计入评分。"
+       }
+      ],
+      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
+     }
+    },
+    {
+     "id": "T3",
+     "tool": "get_card",
+     "result": {
+      "id": "RICOCHET",
+      "name": "连续反弹",
+      "description": "随机对敌人造成3点伤害4次。",
+      "cost": 2,
+      "type": "攻击",
+      "rarity": "普通",
+      "color": "silent",
+      "target": "RandomEnemy",
+      "damage": 3,
+      "hit_count": 4,
+      "keywords": [
+       "奇巧"
+      ],
+      "upgrade_description": "随机对敌人造成3点伤害5次。"
+     }
+    },
+    {
+     "id": "T4",
+     "tool": "what_if_choices",
+     "result": {
+      "remove": [
+       "ACROBATICS",
+       "ASSASSINATE",
+       "DAGGER_THROW",
+       "DEFEND_SILENT",
+       "NEUTRALIZE",
+       "PIERCING_WAIL",
+       "PREPARED",
+       "RICOCHET",
+       "STRIKE_SILENT",
+       "SURVIVOR"
+      ],
+      "upgrade": [
+       "ACROBATICS",
+       "ASSASSINATE",
+       "DAGGER_THROW",
+       "DEFEND_SILENT",
+       "NEUTRALIZE",
+       "PIERCING_WAIL",
+       "RICOCHET",
+       "STRIKE_SILENT",
+       "SURVIVOR"
+      ],
+      "add": [
+       {
+        "card": "ESCAPE_PLAN",
+        "name": "逃脱计划"
+       },
+       {
+        "card": "FLICK_FLACK",
+        "name": "翻越撑击"
+       },
+       {
+        "card": "PREDATOR",
+        "name": "猎杀者"
+       },
+       {
+        "card": "RICOCHET",
+        "name": "连续反弹"
+       },
+       {
+        "card": "UNTOUCHABLE",
+        "name": "触不可及"
+       }
+      ]
+     }
+    }
+   ],
+   "toolCalls": 4,
+   "repairs": 0,
+   "usage": {
+    "prompt_tokens": 15184,
+    "completion_tokens": 676,
+    "cost_usd": 0.006713696,
+    "llm_calls": 4
+   },
+   "finding": {
+    "decision_id": "F12-card",
+    "reasons": [
+     {
+      "factor": "deck_fitness:frontload",
+      "evidence": "T2",
+      "text": "连续反弹把前期输出从每回合 18.1 提到 23.0，是唯一明显拉分的因子，需求是 43.9。"
+     },
+     {
+      "factor": "deck_fitness:defense",
+      "evidence": "T2",
+      "text": "拿连续反弹后防御从 9.2 降到 8.2，但仍高于需求 7.8，代价很小。"
+     },
+     {
+      "factor": "deck_fitness:cycle",
+      "evidence": "T2",
+      "text": "循环从每回合额外抽牌 1.91 降到 1.75，仍高于需求 1.0，影响轻微。"
+     }
+    ],
+    "advice": "第 1 幕前期输出离需求 43.9 还差很多时，一张 2 费 12 点伤害的连续反弹能明显补足输出，值得拿。"
+   }
+  }
+ ],
+ "summary": {
+  "text": "这些决定都优先补足前期输出，但群伤与后续选牌展望常被压低；可照做的方向是：在前期输出接近需求时，更多按群伤和后续选牌展望来选牌。",
+  "source": "model",
+  "cost_usd": 0.0007458
+ },
+ "meta": {
+  "model": "deepseek-v4-pro",
+  "cost_usd": 0.015509824,
+  "seconds": 13.38,
+  "generated_at": "2026-11-01 14:48"
+ }
+}

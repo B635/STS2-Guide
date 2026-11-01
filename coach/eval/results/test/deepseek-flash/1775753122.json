@@ -1,0 +1,1652 @@
+{
+ "run": "1775753122",
+ "set": "test",
+ "model": "deepseek-flash",
+ "prompt_version": "p3",
+ "pre": {
+  "summary": {
+   "run_id": "1775753122",
+   "character": "IRONCLAD",
+   "ascension": 5,
+   "build_id": "v0.99.1",
+   "win": true,
+   "killed_by": null,
+   "acts_reached": 3,
+   "last_scored_floor": 33,
+   "final_deck_size": 25,
+   "decisions_scored": {
+    "card_reward": 16,
+    "rest": 6,
+    "shop": 2
+   },
+   "decisions_skipped": {
+    "unknown_boss": 10,
+    "unknown_card": 1
+   },
+   "agreement": {
+    "agree": 17,
+    "judged": 24,
+    "rate": 0.708
+   },
+   "tier1": [
+    "F17-card"
+   ],
+   "tier2": [
+    "F07-card",
+    "F08-rest",
+    "F13-card",
+    "F14-card",
+    "F30-card",
+    "F33-card"
+   ],
+   "warnings": []
+  },
+  "decisions": {
+   "decisions": [
+    {
+     "id": "F02-card",
+     "kind": "card_reward",
+     "floor": 2,
+     "act": 1,
+     "chosen": "0:POMMEL_STRIKE",
+     "chosen_name": "剑柄打击",
+     "engine_top": "0:POMMEL_STRIKE",
+     "engine_top_name": "剑柄打击",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F03-card",
+     "kind": "card_reward",
+     "floor": 3,
+     "act": 1,
+     "chosen": "0:SHRUG_IT_OFF",
+     "chosen_name": "耸肩无视",
+     "engine_top": "0:SHRUG_IT_OFF",
+     "engine_top_name": "耸肩无视",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F04-card",
+     "kind": "card_reward",
+     "floor": 4,
+     "act": 1,
+     "chosen": "0:POMMEL_STRIKE",
+     "chosen_name": "剑柄打击",
+     "engine_top": "0:POMMEL_STRIKE",
+     "engine_top_name": "剑柄打击",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F06-rest",
+     "kind": "rest",
+     "floor": 6,
+     "act": 1,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F07-card",
+     "kind": "card_reward",
+     "floor": 7,
+     "act": 1,
+     "chosen": "0:RAMPAGE",
+     "chosen_name": "暴走",
+     "engine_top": "2:IRON_WAVE",
+     "engine_top_name": "铁斩波",
+     "confidence": "low",
+     "tier": 2,
+     "gap": 1.9,
+     "not_strict_because": [
+      "low_confidence"
+     ]
+    },
+    {
+     "id": "F08-rest",
+     "kind": "rest",
+     "floor": 8,
+     "act": 1,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:HEAL",
+     "engine_top_name": "休息",
+     "confidence": "low",
+     "tier": 2,
+     "gap": 19.75,
+     "not_strict_because": [
+      "partly_scored",
+      "low_confidence"
+     ]
+    },
+    {
+     "id": "F09-card",
+     "kind": "card_reward",
+     "floor": 9,
+     "act": 1,
+     "chosen": "0:DEMON_FORM",
+     "chosen_name": "恶魔形态",
+     "engine_top": "0:DEMON_FORM",
+     "engine_top_name": "恶魔形态",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F12-card",
+     "kind": "card_reward",
+     "floor": 12,
+     "act": 1,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F13-card",
+     "kind": "card_reward",
+     "floor": 13,
+     "act": 1,
+     "chosen": "0:IMPERVIOUS",
+     "chosen_name": "岿然不动",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": -0.5,
+     "not_strict_because": [
+      "small_gap"
+     ]
+    },
+    {
+     "id": "F14-card",
+     "kind": "card_reward",
+     "floor": 14,
+     "act": 1,
+     "chosen": "0:TRUE_GRIT",
+     "chosen_name": "坚毅",
+     "engine_top": "2:RAGE",
+     "engine_top_name": "狂怒",
+     "confidence": "low",
+     "tier": 2,
+     "gap": 2.9,
+     "not_strict_because": [
+      "partly_scored",
+      "low_confidence"
+     ]
+    },
+    {
+     "id": "F16-rest",
+     "kind": "rest",
+     "floor": 16,
+     "act": 1,
+     "chosen": "rest:HEAL",
+     "chosen_name": "休息",
+     "engine_top": "rest:HEAL",
+     "engine_top_name": "休息",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F17-card",
+     "kind": "card_reward",
+     "floor": 17,
+     "act": 1,
+     "chosen": "0:THRASH",
+     "chosen_name": "痛殴",
+     "engine_top": "1:PYRE",
+     "engine_top_name": "薪火之源",
+     "confidence": "medium",
+     "tier": 1,
+     "gap": 1.4,
+     "not_strict_because": []
+    },
+    {
+     "id": "F19-card",
+     "kind": "card_reward",
+     "floor": 19,
+     "act": 2,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F20-shop",
+     "kind": "shop",
+     "floor": 20,
+     "act": 2,
+     "chosen": "card:1:BLOODLETTING",
+     "chosen_name": "放血",
+     "engine_top": "card:1:BLOODLETTING",
+     "engine_top_name": "放血",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F21-card",
+     "kind": "card_reward",
+     "floor": 21,
+     "act": 2,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F22-shop",
+     "kind": "shop",
+     "floor": 22,
+     "act": 2,
+     "chosen": "removal",
+     "chosen_name": "删牌",
+     "engine_top": "removal",
+     "engine_top_name": "删牌",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F23-rest",
+     "kind": "rest",
+     "floor": 23,
+     "act": 2,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F27-card",
+     "kind": "card_reward",
+     "floor": 27,
+     "act": 2,
+     "chosen": "0:ANGER",
+     "chosen_name": "愤怒",
+     "engine_top": "0:ANGER",
+     "engine_top_name": "愤怒",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F28-card",
+     "kind": "card_reward",
+     "floor": 28,
+     "act": 2,
+     "chosen": "0:BATTLE_TRANCE",
+     "chosen_name": "战斗专注",
+     "engine_top": "0:BATTLE_TRANCE",
+     "engine_top_name": "战斗专注",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F29-rest",
+     "kind": "rest",
+     "floor": 29,
+     "act": 2,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F30-card",
+     "kind": "card_reward",
+     "floor": 30,
+     "act": 2,
+     "chosen": "0:AGGRESSION",
+     "chosen_name": "好勇斗狠",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": 1.7,
+     "not_strict_because": [
+      "partly_scored",
+      "small_gap"
+     ]
+    },
+    {
+     "id": "F31-card",
+     "kind": "card_reward",
+     "floor": 31,
+     "act": 2,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F32-rest",
+     "kind": "rest",
+     "floor": 32,
+     "act": 2,
+     "chosen": "rest:HEAL",
+     "chosen_name": "休息",
+     "engine_top": "rest:HEAL",
+     "engine_top_name": "休息",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F33-card",
+     "kind": "card_reward",
+     "floor": 33,
+     "act": 2,
+     "chosen": "0:PYRE",
+     "chosen_name": "薪火之源",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": -0.8,
+     "not_strict_because": [
+      "small_gap"
+     ]
+    }
+   ],
+   "skipped": [
+    {
+     "id": "F35-card",
+     "kind": "card_reward",
+     "floor": 35,
+     "reason": "unknown_boss:DOORMAKER_BOSS"
+    },
+    {
+     "id": "F36-card",
+     "kind": "card_reward",
+     "floor": 36,
+     "reason": "unknown_boss:DOORMAKER_BOSS"
+    },
+    {
+     "id": "F37-shop",
+     "kind": "shop",
+     "floor": 37,
+     "reason": "unknown_boss:DOORMAKER_BOSS"
+    },
+    {
+     "id": "F38-card",
+     "kind": "card_reward",
+     "floor": 38,
+     "reason": "unknown_boss:DOORMAKER_BOSS"
+    },
+    {
+     "id": "F39-card",
+     "kind": "card_reward",
+     "floor": 39,
+     "reason": "unknown_card:GRAPPLE"
+    },
+    {
+     "id": "F40-rest",
+     "kind": "rest",
+     "floor": 40,
+     "reason": "unknown_boss:DOORMAKER_BOSS"
+    },
+    {
+     "id": "F42-card",
+     "kind": "card_reward",
+     "floor": 42,
+     "reason": "unknown_boss:DOORMAKER_BOSS"
+    },
+    {
+     "id": "F43-card",
+     "kind": "card_reward",
+     "floor": 43,
+     "reason": "unknown_boss:DOORMAKER_BOSS"
+    },
+    {
+     "id": "F44-card",
+     "kind": "card_reward",
+     "floor": 44,
+     "reason": "unknown_boss:DOORMAKER_BOSS"
+    },
+    {
+     "id": "F45-shop",
+     "kind": "shop",
+     "floor": 45,
+     "reason": "unknown_boss:DOORMAKER_BOSS"
+    },
+    {
+     "id": "F47-rest",
+     "kind": "rest",
+     "floor": 47,
+     "reason": "unknown_boss:DOORMAKER_BOSS"
+    }
+   ]
+  },
+  "flags": [
+   {
+    "id": "F17-card",
+    "kind": "card_reward",
+    "floor": 17,
+    "act": 1,
+    "hp": 46,
+    "max_hp": 80,
+    "gold": 322,
+    "engine_top": "1:PYRE",
+    "confidence": "medium",
+    "chosen": "0:THRASH",
+    "tier": 1,
+    "gap": 1.4,
+    "pick_margin": 1,
+    "options": [
+     {
+      "id": "1:PYRE",
+      "kind": "card",
+      "entity_id": "PYRE",
+      "name": "薪火之源",
+      "score": 67.8,
+      "deck_score": 67.8,
+      "rank": 1,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 1 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 1 张牌（坚毅）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 钨合金棍 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:scaling",
+        "delta": 0.81,
+        "message": "拿薪火之源后成长：每回合 8.4 → 9.2（需求 13.6）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": 0.61,
+        "message": "拿薪火之源后前期输出：每回合 19.3 → 20.4（需求 34.5）"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": 0.35,
+        "message": "拿薪火之源后防御：每回合 11.1 → 11.9（需求 8.2）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 恶魔形态 让薪火之源更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": -0.23,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0.6083,
+       "survival": 0.353,
+       "long_term_growth": 0.8129,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "skip",
+      "kind": "skip",
+      "entity_id": null,
+      "name": "跳过",
+      "score": 67.3,
+      "deck_score": 66.3,
+      "rank": 2,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 1 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 1 张牌（坚毅）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 钨合金棍 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": 0,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "code": "deck_fitness:pick_margin",
+        "delta": 1,
+        "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0,
+       "survival": 0,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "0:THRASH",
+      "kind": "card",
+      "entity_id": "THRASH",
+      "name": "痛殴",
+      "score": 66.4,
+      "deck_score": 66.4,
+      "rank": 3,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 1 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 1 张牌（坚毅）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 钨合金棍 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:scaling",
+        "delta": 0.7,
+        "message": "拿痛殴后成长：每回合 8.4 → 9.1（需求 13.6）"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -0.29,
+        "message": "拿痛殴后防御：每回合 11.1 → 10.5（需求 8.2）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": 0.24,
+        "message": "拿痛殴后前期输出：每回合 19.3 → 19.7（需求 34.5）"
+       },
+       {
+        "code": "deck_fitness:cycle",
+        "delta": -0.11,
+        "message": "拿痛殴后循环：每回合额外抽牌 1.19 → 1.10（需求 1.0）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 岿然不动、恶魔形态 让痛殴更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": -0.41,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0.2396,
+       "survival": -0.2902,
+       "long_term_growth": 0.5904,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "2:COLOSSUS",
+      "kind": "card",
+      "entity_id": "COLOSSUS",
+      "name": "巨像",
+      "score": 64,
+      "deck_score": 64,
+      "rank": 4,
+      "eligible": true,
+      "fully_scored": false,
+      "gaps": [
+       "fact_unknowable:powers:COLOSSUS",
+       "power_mechanic_unsupported:COLOSSUS:damage_received"
+      ],
+      "factors": [
+       {
+        "code": "unmodeled_mechanic",
+        "delta": 0,
+        "message": "巨像的部分效果尚未计入评分；牌组中 1 张牌、1 件遗物未完整计入评分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 1 张牌（坚毅）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 钨合金棍 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": -1.19,
+        "message": "拿巨像后前期输出：每回合 19.3 → 17.3（需求 34.5）"
+       },
+       {
+        "code": "deck_fitness:scaling",
+        "delta": -1.13,
+        "message": "拿巨像后成长：每回合 8.4 → 7.3（需求 13.6）"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": 0.13,
+        "message": "拿巨像后防御：每回合 11.1 → 11.4（需求 8.2）"
+       },
+       {
+        "code": "deck_fitness:cycle",
+        "delta": -0.11,
+        "message": "拿巨像后循环：每回合额外抽牌 1.19 → 1.10（需求 1.0）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 剑柄打击、耸肩无视 让巨像更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": 0.06,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": -1.1869,
+       "survival": 0.1253,
+       "long_term_growth": -1.2453,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "explained": [
+  {
+   "flag": "F17-card",
+   "status": "verified",
+   "errors": [],
+   "evidence": [
+    {
+     "id": "T0",
+     "tool": "get_decision",
+     "result": {
+      "id": "F17-card",
+      "kind": "card_reward",
+      "floor": 17,
+      "act": 1,
+      "hp": 46,
+      "max_hp": 80,
+      "gold": 322,
+      "engine_top": "1:PYRE",
+      "confidence": "medium",
+      "chosen": "0:THRASH",
+      "tier": 1,
+      "gap": 1.4,
+      "pick_margin": 1,
+      "options": [
+       {
+        "id": "1:PYRE",
+        "kind": "card",
+        "entity_id": "PYRE",
+        "name": "薪火之源",
+        "score": 67.8,
+        "deck_score": 67.8,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（坚毅）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 钨合金棍 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:scaling",
+          "delta": 0.81,
+          "message": "拿薪火之源后成长：每回合 8.4 → 9.2（需求 13.6）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.61,
+          "message": "拿薪火之源后前期输出：每回合 19.3 → 20.4（需求 34.5）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": 0.35,
+          "message": "拿薪火之源后防御：每回合 11.1 → 11.9（需求 8.2）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 恶魔形态 让薪火之源更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.23,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       },
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 67.3,
+        "deck_score": 66.3,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（坚毅）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 钨合金棍 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 1,
+          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ]
+       },
+       {
+        "id": "0:THRASH",
+        "kind": "card",
+        "entity_id": "THRASH",
+        "name": "痛殴",
+        "score": 66.4,
+        "deck_score": 66.4,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（坚毅）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 钨合金棍 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:scaling",
+          "delta": 0.7,
+          "message": "拿痛殴后成长：每回合 8.4 → 9.1（需求 13.6）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.29,
+          "message": "拿痛殴后防御：每回合 11.1 → 10.5（需求 8.2）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.24,
+          "message": "拿痛殴后前期输出：每回合 19.3 → 19.7（需求 34.5）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.11,
+          "message": "拿痛殴后循环：每回合额外抽牌 1.19 → 1.10（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 岿然不动、恶魔形态 让痛殴更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.41,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       },
+       {
+        "id": "2:COLOSSUS",
+        "kind": "card",
+        "entity_id": "COLOSSUS",
+        "name": "巨像",
+        "score": 64,
+        "deck_score": 64,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": false,
+        "gaps": [
+         "fact_unknowable:powers:COLOSSUS",
+         "power_mechanic_unsupported:COLOSSUS:damage_received"
+        ],
+        "factors": [
+         {
+          "code": "unmodeled_mechanic",
+          "delta": 0,
+          "message": "巨像的部分效果尚未计入评分；牌组中 1 张牌、1 件遗物未完整计入评分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（坚毅）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 钨合金棍 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -1.19,
+          "message": "拿巨像后前期输出：每回合 19.3 → 17.3（需求 34.5）"
+         },
+         {
+          "code": "deck_fitness:scaling",
+          "delta": -1.13,
+          "message": "拿巨像后成长：每回合 8.4 → 7.3（需求 13.6）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": 0.13,
+          "message": "拿巨像后防御：每回合 11.1 → 11.4（需求 8.2）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.11,
+          "message": "拿巨像后循环：每回合额外抽牌 1.19 → 1.10（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 剑柄打击、耸肩无视 让巨像更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0.06,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "id": "T1",
+     "tool": "get_decision",
+     "result": {
+      "id": "F17-card",
+      "kind": "card_reward",
+      "floor": 17,
+      "act": 1,
+      "hp": 46,
+      "max_hp": 80,
+      "gold": 322,
+      "engine_top": "1:PYRE",
+      "confidence": "medium",
+      "policy_status": "recommend",
+      "pick_margin": 1,
+      "options": [
+       {
+        "id": "1:PYRE",
+        "kind": "card",
+        "entity_id": "PYRE",
+        "name": "薪火之源",
+        "score": 67.8,
+        "deck_score": 67.8,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（坚毅）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 钨合金棍 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:scaling",
+          "delta": 0.81,
+          "message": "拿薪火之源后成长：每回合 8.4 → 9.2（需求 13.6）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.61,
+          "message": "拿薪火之源后前期输出：每回合 19.3 → 20.4（需求 34.5）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": 0.35,
+          "message": "拿薪火之源后防御：每回合 11.1 → 11.9（需求 8.2）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 恶魔形态 让薪火之源更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.23,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0.6083,
+         "survival": 0.353,
+         "long_term_growth": 0.8129,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 67.3,
+        "deck_score": 66.3,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（坚毅）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 钨合金棍 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 1,
+          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0,
+         "survival": 0,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "0:THRASH",
+        "kind": "card",
+        "entity_id": "THRASH",
+        "name": "痛殴",
+        "score": 66.4,
+        "deck_score": 66.4,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（坚毅）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 钨合金棍 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:scaling",
+          "delta": 0.7,
+          "message": "拿痛殴后成长：每回合 8.4 → 9.1（需求 13.6）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.29,
+          "message": "拿痛殴后防御：每回合 11.1 → 10.5（需求 8.2）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.24,
+          "message": "拿痛殴后前期输出：每回合 19.3 → 19.7（需求 34.5）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.11,
+          "message": "拿痛殴后循环：每回合额外抽牌 1.19 → 1.10（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 岿然不动、恶魔形态 让痛殴更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.41,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0.2396,
+         "survival": -0.2902,
+         "long_term_growth": 0.5904,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "2:COLOSSUS",
+        "kind": "card",
+        "entity_id": "COLOSSUS",
+        "name": "巨像",
+        "score": 64,
+        "deck_score": 64,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": false,
+        "gaps": [
+         "fact_unknowable:powers:COLOSSUS",
+         "power_mechanic_unsupported:COLOSSUS:damage_received"
+        ],
+        "factors": [
+         {
+          "code": "unmodeled_mechanic",
+          "delta": 0,
+          "message": "巨像的部分效果尚未计入评分；牌组中 1 张牌、1 件遗物未完整计入评分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（坚毅）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 钨合金棍 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -1.19,
+          "message": "拿巨像后前期输出：每回合 19.3 → 17.3（需求 34.5）"
+         },
+         {
+          "code": "deck_fitness:scaling",
+          "delta": -1.13,
+          "message": "拿巨像后成长：每回合 8.4 → 7.3（需求 13.6）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": 0.13,
+          "message": "拿巨像后防御：每回合 11.1 → 11.4（需求 8.2）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.11,
+          "message": "拿巨像后循环：每回合额外抽牌 1.19 → 1.10（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 剑柄打击、耸肩无视 让巨像更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0.06,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": -1.1869,
+         "survival": 0.1253,
+         "long_term_growth": -1.2453,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       }
+      ],
+      "chosen": "0:THRASH",
+      "tier": 1,
+      "gap": 1.4,
+      "not_strict_because": []
+     }
+    },
+    {
+     "id": "T2",
+     "tool": "get_deck",
+     "result": {
+      "decision_id": "F17-card",
+      "floor": 17,
+      "act": 1,
+      "hp": 46,
+      "max_hp": 80,
+      "gold": 322,
+      "deck_size": 17,
+      "deck": [
+       {
+        "card": "ASCENDERS_BANE",
+        "name": "进阶之灾",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "BASH",
+        "name": "痛击",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "BLOODLETTING",
+        "name": "放血",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "DEFEND_IRONCLAD",
+        "name": "防御",
+        "upgrades": 0,
+        "count": 3
+       },
+       {
+        "card": "DEMON_FORM",
+        "name": "恶魔形态",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "IMPERVIOUS",
+        "name": "岿然不动",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "POMMEL_STRIKE",
+        "name": "剑柄打击",
+        "upgrades": 1,
+        "count": 2
+       },
+       {
+        "card": "RAMPAGE",
+        "name": "暴走",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "SHRUG_IT_OFF",
+        "name": "耸肩无视",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "STRIKE_IRONCLAD",
+        "name": "打击",
+        "upgrades": 0,
+        "count": 4
+       },
+       {
+        "card": "TRUE_GRIT",
+        "name": "坚毅",
+        "upgrades": 0,
+        "count": 1
+       }
+      ],
+      "relics": [
+       {
+        "relic": "BURNING_BLOOD",
+        "name": "燃烧之血"
+       },
+       {
+        "relic": "PRECARIOUS_SHEARS",
+        "name": "松动羊毛剪"
+       },
+       {
+        "relic": "TUNGSTEN_ROD",
+        "name": "钨合金棍"
+       },
+       {
+        "relic": "JUZU_BRACELET",
+        "name": "佛珠手链"
+       },
+       {
+        "relic": "LANTERN",
+        "name": "灯笼"
+       }
+      ],
+      "potions": [
+       {
+        "potion": "WEAK_POTION",
+        "name": "虚弱药水"
+       }
+      ]
+     }
+    },
+    {
+     "id": "T3",
+     "tool": "compare_options",
+     "result": {
+      "decision_id": "F17-card",
+      "a": {
+       "id": "1:PYRE",
+       "name": "薪火之源",
+       "deck_score": 67.8,
+       "fully_scored": true
+      },
+      "b": {
+       "id": "0:THRASH",
+       "name": "痛殴",
+       "deck_score": 66.4,
+       "fully_scored": true
+      },
+      "deck_score_difference": 1.4,
+      "factors": [
+       {
+        "factor": "deck_fitness:defense",
+        "a": 0.35,
+        "b": -0.29,
+        "difference": 0.64,
+        "a_message": "拿薪火之源后防御：每回合 11.1 → 11.9（需求 8.2）",
+        "b_message": "拿痛殴后防御：每回合 11.1 → 10.5（需求 8.2）"
+       },
+       {
+        "factor": "deck_fitness:frontload",
+        "a": 0.61,
+        "b": 0.24,
+        "difference": 0.37,
+        "a_message": "拿薪火之源后前期输出：每回合 19.3 → 20.4（需求 34.5）",
+        "b_message": "拿痛殴后前期输出：每回合 19.3 → 19.7（需求 34.5）"
+       },
+       {
+        "factor": "deck_fitness:lookahead",
+        "a": -0.23,
+        "b": -0.41,
+        "difference": 0.18,
+        "a_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度",
+        "b_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "factor": "deck_fitness:cycle",
+        "a": 0,
+        "b": -0.11,
+        "difference": 0.11,
+        "a_message": null,
+        "b_message": "拿痛殴后循环：每回合额外抽牌 1.19 → 1.10（需求 1.0）"
+       },
+       {
+        "factor": "deck_fitness:scaling",
+        "a": 0.81,
+        "b": 0.7,
+        "difference": 0.11,
+        "a_message": "拿薪火之源后成长：每回合 8.4 → 9.2（需求 13.6）",
+        "b_message": "拿痛殴后成长：每回合 8.4 → 9.1（需求 13.6）"
+       },
+       {
+        "factor": "deck_fitness:synergy",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组里的 恶魔形态 让薪火之源更有价值（说明，不另加分）",
+        "b_message": "牌组里的 岿然不动、恶魔形态 让痛殴更有价值（说明，不另加分）"
+       },
+       {
+        "factor": "estimate_scope",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 1 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。",
+        "b_message": "牌组中 1 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "factor": "partially_modeled_deck_cards",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 1 张牌（坚毅）有部分效果尚未计入评分。",
+        "b_message": "牌组中 1 张牌（坚毅）有部分效果尚未计入评分。"
+       },
+       {
+        "factor": "unmodeled_relics",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "遗物 钨合金棍 尚未计入评分。",
+        "b_message": "遗物 钨合金棍 尚未计入评分。"
+       }
+      ],
+      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
+     }
+    },
+    {
+     "id": "T4",
+     "tool": "get_card",
+     "result": {
+      "id": "PYRE",
+      "name": "薪火之源",
+      "description": "在回合开始时，获得。",
+      "cost": 2,
+      "type": "能力",
+      "rarity": "稀有",
+      "color": "ironclad",
+      "target": "Self",
+      "energy_gain": 1,
+      "upgrade_description": "在回合开始时，获得。"
+     }
+    },
+    {
+     "id": "T5",
+     "tool": "what_if_choices",
+     "result": {
+      "remove": [
+       "ASCENDERS_BANE",
+       "BASH",
+       "BLOODLETTING",
+       "DEFEND_IRONCLAD",
+       "DEMON_FORM",
+       "IMPERVIOUS",
+       "POMMEL_STRIKE",
+       "RAMPAGE",
+       "SHRUG_IT_OFF",
+       "STRIKE_IRONCLAD",
+       "TRUE_GRIT"
+      ],
+      "upgrade": [
+       "BASH",
+       "DEFEND_IRONCLAD",
+       "DEMON_FORM",
+       "IMPERVIOUS",
+       "SHRUG_IT_OFF",
+       "STRIKE_IRONCLAD",
+       "TRUE_GRIT"
+      ],
+      "add": [
+       {
+        "card": "BLOOD_WALL",
+        "name": "血墙"
+       },
+       {
+        "card": "BODY_SLAM",
+        "name": "全身撞击"
+       },
+       {
+        "card": "DEMON_FORM",
+        "name": "恶魔形态"
+       },
+       {
+        "card": "EVIL_EYE",
+        "name": "邪眼"
+       },
+       {
+        "card": "HEMOKINESIS",
+        "name": "御血术"
+       },
+       {
+        "card": "IMPERVIOUS",
+        "name": "岿然不动"
+       },
+       {
+        "card": "INFLAME",
+        "name": "燃烧"
+       },
+       {
+        "card": "IRON_WAVE",
+        "name": "铁斩波"
+       },
+       {
+        "card": "MOLTEN_FIST",
+        "name": "熔融之拳"
+       },
+       {
+        "card": "POMMEL_STRIKE",
+        "name": "剑柄打击"
+       },
+       {
+        "card": "RAGE",
+        "name": "狂怒"
+       },
+       {
+        "card": "RAMPAGE",
+        "name": "暴走"
+       },
+       {
+        "card": "RUPTURE",
+        "name": "撕裂"
+       },
+       {
+        "card": "SETUP_STRIKE",
+        "name": "预备打击"
+       },
+       {
+        "card": "SHRUG_IT_OFF",
+        "name": "耸肩无视"
+       },
+       {
+        "card": "THUNDERCLAP",
+        "name": "闪电霹雳"
+       },
+       {
+        "card": "TREMBLE",
+        "name": "战栗"
+       },
+       {
+        "card": "TRUE_GRIT",
+        "name": "坚毅"
+       }
+      ]
+     }
+    },
+    {
+     "id": "T6",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F17-card",
+      "changes": [
+       {
+        "operation": "upgrade",
+        "card": "DEMON_FORM",
+        "name": "恶魔形态"
+       }
+      ],
+      "engine_top_before": "1:PYRE",
+      "engine_top_after": "1:PYRE",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 1.4,
+      "options_after": [
+       {
+        "id": "1:PYRE",
+        "name": "薪火之源",
+        "deck_score": 70.2,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 68.7,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "0:THRASH",
+        "name": "痛殴",
+        "deck_score": 68.8,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "2:COLOSSUS",
+        "name": "巨像",
+        "deck_score": 66.5,
+        "rank": 4,
+        "fully_scored": false
+       }
+      ]
+     }
+    }
+   ],
+   "toolCalls": 6,
+   "repairs": 0,
+   "usage": {
+    "prompt_tokens": 29153,
+    "completion_tokens": 649,
+    "cost_usd": 0.004293852,
+    "llm_calls": 5
+   },
+   "finding": {
+    "decision_id": "F17-card",
+    "reasons": [
+     {
+      "factor": "deck_fitness:defense",
+      "evidence": "T3",
+      "text": "防御是差距最大的一项：拿薪火之源后每回合 11.1 → 11.9，拿痛殴则降到 10.5，需求是 8.2。"
+     },
+     {
+      "factor": "deck_fitness:frontload",
+      "evidence": "T3",
+      "text": "前期输出上薪火之源 19.3 → 20.4，痛殴只到 19.7，两者都远低于需求 34.5。"
+     },
+     {
+      "factor": "deck_fitness:lookahead",
+      "evidence": "T3",
+      "text": "计入后续 3 次选牌后，薪火之源 -0.23，痛殴 -0.41，长期看薪火之源更稳。"
+     }
+    ],
+    "what_if_evidence": "T6",
+    "what_if_text": "把恶魔形态升级后，薪火之源仍是首选（70.2 对痛殴 68.8），差距没有缩小。",
+    "advice": "牌组已有恶魔形态，2 费能力牌薪火之源能同时补防御和成长；下次遇到这类能力牌可优先考虑。"
+   }
+  }
+ ],
+ "summary": {
+  "text": "引擎点出 1 个值得想一想的决定，其中 1 个主要和防御有关。",
+  "source": "program",
+  "cost_usd": 0
+ },
+ "meta": {
+  "model": "deepseek-flash",
+  "cost_usd": 0.004293852,
+  "seconds": 7.314,
+  "generated_at": "2026-11-01 14:44"
+ }
+}

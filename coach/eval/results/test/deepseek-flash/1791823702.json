@@ -1,0 +1,263 @@
+{
+ "run": "1791823702",
+ "set": "test",
+ "model": "deepseek-flash",
+ "prompt_version": "p3",
+ "pre": {
+  "summary": {
+   "run_id": "1791823702",
+   "character": "NECROBINDER",
+   "ascension": 0,
+   "build_id": "v0.111.0",
+   "win": false,
+   "killed_by": "瀑布巨兽",
+   "acts_reached": 1,
+   "last_scored_floor": 16,
+   "final_deck_size": 15,
+   "decisions_scored": {
+    "card_reward": 9,
+    "shop": 1,
+    "rest": 3
+   },
+   "decisions_skipped": {},
+   "agreement": {
+    "agree": 5,
+    "judged": 13,
+    "rate": 0.385
+   },
+   "tier1": [],
+   "tier2": [
+    "F04-card",
+    "F05-card",
+    "F06-card",
+    "F07-rest",
+    "F09-card",
+    "F11-card",
+    "F13-card",
+    "F14-card"
+   ],
+   "warnings": []
+  },
+  "decisions": {
+   "decisions": [
+    {
+     "id": "F02-card",
+     "kind": "card_reward",
+     "floor": 2,
+     "act": 1,
+     "chosen": "0:SCOURGE",
+     "chosen_name": "鞭打",
+     "engine_top": "0:SCOURGE",
+     "engine_top_name": "鞭打",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F03-shop",
+     "kind": "shop",
+     "floor": 3,
+     "act": 1,
+     "chosen": "card:6:FRIENDSHIP",
+     "chosen_name": "友谊",
+     "engine_top": "card:6:FRIENDSHIP",
+     "engine_top_name": "友谊",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F04-card",
+     "kind": "card_reward",
+     "floor": 4,
+     "act": 1,
+     "chosen": "0:SLEIGHT_OF_FLESH",
+     "chosen_name": "血肉戏法",
+     "engine_top": "2:SOW",
+     "engine_top_name": "播种",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": 5.5,
+     "not_strict_because": [
+      "partly_scored"
+     ]
+    },
+    {
+     "id": "F05-card",
+     "kind": "card_reward",
+     "floor": 5,
+     "act": 1,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "2:POKE",
+     "engine_top_name": "戳击",
+     "confidence": "low",
+     "tier": 2,
+     "gap": 1.1,
+     "not_strict_because": [
+      "low_confidence"
+     ]
+    },
+    {
+     "id": "F06-card",
+     "kind": "card_reward",
+     "floor": 6,
+     "act": 1,
+     "chosen": "0:GRAVE_WARDEN",
+     "chosen_name": "守墓人",
+     "engine_top": "1:REAVE",
+     "engine_top_name": "剥夺",
+     "confidence": "low",
+     "tier": 2,
+     "gap": 0.4,
+     "not_strict_because": [
+      "low_confidence",
+      "small_gap"
+     ]
+    },
+    {
+     "id": "F07-rest",
+     "kind": "rest",
+     "floor": 7,
+     "act": 1,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:HEAL",
+     "engine_top_name": "休息",
+     "confidence": "low",
+     "tier": 2,
+     "gap": 11.68,
+     "not_strict_because": [
+      "partly_scored",
+      "low_confidence"
+     ]
+    },
+    {
+     "id": "F09-card",
+     "kind": "card_reward",
+     "floor": 9,
+     "act": 1,
+     "chosen": "0:FLATTEN",
+     "chosen_name": "重压",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "low",
+     "tier": 2,
+     "gap": 2.5,
+     "not_strict_because": [
+      "low_confidence"
+     ]
+    },
+    {
+     "id": "F11-card",
+     "kind": "card_reward",
+     "floor": 11,
+     "act": 1,
+     "chosen": "0:HANG",
+     "chosen_name": "吊杀",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": 0.6,
+     "not_strict_because": [
+      "partly_scored",
+      "small_gap"
+     ]
+    },
+    {
+     "id": "F12-rest",
+     "kind": "rest",
+     "floor": 12,
+     "act": 1,
+     "chosen": "rest:HEAL",
+     "chosen_name": "休息",
+     "engine_top": "rest:HEAL",
+     "engine_top_name": "休息",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F13-card",
+     "kind": "card_reward",
+     "floor": 13,
+     "act": 1,
+     "chosen": "0:DEATH_MARCH",
+     "chosen_name": "死亡行军",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "low",
+     "tier": 2,
+     "gap": 0.3,
+     "not_strict_because": [
+      "low_confidence",
+      "small_gap"
+     ]
+    },
+    {
+     "id": "F14-card",
+     "kind": "card_reward",
+     "floor": 14,
+     "act": 1,
+     "chosen": "0:DIRGE",
+     "chosen_name": "挽歌",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": 0.2,
+     "not_strict_because": [
+      "partly_scored",
+      "small_gap"
+     ]
+    },
+    {
+     "id": "F15-card",
+     "kind": "card_reward",
+     "floor": 15,
+     "act": 1,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F16-rest",
+     "kind": "rest",
+     "floor": 16,
+     "act": 1,
+     "chosen": "rest:HEAL",
+     "chosen_name": "休息",
+     "engine_top": "rest:HEAL",
+     "engine_top_name": "休息",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    }
+   ],
+   "skipped": []
+  },
+  "flags": []
+ },
+ "explained": [],
+ "summary": {
+  "text": "这局没有引擎有把握的分歧：你的选择和引擎的看法没有明显差距。",
+  "source": "program",
+  "cost_usd": 0
+ },
+ "meta": {
+  "model": "deepseek-flash",
+  "cost_usd": 0,
+  "seconds": 0.697,
+  "generated_at": "2026-11-01 14:45"
+ }
+}

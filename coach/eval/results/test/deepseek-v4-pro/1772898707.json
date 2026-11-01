@@ -1,0 +1,932 @@
+{
+ "run": "1772898707",
+ "set": "test",
+ "model": "deepseek-v4-pro",
+ "prompt_version": "p3",
+ "pre": {
+  "summary": {
+   "run_id": "1772898707",
+   "character": "NECROBINDER",
+   "ascension": 0,
+   "build_id": "v0.98.2",
+   "win": false,
+   "killed_by": "灵魂异鱼",
+   "acts_reached": 1,
+   "last_scored_floor": 16,
+   "final_deck_size": 16,
+   "decisions_scored": {
+    "card_reward": 6,
+    "shop": 1,
+    "rest": 3
+   },
+   "decisions_skipped": {},
+   "agreement": {
+    "agree": 5,
+    "judged": 10,
+    "rate": 0.5
+   },
+   "tier1": [
+    "F06-card"
+   ],
+   "tier2": [
+    "F03-card",
+    "F09-card",
+    "F12-card",
+    "F15-card"
+   ],
+   "warnings": []
+  },
+  "decisions": {
+   "decisions": [
+    {
+     "id": "F02-card",
+     "kind": "card_reward",
+     "floor": 2,
+     "act": 1,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F03-card",
+     "kind": "card_reward",
+     "floor": 3,
+     "act": 1,
+     "chosen": "0:REAVE",
+     "chosen_name": "剥夺",
+     "engine_top": "2:PARSE",
+     "engine_top_name": "领会",
+     "confidence": "low",
+     "tier": 2,
+     "gap": 0.3,
+     "not_strict_because": [
+      "low_confidence",
+      "small_gap"
+     ]
+    },
+    {
+     "id": "F06-card",
+     "kind": "card_reward",
+     "floor": 6,
+     "act": 1,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "2:SOW",
+     "engine_top_name": "播种",
+     "confidence": "medium",
+     "tier": 1,
+     "gap": 3.2,
+     "not_strict_because": []
+    },
+    {
+     "id": "F07-shop",
+     "kind": "shop",
+     "floor": 7,
+     "act": 1,
+     "chosen": "card:6:GRAVE_WARDEN",
+     "chosen_name": "守墓人",
+     "engine_top": "card:6:GRAVE_WARDEN",
+     "engine_top_name": "守墓人",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F08-rest",
+     "kind": "rest",
+     "floor": 8,
+     "act": 1,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F09-card",
+     "kind": "card_reward",
+     "floor": 9,
+     "act": 1,
+     "chosen": "0:DEVOUR_LIFE",
+     "chosen_name": "吞噬生命",
+     "engine_top": "1:CAPTURE_SPIRIT",
+     "engine_top_name": "捕捉灵魂",
+     "confidence": "low",
+     "tier": 2,
+     "gap": 2.2,
+     "not_strict_because": [
+      "partly_scored",
+      "low_confidence"
+     ]
+    },
+    {
+     "id": "F12-card",
+     "kind": "card_reward",
+     "floor": 12,
+     "act": 1,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "2:SOW",
+     "engine_top_name": "播种",
+     "confidence": "low",
+     "tier": 2,
+     "gap": 2.3,
+     "not_strict_because": [
+      "low_confidence"
+     ]
+    },
+    {
+     "id": "F13-rest",
+     "kind": "rest",
+     "floor": 13,
+     "act": 1,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F15-card",
+     "kind": "card_reward",
+     "floor": 15,
+     "act": 1,
+     "chosen": "0:DRAIN_POWER",
+     "chosen_name": "能量汲取",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "low",
+     "tier": 2,
+     "gap": -0.2,
+     "not_strict_because": [
+      "low_confidence",
+      "small_gap"
+     ]
+    },
+    {
+     "id": "F16-rest",
+     "kind": "rest",
+     "floor": 16,
+     "act": 1,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    }
+   ],
+   "skipped": []
+  },
+  "flags": [
+   {
+    "id": "F06-card",
+    "kind": "card_reward",
+    "floor": 6,
+    "act": 1,
+    "hp": 63,
+    "max_hp": 66,
+    "gold": 196,
+    "engine_top": "2:SOW",
+    "confidence": "medium",
+    "chosen": "skip",
+    "tier": 1,
+    "gap": 3.2,
+    "pick_margin": 1,
+    "options": [
+     {
+      "id": "2:SOW",
+      "kind": "card",
+      "entity_id": "SOW",
+      "name": "播种",
+      "score": 53.1,
+      "deck_score": 53.1,
+      "rank": 1,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "deck_fitness:aoe",
+        "delta": 4.1,
+        "message": "拿播种后群伤：每回合 0.0 → 0.9（需求 3.1）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": 0.91,
+        "message": "拿播种后前期输出：每回合 14.3 → 15.3（需求 23.4）"
+       },
+       {
+        "code": "deck_fitness:cycle",
+        "delta": -0.78,
+        "message": "拿播种后循环：每回合额外抽牌 0.45 → 0.37（需求 1.0）"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -0.46,
+        "message": "拿播种后防御：每回合 7.7 → 6.9（需求 4.9）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": -0.56,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 5.0047,
+       "survival": -0.4597,
+       "long_term_growth": -0.7811,
+       "resource_efficiency": 0,
+       "data_completeness": 1
+      }
+     },
+     {
+      "id": "0:BURY",
+      "kind": "card",
+      "entity_id": "BURY",
+      "name": "埋葬",
+      "score": 52,
+      "deck_score": 52,
+      "rank": 2,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "deck_fitness:frontload",
+        "delta": 5.16,
+        "message": "拿埋葬后前期输出：每回合 14.3 → 20.5（需求 23.4）"
+       },
+       {
+        "code": "deck_fitness:cycle",
+        "delta": -1.4,
+        "message": "拿埋葬后循环：每回合额外抽牌 0.45 → 0.31（需求 1.0）"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -1.07,
+        "message": "拿埋葬后防御：每回合 7.7 → 5.9（需求 4.9）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 护卫 让埋葬更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": -0.52,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 5.1648,
+       "survival": -1.0663,
+       "long_term_growth": -1.3998,
+       "resource_efficiency": 0,
+       "data_completeness": 1
+      }
+     },
+     {
+      "id": "skip",
+      "kind": "skip",
+      "entity_id": null,
+      "name": "跳过",
+      "score": 50.9,
+      "deck_score": 49.9,
+      "rank": 3,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": 0,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "code": "deck_fitness:pick_margin",
+        "delta": 1,
+        "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0,
+       "survival": 0,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 1
+      }
+     },
+     {
+      "id": "1:RATTLE",
+      "kind": "card",
+      "entity_id": "RATTLE",
+      "name": "猛晃",
+      "score": 48.9,
+      "deck_score": 48.9,
+      "rank": 4,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "deck_fitness:cycle",
+        "delta": -0.63,
+        "message": "拿猛晃后循环：每回合额外抽牌 0.45 → 0.39（需求 1.0）"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -0.3,
+        "message": "拿猛晃后防御：每回合 7.7 → 7.1（需求 4.9）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": -0.01,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": -0.0186,
+       "survival": -0.304,
+       "long_term_growth": -0.6335,
+       "resource_efficiency": 0,
+       "data_completeness": 1
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "explained": [
+  {
+   "flag": "F06-card",
+   "status": "verified",
+   "errors": [
+    "reasons[2]: deck_fitness:defense is not one of the largest differences here (deck_fitness:aoe, deck_fitness:frontload, deck_fitness:cycle)"
+   ],
+   "evidence": [
+    {
+     "id": "T0",
+     "tool": "get_decision",
+     "result": {
+      "id": "F06-card",
+      "kind": "card_reward",
+      "floor": 6,
+      "act": 1,
+      "hp": 63,
+      "max_hp": 66,
+      "gold": 196,
+      "engine_top": "2:SOW",
+      "confidence": "medium",
+      "chosen": "skip",
+      "tier": 1,
+      "gap": 3.2,
+      "pick_margin": 1,
+      "options": [
+       {
+        "id": "2:SOW",
+        "kind": "card",
+        "entity_id": "SOW",
+        "name": "播种",
+        "score": 53.1,
+        "deck_score": 53.1,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:aoe",
+          "delta": 4.1,
+          "message": "拿播种后群伤：每回合 0.0 → 0.9（需求 3.1）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.91,
+          "message": "拿播种后前期输出：每回合 14.3 → 15.3（需求 23.4）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.78,
+          "message": "拿播种后循环：每回合额外抽牌 0.45 → 0.37（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.46,
+          "message": "拿播种后防御：每回合 7.7 → 6.9（需求 4.9）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.56,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       },
+       {
+        "id": "0:BURY",
+        "kind": "card",
+        "entity_id": "BURY",
+        "name": "埋葬",
+        "score": 52,
+        "deck_score": 52,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 5.16,
+          "message": "拿埋葬后前期输出：每回合 14.3 → 20.5（需求 23.4）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -1.4,
+          "message": "拿埋葬后循环：每回合额外抽牌 0.45 → 0.31（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -1.07,
+          "message": "拿埋葬后防御：每回合 7.7 → 5.9（需求 4.9）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 护卫 让埋葬更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.52,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       },
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 50.9,
+        "deck_score": 49.9,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 1,
+          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ]
+       },
+       {
+        "id": "1:RATTLE",
+        "kind": "card",
+        "entity_id": "RATTLE",
+        "name": "猛晃",
+        "score": 48.9,
+        "deck_score": 48.9,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.63,
+          "message": "拿猛晃后循环：每回合额外抽牌 0.45 → 0.39（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.3,
+          "message": "拿猛晃后防御：每回合 7.7 → 7.1（需求 4.9）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.01,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "id": "T1",
+     "tool": "get_decision",
+     "result": {
+      "id": "F06-card",
+      "kind": "card_reward",
+      "floor": 6,
+      "act": 1,
+      "hp": 63,
+      "max_hp": 66,
+      "gold": 196,
+      "engine_top": "2:SOW",
+      "confidence": "medium",
+      "policy_status": "recommend",
+      "pick_margin": 1,
+      "options": [
+       {
+        "id": "2:SOW",
+        "kind": "card",
+        "entity_id": "SOW",
+        "name": "播种",
+        "score": 53.1,
+        "deck_score": 53.1,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:aoe",
+          "delta": 4.1,
+          "message": "拿播种后群伤：每回合 0.0 → 0.9（需求 3.1）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.91,
+          "message": "拿播种后前期输出：每回合 14.3 → 15.3（需求 23.4）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.78,
+          "message": "拿播种后循环：每回合额外抽牌 0.45 → 0.37（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.46,
+          "message": "拿播种后防御：每回合 7.7 → 6.9（需求 4.9）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.56,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 5.0047,
+         "survival": -0.4597,
+         "long_term_growth": -0.7811,
+         "resource_efficiency": 0,
+         "data_completeness": 1
+        }
+       },
+       {
+        "id": "0:BURY",
+        "kind": "card",
+        "entity_id": "BURY",
+        "name": "埋葬",
+        "score": 52,
+        "deck_score": 52,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 5.16,
+          "message": "拿埋葬后前期输出：每回合 14.3 → 20.5（需求 23.4）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -1.4,
+          "message": "拿埋葬后循环：每回合额外抽牌 0.45 → 0.31（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -1.07,
+          "message": "拿埋葬后防御：每回合 7.7 → 5.9（需求 4.9）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 护卫 让埋葬更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.52,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 5.1648,
+         "survival": -1.0663,
+         "long_term_growth": -1.3998,
+         "resource_efficiency": 0,
+         "data_completeness": 1
+        }
+       },
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 50.9,
+        "deck_score": 49.9,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 1,
+          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0,
+         "survival": 0,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "data_completeness": 1
+        }
+       },
+       {
+        "id": "1:RATTLE",
+        "kind": "card",
+        "entity_id": "RATTLE",
+        "name": "猛晃",
+        "score": 48.9,
+        "deck_score": 48.9,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.63,
+          "message": "拿猛晃后循环：每回合额外抽牌 0.45 → 0.39（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.3,
+          "message": "拿猛晃后防御：每回合 7.7 → 7.1（需求 4.9）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.01,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": -0.0186,
+         "survival": -0.304,
+         "long_term_growth": -0.6335,
+         "resource_efficiency": 0,
+         "data_completeness": 1
+        }
+       }
+      ],
+      "chosen": "skip",
+      "tier": 1,
+      "gap": 3.2,
+      "not_strict_because": []
+     }
+    },
+    {
+     "id": "T2",
+     "tool": "get_deck",
+     "result": {
+      "decision_id": "F06-card",
+      "floor": 6,
+      "act": 1,
+      "hp": 63,
+      "max_hp": 66,
+      "gold": 196,
+      "deck_size": 12,
+      "deck": [
+       {
+        "card": "BODYGUARD",
+        "name": "护卫",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "CLUMSY",
+        "name": "笨拙",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "DEFEND_NECROBINDER",
+        "name": "防御",
+        "upgrades": 0,
+        "count": 4
+       },
+       {
+        "card": "REAVE",
+        "name": "剥夺",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "STRIKE_NECROBINDER",
+        "name": "打击",
+        "upgrades": 0,
+        "count": 4
+       },
+       {
+        "card": "UNLEASH",
+        "name": "出击",
+        "upgrades": 0,
+        "count": 1
+       }
+      ],
+      "relics": [
+       {
+        "relic": "BOUND_PHYLACTERY",
+        "name": "缚魂命匣"
+       },
+       {
+        "relic": "LAVA_ROCK",
+        "name": "熔岩石"
+       },
+       {
+        "relic": "STRIKE_DUMMY",
+        "name": "打击木偶"
+       }
+      ],
+      "potions": [
+       {
+        "potion": "FORTIFIER",
+        "name": "固化药水"
+       },
+       {
+        "potion": "POWER_POTION",
+        "name": "能力药水"
+       }
+      ]
+     }
+    },
+    {
+     "id": "T3",
+     "tool": "get_card",
+     "result": {
+      "id": "SOW",
+      "name": "播种",
+      "description": "对所有敌人造成8点伤害。",
+      "cost": 1,
+      "type": "攻击",
+      "rarity": "普通",
+      "color": "necrobinder",
+      "target": "AllEnemies",
+      "damage": 8,
+      "keywords": [
+       "保留"
+      ],
+      "upgrade_description": "对所有敌人造成11点伤害。"
+     }
+    },
+    {
+     "id": "T4",
+     "tool": "get_card",
+     "result": {
+      "id": "BURY",
+      "name": "埋葬",
+      "description": "造成52点伤害。",
+      "cost": 4,
+      "type": "攻击",
+      "rarity": "罕见",
+      "color": "necrobinder",
+      "target": "AnyEnemy",
+      "damage": 52,
+      "upgrade_description": "造成63点伤害。"
+     }
+    },
+    {
+     "id": "T5",
+     "tool": "compare_options",
+     "result": {
+      "decision_id": "F06-card",
+      "a": {
+       "id": "2:SOW",
+       "name": "播种",
+       "deck_score": 53.1,
+       "fully_scored": true
+      },
+      "b": {
+       "id": "skip",
+       "name": "跳过",
+       "deck_score": 49.9,
+       "fully_scored": true
+      },
+      "deck_score_difference": 3.2,
+      "factors": [
+       {
+        "factor": "deck_fitness:aoe",
+        "a": 4.1,
+        "b": 0,
+        "difference": 4.1,
+        "a_message": "拿播种后群伤：每回合 0.0 → 0.9（需求 3.1）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:frontload",
+        "a": 0.91,
+        "b": 0,
+        "difference": 0.91,
+        "a_message": "拿播种后前期输出：每回合 14.3 → 15.3（需求 23.4）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:cycle",
+        "a": -0.78,
+        "b": 0,
+        "difference": -0.78,
+        "a_message": "拿播种后循环：每回合额外抽牌 0.45 → 0.37（需求 1.0）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:lookahead",
+        "a": -0.56,
+        "b": 0,
+        "difference": -0.56,
+        "a_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度",
+        "b_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "factor": "deck_fitness:defense",
+        "a": -0.46,
+        "b": 0,
+        "difference": -0.46,
+        "a_message": "拿播种后防御：每回合 7.7 → 6.9（需求 4.9）",
+        "b_message": null
+       }
+      ],
+      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
+     }
+    }
+   ],
+   "toolCalls": 5,
+   "repairs": 1,
+   "usage": {
+    "prompt_tokens": 21704,
+    "completion_tokens": 797,
+    "cost_usd": 0.008449496,
+    "llm_calls": 5
+   },
+   "finding": {
+    "decision_id": "F06-card",
+    "reasons": [
+     {
+      "factor": "deck_fitness:aoe",
+      "evidence": "T5",
+      "text": "播种是当前唯一能打群伤的牌，拿后群伤每回合 0.0 → 0.9，而牌组目前完全没有群伤手段。"
+     },
+     {
+      "factor": "deck_fitness:frontload",
+      "evidence": "T5",
+      "text": "播种还小幅提升前期输出，每回合 14.3 → 15.3，且只花 1 费，比 4 费的埋葬更顺滑。"
+     },
+     {
+      "factor": "deck_fitness:cycle",
+      "evidence": "T5",
+      "text": "播种对循环的拖累很小，额外抽牌每回合 0.45 → 0.37，代价可接受。"
+     }
+    ],
+    "advice": "第 1 幕前期若牌组完全没有群伤，遇到低费的全体攻击牌值得优先考虑，哪怕它不直接加防御。"
+   }
+  }
+ ],
+ "summary": {
+  "text": "引擎点出 1 个值得想一想的决定，其中 1 个主要和群伤有关。",
+  "source": "program",
+  "cost_usd": 0
+ },
+ "meta": {
+  "model": "deepseek-v4-pro",
+  "cost_usd": 0.008449496,
+  "seconds": 11.816,
+  "generated_at": "2026-11-01 14:46"
+ }
+}

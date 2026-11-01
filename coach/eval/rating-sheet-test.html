@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>复盘评分 · test</title><style>:root{--bg:#fbfaf7;--fg:#1d1b18;--muted:#6b665e;--card:#fff;--line:#e4e0d8;--accent:#9a4d1f;--tag:#f1e7dc;--ok:#2f6b3a}
+@media (prefers-color-scheme:dark){:root{--bg:#171614;--fg:#ece8e1;--muted:#a39d93;--card:#211f1c;--line:#36332e;--accent:#e09a62;--tag:#3a2c20;--ok:#7fc28c}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.65 system-ui,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:760px;margin:0 auto;padding:24px 16px 64px}h1{font-size:22px;margin:0 0 4px}h2{font-size:17px;margin:32px 0 12px}
+h3{font-size:16px;margin:4px 0 8px}.meta,.where,.note,.caveat,footer{color:var(--muted);font-size:13px}
+.summary{font-size:16px;padding:12px 14px;border-left:3px solid var(--accent);background:var(--card)}
+.flag{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin:12px 0}
+.reasons{padding-left:18px;margin:6px 0}.tag{display:inline-block;background:var(--tag);border-radius:4px;padding:0 6px;margin-right:6px;font-size:12px}
+.rate{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.rate button{border:1px solid var(--line);background:transparent;color:var(--fg);border-radius:6px;padding:3px 10px;cursor:pointer}
+.rate button.on{background:var(--accent);color:#fff;border-color:var(--accent)}.rate input{flex:1;min-width:140px;border:1px solid var(--line);background:transparent;color:var(--fg);border-radius:6px;padding:3px 8px}
+table{width:100%;border-collapse:collapse;font-size:13px}td,th{border-bottom:1px solid var(--line);padding:4px 6px;text-align:left}tr.t1 td{font-weight:600}
+.table{overflow-x:auto}#copy{margin-top:8px;padding:6px 14px;border-radius:6px;border:1px solid var(--accent);background:var(--accent);color:#fff;cursor:pointer}
+#copied{color:var(--ok);margin-left:8px}
+</style></head><body><main>
+<h1>复盘教练评分表（30 条）</h1>
+<p class="note">每条按你的判断选一个：<b>有用</b>（说得对，而且对你有帮助）、<b>没用</b>（说得不算错，但没帮助）、<b>引擎错了</b>（你认为这里你的选择更好）。可以加一句备注。全部评完后按最下面的“复制评分”，把复制的文字贴回对话。</p>
+<h2>储君 · v0.98.1 · 对局 1772819860</h2>
+<section class="flag" data-flag="1772819860/F02-card">
+  <div class="where">第 1 幕 · 第 2 层 · 选牌 · 生命 61/65 · 金币 119</div>
+  <h3>1. 引擎认为「引导之星」比你选的「战火铸就」高 6 分，主要因为循环（过牌）</h3>
+  <ul class="reasons"><li><span class="tag">循环（过牌）</span>引导之星把每回合额外抽牌从 0.00 提到 0.52（需求 1.0），战火铸就在这一项没有贡献，这是两者差距最大的一项。</li><li><span class="tag">防御</span>防御需求是每回合 6.7：拿引导之星后 5.8 → 5.3，拿战火铸就后 5.8 → 4.5，后者离需求更远。</li><li><span class="tag">后续选牌</span>计入后续 3 次选牌后，引导之星是 -2.04，战火铸只是 -0.14，说明引擎认为战火铸就与后续牌池更搭。</li></ul>
+  <p class="whatif"><b>如果当时…</b>试着少一张打击，引擎首选仍是引导之星，差距仍是 6，说明这不是牌组张数的问题。</p>
+  <p class="advice"><b>下次可以注意：</b>前期防御只有 5.8、需求 6.7 时，优先考虑能补抽牌或防御的牌；战火铸就偏输出，可留到防御够用后再拿。</p>
+  
+  <div class="rate" role="group" aria-label="这条建议">
+    <button data-v="useful">有用</button><button data-v="not_useful">没用</button><button data-v="engine_wrong">引擎错了</button>
+    <input type="text" placeholder="备注（可不填）" maxlength="200">
+  </div>
+</section>
+<section class="flag" data-flag="1772819860/F17-card">
+  <div class="where">第 1 幕 · 第 17 层 · 选牌 · 生命 14/65 · 金币 316</div>
+  <h3>2. 引擎认为「彗星」比你选的「剑圣」高 5.4 分，主要因为前期输出</h3>
+  <ul class="reasons"><li><span class="tag">前期输出</span>差距主要在前期的输出：拿彗星后每回合 19.3 → 34.1，接近需求 35.1；拿剑圣只到 20.4。</li><li><span class="tag">防御</span>防御上彗星也略好：每回合 12.8 → 14.2，剑圣则降到 12.2，两者需求都是 8.5。</li><li><span class="tag">后续选牌</span>往后看三次选牌，彗星略吃亏（-1.66 对 -0.05），但不足以抵消前面的输出差距。</li></ul>
+  
+  <p class="advice"><b>下次可以注意：</b>当前牌组每回合输出只有 19.3、离需求 35.1 很远，下次遇到能大幅提高单回合伤害的牌可以优先考虑。</p>
+  <p class="caveat">引擎没能完整计算：抉择，抉择（部分效果未计入，分数是下限）。</p>
+  <div class="rate" role="group" aria-label="这条建议">
+    <button data-v="useful">有用</button><button data-v="not_useful">没用</button><button data-v="engine_wrong">引擎错了</button>
+    <input type="text" placeholder="备注（可不填）" maxlength="200">
+  </div>
+</section>
+<h2>储君 · v0.98.2 · 对局 1772895979</h2>
+<section class="flag" data-flag="1772895979/F11-card">
+  <div class="where">第 1 幕 · 第 11 层 · 选牌 · 生命 61/75 · 金币 112</div>
+  <h3>3. 引擎认为「辉光」比你选的「战火铸就」高 2.8 分，主要因为循环（过牌）</h3>
+  <ul class="reasons"><li><span class="tag">循环（过牌）</span>辉光让每回合额外抽牌从 0.00 升到 0.21（需求 1.0），这是两者差距最大的一项，战火铸就在这项没有贡献。</li><li><span class="tag">前期输出</span>战火铸就前期输出 30.1 → 30.5，辉光则降到 29.0（需求 33.7），这一项玩家选得更贴合当前输出缺口。</li><li><span class="tag">后续选牌</span>计入后续 2 次选牌后，辉光仍为正 0.52，战火铸就为负 0.2，引擎认为辉光后续更好接。</li></ul>
+  <p class="whatif"><b>如果当时…</b>即使去掉一张打击，引擎仍首选辉光，差距还从 2.8 扩大到 3，说明这不是打击数量造成的。</p>
+  <p class="advice"><b>下次可以注意：</b>牌组只有 16 张、抽牌几乎为零，若之后想补循环，辉光这类抽牌牌值得优先考虑；当前更缺的是防御（需求 7.0）。</p>
+  <p class="caveat">引擎没能完整计算：决胜一击（部分效果未计入，分数是下限）。</p>
+  <div class="rate" role="group" aria-label="这条建议">
+    <button data-v="useful">有用</button><button data-v="not_useful">没用</button><button data-v="engine_wrong">引擎错了</button>
+    <input type="text" placeholder="备注（可不填）" maxlength="200">
+  </div>
+</section>
+<section class="flag" data-flag="1772895979/F30-card">
+  <div class="where">第 2 幕 · 第 30 层 · 选牌 · 生命 25/75 · 金币 296</div>
+  <h3>4. 引擎认为「何人僭越」比你选的「跳过」高 2.7 分，主要因为防御</h3>
+  <ul class="reasons"><li><span class="tag">防御</span>拿何人僭越后防御每回合 7.3 → 7.7，需求 9.8，是两边差距最大的一项。</li><li><span class="tag">前期输出</span>前期输出每回合 35.2 → 37.3，需求 45.9，输出也略有补足。</li></ul>
+  <p class="whatif"><b>如果当时…</b>假设少一张打击，引擎首选仍是何人僭越，差距从 2.7 变为 2.5，结论不变。</p>
+  <p class="advice"><b>下次可以注意：</b>血量 25/75 偏低时，可优先考虑这种 0 费、给虚弱和易伤的防御型技能，而不是直接跳过。</p>
+  <p class="caveat">引擎没能完整计算：征召上前（部分效果未计入，分数是下限）。</p>
+  <div class="rate" role="group" aria-label="这条建议">
+    <button data-v="useful">有用</button><button data-v="not_useful">没用</button><button data-v="engine_wrong">引擎错了</button>
+    <input type="text" placeholder="备注（可不填）" maxlength="200">
+  </div>
+</section>
+<section class="flag" data-flag="1772895979/F04-card">
+  <div class="where">第 1 幕 · 第 4 层 · 选牌 · 生命 71/75 · 金币 155</div>
+  <h3>5. 引擎认为「跳过」比你选的「战火铸就」高 2 分，主要因为防御</h3>
+  <ul class="reasons"><li><span class="tag">防御</span>差距最大的是防御：拿战火铸就后每回合防御 5.2 → 4.5，而需求是 7.0，本来就偏低的防御更吃紧。</li><li><span class="tag">前期输出</span>它换来的是前期输出 21.0 → 22.3，离需求 27.9 仍有距离，补得不够多。</li><li><span class="tag">后续选牌</span>计入后续 3 次选牌后，这张牌还让牌组适合度略降，所以引擎更倾向先跳过。</li></ul>
+  <p class="whatif"><b>如果当时…</b>试过少一张打击，引擎首选仍是跳过，差距 2.2，说明不是某张牌占位的问题。</p>
+  <p class="advice"><b>下次可以注意：</b>第 1 幕防御只有 5.2、需求 7.0，下次选牌可优先考虑能补防御的选项，而不是再加输出。</p>
+  
+  <div class="rate" role="group" aria-label="这条建议">
+    <button data-v="useful">有用</button><button data-v="not_useful">没用</button><button data-v="engine_wrong">引擎错了</button>
+    <input type="text" placeholder="备注（可不填）" maxlength="200">
+  </div>
+</section>
+<h2>亡灵契约师 · v0.98.2 · 对局 1772898707</h2>
+<section class="flag" data-flag="1772898707/F06-card">
+  <div class="where">第 1 幕 · 第 6 层 · 选牌 · 生命 63/66 · 金币 196</div>
+  <h3>6. 引擎认为「播种」比你选的「跳过」高 3.2 分，主要因为群伤</h3>
+  <ul class="reasons"><li><span class="tag">群伤</span>牌组目前群伤每回合 0.0，需求 3.1；拿播种后升到 0.9，这是差距最大的一项。</li><li><span class="tag">前期输出</span>拿播种后前期输出每回合 14.3 → 15.3（需求 23.4），是唯一正向提升的输出项。</li><li><span class="tag">循环（过牌）</span>代价是循环每回合额外抽牌 0.45 → 0.37，防御 7.7 → 6.9，两项都小幅下滑。</li></ul>
+  <p class="whatif"><b>如果当时…</b>假设先去掉一张笨拙，引擎首选仍是播种，差距反而从 3.2 扩大到 3.4，说明结论不依赖这张牌。</p>
+  <p class="advice"><b>下次可以注意：</b>第 1 幕群伤为 0 时，一张低费群攻牌往往比跳过更划算；可留意后续选牌能否补上抽牌。</p>
+  
+  <div class="rate" role="group" aria-label="这条建议">
+    <button data-v="useful">有用</button><button data-v="not_useful">没用</button><button data-v="engine_wrong">引擎错了</button>
+    <input type="text" placeholder="备注（可不填）" maxlength="200">
+  </div>
+</section>
+<h2>铁甲战士 · v0.98.2 · 对局 1773037084</h2>
+<section class="flag" data-flag="1773037084/F14-card">
+  <div class="where">第 1 幕 · 第 14 层 · 选牌 · 生命 70/80 · 金币 172</div>
+  <h3>7. 引擎认为「祭品」比你选的「跳过」高 5.6 分，主要因为循环（过牌）</h3>
+  <ul class="reasons"><li><span class="tag">循环（过牌）</span>差距最大的是循环：拿祭品后每回合额外抽牌 0.17 → 0.66（需求 1.0），跳过则停在 0.17。</li><li><span class="tag">前期输出</span>前期输出也受益：每回合 27.6 → 30.7，更接近 31.6 的需求。</li><li><span class="tag">后续选牌</span>唯一拉低的是后续选牌预估：计入下一次选牌后祭品略减分，但没改变排序。</li></ul>
+  <p class="whatif"><b>如果当时…</b>试着少一张打击，引擎仍首选祭品，差距不变，说明这不是牌组里某张牌的问题。</p>
+  <p class="advice"><b>下次可以注意：</b>这套 13 张牌抽牌偏少，下次遇到能补循环的牌（如祭品）可以优先考虑，防御缺口另找牌补。</p>
+  
+  <div class="rate" role="group" aria-label="这条建议">
+    <button data-v="useful">有用</button><button data-v="not_useful">没用</button><button data-v="engine_wrong">引擎错了</button>
+    <input type="text" placeholder="备注（可不填）" maxlength="200">
+  </div>
+</section>
+<section class="flag" data-flag="1773037084/F02-card">
+  <div class="where">第 1 幕 · 第 2 层 · 选牌 · 生命 65/80 · 金币 260</div>
+  <h3>8. 引擎认为「耸肩无视」比你选的「重锤」高 3.9 分，主要因为防御</h3>
+  <ul class="reasons"><li><span class="tag">防御</span>防御是最大差距：拿耸肩无视后每回合 5.4 → 6.9，拿重锤则降到 4.2，而需求是 7.5。</li><li><span class="tag">前期输出</span>重锤在前期输出上更好：每回合 13.2 → 18.2，耸肩无视反而降到 11.9，但两者都离需求 22.0 很远。</li><li><span class="tag">循环（过牌）</span>耸肩无视还带来每回合额外抽牌 0.00 → 0.25，重锤没有这一项。</li></ul>
+  <p class="whatif"><b>如果当时…</b>试着少一张打击后，引擎仍选耸肩无视，差距还从 3.9 扩大到 4.6，说明这不是牌组里打击太多造成的。</p>
+  <p class="advice"><b>下次可以注意：</b>这套 10 张牌只有 4 张防御，前期先补防御类牌，输出可以稍后再补。</p>
+  <p class="caveat">引擎没能完整计算：头槌（部分效果未计入，分数是下限）。</p>
+  <div class="rate" role="group" aria-label="这条建议">
+    <button data-v="useful">有用</button><button data-v="not_useful">没用</button><button data-v="engine_wrong">引擎错了</button>
+    <input type="text" placeholder="备注（可不填）" maxlength="200">
+  </div>
+</section>
+<section class="flag" data-flag="1773037084/F17-card">
+  <div class="where">第 1 幕 · 第 17 层 · 选牌 · 生命 59/80 · 金币 292</div>
+  <h3>9. 引擎认为「恶魔形态」比你选的「痛殴」高 3.9 分，主要因为成长</h3>
+  <ul class="reasons"><li><span class="tag">成长</span>恶魔形态把每回合成长从 0.0 提到 3.7（需求 13.6），痛殴在这项没有贡献，是差距最大的一项。</li><li><span class="tag">前期输出</span>代价是前期输出：恶魔形态让每回合 30.1 降到 27.6，痛殴则微升到 30.2，需求是 34.5。</li><li><span class="tag">后续选牌</span>计入后续 3 次选牌后，恶魔形态的牌组适合度仍多出 0.5，痛殴几乎没有变化。</li></ul>
+  <p class="whatif"><b>如果当时…</b>试着去掉两张打击后，引擎仍选恶魔形态，差距 3.8，说明这不是打击占位造成的。</p>
+  <p class="advice"><b>下次可以注意：</b>牌组已有痛击、重锤这类高费牌时，引擎更看重成长上限；若你更想补前期输出，可以留意痛殴这类低费牌，但要接受成长缺口。</p>
+  
+  <div class="rate" role="group" aria-label="这条建议">
+    <button data-v="useful">有用</button><button data-v="not_useful">没用</button><button data-v="engine_wrong">引擎错了</button>
+    <input type="text" placeholder="备注（可不填）" maxlength="200">
+  </div>
+</section>
+<section class="flag" data-flag="1773037084/F08-card">
+  <div class="where">第 1 幕 · 第 8 层 · 选牌 · 生命 72/80 · 金币 54</div>
+  <h3>10. 引擎认为「狂怒」比你选的「跳过」高 3.7 分，主要因为防御</h3>
+  <ul class="reasons"><li><span class="tag">防御</span>引擎最看重防御：拿狂怒后每回合格挡 5.3 → 6.9，而需求是 8.5，牌组仍偏薄。</li><li><span class="tag">后续选牌</span>往后看三次选牌，狂怒反而略降适合度，说明它更像补当下的短板。</li></ul>
+  <p class="whatif"><b>如果当时…</b>即使先补一张耸肩无视，引擎首选仍是狂怒，差距 3.4，说明这不是被别的牌挤掉的选择。</p>
+  <p class="advice"><b>下次可以注意：</b>牌组只有 11 张、防御每回合 5.3 低于需求 8.5 时，0 费格挡牌值得优先考虑。</p>
+  <p class="caveat">引擎没能完整计算：愤怒、破灭（部分效果未计入，分数是下限）。</p>
+  <div class="rate" role="group" aria-label="这条建议">
+    <button data-v="useful">有用</button><button data-v="not_useful">没用</button><button data-v="engine_wrong">引擎错了</button>
+    <input type="text" placeholder="备注（可不填）" maxlength="200">
+  </div>
+</section>
+<h2>故障机器人 · v0.98.2 · 对局 1773057317</h2>
+<section class="flag" data-flag="1773057317/F12-card">
+  <div class="where">第 1 幕 · 第 12 层 · 选牌 · 生命 43/82 · 金币 285</div>
+  <h3>11. 引擎认为「冰川」比你选的「暴风雨」高 6.1 分，主要因为防御</h3>
+  <ul class="reasons"><li><span class="tag">防御</span>防御是最大差距：拿冰川每回合 9.2 → 12.7，已过需求 11.8；拿暴风雨则 9.2 → 9.1，仍差一截。</li><li><span class="tag">前期输出</span>输出上冰川反而更吃亏：前期输出 25.3 → 21.3，暴风雨只降到 25.0，但两者都远低于需求 36.0。</li></ul>
+  <p class="whatif"><b>如果当时…</b>假设之前拿过飞跃，引擎首选仍是冰川，差距从 6.1 缩到 2.7，暴风雨仍排最后。</p>
+  <p class="advice"><b>下次可以注意：</b>当前防御每回合只有 9.2、需求 11.8，下次遇到冰川这类冰球防御牌可以优先考虑。</p>
+  
+  <div class="rate" role="group" aria-label="这条建议">
+    <button data-v="useful">有用</button><button data-v="not_useful">没用</button><button data-v="engine_wrong">引擎错了</button>
+    <input type="text" placeholder="备注（可不填）" maxlength="200">
+  </div>
+</section>
+<section class="flag" data-flag="1773057317/F09-card">
+  <div class="where">第 1 幕 · 第 9 层 · 选牌 · 生命 22/75 · 金币 203</div>
+  <h3>12. 引擎认为「编译冲击」比你选的「引雷针」高 2.2 分，主要因为循环（过牌）</h3>
+  <ul class="reasons"><li><span class="tag">循环（过牌）</span>引擎最看重抽牌：拿编译冲击后每回合额外抽牌 0.00 → 0.69（需求 1.0），引雷针在这项没有提升。</li><li><span class="tag">防御</span>防御上引雷针更稳：拿它后战斗长度从标准的 1.37 倍降到 1.17 倍，而编译冲击让每回合防御 9.2 → 8.8（需求 10.1）。</li><li><span class="tag">前期输出</span>前期输出引雷针更高：每回合 21.0 → 24.7，编译冲击只到 21.9（需求 28.9）。</li></ul>
+  <p class="whatif"><b>如果当时…</b>如果之前拿过超频，引擎的首选就会变成引雷针，和你的选择一致。</p>
+  <p class="advice"><b>下次可以注意：</b>当前牌组缺抽牌，若之后能补到超频这类抽牌，引雷针这类直接加输出的牌会更划算。</p>
+  <p class="caveat">引擎没能完整计算：人工合成（部分效果未计入，分数是下限）。</p>
+  <div class="rate" role="group" aria-label="这条建议">
+    <button data-v="useful">有用</button><button data-v="not_useful">没用</button><button data-v="engine_wrong">引擎错了</button>
+    <input type="text" placeholder="备注（可不填）" maxlength="200">
+  </div>
+</section>
+<section class="flag" data-flag="1773057317/F17-card">
+  <div class="where">第 1 幕 · 第 17 层 · 选牌 · 生命 33/82 · 金币 235</div>
+  <h3>13. 引擎认为「跳过」比你选的「缓冲」高 1.5 分，主要因为前期输出</h3>
+  <ul class="reasons"><li><span class="tag">前期输出</span>拿缓冲后前期输出每回合 26.4 → 24.2，而需求是 34.1，这是差距最大的一项。</li><li><span class="tag">循环（过牌）</span>缓冲不帮助循环：每回合额外抽牌 0.61 → 0.57，需求 1.0。</li><li><span class="tag">后续选牌</span>计入后续 3 次选牌后，缓冲的牌组适合度仍小幅下降。</li></ul>
+  <p class="whatif"><b>如果当时…</b>即使去掉一张打击并补上编译冲击，引擎仍选跳过，缓冲依旧排第三，差距保持 1.5。</p>
+  <p class="advice"><b>下次可以注意：</b>当前牌组输出离需求 34.1 还差不少，选牌时优先考虑能提升每回合输出的牌，而不是再加一层防御。</p>
+  <p class="caveat">引擎没能完整计算：化废为宝、吞噬暗影（部分效果未计入，分数是下限）。</p>
+  <div class="rate" role="group" aria-label="这条建议">
+    <button data-v="useful">有用</button><button data-v="not_useful">没用</button><button data-v="engine_wrong">引擎错了</button>
+    <input type="text" placeholder="备注（可不填）" maxlength="200">
+  </div>
+</section>
+<h2>亡灵契约师 · v0.99.1 · 对局 1773853598</h2>
+<section class="flag" data-flag="1773853598/F15-card">
+  <div class="where">第 1 幕 · 第 15 层 · 选牌 · 生命 26/73 · 金币 254</div>
+  <h3>14. 引擎认为「埋葬」比你选的「玷污」高 2.5 分，主要因为前期输出</h3>
+  <ul class="reasons"><li><span class="tag">前期输出</span>引擎最看重前期输出：拿埋葬每回合 14.6 → 23.5，拿玷污只到 17.6，需求是 24.7，埋葬更接近。</li><li><span class="tag">防御</span>代价在防御：埋葬让每回合防御 10.4 → 8.2，低于需求 8.4；玷污是 9.7，仍高于需求。</li></ul>
+  <p class="whatif"><b>如果当时…</b>假设少一张打击，引擎仍首选埋葬，差距反而从 2.5 扩大到 3，说明这不是打击数量的问题。</p>
+  <p class="advice"><b>下次可以注意：</b>当前血量 26/73，防御已贴近需求，下次在输出与防御之间取舍时，先看防御是否还高于需求线。</p>
+  
+  <div class="rate" role="group" aria-label="这条建议">
+    <button data-v="useful">有用</button><button data-v="not_useful">没用</button><button data-v="engine_wrong">引擎错了</button>
+    <input type="text" placeholder="备注（可不填）" maxlength="200">
+  </div>
+</section>
+<section class="flag" data-flag="1773853598/F03-shop">
+  <div class="where">第 1 幕 · 第 3 层 · 商店 · 生命 66/66 · 金币 119</div>
+  <h3>15. 引擎认为「离开商店」比你选的「删牌」高 2.19 分，主要因为花掉的金币</h3>
+  <ul class="reasons"><li><span class="tag">花掉的金币</span>删牌要花 75 金币（现有 119），引擎认为这笔钱留给之后的商店更值，这一项差 2.68，是全部差距的来源。</li><li><span class="tag">牌组变化</span>删掉一张防御只让牌组适合度涨 0.49，抵不过金币的代价，所以净差 2.19。</li></ul>
+  
+  <p class="advice"><b>下次可以注意：</b>第 1 幕金币只有 119 时，引擎更倾向攒钱；若之后商店有更想要的牌，删牌可以留到金币更宽裕时再做。</p>
+  <p class="caveat">引擎没能完整计算：延伸、致死性、易伤药水、液态记忆、熔炉的祝福（部分效果未计入，分数是下限）。</p>
+  <div class="rate" role="group" aria-label="这条建议">
+    <button data-v="useful">有用</button><button data-v="not_useful">没用</button><button data-v="engine_wrong">引擎错了</button>
+    <input type="text" placeholder="备注（可不填）" maxlength="200">
+  </div>
+</section>
+<h2>故障机器人 · v0.100.0 · 对局 1773983149</h2>
+<section class="flag" data-flag="1773983149/F24-card">
+  <div class="where">第 2 幕 · 第 24 层 · 选牌 · 生命 34/75 · 金币 151</div>
+  <h3>16. 引擎认为「折射」比你选的「跳过」高 4.5 分，主要因为群伤</h3>
+  <ul class="reasons"><li><span class="tag">群伤</span>引擎最看重群伤：拿折射后每回合群伤 1.3 → 3.6，而需求是 7.5，这是差距最大的一项。</li><li><span class="tag">前期输出</span>其次是前期输出：每回合 29.7 → 36.1，需求 38.8，折射能补上这段缺口。</li><li><span class="tag">防御</span>代价在防御：每回合 11.9 → 9.5，仍高于需求 8.3，所以引擎认为可以接受。</li></ul>
+  <p class="whatif"><b>如果当时…</b>假设少一张打击，引擎首选仍是折射，差距 4.6，没有改变结论。</p>
+  <p class="advice"><b>下次可以注意：</b>当前血量 34/75，若更在意防御可以跳过；但群伤和前期输出都明显低于需求，折射是补输出的选项。</p>
+  <p class="caveat">引擎没能完整计算：刮削（部分效果未计入，分数是下限）。</p>
+  <div class="rate" role="group" aria-label="这条建议">
+    <button data-v="useful">有用</button><button data-v="not_useful">没用</button><button data-v="engine_wrong">引擎错了</button>
+    <input type="text" placeholder="备注（可不填）" maxlength="200">
+  </div>
+</section>
+<section class="flag" data-flag="1773983149/F28-card">
+  <div class="where">第 2 幕 · 第 28 层 · 选牌 · 生命 31/75 · 金币 194</div>
+  <h3>17. 引擎认为「玻璃工艺」比你选的「跳过」高 3 分，主要因为群伤</h3>
+  <ul class="reasons"><li><span class="tag">群伤</span>引擎最看重群伤：拿玻璃工艺后每回合群伤 1.0 → 2.3，而需求是 6.0，这是差距最大的一项。</li><li><span class="tag">前期输出</span>前期输出也会从每回合 29.5 升到 31.0，需求 40.2，方向对但幅度小。</li><li><span class="tag">后续选牌</span>计入后续 2 次选牌后，玻璃工艺的长期适合度反而略降，所以引擎信心只有中等。</li></ul>
+  <p class="whatif"><b>如果当时…</b>即使先拿到扫荡射线，引擎仍选玻璃工艺，差距 2.7，说明补群伤不会改变这个取舍。</p>
+  <p class="advice"><b>下次可以注意：</b>群伤需求 6.0 而当前只有 1.0，下次遇到能补群伤的牌可以优先考虑；但过线幅度小时跳过也合理。</p>
+  <p class="caveat">引擎没能完整计算：吞噬暗影（部分效果未计入，分数是下限）。</p>
+  <div class="rate" role="group" aria-label="这条建议">
+    <button data-v="useful">有用</button><button data-v="not_useful">没用</button><button data-v="engine_wrong">引擎错了</button>
+    <input type="text" placeholder="备注（可不填）" maxlength="200">
+  </div>
+</section>
+<section class="flag" data-flag="1773983149/F04-card">
+  <div class="where">第 1 幕 · 第 4 层 · 选牌 · 生命 45/75 · 金币 124</div>
+  <h3>18. 引擎认为「聚变」比你选的「污秽攻击」高 1.8 分，主要因为防御</h3>
+  <ul class="reasons"><li><span class="tag">防御</span>防御差距最大：拿聚变每回合 7.5 → 8.7，拿污秽攻击反而降到 6.5，需求 4.9。</li><li><span class="tag">前期输出</span>输出上聚变也更好：每回合 15.7 → 17.7，污秽攻击只到 16.6，需求 22.5。</li><li><span class="tag">后续选牌</span>往后看三次选牌，聚变的长期适合度略吃亏（-0.78 对 -0.29），这是污秽攻击唯一占优的地方。</li></ul>
+  <p class="whatif"><b>如果当时…</b>假设当时少一张打击，引擎首选仍是聚变，差距保持 1.8，说明这不是牌组张数的问题。</p>
+  <p class="advice"><b>下次可以注意：</b>这套牌只有 12 张、防御偏薄，选牌时优先看每回合防御和输出能否同时抬升，而不是只看单张攻击。</p>
+  
+  <div class="rate" role="group" aria-label="这条建议">
+    <button data-v="useful">有用</button><button data-v="not_useful">没用</button><button data-v="engine_wrong">引擎错了</button>
+    <input type="text" placeholder="备注（可不填）" maxlength="200">
+  </div>
+</section>
+<h2>故障机器人 · v0.100.0 · 对局 1774199215</h2>
+<section class="flag" data-flag="1774199215/F33-card">
+  <div class="where">第 2 幕 · 第 33 层 · 选牌 · 生命 50/82 · 金币 137</div>
+  <h3>19. 引擎认为「高速脱离」比你选的「跳过」高 8.3 分，主要因为防御</h3>
+  <ul class="reasons"><li><span class="tag">防御</span>差距几乎全在防御：拿高速脱离后每回合格挡 7.6 → 10.3，超过需求 9.8；跳过则停在 7.6。</li><li><span class="tag">前期输出</span>代价很小：前期输出 25.7 → 25.1，离需求 45.9 本来就很远，这张牌不改变输出短板。</li><li><span class="tag">成长</span>成长几乎不变：每回合 1.9 → 1.8，需求 26.2，拿不拿都不影响成长路线。</li></ul>
+  <p class="whatif"><b>如果当时…</b>假设少一张打击，首选仍是高速脱离，差距从 8.3 降到 5.8，说明结论不依赖某张具体牌。</p>
+  <p class="advice"><b>下次可以注意：</b>当格挡每回合只有 7.6、需求 9.8 时，0 费 6 点格挡的技能牌值得优先考虑，即使它附带一张晕眩。</p>
+  
+  <div class="rate" role="group" aria-label="这条建议">
+    <button data-v="useful">有用</button><button data-v="not_useful">没用</button><button data-v="engine_wrong">引擎错了</button>
+    <input type="text" placeholder="备注（可不填）" maxlength="200">
+  </div>
+</section>
+<section class="flag" data-flag="1774199215/F19-card">
+  <div class="where">第 2 幕 · 第 19 层 · 选牌 · 生命 45/75 · 金币 242</div>
+  <h3>20. 引擎认为「折射」比你选的「跳过」高 5.3 分，主要因为群伤</h3>
+  <ul class="reasons"><li><span class="tag">群伤</span>引擎最看重群伤：拿折射后每回合群伤 0.0 → 3.2（需求 7.8），这是差距最大的一项。</li><li><span class="tag">前期输出</span>前期输出也会从每回合 22.7 升到 29.7（需求 33.9），离需求更近一步。</li><li><span class="tag">防御</span>代价是防御从每回合 7.6 降到 6.1（需求 9.5），当前 45/75 血时这一项是反向的。</li></ul>
+  <p class="whatif"><b>如果当时…</b>试过少一张打击，引擎仍首选折射，差距反而从 5.3 变成 5.8，说明不是牌组太厚的问题。</p>
+  <p class="advice"><b>下次可以注意：</b>若你更在意防御，可以留意补防御牌；引擎这次偏向用群伤和输出换防御。</p>
+  <p class="caveat">引擎没能完整计算：眼部攻击（部分效果未计入，分数是下限）。</p>
+  <div class="rate" role="group" aria-label="这条建议">
+    <button data-v="useful">有用</button><button data-v="not_useful">没用</button><button data-v="engine_wrong">引擎错了</button>
+    <input type="text" placeholder="备注（可不填）" maxlength="200">
+  </div>
+</section>
+<section class="flag" data-flag="1774199215/F04-card">
+  <div class="where">第 1 幕 · 第 4 层 · 选牌 · 生命 57/75 · 金币 37</div>
+  <h3>21. 引擎认为「聚变」比你选的「污秽攻击」高 3.3 分，主要因为防御</h3>
+  <ul class="reasons"><li><span class="tag">防御</span>差距最大的是防御：拿聚变每回合 5.1 → 5.9，拿污秽攻击反而降到 4.5，而需求是 6.5。</li><li><span class="tag">后续选牌</span>往后看两次选牌，污秽攻击的后续适配反而更好（+0.84 对 -2.4），这是引擎只给中等信心的原因。</li><li><span class="tag">循环（过牌）</span>污秽攻击在循环上略有加分，每回合额外抽牌 0.00 → 0.12，但需求是 1.0，补得有限。</li></ul>
+  <p class="whatif"><b>如果当时…</b>假设当时少一张打击，引擎首选仍是聚变，差距从 3.3 缩到 2.8，没有改变结论。</p>
+  <p class="advice"><b>下次可以注意：</b>当前牌组只有 4 张防御、每回合防御 5.1 低于需求 6.5，选牌时可优先补防御或产球，而不是再加攻击牌。</p>
+  
+  <div class="rate" role="group" aria-label="这条建议">
+    <button data-v="useful">有用</button><button data-v="not_useful">没用</button><button data-v="engine_wrong">引擎错了</button>
+    <input type="text" placeholder="备注（可不填）" maxlength="200">
+  </div>
+</section>
+<h2>铁甲战士 · v0.100.0 · 对局 1774202131</h2>
+<section class="flag" data-flag="1774202131/F17-card">
+  <div class="where">第 1 幕 · 第 17 层 · 选牌 · 生命 10/80 · 金币 396</div>
+  <h3>22. 引擎认为「恶魔形态」比你选的「契约终结」高 2.4 分，主要因为成长</h3>
+  <ul class="reasons"><li><span class="tag">成长</span>引擎最看重成长：拿恶魔形态后每回合成长 0.0 → 2.6（需求 15.5），契约终结在这项没有贡献。</li><li><span class="tag">后续选牌</span>往后看 3 次选牌，恶魔形态让牌组更顺，契约终结没有这项收益。</li><li><span class="tag">前期输出</span>代价是前期输出每回合 15.6 → 14.4（需求 35.5），防御 10.0 → 9.3（需求 8.7），所以差距只有 2.4。</li></ul>
+  <p class="whatif"><b>如果当时…</b>试着去掉一张打击和一张防御后，引擎仍选恶魔形态，差距 2.5，说明这不是牌组太厚造成的。</p>
+  <p class="advice"><b>下次可以注意：</b>当前 15 张牌、前期输出离需求 35.5 还远，若想补即时战力可留意恶魔之焰这类直接加输出的牌。</p>
+  
+  <div class="rate" role="group" aria-label="这条建议">
+    <button data-v="useful">有用</button><button data-v="not_useful">没用</button><button data-v="engine_wrong">引擎错了</button>
+    <input type="text" placeholder="备注（可不填）" maxlength="200">
+  </div>
+</section>
+<h2>铁甲战士 · v0.99.1 · 对局 1775753122</h2>
+<section class="flag" data-flag="1775753122/F17-card">
+  <div class="where">第 1 幕 · 第 17 层 · 选牌 · 生命 46/80 · 金币 322</div>
+  <h3>23. 引擎认为「薪火之源」比你选的「痛殴」高 1.4 分，主要因为防御</h3>
+  <ul class="reasons"><li><span class="tag">防御</span>防御是差距最大的一项：拿薪火之源后每回合 11.1 → 11.9，拿痛殴则降到 10.5，需求是 8.2。</li><li><span class="tag">前期输出</span>前期输出上薪火之源 19.3 → 20.4，痛殴只到 19.7，两者都远低于需求 34.5。</li><li><span class="tag">后续选牌</span>计入后续 3 次选牌后，薪火之源 -0.23，痛殴 -0.41，长期看薪火之源更稳。</li></ul>
+  <p class="whatif"><b>如果当时…</b>把恶魔形态升级后，薪火之源仍是首选（70.2 对痛殴 68.8），差距没有缩小。</p>
+  <p class="advice"><b>下次可以注意：</b>牌组已有恶魔形态，2 费能力牌薪火之源能同时补防御和成长；下次遇到这类能力牌可优先考虑。</p>
+  <p class="caveat">引擎没能完整计算：巨像（部分效果未计入，分数是下限）。</p>
+  <div class="rate" role="group" aria-label="这条建议">
+    <button data-v="useful">有用</button><button data-v="not_useful">没用</button><button data-v="engine_wrong">引擎错了</button>
+    <input type="text" placeholder="备注（可不填）" maxlength="200">
+  </div>
+</section>
+<h2>静默猎手 · v0.107.1 · 对局 1782142555</h2>
+<section class="flag" data-flag="1782142555/F07-card">
+  <div class="where">第 1 幕 · 第 7 层 · 选牌 · 生命 61/70 · 金币 242</div>
+  <h3>24. 引擎认为「翻越撑击」比你选的「跳过」高 3.6 分，主要因为群伤</h3>
+  <ul class="reasons"><li><span class="tag">群伤</span>牌组群伤每回合只有 0.0，拿翻越撑击后升到 5.9，这是两边差距最大的一项。</li><li><span class="tag">前期输出</span>前期输出每回合 19.0 → 21.5，需求 35.9，输出端也补了一点。</li><li><span class="tag">后续选牌</span>代价是后续选牌空间略降，防御 8.6 → 8.2 仍高于需求 6.9，所以引擎认为值得拿。</li></ul>
+  <p class="whatif"><b>如果当时…</b>若之前拿过触不可及，引擎仍首选翻越撑击，差距从 3.6 缩到 2.5，没有改变结论。</p>
+  <p class="advice"><b>下次可以注意：</b>第 1 幕群伤接近 0 时，可以优先考虑一张群伤牌，而不是直接跳过。</p>
+  
+  <div class="rate" role="group" aria-label="这条建议">
+    <button data-v="useful">有用</button><button data-v="not_useful">没用</button><button data-v="engine_wrong">引擎错了</button>
+    <input type="text" placeholder="备注（可不填）" maxlength="200">
+  </div>
+</section>
+<section class="flag" data-flag="1782142555/F12-card">
+  <div class="where">第 1 幕 · 第 12 层 · 选牌 · 生命 60/70 · 金币 149</div>
+  <h3>25. 引擎认为「连续反弹」比你选的「跳过」高 1.9 分，主要因为前期输出</h3>
+  <ul class="reasons"><li><span class="tag">前期输出</span>引擎最看重输出：拿连续反弹后每回合前期输出 18.1 → 23.0，而当前需求是 43.9，缺口仍很大。</li><li><span class="tag">防御</span>代价是防御每回合 9.2 → 8.2，仍高于需求 7.8，所以引擎认为这点损失可以接受。</li><li><span class="tag">循环（过牌）</span>循环每回合额外抽牌 1.91 → 1.75，仍高于需求 1.0，影响很小。</li></ul>
+  <p class="whatif"><b>如果当时…</b>即使之前多拿一张翻越撑击，引擎仍选连续反弹，只是领先缩小到 1.2 分。</p>
+  <p class="advice"><b>下次可以注意：</b>输出离需求 43.9 还差很远时，这类低费多段攻击值得优先考虑；若更想补防御，触不可及能把防御推到 11.3。</p>
+  
+  <div class="rate" role="group" aria-label="这条建议">
+    <button data-v="useful">有用</button><button data-v="not_useful">没用</button><button data-v="engine_wrong">引擎错了</button>
+    <input type="text" placeholder="备注（可不填）" maxlength="200">
+  </div>
+</section>
+<h2>亡灵契约师 · v0.111.0 · 对局 1791474137</h2>
+<section class="flag" data-flag="1791474137/F15-card">
+  <div class="where">第 1 幕 · 第 15 层 · 选牌 · 生命 46/77 · 金币 179</div>
+  <h3>26. 引擎认为「拖延」比你选的「跳过」高 6.3 分，主要因为防御</h3>
+  <ul class="reasons"><li><span class="tag">防御</span>拿拖延后防御每回合 6.8 → 8.6，需求 11.8，这是两边差距最大的一项。</li><li><span class="tag">循环（过牌）</span>代价是循环变慢：每回合额外抽牌 0.75 → 0.63，需求 1.0。</li><li><span class="tag">前期输出</span>前期输出也会降：每回合 19.3 → 18.0，需求 36.0，本来就偏低。</li></ul>
+  <p class="whatif"><b>如果当时…</b>假设少两张打击，引擎仍首选拖延，差距 5.9，说明结论不依赖打击数量。</p>
+  <p class="advice"><b>下次可以注意：</b>当前 46/77 血、防御离需求还差不少时，2 费 11 格挡的拖延值得考虑；若更在意抽牌节奏，跳过也说得通。</p>
+  <p class="caveat">引擎没能完整计算：无处可逃、荒疫打击（部分效果未计入，分数是下限）。</p>
+  <div class="rate" role="group" aria-label="这条建议">
+    <button data-v="useful">有用</button><button data-v="not_useful">没用</button><button data-v="engine_wrong">引擎错了</button>
+    <input type="text" placeholder="备注（可不填）" maxlength="200">
+  </div>
+</section>
+<section class="flag" data-flag="1791474137/F09-card">
+  <div class="where">第 1 幕 · 第 9 层 · 选牌 · 生命 56/77 · 金币 73</div>
+  <h3>27. 引擎认为「跳过」比你选的「预借时间」高 5.4 分，主要因为循环（过牌）</h3>
+  <ul class="reasons"><li><span class="tag">循环（过牌）</span>拿预借时间后每回合额外抽牌 1.12 → 0.66，低于需求 1.0，是差距最大的一项。</li><li><span class="tag">防御</span>防御每回合 5.5 → 5.4，而需求是 8.4，本来就吃紧的防御更薄。</li><li><span class="tag">前期输出</span>前期输出每回合 14.1 → 12.8，离需求 26.0 更远。</li></ul>
+  <p class="whatif"><b>如果当时…</b>即使少一张打击，引擎仍选跳过，差距 5.6，说明不是某张牌拖累，而是牌组整体方向不合。</p>
+  <p class="advice"><b>下次可以注意：</b>这套 13 张牌缺防御和抽牌，第 1 幕选牌时优先补防御或抽牌，纯能量牌可以再等等。</p>
+  <p class="caveat">引擎没能完整计算：摧残、清淤（部分效果未计入，分数是下限）。</p>
+  <div class="rate" role="group" aria-label="这条建议">
+    <button data-v="useful">有用</button><button data-v="not_useful">没用</button><button data-v="engine_wrong">引擎错了</button>
+    <input type="text" placeholder="备注（可不填）" maxlength="200">
+  </div>
+</section>
+<section class="flag" data-flag="1791474137/F02-card">
+  <div class="where">第 1 幕 · 第 2 层 · 选牌 · 生命 77/77 · 金币 109</div>
+  <h3>28. 引擎认为「跳过」比你选的「重压」高 2.9 分，主要因为后续选牌</h3>
+  <ul class="reasons"><li><span class="tag">后续选牌</span>引擎更看重后续 3 次选牌的空间：拿重压会让未来牌组适合度下降，跳过则不受影响，这是差距最大的一项。</li><li><span class="tag">防御</span>防御每回合 8.4 → 7.3，低于需求 7.5；跳过则保持 8.4。</li><li><span class="tag">前期输出</span>重压对前期输出几乎没帮助：每回合 8.8 → 9.0，而需求是 22.9。</li></ul>
+  <p class="whatif"><b>如果当时…</b>假设当时少一张打击，引擎首选仍是跳过，重压仍排最后，说明这不是单张牌的问题。</p>
+  <p class="advice"><b>下次可以注意：</b>第 1 幕早期牌组只有 10 张时，先看这张牌能否补上防御（需求 7.5）和输出（需求 22.9），补不上就考虑跳过。</p>
+  
+  <div class="rate" role="group" aria-label="这条建议">
+    <button data-v="useful">有用</button><button data-v="not_useful">没用</button><button data-v="engine_wrong">引擎错了</button>
+    <input type="text" placeholder="备注（可不填）" maxlength="200">
+  </div>
+</section>
+<h2>静默猎手 · v0.111.0 · 对局 1791820890</h2>
+<section class="flag" data-flag="1791820890/F02-card">
+  <div class="where">第 1 幕 · 第 2 层 · 选牌 · 生命 54/70 · 金币 113</div>
+  <h3>29. 引擎认为「蛇咬」比你选的「跳过」高 3.6 分，主要因为前期输出</h3>
+  <ul class="reasons"><li><span class="tag">前期输出</span>引擎最看重输出：拿蛇咬后前期每回合 9.4 → 18.7，而需求是 25.5，牌组目前明显偏慢。</li><li><span class="tag">后续选牌</span>引擎也承认往后看会掉分：计入后续 3 次选牌后，蛇咬的长期适合度是负的。</li><li><span class="tag">防御</span>代价是防御每回合 10.3 → 7.3，仍高于需求 6.1，所以引擎认为这笔交换划算。</li></ul>
+  <p class="whatif"><b>如果当时…</b>假设当时少一张打击，引擎首选仍是蛇咬，与跳过的差距从 3.6 缩到 2.1，没有改变结论。</p>
+  <p class="advice"><b>下次可以注意：</b>第 1 幕前期输出只有 9.4、离需求 25.5 很远时，可以考虑先补一张攻击牌再谈精简。</p>
+  
+  <div class="rate" role="group" aria-label="这条建议">
+    <button data-v="useful">有用</button><button data-v="not_useful">没用</button><button data-v="engine_wrong">引擎错了</button>
+    <input type="text" placeholder="备注（可不填）" maxlength="200">
+  </div>
+</section>
+<section class="flag" data-flag="1791820890/F07-card">
+  <div class="where">第 1 幕 · 第 7 层 · 选牌 · 生命 54/70 · 金币 102</div>
+  <h3>30. 引擎认为「精确切击」比你选的「跳过」高 1.6 分，主要因为前期输出</h3>
+  <ul class="reasons"><li><span class="tag">前期输出</span>拿精确切击后前期输出每回合 18.7 → 21.4，需求 29.4，这是两边差距最大的一项。</li><li><span class="tag">后续选牌</span>往后看 3 次选牌，精确切击反而略降牌组适合度，所以引擎的领先幅度不大。</li></ul>
+  <p class="whatif"><b>如果当时…</b>假设当时少一张打击，引擎首选仍是精确切击，差距不变，说明结论不取决于打击数量。</p>
+  <p class="advice"><b>下次可以注意：</b>牌组只有 14 张、输出离需求还差不少时，0 费攻击牌对前期推进帮助更直接；若更看重后续抽牌质量，跳过也说得通。</p>
+  <p class="caveat">引擎没能完整计算：刀刃陷阱（部分效果未计入，分数是下限）。</p>
+  <div class="rate" role="group" aria-label="这条建议">
+    <button data-v="useful">有用</button><button data-v="not_useful">没用</button><button data-v="engine_wrong">引擎错了</button>
+    <input type="text" placeholder="备注（可不填）" maxlength="200">
+  </div>
+</section>
+<button id="copy">复制评分</button><span id="copied" hidden>已复制</span>
+</main><script>
+const REVIEW = {"run_id":"SET:test","model":"deepseek-flash","prompt_version":"p3"};
+const ratings = {};
+document.querySelectorAll(".flag").forEach((card) => {
+  const flag = card.dataset.flag, note = card.querySelector("input");
+  card.querySelectorAll("button").forEach((b) => b.addEventListener("click", () => {
+    card.querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b));
+    ratings[flag] = { rating: b.dataset.v, note: note.value };
+  }));
+  note.addEventListener("input", () => { if (ratings[flag]) ratings[flag].note = note.value; });
+});
+const copy = document.getElementById("copy");
+if (copy) copy.addEventListener("click", async () => {
+  const text = "STS2-COACH-RATINGS " + JSON.stringify({ ...REVIEW, ratings });
+  try { await navigator.clipboard.writeText(text); }
+  catch { const t = document.createElement("textarea"); t.value = text; document.body.appendChild(t); t.select(); document.execCommand("copy"); t.remove(); }
+  document.getElementById("copied").hidden = false;
+});
+</script></body></html>

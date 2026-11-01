@@ -1,0 +1,2030 @@
+{
+ "run": "1791820890",
+ "set": "test",
+ "model": "deepseek-flash",
+ "prompt_version": "p3",
+ "pre": {
+  "summary": {
+   "run_id": "1791820890",
+   "character": "SILENT",
+   "ascension": 0,
+   "build_id": "v0.111.0",
+   "win": false,
+   "killed_by": "女王",
+   "acts_reached": 3,
+   "last_scored_floor": 47,
+   "final_deck_size": 20,
+   "decisions_scored": {
+    "card_reward": 21,
+    "shop": 4,
+    "rest": 7
+   },
+   "decisions_skipped": {},
+   "agreement": {
+    "agree": 23,
+    "judged": 30,
+    "rate": 0.767
+   },
+   "tier1": [
+    "F02-card",
+    "F07-card"
+   ],
+   "tier2": [
+    "F14-card",
+    "F17-card",
+    "F31-card",
+    "F32-rest",
+    "F46-card"
+   ],
+   "warnings": [
+    "floor 47: 4 potions replayed for 3 slots"
+   ]
+  },
+  "decisions": {
+   "decisions": [
+    {
+     "id": "F02-card",
+     "kind": "card_reward",
+     "floor": 2,
+     "act": 1,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "1:SNAKEBITE",
+     "engine_top_name": "蛇咬",
+     "confidence": "medium",
+     "tier": 1,
+     "gap": 3.6,
+     "not_strict_because": []
+    },
+    {
+     "id": "F03-shop",
+     "kind": "shop",
+     "floor": 3,
+     "act": 1,
+     "chosen": null,
+     "chosen_name": null,
+     "engine_top": "leave",
+     "engine_top_name": "离开商店",
+     "confidence": "low",
+     "tier": null,
+     "gap": null,
+     "not_strict_because": [
+      "choice_unknown"
+     ]
+    },
+    {
+     "id": "F06-card",
+     "kind": "card_reward",
+     "floor": 6,
+     "act": 1,
+     "chosen": "0:ECHOING_SLASH",
+     "chosen_name": "回响斩击",
+     "engine_top": "0:ECHOING_SLASH",
+     "engine_top_name": "回响斩击",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F07-card",
+     "kind": "card_reward",
+     "floor": 7,
+     "act": 1,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "2:PRECISE_CUT",
+     "engine_top_name": "精确切击",
+     "confidence": "medium",
+     "tier": 1,
+     "gap": 1.6,
+     "not_strict_because": []
+    },
+    {
+     "id": "F08-rest",
+     "kind": "rest",
+     "floor": 8,
+     "act": 1,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F09-card",
+     "kind": "card_reward",
+     "floor": 9,
+     "act": 1,
+     "chosen": "0:PREPARED",
+     "chosen_name": "早有准备",
+     "engine_top": "0:PREPARED",
+     "engine_top_name": "早有准备",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F12-card",
+     "kind": "card_reward",
+     "floor": 12,
+     "act": 1,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F13-rest",
+     "kind": "rest",
+     "floor": 13,
+     "act": 1,
+     "chosen": "rest:HEAL",
+     "chosen_name": "休息",
+     "engine_top": "rest:HEAL",
+     "engine_top_name": "休息",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F14-card",
+     "kind": "card_reward",
+     "floor": 14,
+     "act": 1,
+     "chosen": "0:DAGGER_THROW",
+     "chosen_name": "投掷匕首",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": -0.5,
+     "not_strict_because": [
+      "small_gap"
+     ]
+    },
+    {
+     "id": "F15-card",
+     "kind": "card_reward",
+     "floor": 15,
+     "act": 1,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F16-rest",
+     "kind": "rest",
+     "floor": 16,
+     "act": 1,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F17-card",
+     "kind": "card_reward",
+     "floor": 17,
+     "act": 1,
+     "chosen": "0:GRAND_FINALE",
+     "chosen_name": "华丽收场",
+     "engine_top": "1:OUTBREAK",
+     "engine_top_name": "毒性爆发",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": 3.5,
+     "not_strict_because": [
+      "partly_scored"
+     ]
+    },
+    {
+     "id": "F19-card",
+     "kind": "card_reward",
+     "floor": 19,
+     "act": 2,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F20-shop",
+     "kind": "shop",
+     "floor": 20,
+     "act": 2,
+     "chosen": "relic:2:VAJRA",
+     "chosen_name": "金刚杵",
+     "engine_top": "relic:2:VAJRA",
+     "engine_top_name": "金刚杵",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F23-shop",
+     "kind": "shop",
+     "floor": 23,
+     "act": 2,
+     "chosen": null,
+     "chosen_name": null,
+     "engine_top": "leave",
+     "engine_top_name": "离开商店",
+     "confidence": "medium",
+     "tier": null,
+     "gap": null,
+     "not_strict_because": [
+      "choice_unknown"
+     ]
+    },
+    {
+     "id": "F25-card",
+     "kind": "card_reward",
+     "floor": 25,
+     "act": 2,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F28-rest",
+     "kind": "rest",
+     "floor": 28,
+     "act": 2,
+     "chosen": "rest:HEAL",
+     "chosen_name": "休息",
+     "engine_top": "rest:HEAL",
+     "engine_top_name": "休息",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F29-card",
+     "kind": "card_reward",
+     "floor": 29,
+     "act": 2,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F30-card",
+     "kind": "card_reward",
+     "floor": 30,
+     "act": 2,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F31-card",
+     "kind": "card_reward",
+     "floor": 31,
+     "act": 2,
+     "chosen": "0:PIERCING_WAIL",
+     "chosen_name": "尖啸",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": 0.5,
+     "not_strict_because": [
+      "small_gap"
+     ]
+    },
+    {
+     "id": "F32-rest",
+     "kind": "rest",
+     "floor": 32,
+     "act": 2,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:HEAL",
+     "engine_top_name": "休息",
+     "confidence": "low",
+     "tier": 2,
+     "gap": 12.25,
+     "not_strict_because": [
+      "partly_scored",
+      "low_confidence"
+     ]
+    },
+    {
+     "id": "F33-card",
+     "kind": "card_reward",
+     "floor": 33,
+     "act": 2,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F35-card",
+     "kind": "card_reward",
+     "floor": 35,
+     "act": 3,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F37-card",
+     "kind": "card_reward",
+     "floor": 37,
+     "act": 3,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F38-card",
+     "kind": "card_reward",
+     "floor": 38,
+     "act": 3,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F39-shop",
+     "kind": "shop",
+     "floor": 39,
+     "act": 3,
+     "chosen": "removal",
+     "chosen_name": "删牌",
+     "engine_top": "removal",
+     "engine_top_name": "删牌",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F42-card",
+     "kind": "card_reward",
+     "floor": 42,
+     "act": 3,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F43-card",
+     "kind": "card_reward",
+     "floor": 43,
+     "act": 3,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F44-rest",
+     "kind": "rest",
+     "floor": 44,
+     "act": 3,
+     "chosen": "rest:HEAL",
+     "chosen_name": "休息",
+     "engine_top": "rest:HEAL",
+     "engine_top_name": "休息",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F45-card",
+     "kind": "card_reward",
+     "floor": 45,
+     "act": 3,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F46-card",
+     "kind": "card_reward",
+     "floor": 46,
+     "act": 3,
+     "chosen": "0:MURDER",
+     "chosen_name": "谋杀",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": 0.6,
+     "not_strict_because": [
+      "small_gap"
+     ]
+    },
+    {
+     "id": "F47-rest",
+     "kind": "rest",
+     "floor": 47,
+     "act": 3,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    }
+   ],
+   "skipped": []
+  },
+  "flags": [
+   {
+    "id": "F02-card",
+    "kind": "card_reward",
+    "floor": 2,
+    "act": 1,
+    "hp": 54,
+    "max_hp": 70,
+    "gold": 113,
+    "engine_top": "1:SNAKEBITE",
+    "confidence": "medium",
+    "chosen": "skip",
+    "tier": 1,
+    "gap": 3.6,
+    "pick_margin": 1,
+    "options": [
+     {
+      "id": "1:SNAKEBITE",
+      "kind": "card",
+      "entity_id": "SNAKEBITE",
+      "name": "蛇咬",
+      "score": 56.7,
+      "deck_score": 56.7,
+      "rank": 1,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "deck_fitness:frontload",
+        "delta": 7.84,
+        "message": "拿蛇咬后前期输出：每回合 9.4 → 18.7（需求 25.5）"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -1.55,
+        "message": "拿蛇咬后防御：每回合 10.3 → 7.3（需求 6.1）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 中和 让蛇咬更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": -2.72,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 7.8431,
+       "survival": -1.5504,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 1
+      }
+     },
+     {
+      "id": "skip",
+      "kind": "skip",
+      "entity_id": null,
+      "name": "跳过",
+      "score": 54.1,
+      "deck_score": 53.1,
+      "rank": 2,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": 0,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "code": "deck_fitness:pick_margin",
+        "delta": 1,
+        "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0,
+       "survival": 0,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 1
+      }
+     },
+     {
+      "id": "2:POISONED_STAB",
+      "kind": "card",
+      "entity_id": "POISONED_STAB",
+      "name": "带毒刺击",
+      "score": 54,
+      "deck_score": 54,
+      "rank": 3,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "deck_fitness:frontload",
+        "delta": 2.41,
+        "message": "拿带毒刺击后前期输出：每回合 9.4 → 12.0（需求 25.5）"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -0.47,
+        "message": "拿带毒刺击后防御：每回合 10.3 → 9.3（需求 6.1）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": -1.04,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 2.4078,
+       "survival": -0.4691,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 1
+      }
+     },
+     {
+      "id": "0:DODGE_AND_ROLL",
+      "kind": "card",
+      "entity_id": "DODGE_AND_ROLL",
+      "name": "闪躲翻滚",
+      "score": 52.4,
+      "deck_score": 52.4,
+      "rank": 4,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "deck_fitness:frontload",
+        "delta": -0.88,
+        "message": "拿闪躲翻滚后前期输出：每回合 9.4 → 8.4（需求 25.5）"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": 0.53,
+        "message": "拿闪躲翻滚后防御：每回合 10.3 → 11.6（需求 6.1）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": -0.41,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": -0.8752,
+       "survival": 0.5327,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 1
+      }
+     }
+    ]
+   },
+   {
+    "id": "F07-card",
+    "kind": "card_reward",
+    "floor": 7,
+    "act": 1,
+    "hp": 54,
+    "max_hp": 70,
+    "gold": 102,
+    "engine_top": "2:PRECISE_CUT",
+    "confidence": "medium",
+    "chosen": "skip",
+    "tier": 1,
+    "gap": 1.6,
+    "pick_margin": 1,
+    "options": [
+     {
+      "id": "2:PRECISE_CUT",
+      "kind": "card",
+      "entity_id": "PRECISE_CUT",
+      "name": "精确切击",
+      "score": 57,
+      "deck_score": 57,
+      "rank": 1,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "deck_fitness:frontload",
+        "delta": 1.73,
+        "message": "拿精确切击后前期输出：每回合 18.7 → 21.4（需求 29.4）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": -0.14,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 1.7338,
+       "survival": -0.0454,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 1
+      }
+     },
+     {
+      "id": "skip",
+      "kind": "skip",
+      "entity_id": null,
+      "name": "跳过",
+      "score": 56.4,
+      "deck_score": 55.4,
+      "rank": 2,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": 0,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "code": "deck_fitness:pick_margin",
+        "delta": 1,
+        "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0,
+       "survival": 0,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 1
+      }
+     },
+     {
+      "id": "0:POISONED_STAB",
+      "kind": "card",
+      "entity_id": "POISONED_STAB",
+      "name": "带毒刺击",
+      "score": 55.2,
+      "deck_score": 55.2,
+      "rank": 3,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "deck_fitness:frontload",
+        "delta": 0.81,
+        "message": "拿带毒刺击后前期输出：每回合 18.7 → 19.9（需求 29.4）"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -0.33,
+        "message": "拿带毒刺击后防御：每回合 7.2 → 6.7（需求 6.7）"
+       },
+       {
+        "code": "deck_fitness:aoe",
+        "delta": -0.23,
+        "message": "拿带毒刺击后群伤：每回合 4.3 → 4.0（需求 17.9）"
+       },
+       {
+        "code": "deck_fitness:cycle",
+        "delta": -0.14,
+        "message": "拿带毒刺击后循环：每回合额外抽牌 0.61 → 0.59（需求 1.0）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 生存者、中和 让带毒刺击更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": -0.33,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0.5883,
+       "survival": -0.3329,
+       "long_term_growth": -0.1358,
+       "resource_efficiency": 0,
+       "data_completeness": 1
+      }
+     },
+     {
+      "id": "1:KNIFE_TRAP",
+      "kind": "card",
+      "entity_id": "KNIFE_TRAP",
+      "name": "刀刃陷阱",
+      "score": 51.9,
+      "deck_score": 51.9,
+      "rank": 4,
+      "eligible": true,
+      "fully_scored": false,
+      "gaps": [
+       "card_effect_unsupported:KNIFE_TRAP:effect:auto_play"
+      ],
+      "factors": [
+       {
+        "code": "unmodeled_mechanic",
+        "delta": 0,
+        "message": "刀刃陷阱的部分效果尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -2,
+        "message": "拿刀刃陷阱后防御：每回合 7.2 → 6.3（需求 6.7）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": -1.5,
+        "message": "拿刀刃陷阱后前期输出：每回合 18.7 → 16.6（需求 29.4）"
+       },
+       {
+        "code": "deck_fitness:aoe",
+        "delta": -0.42,
+        "message": "拿刀刃陷阱后群伤：每回合 4.3 → 3.8（需求 17.9）"
+       },
+       {
+        "code": "deck_fitness:cycle",
+        "delta": -0.25,
+        "message": "拿刀刃陷阱后循环：每回合额外抽牌 0.61 → 0.58（需求 1.0）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 生存者、中和 让刀刃陷阱更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": 0.59,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": -1.9211,
+       "survival": -2.0026,
+       "long_term_growth": -0.2547,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "explained": [
+  {
+   "flag": "F02-card",
+   "status": "verified",
+   "errors": [],
+   "evidence": [
+    {
+     "id": "T0",
+     "tool": "get_decision",
+     "result": {
+      "id": "F02-card",
+      "kind": "card_reward",
+      "floor": 2,
+      "act": 1,
+      "hp": 54,
+      "max_hp": 70,
+      "gold": 113,
+      "engine_top": "1:SNAKEBITE",
+      "confidence": "medium",
+      "chosen": "skip",
+      "tier": 1,
+      "gap": 3.6,
+      "pick_margin": 1,
+      "options": [
+       {
+        "id": "1:SNAKEBITE",
+        "kind": "card",
+        "entity_id": "SNAKEBITE",
+        "name": "蛇咬",
+        "score": 56.7,
+        "deck_score": 56.7,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 7.84,
+          "message": "拿蛇咬后前期输出：每回合 9.4 → 18.7（需求 25.5）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -1.55,
+          "message": "拿蛇咬后防御：每回合 10.3 → 7.3（需求 6.1）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 中和 让蛇咬更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -2.72,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       },
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 54.1,
+        "deck_score": 53.1,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 1,
+          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ]
+       },
+       {
+        "id": "2:POISONED_STAB",
+        "kind": "card",
+        "entity_id": "POISONED_STAB",
+        "name": "带毒刺击",
+        "score": 54,
+        "deck_score": 54,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 2.41,
+          "message": "拿带毒刺击后前期输出：每回合 9.4 → 12.0（需求 25.5）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.47,
+          "message": "拿带毒刺击后防御：每回合 10.3 → 9.3（需求 6.1）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -1.04,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       },
+       {
+        "id": "0:DODGE_AND_ROLL",
+        "kind": "card",
+        "entity_id": "DODGE_AND_ROLL",
+        "name": "闪躲翻滚",
+        "score": 52.4,
+        "deck_score": 52.4,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.88,
+          "message": "拿闪躲翻滚后前期输出：每回合 9.4 → 8.4（需求 25.5）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": 0.53,
+          "message": "拿闪躲翻滚后防御：每回合 10.3 → 11.6（需求 6.1）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.41,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "id": "T1",
+     "tool": "get_decision",
+     "result": {
+      "id": "F02-card",
+      "kind": "card_reward",
+      "floor": 2,
+      "act": 1,
+      "hp": 54,
+      "max_hp": 70,
+      "gold": 113,
+      "engine_top": "1:SNAKEBITE",
+      "confidence": "medium",
+      "policy_status": "recommend",
+      "pick_margin": 1,
+      "options": [
+       {
+        "id": "1:SNAKEBITE",
+        "kind": "card",
+        "entity_id": "SNAKEBITE",
+        "name": "蛇咬",
+        "score": 56.7,
+        "deck_score": 56.7,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 7.84,
+          "message": "拿蛇咬后前期输出：每回合 9.4 → 18.7（需求 25.5）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -1.55,
+          "message": "拿蛇咬后防御：每回合 10.3 → 7.3（需求 6.1）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 中和 让蛇咬更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -2.72,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 7.8431,
+         "survival": -1.5504,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "data_completeness": 1
+        }
+       },
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 54.1,
+        "deck_score": 53.1,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 1,
+          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0,
+         "survival": 0,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "data_completeness": 1
+        }
+       },
+       {
+        "id": "2:POISONED_STAB",
+        "kind": "card",
+        "entity_id": "POISONED_STAB",
+        "name": "带毒刺击",
+        "score": 54,
+        "deck_score": 54,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 2.41,
+          "message": "拿带毒刺击后前期输出：每回合 9.4 → 12.0（需求 25.5）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.47,
+          "message": "拿带毒刺击后防御：每回合 10.3 → 9.3（需求 6.1）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -1.04,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 2.4078,
+         "survival": -0.4691,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "data_completeness": 1
+        }
+       },
+       {
+        "id": "0:DODGE_AND_ROLL",
+        "kind": "card",
+        "entity_id": "DODGE_AND_ROLL",
+        "name": "闪躲翻滚",
+        "score": 52.4,
+        "deck_score": 52.4,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.88,
+          "message": "拿闪躲翻滚后前期输出：每回合 9.4 → 8.4（需求 25.5）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": 0.53,
+          "message": "拿闪躲翻滚后防御：每回合 10.3 → 11.6（需求 6.1）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.41,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": -0.8752,
+         "survival": 0.5327,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "data_completeness": 1
+        }
+       }
+      ],
+      "chosen": "skip",
+      "tier": 1,
+      "gap": 3.6,
+      "not_strict_because": []
+     }
+    },
+    {
+     "id": "T2",
+     "tool": "get_deck",
+     "result": {
+      "decision_id": "F02-card",
+      "floor": 2,
+      "act": 1,
+      "hp": 54,
+      "max_hp": 70,
+      "gold": 113,
+      "deck_size": 10,
+      "deck": [
+       {
+        "card": "DEFEND_SILENT",
+        "name": "防御",
+        "upgrades": 0,
+        "count": 4
+       },
+       {
+        "card": "NEUTRALIZE",
+        "name": "中和",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "STRIKE_SILENT",
+        "name": "打击",
+        "upgrades": 0,
+        "count": 4
+       },
+       {
+        "card": "SURVIVOR",
+        "name": "生存者",
+        "upgrades": 0,
+        "count": 1
+       }
+      ],
+      "relics": [
+       {
+        "relic": "RING_OF_THE_SNAKE",
+        "name": "蛇之戒指"
+       },
+       {
+        "relic": "PRECARIOUS_SHEARS",
+        "name": "松动羊毛剪"
+       }
+      ],
+      "potions": []
+     }
+    },
+    {
+     "id": "T3",
+     "tool": "compare_options",
+     "result": {
+      "decision_id": "F02-card",
+      "a": {
+       "id": "1:SNAKEBITE",
+       "name": "蛇咬",
+       "deck_score": 56.7,
+       "fully_scored": true
+      },
+      "b": {
+       "id": "skip",
+       "name": "跳过",
+       "deck_score": 53.1,
+       "fully_scored": true
+      },
+      "deck_score_difference": 3.6,
+      "factors": [
+       {
+        "factor": "deck_fitness:frontload",
+        "a": 7.84,
+        "b": 0,
+        "difference": 7.84,
+        "a_message": "拿蛇咬后前期输出：每回合 9.4 → 18.7（需求 25.5）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:lookahead",
+        "a": -2.72,
+        "b": 0,
+        "difference": -2.72,
+        "a_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度",
+        "b_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "factor": "deck_fitness:defense",
+        "a": -1.55,
+        "b": 0,
+        "difference": -1.55,
+        "a_message": "拿蛇咬后防御：每回合 10.3 → 7.3（需求 6.1）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:synergy",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组里的 中和 让蛇咬更有价值（说明，不另加分）",
+        "b_message": null
+       }
+      ],
+      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
+     }
+    },
+    {
+     "id": "T4",
+     "tool": "what_if_choices",
+     "result": {
+      "remove": [
+       "DEFEND_SILENT",
+       "NEUTRALIZE",
+       "STRIKE_SILENT",
+       "SURVIVOR"
+      ],
+      "upgrade": [
+       "DEFEND_SILENT",
+       "NEUTRALIZE",
+       "STRIKE_SILENT",
+       "SURVIVOR"
+      ],
+      "add": []
+     }
+    },
+    {
+     "id": "T5",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F02-card",
+      "changes": [
+       {
+        "operation": "remove",
+        "card": "STRIKE_SILENT",
+        "name": "打击"
+       }
+      ],
+      "engine_top_before": "1:SNAKEBITE",
+      "engine_top_after": "1:SNAKEBITE",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 2.1,
+      "options_after": [
+       {
+        "id": "1:SNAKEBITE",
+        "name": "蛇咬",
+        "deck_score": 55.8,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 53.7,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "2:POISONED_STAB",
+        "name": "带毒刺击",
+        "deck_score": 54.7,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "0:DODGE_AND_ROLL",
+        "name": "闪躲翻滚",
+        "deck_score": 52.8,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    }
+   ],
+   "toolCalls": 5,
+   "repairs": 0,
+   "usage": {
+    "prompt_tokens": 15824,
+    "completion_tokens": 610,
+    "cost_usd": 0.0017536319999999998,
+    "llm_calls": 4
+   },
+   "finding": {
+    "decision_id": "F02-card",
+    "reasons": [
+     {
+      "factor": "deck_fitness:frontload",
+      "evidence": "T3",
+      "text": "引擎最看重输出：拿蛇咬后前期每回合 9.4 → 18.7，而需求是 25.5，牌组目前明显偏慢。"
+     },
+     {
+      "factor": "deck_fitness:lookahead",
+      "evidence": "T3",
+      "text": "引擎也承认往后看会掉分：计入后续 3 次选牌后，蛇咬的长期适合度是负的。"
+     },
+     {
+      "factor": "deck_fitness:defense",
+      "evidence": "T3",
+      "text": "代价是防御每回合 10.3 → 7.3，仍高于需求 6.1，所以引擎认为这笔交换划算。"
+     }
+    ],
+    "what_if_evidence": "T5",
+    "what_if_text": "假设当时少一张打击，引擎首选仍是蛇咬，与跳过的差距从 3.6 缩到 2.1，没有改变结论。",
+    "advice": "第 1 幕前期输出只有 9.4、离需求 25.5 很远时，可以考虑先补一张攻击牌再谈精简。"
+   }
+  },
+  {
+   "flag": "F07-card",
+   "status": "verified",
+   "errors": [
+    "reasons[2]: deck_fitness:pick_margin is not one of the largest differences here (deck_fitness:frontload, deck_fitness:lookahead)"
+   ],
+   "evidence": [
+    {
+     "id": "T0",
+     "tool": "get_decision",
+     "result": {
+      "id": "F07-card",
+      "kind": "card_reward",
+      "floor": 7,
+      "act": 1,
+      "hp": 54,
+      "max_hp": 70,
+      "gold": 102,
+      "engine_top": "2:PRECISE_CUT",
+      "confidence": "medium",
+      "chosen": "skip",
+      "tier": 1,
+      "gap": 1.6,
+      "pick_margin": 1,
+      "options": [
+       {
+        "id": "2:PRECISE_CUT",
+        "kind": "card",
+        "entity_id": "PRECISE_CUT",
+        "name": "精确切击",
+        "score": 57,
+        "deck_score": 57,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 1.73,
+          "message": "拿精确切击后前期输出：每回合 18.7 → 21.4（需求 29.4）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.14,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       },
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 56.4,
+        "deck_score": 55.4,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 1,
+          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ]
+       },
+       {
+        "id": "0:POISONED_STAB",
+        "kind": "card",
+        "entity_id": "POISONED_STAB",
+        "name": "带毒刺击",
+        "score": 55.2,
+        "deck_score": 55.2,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.81,
+          "message": "拿带毒刺击后前期输出：每回合 18.7 → 19.9（需求 29.4）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.33,
+          "message": "拿带毒刺击后防御：每回合 7.2 → 6.7（需求 6.7）"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": -0.23,
+          "message": "拿带毒刺击后群伤：每回合 4.3 → 4.0（需求 17.9）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.14,
+          "message": "拿带毒刺击后循环：每回合额外抽牌 0.61 → 0.59（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 生存者、中和 让带毒刺击更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.33,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       },
+       {
+        "id": "1:KNIFE_TRAP",
+        "kind": "card",
+        "entity_id": "KNIFE_TRAP",
+        "name": "刀刃陷阱",
+        "score": 51.9,
+        "deck_score": 51.9,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": false,
+        "gaps": [
+         "card_effect_unsupported:KNIFE_TRAP:effect:auto_play"
+        ],
+        "factors": [
+         {
+          "code": "unmodeled_mechanic",
+          "delta": 0,
+          "message": "刀刃陷阱的部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -2,
+          "message": "拿刀刃陷阱后防御：每回合 7.2 → 6.3（需求 6.7）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -1.5,
+          "message": "拿刀刃陷阱后前期输出：每回合 18.7 → 16.6（需求 29.4）"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": -0.42,
+          "message": "拿刀刃陷阱后群伤：每回合 4.3 → 3.8（需求 17.9）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.25,
+          "message": "拿刀刃陷阱后循环：每回合额外抽牌 0.61 → 0.58（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 生存者、中和 让刀刃陷阱更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0.59,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "id": "T1",
+     "tool": "get_decision",
+     "result": {
+      "id": "F07-card",
+      "kind": "card_reward",
+      "floor": 7,
+      "act": 1,
+      "hp": 54,
+      "max_hp": 70,
+      "gold": 102,
+      "engine_top": "2:PRECISE_CUT",
+      "confidence": "medium",
+      "policy_status": "recommend",
+      "pick_margin": 1,
+      "options": [
+       {
+        "id": "2:PRECISE_CUT",
+        "kind": "card",
+        "entity_id": "PRECISE_CUT",
+        "name": "精确切击",
+        "score": 57,
+        "deck_score": 57,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 1.73,
+          "message": "拿精确切击后前期输出：每回合 18.7 → 21.4（需求 29.4）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.14,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 1.7338,
+         "survival": -0.0454,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "data_completeness": 1
+        }
+       },
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 56.4,
+        "deck_score": 55.4,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 1,
+          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0,
+         "survival": 0,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "data_completeness": 1
+        }
+       },
+       {
+        "id": "0:POISONED_STAB",
+        "kind": "card",
+        "entity_id": "POISONED_STAB",
+        "name": "带毒刺击",
+        "score": 55.2,
+        "deck_score": 55.2,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.81,
+          "message": "拿带毒刺击后前期输出：每回合 18.7 → 19.9（需求 29.4）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.33,
+          "message": "拿带毒刺击后防御：每回合 7.2 → 6.7（需求 6.7）"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": -0.23,
+          "message": "拿带毒刺击后群伤：每回合 4.3 → 4.0（需求 17.9）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.14,
+          "message": "拿带毒刺击后循环：每回合额外抽牌 0.61 → 0.59（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 生存者、中和 让带毒刺击更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.33,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0.5883,
+         "survival": -0.3329,
+         "long_term_growth": -0.1358,
+         "resource_efficiency": 0,
+         "data_completeness": 1
+        }
+       },
+       {
+        "id": "1:KNIFE_TRAP",
+        "kind": "card",
+        "entity_id": "KNIFE_TRAP",
+        "name": "刀刃陷阱",
+        "score": 51.9,
+        "deck_score": 51.9,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": false,
+        "gaps": [
+         "card_effect_unsupported:KNIFE_TRAP:effect:auto_play"
+        ],
+        "factors": [
+         {
+          "code": "unmodeled_mechanic",
+          "delta": 0,
+          "message": "刀刃陷阱的部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -2,
+          "message": "拿刀刃陷阱后防御：每回合 7.2 → 6.3（需求 6.7）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -1.5,
+          "message": "拿刀刃陷阱后前期输出：每回合 18.7 → 16.6（需求 29.4）"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": -0.42,
+          "message": "拿刀刃陷阱后群伤：每回合 4.3 → 3.8（需求 17.9）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.25,
+          "message": "拿刀刃陷阱后循环：每回合额外抽牌 0.61 → 0.58（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 生存者、中和 让刀刃陷阱更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0.59,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": -1.9211,
+         "survival": -2.0026,
+         "long_term_growth": -0.2547,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       }
+      ],
+      "chosen": "skip",
+      "tier": 1,
+      "gap": 1.6,
+      "not_strict_because": []
+     }
+    },
+    {
+     "id": "T2",
+     "tool": "get_deck",
+     "result": {
+      "decision_id": "F07-card",
+      "floor": 7,
+      "act": 1,
+      "hp": 54,
+      "max_hp": 70,
+      "gold": 102,
+      "deck_size": 14,
+      "deck": [
+       {
+        "card": "DAGGER_THROW",
+        "name": "投掷匕首",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "DEFEND_SILENT",
+        "name": "防御",
+        "upgrades": 0,
+        "count": 4
+       },
+       {
+        "card": "ECHOING_SLASH",
+        "name": "回响斩击",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "NEUTRALIZE",
+        "name": "中和",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "RICOCHET",
+        "name": "连续反弹",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "SPOILS_MAP",
+        "name": "藏宝图",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "STRIKE_SILENT",
+        "name": "打击",
+        "upgrades": 0,
+        "count": 4
+       },
+       {
+        "card": "SURVIVOR",
+        "name": "生存者",
+        "upgrades": 0,
+        "count": 1
+       }
+      ],
+      "relics": [
+       {
+        "relic": "RING_OF_THE_SNAKE",
+        "name": "蛇之戒指"
+       },
+       {
+        "relic": "PRECARIOUS_SHEARS",
+        "name": "松动羊毛剪"
+       }
+      ],
+      "potions": []
+     }
+    },
+    {
+     "id": "T3",
+     "tool": "compare_options",
+     "result": {
+      "decision_id": "F07-card",
+      "a": {
+       "id": "2:PRECISE_CUT",
+       "name": "精确切击",
+       "deck_score": 57,
+       "fully_scored": true
+      },
+      "b": {
+       "id": "skip",
+       "name": "跳过",
+       "deck_score": 55.4,
+       "fully_scored": true
+      },
+      "deck_score_difference": 1.6,
+      "factors": [
+       {
+        "factor": "deck_fitness:frontload",
+        "a": 1.73,
+        "b": 0,
+        "difference": 1.73,
+        "a_message": "拿精确切击后前期输出：每回合 18.7 → 21.4（需求 29.4）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:lookahead",
+        "a": -0.14,
+        "b": 0,
+        "difference": -0.14,
+        "a_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度",
+        "b_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
+     }
+    },
+    {
+     "id": "T4",
+     "tool": "get_card",
+     "result": {
+      "id": "PRECISE_CUT",
+      "name": "精确切击",
+      "description": "造成13点伤害。\n你的手牌中每有一张牌，此牌的伤害就降低2点。",
+      "cost": 0,
+      "type": "攻击",
+      "rarity": "罕见",
+      "color": "silent",
+      "target": "AnyEnemy",
+      "damage": 13
+     }
+    },
+    {
+     "id": "T5",
+     "tool": "what_if_choices",
+     "result": {
+      "remove": [
+       "DAGGER_THROW",
+       "DEFEND_SILENT",
+       "ECHOING_SLASH",
+       "NEUTRALIZE",
+       "RICOCHET",
+       "SPOILS_MAP",
+       "STRIKE_SILENT",
+       "SURVIVOR"
+      ],
+      "upgrade": [
+       "DAGGER_THROW",
+       "DEFEND_SILENT",
+       "ECHOING_SLASH",
+       "NEUTRALIZE",
+       "RICOCHET",
+       "STRIKE_SILENT",
+       "SURVIVOR"
+      ],
+      "add": [
+       {
+        "card": "DODGE_AND_ROLL",
+        "name": "闪躲翻滚"
+       },
+       {
+        "card": "ECHOING_SLASH",
+        "name": "回响斩击"
+       },
+       {
+        "card": "FASTEN",
+        "name": "勒紧"
+       },
+       {
+        "card": "GOLD_AXE",
+        "name": "金斧"
+       },
+       {
+        "card": "NOXIOUS_FUMES",
+        "name": "毒雾"
+       },
+       {
+        "card": "PIERCING_WAIL",
+        "name": "尖啸"
+       },
+       {
+        "card": "POISONED_STAB",
+        "name": "带毒刺击"
+       },
+       {
+        "card": "PREDATOR",
+        "name": "猎杀者"
+       },
+       {
+        "card": "SNAKEBITE",
+        "name": "蛇咬"
+       },
+       {
+        "card": "UNTOUCHABLE",
+        "name": "触不可及"
+       }
+      ]
+     }
+    },
+    {
+     "id": "T6",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F07-card",
+      "changes": [
+       {
+        "operation": "remove",
+        "card": "STRIKE_SILENT",
+        "name": "打击"
+       }
+      ],
+      "engine_top_before": "2:PRECISE_CUT",
+      "engine_top_after": "2:PRECISE_CUT",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 1.6,
+      "options_after": [
+       {
+        "id": "2:PRECISE_CUT",
+        "name": "精确切击",
+        "deck_score": 57.9,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 56.3,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "0:POISONED_STAB",
+        "name": "带毒刺击",
+        "deck_score": 56.3,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "1:KNIFE_TRAP",
+        "name": "刀刃陷阱",
+        "deck_score": 53.1,
+        "rank": 4,
+        "fully_scored": false
+       }
+      ]
+     }
+    }
+   ],
+   "toolCalls": 6,
+   "repairs": 1,
+   "usage": {
+    "prompt_tokens": 27410,
+    "completion_tokens": 918,
+    "cost_usd": 0.003604536,
+    "llm_calls": 6
+   },
+   "finding": {
+    "decision_id": "F07-card",
+    "reasons": [
+     {
+      "factor": "deck_fitness:frontload",
+      "evidence": "T3",
+      "text": "拿精确切击后前期输出每回合 18.7 → 21.4，需求 29.4，这是两边差距最大的一项。"
+     },
+     {
+      "factor": "deck_fitness:lookahead",
+      "evidence": "T3",
+      "text": "往后看 3 次选牌，精确切击反而略降牌组适合度，所以引擎的领先幅度不大。"
+     }
+    ],
+    "what_if_evidence": "T6",
+    "what_if_text": "假设当时少一张打击，引擎首选仍是精确切击，差距不变，说明结论不取决于打击数量。",
+    "advice": "牌组只有 14 张、输出离需求还差不少时，0 费攻击牌对前期推进帮助更直接；若更看重后续抽牌质量，跳过也说得通。"
+   }
+  }
+ ],
+ "summary": {
+  "text": "这些决定都只顾眼前输出、忽视后续选牌，可先补攻击牌再谈精简。",
+  "source": "model",
+  "cost_usd": 0.00014309999999999998
+ },
+ "meta": {
+  "model": "deepseek-flash",
+  "cost_usd": 0.005501268,
+  "seconds": 10.42,
+  "generated_at": "2026-11-01 14:45"
+ }
+}

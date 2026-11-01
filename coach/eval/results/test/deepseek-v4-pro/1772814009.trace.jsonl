@@ -1,0 +1,2 @@
+{"name":"prepass","start":"2026-11-01T06:45:25.065Z","duration_ms":2009,"attributes":{"run_id":"1772814009","tier1":[],"tier2":7}}
+{"name":"review.done","start":"2026-11-01T06:45:27.086Z","duration_ms":0,"attributes":{"run_id":"1772814009","model":"deepseek-v4-pro","cost_usd":0,"seconds":2.011,"verified":[],"dropped":[],"summary_source":"program"}}

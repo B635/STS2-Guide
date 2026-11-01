@@ -1,0 +1,27 @@
+{
+ "set": "test",
+ "model": "deepseek-v4-pro",
+ "prompt_version": "p3",
+ "runs": 15,
+ "runs_without_flags": 2,
+ "tier1_total": 31,
+ "shown": 31,
+ "verified": 28,
+ "verified_first_try": 12,
+ "dropped": 3,
+ "groundedness": 1,
+ "coverage": 0.903,
+ "reverify_failures": [],
+ "summary_from_model": 9,
+ "tool_calls_per_flag": 5.387,
+ "what_if_used": 0,
+ "cost_usd": 0.3752,
+ "cost_per_run": 0.025,
+ "seconds_per_run": 12.855,
+ "ratings": {
+  "useful": 0,
+  "not_useful": 0,
+  "engine_wrong": 0,
+  "rated": 0
+ }
+}

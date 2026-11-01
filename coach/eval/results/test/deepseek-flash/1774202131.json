@@ -1,0 +1,1466 @@
+{
+ "run": "1774202131",
+ "set": "test",
+ "model": "deepseek-flash",
+ "prompt_version": "p3",
+ "pre": {
+  "summary": {
+   "run_id": "1774202131",
+   "character": "IRONCLAD",
+   "ascension": 3,
+   "build_id": "v0.100.0",
+   "win": true,
+   "killed_by": null,
+   "acts_reached": 3,
+   "last_scored_floor": 44,
+   "final_deck_size": 15,
+   "decisions_scored": {
+    "card_reward": 12,
+    "rest": 10,
+    "shop": 2
+   },
+   "decisions_skipped": {},
+   "agreement": {
+    "agree": 18,
+    "judged": 24,
+    "rate": 0.75
+   },
+   "tier1": [
+    "F17-card"
+   ],
+   "tier2": [
+    "F02-card",
+    "F08-card",
+    "F12-card",
+    "F32-rest",
+    "F33-card"
+   ],
+   "warnings": []
+  },
+  "decisions": {
+   "decisions": [
+    {
+     "id": "F02-card",
+     "kind": "card_reward",
+     "floor": 2,
+     "act": 1,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "2:ANGER",
+     "engine_top_name": "愤怒",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": 4.1,
+     "not_strict_because": [
+      "partly_scored"
+     ]
+    },
+    {
+     "id": "F04-card",
+     "kind": "card_reward",
+     "floor": 4,
+     "act": 1,
+     "chosen": "0:FLAME_BARRIER",
+     "chosen_name": "火焰屏障",
+     "engine_top": "0:FLAME_BARRIER",
+     "engine_top_name": "火焰屏障",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F08-card",
+     "kind": "card_reward",
+     "floor": 8,
+     "act": 1,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "2:BREAKTHROUGH",
+     "engine_top_name": "突破",
+     "confidence": "low",
+     "tier": 2,
+     "gap": 1.1,
+     "not_strict_because": [
+      "low_confidence"
+     ]
+    },
+    {
+     "id": "F09-rest",
+     "kind": "rest",
+     "floor": 9,
+     "act": 1,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F11-rest",
+     "kind": "rest",
+     "floor": 11,
+     "act": 1,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F12-card",
+     "kind": "card_reward",
+     "floor": 12,
+     "act": 1,
+     "chosen": "0:TRUE_GRIT",
+     "chosen_name": "坚毅",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": 0.5,
+     "not_strict_because": [
+      "partly_scored",
+      "small_gap"
+     ]
+    },
+    {
+     "id": "F13-rest",
+     "kind": "rest",
+     "floor": 13,
+     "act": 1,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F14-card",
+     "kind": "card_reward",
+     "floor": 14,
+     "act": 1,
+     "chosen": "0:BATTLE_TRANCE",
+     "chosen_name": "战斗专注",
+     "engine_top": "0:BATTLE_TRANCE",
+     "engine_top_name": "战斗专注",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F16-rest",
+     "kind": "rest",
+     "floor": 16,
+     "act": 1,
+     "chosen": "rest:HEAL",
+     "chosen_name": "休息",
+     "engine_top": "rest:HEAL",
+     "engine_top_name": "休息",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F17-card",
+     "kind": "card_reward",
+     "floor": 17,
+     "act": 1,
+     "chosen": "0:PACTS_END",
+     "chosen_name": "契约终结",
+     "engine_top": "1:DEMON_FORM",
+     "engine_top_name": "恶魔形态",
+     "confidence": "medium",
+     "tier": 1,
+     "gap": 2.4,
+     "not_strict_because": []
+    },
+    {
+     "id": "F19-card",
+     "kind": "card_reward",
+     "floor": 19,
+     "act": 2,
+     "chosen": "0:BLOODLETTING",
+     "chosen_name": "放血",
+     "engine_top": "0:BLOODLETTING",
+     "engine_top_name": "放血",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F23-rest",
+     "kind": "rest",
+     "floor": 23,
+     "act": 2,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F24-card",
+     "kind": "card_reward",
+     "floor": 24,
+     "act": 2,
+     "chosen": "0:HOWL_FROM_BEYOND",
+     "chosen_name": "彼岸咆哮",
+     "engine_top": "0:HOWL_FROM_BEYOND",
+     "engine_top_name": "彼岸咆哮",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F25-rest",
+     "kind": "rest",
+     "floor": 25,
+     "act": 2,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F27-shop",
+     "kind": "shop",
+     "floor": 27,
+     "act": 2,
+     "chosen": "removal",
+     "chosen_name": "删牌",
+     "engine_top": "removal",
+     "engine_top_name": "删牌",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F28-card",
+     "kind": "card_reward",
+     "floor": 28,
+     "act": 2,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F29-rest",
+     "kind": "rest",
+     "floor": 29,
+     "act": 2,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F32-rest",
+     "kind": "rest",
+     "floor": 32,
+     "act": 2,
+     "chosen": "rest:HEAL",
+     "chosen_name": "休息",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 2,
+     "gap": -18.1,
+     "not_strict_because": [
+      "partly_scored",
+      "low_confidence",
+      "small_gap"
+     ]
+    },
+    {
+     "id": "F33-card",
+     "kind": "card_reward",
+     "floor": 33,
+     "act": 2,
+     "chosen": "0:PYRE",
+     "chosen_name": "薪火之源",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": -1.5,
+     "not_strict_because": [
+      "small_gap"
+     ]
+    },
+    {
+     "id": "F35-card",
+     "kind": "card_reward",
+     "floor": 35,
+     "act": 3,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F36-card",
+     "kind": "card_reward",
+     "floor": 36,
+     "act": 3,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F39-rest",
+     "kind": "rest",
+     "floor": 39,
+     "act": 3,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F43-rest",
+     "kind": "rest",
+     "floor": 43,
+     "act": 3,
+     "chosen": "rest:HEAL",
+     "chosen_name": "休息",
+     "engine_top": "rest:HEAL",
+     "engine_top_name": "休息",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F44-shop",
+     "kind": "shop",
+     "floor": 44,
+     "act": 3,
+     "chosen": "card:3:BLOODLETTING",
+     "chosen_name": "放血",
+     "engine_top": "card:3:BLOODLETTING",
+     "engine_top_name": "放血",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    }
+   ],
+   "skipped": []
+  },
+  "flags": [
+   {
+    "id": "F17-card",
+    "kind": "card_reward",
+    "floor": 17,
+    "act": 1,
+    "hp": 10,
+    "max_hp": 80,
+    "gold": 396,
+    "engine_top": "1:DEMON_FORM",
+    "confidence": "medium",
+    "chosen": "0:PACTS_END",
+    "tier": 1,
+    "gap": 2.4,
+    "pick_margin": 1,
+    "options": [
+     {
+      "id": "1:DEMON_FORM",
+      "kind": "card",
+      "entity_id": "DEMON_FORM",
+      "name": "恶魔形态",
+      "score": 58.5,
+      "deck_score": 58.5,
+      "rank": 1,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 2 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 2 张牌（坚毅、火焰屏障）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 招财异鱼 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:scaling",
+        "delta": 2.86,
+        "message": "拿恶魔形态后成长：每回合 0.0 → 2.6（需求 15.5）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": -0.7,
+        "message": "拿恶魔形态后前期输出：每回合 15.6 → 14.4（需求 35.5）"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -0.43,
+        "message": "拿恶魔形态后防御：每回合 10.0 → 9.3（需求 8.7）"
+       },
+       {
+        "code": "deck_fitness:cycle",
+        "delta": -0.08,
+        "message": "拿恶魔形态后循环：每回合额外抽牌 2.48 → 2.32（需求 1.0）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 火焰屏障、凌虐 让恶魔形态更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": 0.75,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": -0.6959,
+       "survival": -0.4294,
+       "long_term_growth": 2.7802,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "skip",
+      "kind": "skip",
+      "entity_id": null,
+      "name": "跳过",
+      "score": 57.1,
+      "deck_score": 56.1,
+      "rank": 2,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 2 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 2 张牌（坚毅、火焰屏障）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 招财异鱼 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": 0,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "code": "deck_fitness:pick_margin",
+        "delta": 1,
+        "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0,
+       "survival": 0,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "2:FIEND_FIRE",
+      "kind": "card",
+      "entity_id": "FIEND_FIRE",
+      "name": "恶魔之焰",
+      "score": 56.2,
+      "deck_score": 56.2,
+      "rank": 3,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 2 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 2 张牌（坚毅、火焰屏障）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 招财异鱼 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": 0.61,
+        "message": "拿恶魔之焰后前期输出：每回合 15.6 → 16.8（需求 35.5）"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -0.29,
+        "message": "拿恶魔之焰后防御：每回合 10.0 → 9.5（需求 8.7）"
+       },
+       {
+        "code": "deck_fitness:cycle",
+        "delta": -0.07,
+        "message": "拿恶魔之焰后循环：每回合额外抽牌 2.48 → 2.34（需求 1.0）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 火焰屏障 让恶魔之焰更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": -0.15,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0.6135,
+       "survival": -0.2889,
+       "long_term_growth": -0.0733,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "0:PACTS_END",
+      "kind": "card",
+      "entity_id": "PACTS_END",
+      "name": "契约终结",
+      "score": 56.1,
+      "deck_score": 56.1,
+      "rank": 4,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 2 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 2 张牌（坚毅、火焰屏障）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 招财异鱼 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:cycle",
+        "delta": -0.05,
+        "message": "拿契约终结后循环：每回合额外抽牌 2.48 → 2.39（需求 1.0）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": 0,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0.0709,
+       "survival": 0,
+       "long_term_growth": -0.0502,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "explained": [
+  {
+   "flag": "F17-card",
+   "status": "verified",
+   "errors": [],
+   "evidence": [
+    {
+     "id": "T0",
+     "tool": "get_decision",
+     "result": {
+      "id": "F17-card",
+      "kind": "card_reward",
+      "floor": 17,
+      "act": 1,
+      "hp": 10,
+      "max_hp": 80,
+      "gold": 396,
+      "engine_top": "1:DEMON_FORM",
+      "confidence": "medium",
+      "chosen": "0:PACTS_END",
+      "tier": 1,
+      "gap": 2.4,
+      "pick_margin": 1,
+      "options": [
+       {
+        "id": "1:DEMON_FORM",
+        "kind": "card",
+        "entity_id": "DEMON_FORM",
+        "name": "恶魔形态",
+        "score": 58.5,
+        "deck_score": 58.5,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 2 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 2 张牌（坚毅、火焰屏障）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 招财异鱼 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:scaling",
+          "delta": 2.86,
+          "message": "拿恶魔形态后成长：每回合 0.0 → 2.6（需求 15.5）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.7,
+          "message": "拿恶魔形态后前期输出：每回合 15.6 → 14.4（需求 35.5）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.43,
+          "message": "拿恶魔形态后防御：每回合 10.0 → 9.3（需求 8.7）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.08,
+          "message": "拿恶魔形态后循环：每回合额外抽牌 2.48 → 2.32（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 火焰屏障、凌虐 让恶魔形态更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0.75,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       },
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 57.1,
+        "deck_score": 56.1,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 2 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 2 张牌（坚毅、火焰屏障）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 招财异鱼 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 1,
+          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ]
+       },
+       {
+        "id": "2:FIEND_FIRE",
+        "kind": "card",
+        "entity_id": "FIEND_FIRE",
+        "name": "恶魔之焰",
+        "score": 56.2,
+        "deck_score": 56.2,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 2 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 2 张牌（坚毅、火焰屏障）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 招财异鱼 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.61,
+          "message": "拿恶魔之焰后前期输出：每回合 15.6 → 16.8（需求 35.5）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.29,
+          "message": "拿恶魔之焰后防御：每回合 10.0 → 9.5（需求 8.7）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.07,
+          "message": "拿恶魔之焰后循环：每回合额外抽牌 2.48 → 2.34（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 火焰屏障 让恶魔之焰更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.15,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       },
+       {
+        "id": "0:PACTS_END",
+        "kind": "card",
+        "entity_id": "PACTS_END",
+        "name": "契约终结",
+        "score": 56.1,
+        "deck_score": 56.1,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 2 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 2 张牌（坚毅、火焰屏障）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 招财异鱼 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.05,
+          "message": "拿契约终结后循环：每回合额外抽牌 2.48 → 2.39（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "id": "T1",
+     "tool": "get_decision",
+     "result": {
+      "id": "F17-card",
+      "kind": "card_reward",
+      "floor": 17,
+      "act": 1,
+      "hp": 10,
+      "max_hp": 80,
+      "gold": 396,
+      "engine_top": "1:DEMON_FORM",
+      "confidence": "medium",
+      "policy_status": "recommend",
+      "pick_margin": 1,
+      "options": [
+       {
+        "id": "1:DEMON_FORM",
+        "kind": "card",
+        "entity_id": "DEMON_FORM",
+        "name": "恶魔形态",
+        "score": 58.5,
+        "deck_score": 58.5,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 2 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 2 张牌（坚毅、火焰屏障）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 招财异鱼 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:scaling",
+          "delta": 2.86,
+          "message": "拿恶魔形态后成长：每回合 0.0 → 2.6（需求 15.5）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.7,
+          "message": "拿恶魔形态后前期输出：每回合 15.6 → 14.4（需求 35.5）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.43,
+          "message": "拿恶魔形态后防御：每回合 10.0 → 9.3（需求 8.7）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.08,
+          "message": "拿恶魔形态后循环：每回合额外抽牌 2.48 → 2.32（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 火焰屏障、凌虐 让恶魔形态更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0.75,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": -0.6959,
+         "survival": -0.4294,
+         "long_term_growth": 2.7802,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 57.1,
+        "deck_score": 56.1,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 2 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 2 张牌（坚毅、火焰屏障）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 招财异鱼 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 1,
+          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0,
+         "survival": 0,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "2:FIEND_FIRE",
+        "kind": "card",
+        "entity_id": "FIEND_FIRE",
+        "name": "恶魔之焰",
+        "score": 56.2,
+        "deck_score": 56.2,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 2 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 2 张牌（坚毅、火焰屏障）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 招财异鱼 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.61,
+          "message": "拿恶魔之焰后前期输出：每回合 15.6 → 16.8（需求 35.5）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.29,
+          "message": "拿恶魔之焰后防御：每回合 10.0 → 9.5（需求 8.7）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.07,
+          "message": "拿恶魔之焰后循环：每回合额外抽牌 2.48 → 2.34（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 火焰屏障 让恶魔之焰更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.15,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0.6135,
+         "survival": -0.2889,
+         "long_term_growth": -0.0733,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "0:PACTS_END",
+        "kind": "card",
+        "entity_id": "PACTS_END",
+        "name": "契约终结",
+        "score": 56.1,
+        "deck_score": 56.1,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 2 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 2 张牌（坚毅、火焰屏障）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 招财异鱼 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.05,
+          "message": "拿契约终结后循环：每回合额外抽牌 2.48 → 2.39（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0.0709,
+         "survival": 0,
+         "long_term_growth": -0.0502,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       }
+      ],
+      "chosen": "0:PACTS_END",
+      "tier": 1,
+      "gap": 2.4,
+      "not_strict_because": []
+     }
+    },
+    {
+     "id": "T2",
+     "tool": "get_deck",
+     "result": {
+      "decision_id": "F17-card",
+      "floor": 17,
+      "act": 1,
+      "hp": 10,
+      "max_hp": 80,
+      "gold": 396,
+      "deck_size": 15,
+      "deck": [
+       {
+        "card": "BASH",
+        "name": "痛击",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "BATTLE_TRANCE",
+        "name": "战斗专注",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "BURNING_PACT",
+        "name": "燃烧契约",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "DEFEND_IRONCLAD",
+        "name": "防御",
+        "upgrades": 0,
+        "count": 4
+       },
+       {
+        "card": "FLAME_BARRIER",
+        "name": "火焰屏障",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "MANGLE",
+        "name": "凌虐",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "POMMEL_STRIKE",
+        "name": "剑柄打击",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "SPOILS_MAP",
+        "name": "藏宝图",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "STRIKE_IRONCLAD",
+        "name": "打击",
+        "upgrades": 0,
+        "count": 3
+       },
+       {
+        "card": "TRUE_GRIT",
+        "name": "坚毅",
+        "upgrades": 0,
+        "count": 1
+       }
+      ],
+      "relics": [
+       {
+        "relic": "BURNING_BLOOD",
+        "name": "燃烧之血"
+       },
+       {
+        "relic": "NEW_LEAF",
+        "name": "新叶"
+       },
+       {
+        "relic": "BAG_OF_MARBLES",
+        "name": "弹珠袋"
+       },
+       {
+        "relic": "LUCKY_FYSH",
+        "name": "招财异鱼"
+       },
+       {
+        "relic": "BAG_OF_PREPARATION",
+        "name": "准备背包"
+       }
+      ],
+      "potions": []
+     }
+    },
+    {
+     "id": "T3",
+     "tool": "compare_options",
+     "result": {
+      "decision_id": "F17-card",
+      "a": {
+       "id": "1:DEMON_FORM",
+       "name": "恶魔形态",
+       "deck_score": 58.5,
+       "fully_scored": true
+      },
+      "b": {
+       "id": "0:PACTS_END",
+       "name": "契约终结",
+       "deck_score": 56.1,
+       "fully_scored": true
+      },
+      "deck_score_difference": 2.4,
+      "factors": [
+       {
+        "factor": "deck_fitness:scaling",
+        "a": 2.86,
+        "b": 0,
+        "difference": 2.86,
+        "a_message": "拿恶魔形态后成长：每回合 0.0 → 2.6（需求 15.5）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:lookahead",
+        "a": 0.75,
+        "b": 0,
+        "difference": 0.75,
+        "a_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度",
+        "b_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "factor": "deck_fitness:frontload",
+        "a": -0.7,
+        "b": 0,
+        "difference": -0.7,
+        "a_message": "拿恶魔形态后前期输出：每回合 15.6 → 14.4（需求 35.5）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:defense",
+        "a": -0.43,
+        "b": 0,
+        "difference": -0.43,
+        "a_message": "拿恶魔形态后防御：每回合 10.0 → 9.3（需求 8.7）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:cycle",
+        "a": -0.08,
+        "b": -0.05,
+        "difference": -0.03,
+        "a_message": "拿恶魔形态后循环：每回合额外抽牌 2.48 → 2.32（需求 1.0）",
+        "b_message": "拿契约终结后循环：每回合额外抽牌 2.48 → 2.39（需求 1.0）"
+       },
+       {
+        "factor": "deck_fitness:synergy",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组里的 火焰屏障、凌虐 让恶魔形态更有价值（说明，不另加分）",
+        "b_message": null
+       },
+       {
+        "factor": "estimate_scope",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 2 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。",
+        "b_message": "牌组中 2 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "factor": "partially_modeled_deck_cards",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 2 张牌（坚毅、火焰屏障）有部分效果尚未计入评分。",
+        "b_message": "牌组中 2 张牌（坚毅、火焰屏障）有部分效果尚未计入评分。"
+       },
+       {
+        "factor": "unmodeled_relics",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "遗物 招财异鱼 尚未计入评分。",
+        "b_message": "遗物 招财异鱼 尚未计入评分。"
+       }
+      ],
+      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
+     }
+    },
+    {
+     "id": "T4",
+     "tool": "what_if_choices",
+     "result": {
+      "remove": [
+       "BASH",
+       "BATTLE_TRANCE",
+       "BURNING_PACT",
+       "DEFEND_IRONCLAD",
+       "FLAME_BARRIER",
+       "MANGLE",
+       "POMMEL_STRIKE",
+       "SPOILS_MAP",
+       "STRIKE_IRONCLAD",
+       "TRUE_GRIT"
+      ],
+      "upgrade": [
+       "BASH",
+       "BATTLE_TRANCE",
+       "BURNING_PACT",
+       "DEFEND_IRONCLAD",
+       "STRIKE_IRONCLAD",
+       "TRUE_GRIT"
+      ],
+      "add": [
+       {
+        "card": "ANGER",
+        "name": "愤怒"
+       },
+       {
+        "card": "ASHEN_STRIKE",
+        "name": "灰烬打击"
+       },
+       {
+        "card": "BATTLE_TRANCE",
+        "name": "战斗专注"
+       },
+       {
+        "card": "BLOOD_WALL",
+        "name": "血墙"
+       },
+       {
+        "card": "BREAKTHROUGH",
+        "name": "突破"
+       },
+       {
+        "card": "COLOSSUS",
+        "name": "巨像"
+       },
+       {
+        "card": "EXPECT_A_FIGHT",
+        "name": "跃跃欲试"
+       },
+       {
+        "card": "FLAME_BARRIER",
+        "name": "火焰屏障"
+       },
+       {
+        "card": "HEADBUTT",
+        "name": "头槌"
+       },
+       {
+        "card": "MOLTEN_FIST",
+        "name": "熔融之拳"
+       },
+       {
+        "card": "SETUP_STRIKE",
+        "name": "预备打击"
+       },
+       {
+        "card": "TRUE_GRIT",
+        "name": "坚毅"
+       },
+       {
+        "card": "UNRELENTING",
+        "name": "无情猛攻"
+       }
+      ]
+     }
+    },
+    {
+     "id": "T5",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F17-card",
+      "changes": [
+       {
+        "operation": "remove",
+        "card": "STRIKE_IRONCLAD",
+        "name": "打击"
+       },
+       {
+        "operation": "remove",
+        "card": "DEFEND_IRONCLAD",
+        "name": "防御"
+       }
+      ],
+      "engine_top_before": "1:DEMON_FORM",
+      "engine_top_after": "1:DEMON_FORM",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 2.5,
+      "options_after": [
+       {
+        "id": "1:DEMON_FORM",
+        "name": "恶魔形态",
+        "deck_score": 59.7,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 57.1,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "2:FIEND_FIRE",
+        "name": "恶魔之焰",
+        "deck_score": 57.2,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "0:PACTS_END",
+        "name": "契约终结",
+        "deck_score": 57.2,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    }
+   ],
+   "toolCalls": 5,
+   "repairs": 0,
+   "usage": {
+    "prompt_tokens": 21488,
+    "completion_tokens": 631,
+    "cost_usd": 0.002386704,
+    "llm_calls": 4
+   },
+   "finding": {
+    "decision_id": "F17-card",
+    "reasons": [
+     {
+      "factor": "deck_fitness:scaling",
+      "evidence": "T3",
+      "text": "引擎最看重成长：拿恶魔形态后每回合成长 0.0 → 2.6（需求 15.5），契约终结在这项没有贡献。"
+     },
+     {
+      "factor": "deck_fitness:lookahead",
+      "evidence": "T3",
+      "text": "往后看 3 次选牌，恶魔形态让牌组更顺，契约终结没有这项收益。"
+     },
+     {
+      "factor": "deck_fitness:frontload",
+      "evidence": "T3",
+      "text": "代价是前期输出每回合 15.6 → 14.4（需求 35.5），防御 10.0 → 9.3（需求 8.7），所以差距只有 2.4。"
+     }
+    ],
+    "what_if_evidence": "T5",
+    "what_if_text": "试着去掉一张打击和一张防御后，引擎仍选恶魔形态，差距 2.5，说明这不是牌组太厚造成的。",
+    "advice": "当前 15 张牌、前期输出离需求 35.5 还远，若想补即时战力可留意恶魔之焰这类直接加输出的牌。"
+   }
+  }
+ ],
+ "summary": {
+  "text": "引擎点出 1 个值得想一想的决定，其中 1 个主要和成长有关。",
+  "source": "program",
+  "cost_usd": 0
+ },
+ "meta": {
+  "model": "deepseek-flash",
+  "cost_usd": 0.002386704,
+  "seconds": 5.842,
+  "generated_at": "2026-11-01 14:44"
+ }
+}

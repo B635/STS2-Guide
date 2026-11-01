@@ -1,0 +1,2255 @@
+{
+ "run": "1773853598",
+ "set": "test",
+ "model": "deepseek-v4-pro",
+ "prompt_version": "p3",
+ "pre": {
+  "summary": {
+   "run_id": "1773853598",
+   "character": "NECROBINDER",
+   "ascension": 1,
+   "build_id": "v0.99.1",
+   "win": false,
+   "killed_by": "残杀千足虫",
+   "acts_reached": 2,
+   "last_scored_floor": 17,
+   "final_deck_size": 18,
+   "decisions_scored": {
+    "card_reward": 7,
+    "shop": 1,
+    "rest": 4
+   },
+   "decisions_skipped": {
+    "no_boss": 4
+   },
+   "agreement": {
+    "agree": 6,
+    "judged": 12,
+    "rate": 0.5
+   },
+   "tier1": [
+    "F15-card",
+    "F03-shop"
+   ],
+   "tier2": [
+    "F02-card",
+    "F08-card",
+    "F12-card",
+    "F17-card"
+   ],
+   "warnings": []
+  },
+  "decisions": {
+   "decisions": [
+    {
+     "id": "F02-card",
+     "kind": "card_reward",
+     "floor": 2,
+     "act": 1,
+     "chosen": "0:DEATHS_DOOR",
+     "chosen_name": "死亡之门",
+     "engine_top": "2:INVOKE",
+     "engine_top_name": "唤起",
+     "confidence": "low",
+     "tier": 2,
+     "gap": 1.5,
+     "not_strict_because": [
+      "partly_scored",
+      "low_confidence"
+     ]
+    },
+    {
+     "id": "F03-shop",
+     "kind": "shop",
+     "floor": 3,
+     "act": 1,
+     "chosen": "removal",
+     "chosen_name": "删牌",
+     "engine_top": "leave",
+     "engine_top_name": "离开商店",
+     "confidence": "medium",
+     "tier": 1,
+     "gap": 2.19,
+     "not_strict_because": []
+    },
+    {
+     "id": "F05-card",
+     "kind": "card_reward",
+     "floor": 5,
+     "act": 1,
+     "chosen": "0:NEGATIVE_PULSE",
+     "chosen_name": "负能量脉冲",
+     "engine_top": "0:NEGATIVE_PULSE",
+     "engine_top_name": "负能量脉冲",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F07-rest",
+     "kind": "rest",
+     "floor": 7,
+     "act": 1,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F08-card",
+     "kind": "card_reward",
+     "floor": 8,
+     "act": 1,
+     "chosen": "0:EIDOLON",
+     "chosen_name": "幻景",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": 2,
+     "not_strict_because": [
+      "partly_scored"
+     ]
+    },
+    {
+     "id": "F09-rest",
+     "kind": "rest",
+     "floor": 9,
+     "act": 1,
+     "chosen": "rest:HEAL",
+     "chosen_name": "休息",
+     "engine_top": "rest:HEAL",
+     "engine_top_name": "休息",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F12-card",
+     "kind": "card_reward",
+     "floor": 12,
+     "act": 1,
+     "chosen": "0:DRAIN_POWER",
+     "chosen_name": "能量汲取",
+     "engine_top": "1:DEFILE",
+     "engine_top_name": "玷污",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": 0.7,
+     "not_strict_because": [
+      "small_gap"
+     ]
+    },
+    {
+     "id": "F13-rest",
+     "kind": "rest",
+     "floor": 13,
+     "act": 1,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F14-card",
+     "kind": "card_reward",
+     "floor": 14,
+     "act": 1,
+     "chosen": "0:WISP",
+     "chosen_name": "鬼火",
+     "engine_top": "0:WISP",
+     "engine_top_name": "鬼火",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F15-card",
+     "kind": "card_reward",
+     "floor": 15,
+     "act": 1,
+     "chosen": "0:DEFILE",
+     "chosen_name": "玷污",
+     "engine_top": "2:BURY",
+     "engine_top_name": "埋葬",
+     "confidence": "medium",
+     "tier": 1,
+     "gap": 2.5,
+     "not_strict_because": []
+    },
+    {
+     "id": "F16-rest",
+     "kind": "rest",
+     "floor": 16,
+     "act": 1,
+     "chosen": "rest:HEAL",
+     "chosen_name": "休息",
+     "engine_top": "rest:HEAL",
+     "engine_top_name": "休息",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F17-card",
+     "kind": "card_reward",
+     "floor": 17,
+     "act": 1,
+     "chosen": "0:REAPER_FORM",
+     "chosen_name": "死神形态",
+     "engine_top": "1:MISERY",
+     "engine_top_name": "苦难",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": 4.5,
+     "not_strict_because": [
+      "partly_scored"
+     ]
+    }
+   ],
+   "skipped": [
+    {
+     "id": "F20-shop",
+     "kind": "shop",
+     "floor": 20,
+     "reason": "no_boss"
+    },
+    {
+     "id": "F22-card",
+     "kind": "card_reward",
+     "floor": 22,
+     "reason": "no_boss"
+    },
+    {
+     "id": "F23-shop",
+     "kind": "shop",
+     "floor": 23,
+     "reason": "no_boss"
+    },
+    {
+     "id": "F24-rest",
+     "kind": "rest",
+     "floor": 24,
+     "reason": "no_boss"
+    }
+   ]
+  },
+  "flags": [
+   {
+    "id": "F15-card",
+    "kind": "card_reward",
+    "floor": 15,
+    "act": 1,
+    "hp": 26,
+    "max_hp": 73,
+    "gold": 254,
+    "engine_top": "2:BURY",
+    "confidence": "medium",
+    "chosen": "0:DEFILE",
+    "tier": 1,
+    "gap": 2.5,
+    "pick_margin": 1,
+    "options": [
+     {
+      "id": "2:BURY",
+      "kind": "card",
+      "entity_id": "BURY",
+      "name": "埋葬",
+      "score": 63.3,
+      "deck_score": 63.3,
+      "rank": 1,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 3 张牌未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 3 张牌（幻景、死亡之门、负能量脉冲）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": 5.92,
+        "message": "拿埋葬后前期输出：每回合 14.6 → 23.5（需求 24.7）"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -1.61,
+        "message": "拿埋葬后防御：每回合 10.4 → 8.2（需求 8.4）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 死亡之门、护卫 让埋葬更有价值（说明，不另加分）"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 5.9219,
+       "survival": -1.6068,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "0:DEFILE",
+      "kind": "card",
+      "entity_id": "DEFILE",
+      "name": "玷污",
+      "score": 60.8,
+      "deck_score": 60.8,
+      "rank": 2,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 3 张牌未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 3 张牌（幻景、死亡之门、负能量脉冲）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": 2.17,
+        "message": "拿玷污后前期输出：每回合 14.6 → 17.6（需求 24.7）"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -0.37,
+        "message": "拿玷污后防御：每回合 10.4 → 9.7（需求 8.4）"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 2.1669,
+       "survival": -0.3669,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "skip",
+      "kind": "skip",
+      "entity_id": null,
+      "name": "跳过",
+      "score": 60,
+      "deck_score": 59,
+      "rank": 3,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 3 张牌未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 3 张牌（幻景、死亡之门、负能量脉冲）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:pick_margin",
+        "delta": 1,
+        "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0,
+       "survival": 0,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "1:DEFY",
+      "kind": "card",
+      "entity_id": "DEFY",
+      "name": "违逆",
+      "score": 59,
+      "deck_score": 59,
+      "rank": 4,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 3 张牌未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 3 张牌（幻景、死亡之门、负能量脉冲）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": -0.81,
+        "message": "拿违逆后前期输出：每回合 14.6 → 13.5（需求 24.7）"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": 0.78,
+        "message": "拿违逆后防御：每回合 10.4 → 12.0（需求 8.4）"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": -0.8089,
+       "survival": 0.7786,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     }
+    ]
+   },
+   {
+    "id": "F03-shop",
+    "kind": "shop",
+    "floor": 3,
+    "act": 1,
+    "hp": 66,
+    "max_hp": 66,
+    "gold": 119,
+    "engine_top": "leave",
+    "confidence": "medium",
+    "chosen": "removal",
+    "tier": 1,
+    "gap": 2.19,
+    "pick_margin": 1,
+    "options": [
+     {
+      "id": "leave",
+      "kind": "leave",
+      "entity_id": null,
+      "name": "离开商店",
+      "score": 50,
+      "deck_score": 50,
+      "rank": 1,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "merchant_leave",
+        "delta": 0,
+        "message": "离开商店，保留金币。"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0,
+       "survival": 0,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "deck_burden": 0,
+       "synergy": 0,
+       "route_fit": 0,
+       "data_completeness": 1
+      }
+     },
+     {
+      "id": "removal",
+      "kind": "card_removal",
+      "entity_id": null,
+      "name": "删牌",
+      "score": 47.8118,
+      "deck_score": 47.81,
+      "rank": 2,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "merchant:deck",
+        "delta": 0.49,
+        "message": "移除 防御（可移除的牌中估值最好的一张）"
+       },
+       {
+        "code": "merchant:price",
+        "delta": -2.6782,
+        "message": "花 75 金币（现有 119）：这些金币在之后的商店能买到的价值；金币越多每枚越不值钱"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0,
+       "survival": 0,
+       "long_term_growth": 0.49,
+       "resource_efficiency": -2.6782,
+       "deck_burden": 0,
+       "synergy": 0,
+       "route_fit": 0,
+       "data_completeness": 1
+      }
+     },
+     {
+      "id": "card:2:PULL_AGGRO",
+      "kind": "card",
+      "entity_id": "PULL_AGGRO",
+      "name": "吸引仇恨",
+      "score": 47.5742,
+      "deck_score": 47.57,
+      "rank": 3,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "merchant:deck",
+        "delta": -0.6897,
+        "message": "加入 吸引仇恨 后的牌组适合度（计入本幕后续选牌）"
+       },
+       {
+        "code": "merchant:price",
+        "delta": -1.7361,
+        "message": "花 50 金币（现有 119）：这些金币在之后的商店能买到的价值；金币越多每枚越不值钱"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0,
+       "survival": 0,
+       "long_term_growth": -0.6897,
+       "resource_efficiency": -1.7361,
+       "deck_burden": 0,
+       "synergy": 0,
+       "route_fit": 0,
+       "data_completeness": 1
+      }
+     },
+     {
+      "id": "card:3:DELAY",
+      "kind": "card",
+      "entity_id": "DELAY",
+      "name": "拖延",
+      "score": 47.5062,
+      "deck_score": 47.51,
+      "rank": 4,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "merchant:deck",
+        "delta": 0.1844,
+        "message": "加入 拖延 后的牌组适合度（计入本幕后续选牌）"
+       },
+       {
+        "code": "merchant:price",
+        "delta": -2.6782,
+        "message": "花 75 金币（现有 119）：这些金币在之后的商店能买到的价值；金币越多每枚越不值钱"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0,
+       "survival": 0,
+       "long_term_growth": 0.1844,
+       "resource_efficiency": -2.6782,
+       "deck_burden": 0,
+       "synergy": 0,
+       "route_fit": 0,
+       "data_completeness": 1
+      }
+     },
+     {
+      "id": "card:5:PROLONG",
+      "kind": "card",
+      "entity_id": "PROLONG",
+      "name": "延伸",
+      "score": 47.3367,
+      "deck_score": 47.34,
+      "rank": 5,
+      "eligible": true,
+      "fully_scored": false,
+      "gaps": [
+       "card_effect_unsupported:PROLONG:power_effect_key:amount_text"
+      ],
+      "factors": [
+       {
+        "code": "merchant:deck",
+        "delta": 0.0149,
+        "message": "加入 延伸 后的牌组适合度（计入本幕后续选牌）"
+       },
+       {
+        "code": "merchant:price",
+        "delta": -2.6782,
+        "message": "花 75 金币（现有 119）：这些金币在之后的商店能买到的价值；金币越多每枚越不值钱"
+       },
+       {
+        "code": "unmodeled_mechanic",
+        "delta": 0,
+        "message": "部分效果尚未计入评分（见数据缺口），分数只反映已计入的部分。"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0,
+       "survival": 0,
+       "long_term_growth": 0.0149,
+       "resource_efficiency": -2.6782,
+       "deck_burden": 0,
+       "synergy": 0,
+       "route_fit": 0,
+       "data_completeness": 1
+      }
+     },
+     {
+      "id": "card:4:LETHALITY",
+      "kind": "card",
+      "entity_id": "LETHALITY",
+      "name": "致死性",
+      "score": 46.4359,
+      "deck_score": 46.44,
+      "rank": 6,
+      "eligible": true,
+      "fully_scored": false,
+      "gaps": [
+       "power_mechanic_unsupported:LETHALITY:key:applies_to"
+      ],
+      "factors": [
+       {
+        "code": "merchant:deck",
+        "delta": -0.8859,
+        "message": "加入 致死性 后的牌组适合度（计入本幕后续选牌）"
+       },
+       {
+        "code": "merchant:price",
+        "delta": -2.6782,
+        "message": "花 75 金币（现有 119）：这些金币在之后的商店能买到的价值；金币越多每枚越不值钱"
+       },
+       {
+        "code": "unmodeled_mechanic",
+        "delta": 0,
+        "message": "部分效果尚未计入评分（见数据缺口），分数只反映已计入的部分。"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0,
+       "survival": 0,
+       "long_term_growth": -0.8859,
+       "resource_efficiency": -2.6782,
+       "deck_burden": 0,
+       "synergy": 0,
+       "route_fit": 0,
+       "data_completeness": 1
+      }
+     },
+     {
+      "id": "card:0:BANSHEES_CRY",
+      "kind": "card",
+      "entity_id": "BANSHEES_CRY",
+      "name": "女妖之嚎",
+      "score": null,
+      "deck_score": null,
+      "rank": null,
+      "eligible": false,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [],
+      "dimensions": {
+       "immediate_power": 0,
+       "survival": 0,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "deck_burden": 0,
+       "synergy": 0,
+       "route_fit": 0,
+       "data_completeness": 1
+      }
+     },
+     {
+      "id": "card:1:TIMES_UP",
+      "kind": "card",
+      "entity_id": "TIMES_UP",
+      "name": "大限已至",
+      "score": null,
+      "deck_score": null,
+      "rank": null,
+      "eligible": false,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [],
+      "dimensions": {
+       "immediate_power": 0,
+       "survival": 0,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "deck_burden": 0,
+       "synergy": 0,
+       "route_fit": 0,
+       "data_completeness": 1
+      }
+     },
+     {
+      "id": "card:6:REND",
+      "kind": "card",
+      "entity_id": "REND",
+      "name": "撕碎",
+      "score": null,
+      "deck_score": null,
+      "rank": null,
+      "eligible": false,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [],
+      "dimensions": {
+       "immediate_power": 0,
+       "survival": 0,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "deck_burden": 0,
+       "synergy": 0,
+       "route_fit": 0,
+       "data_completeness": 1
+      }
+     },
+     {
+      "id": "relic:0:PARRYING_SHIELD",
+      "kind": "relic",
+      "entity_id": "PARRYING_SHIELD",
+      "name": "招架盾",
+      "score": null,
+      "deck_score": null,
+      "rank": null,
+      "eligible": false,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [],
+      "dimensions": {
+       "immediate_power": 0,
+       "survival": 0,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "deck_burden": 0,
+       "synergy": 0,
+       "route_fit": 0,
+       "data_completeness": 1
+      }
+     },
+     {
+      "id": "relic:1:BRONZE_SCALES",
+      "kind": "relic",
+      "entity_id": "BRONZE_SCALES",
+      "name": "铜质鳞片",
+      "score": null,
+      "deck_score": null,
+      "rank": null,
+      "eligible": false,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [],
+      "dimensions": {
+       "immediate_power": 0,
+       "survival": 0,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "deck_burden": 0,
+       "synergy": 0,
+       "route_fit": 0,
+       "data_completeness": 1
+      }
+     },
+     {
+      "id": "relic:2:BREAD",
+      "kind": "relic",
+      "entity_id": "BREAD",
+      "name": "面包",
+      "score": null,
+      "deck_score": null,
+      "rank": null,
+      "eligible": false,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [],
+      "dimensions": {
+       "immediate_power": 0,
+       "survival": 0,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "deck_burden": 0,
+       "synergy": 0,
+       "route_fit": 0,
+       "data_completeness": 1
+      }
+     },
+     {
+      "id": "potion:0:VULNERABLE_POTION",
+      "kind": "potion",
+      "entity_id": "VULNERABLE_POTION",
+      "name": "易伤药水",
+      "score": null,
+      "deck_score": null,
+      "rank": null,
+      "eligible": true,
+      "fully_scored": false,
+      "gaps": [
+       "merchant:potion_unmodeled:VULNERABLE_POTION"
+      ],
+      "factors": [
+       {
+        "code": "insufficient_data",
+        "delta": 0,
+        "message": "药水还没有经程序集核对的效果事实，暂不评分。"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0,
+       "survival": 0,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "deck_burden": 0,
+       "synergy": 0,
+       "route_fit": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "potion:1:LIQUID_MEMORIES",
+      "kind": "potion",
+      "entity_id": "LIQUID_MEMORIES",
+      "name": "液态记忆",
+      "score": null,
+      "deck_score": null,
+      "rank": null,
+      "eligible": true,
+      "fully_scored": false,
+      "gaps": [
+       "merchant:potion_unmodeled:LIQUID_MEMORIES"
+      ],
+      "factors": [
+       {
+        "code": "insufficient_data",
+        "delta": 0,
+        "message": "药水还没有经程序集核对的效果事实，暂不评分。"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0,
+       "survival": 0,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "deck_burden": 0,
+       "synergy": 0,
+       "route_fit": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "potion:2:BLESSING_OF_THE_FORGE",
+      "kind": "potion",
+      "entity_id": "BLESSING_OF_THE_FORGE",
+      "name": "熔炉的祝福",
+      "score": null,
+      "deck_score": null,
+      "rank": null,
+      "eligible": true,
+      "fully_scored": false,
+      "gaps": [
+       "merchant:potion_unmodeled:BLESSING_OF_THE_FORGE"
+      ],
+      "factors": [
+       {
+        "code": "insufficient_data",
+        "delta": 0,
+        "message": "药水还没有经程序集核对的效果事实，暂不评分。"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0,
+       "survival": 0,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "deck_burden": 0,
+       "synergy": 0,
+       "route_fit": 0,
+       "data_completeness": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "explained": [
+  {
+   "flag": "F15-card",
+   "status": "verified",
+   "errors": [
+    "reasons[2]: deck_fitness:synergy is not one of the largest differences here (deck_fitness:frontload, deck_fitness:defense)"
+   ],
+   "evidence": [
+    {
+     "id": "T0",
+     "tool": "get_decision",
+     "result": {
+      "id": "F15-card",
+      "kind": "card_reward",
+      "floor": 15,
+      "act": 1,
+      "hp": 26,
+      "max_hp": 73,
+      "gold": 254,
+      "engine_top": "2:BURY",
+      "confidence": "medium",
+      "chosen": "0:DEFILE",
+      "tier": 1,
+      "gap": 2.5,
+      "pick_margin": 1,
+      "options": [
+       {
+        "id": "2:BURY",
+        "kind": "card",
+        "entity_id": "BURY",
+        "name": "埋葬",
+        "score": 63.3,
+        "deck_score": 63.3,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 3 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 3 张牌（幻景、死亡之门、负能量脉冲）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 5.92,
+          "message": "拿埋葬后前期输出：每回合 14.6 → 23.5（需求 24.7）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -1.61,
+          "message": "拿埋葬后防御：每回合 10.4 → 8.2（需求 8.4）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 死亡之门、护卫 让埋葬更有价值（说明，不另加分）"
+         }
+        ]
+       },
+       {
+        "id": "0:DEFILE",
+        "kind": "card",
+        "entity_id": "DEFILE",
+        "name": "玷污",
+        "score": 60.8,
+        "deck_score": 60.8,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 3 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 3 张牌（幻景、死亡之门、负能量脉冲）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 2.17,
+          "message": "拿玷污后前期输出：每回合 14.6 → 17.6（需求 24.7）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.37,
+          "message": "拿玷污后防御：每回合 10.4 → 9.7（需求 8.4）"
+         }
+        ]
+       },
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 60,
+        "deck_score": 59,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 3 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 3 张牌（幻景、死亡之门、负能量脉冲）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 1,
+          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ]
+       },
+       {
+        "id": "1:DEFY",
+        "kind": "card",
+        "entity_id": "DEFY",
+        "name": "违逆",
+        "score": 59,
+        "deck_score": 59,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 3 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 3 张牌（幻景、死亡之门、负能量脉冲）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.81,
+          "message": "拿违逆后前期输出：每回合 14.6 → 13.5（需求 24.7）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": 0.78,
+          "message": "拿违逆后防御：每回合 10.4 → 12.0（需求 8.4）"
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "id": "T1",
+     "tool": "get_decision",
+     "result": {
+      "id": "F15-card",
+      "kind": "card_reward",
+      "floor": 15,
+      "act": 1,
+      "hp": 26,
+      "max_hp": 73,
+      "gold": 254,
+      "engine_top": "2:BURY",
+      "confidence": "medium",
+      "policy_status": "recommend",
+      "pick_margin": 1,
+      "options": [
+       {
+        "id": "2:BURY",
+        "kind": "card",
+        "entity_id": "BURY",
+        "name": "埋葬",
+        "score": 63.3,
+        "deck_score": 63.3,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 3 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 3 张牌（幻景、死亡之门、负能量脉冲）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 5.92,
+          "message": "拿埋葬后前期输出：每回合 14.6 → 23.5（需求 24.7）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -1.61,
+          "message": "拿埋葬后防御：每回合 10.4 → 8.2（需求 8.4）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 死亡之门、护卫 让埋葬更有价值（说明，不另加分）"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 5.9219,
+         "survival": -1.6068,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "0:DEFILE",
+        "kind": "card",
+        "entity_id": "DEFILE",
+        "name": "玷污",
+        "score": 60.8,
+        "deck_score": 60.8,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 3 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 3 张牌（幻景、死亡之门、负能量脉冲）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 2.17,
+          "message": "拿玷污后前期输出：每回合 14.6 → 17.6（需求 24.7）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.37,
+          "message": "拿玷污后防御：每回合 10.4 → 9.7（需求 8.4）"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 2.1669,
+         "survival": -0.3669,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 60,
+        "deck_score": 59,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 3 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 3 张牌（幻景、死亡之门、负能量脉冲）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 1,
+          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0,
+         "survival": 0,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "1:DEFY",
+        "kind": "card",
+        "entity_id": "DEFY",
+        "name": "违逆",
+        "score": 59,
+        "deck_score": 59,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 3 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 3 张牌（幻景、死亡之门、负能量脉冲）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.81,
+          "message": "拿违逆后前期输出：每回合 14.6 → 13.5（需求 24.7）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": 0.78,
+          "message": "拿违逆后防御：每回合 10.4 → 12.0（需求 8.4）"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": -0.8089,
+         "survival": 0.7786,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       }
+      ],
+      "chosen": "0:DEFILE",
+      "tier": 1,
+      "gap": 2.5,
+      "not_strict_because": []
+     }
+    },
+    {
+     "id": "T2",
+     "tool": "get_deck",
+     "result": {
+      "decision_id": "F15-card",
+      "floor": 15,
+      "act": 1,
+      "hp": 26,
+      "max_hp": 73,
+      "gold": 254,
+      "deck_size": 14,
+      "deck": [
+       {
+        "card": "BODYGUARD",
+        "name": "护卫",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "DEATHS_DOOR",
+        "name": "死亡之门",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "DEFEND_NECROBINDER",
+        "name": "防御",
+        "upgrades": 0,
+        "count": 3
+       },
+       {
+        "card": "DRAIN_POWER",
+        "name": "能量汲取",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "EIDOLON",
+        "name": "幻景",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "NEGATIVE_PULSE",
+        "name": "负能量脉冲",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "STRIKE_NECROBINDER",
+        "name": "打击",
+        "upgrades": 0,
+        "count": 4
+       },
+       {
+        "card": "UNLEASH",
+        "name": "出击",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "WISP",
+        "name": "鬼火",
+        "upgrades": 0,
+        "count": 1
+       }
+      ],
+      "relics": [
+       {
+        "relic": "BOUND_PHYLACTERY",
+        "name": "缚魂命匣"
+       },
+       {
+        "relic": "LAVA_ROCK",
+        "name": "熔岩石"
+       },
+       {
+        "relic": "SWORD_OF_STONE",
+        "name": "石之剑"
+       },
+       {
+        "relic": "STRAWBERRY",
+        "name": "草莓"
+       },
+       {
+        "relic": "VAMBRACE",
+        "name": "臂甲"
+       },
+       {
+        "relic": "MOLTEN_EGG",
+        "name": "熔火之蛋"
+       },
+       {
+        "relic": "BAG_OF_MARBLES",
+        "name": "弹珠袋"
+       }
+      ],
+      "potions": [
+       {
+        "potion": "DEXTERITY_POTION",
+        "name": "敏捷药水"
+       }
+      ]
+     }
+    },
+    {
+     "id": "T3",
+     "tool": "compare_options",
+     "result": {
+      "decision_id": "F15-card",
+      "a": {
+       "id": "2:BURY",
+       "name": "埋葬",
+       "deck_score": 63.3,
+       "fully_scored": true
+      },
+      "b": {
+       "id": "0:DEFILE",
+       "name": "玷污",
+       "deck_score": 60.8,
+       "fully_scored": true
+      },
+      "deck_score_difference": 2.5,
+      "factors": [
+       {
+        "factor": "deck_fitness:frontload",
+        "a": 5.92,
+        "b": 2.17,
+        "difference": 3.75,
+        "a_message": "拿埋葬后前期输出：每回合 14.6 → 23.5（需求 24.7）",
+        "b_message": "拿玷污后前期输出：每回合 14.6 → 17.6（需求 24.7）"
+       },
+       {
+        "factor": "deck_fitness:defense",
+        "a": -1.61,
+        "b": -0.37,
+        "difference": -1.24,
+        "a_message": "拿埋葬后防御：每回合 10.4 → 8.2（需求 8.4）",
+        "b_message": "拿玷污后防御：每回合 10.4 → 9.7（需求 8.4）"
+       },
+       {
+        "factor": "deck_fitness:synergy",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组里的 死亡之门、护卫 让埋葬更有价值（说明，不另加分）",
+        "b_message": null
+       },
+       {
+        "factor": "estimate_scope",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 3 张牌未完整计入评分，分数只反映已计入的部分。",
+        "b_message": "牌组中 3 张牌未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "factor": "partially_modeled_deck_cards",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 3 张牌（幻景、死亡之门、负能量脉冲）有部分效果尚未计入评分。",
+        "b_message": "牌组中 3 张牌（幻景、死亡之门、负能量脉冲）有部分效果尚未计入评分。"
+       }
+      ],
+      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
+     }
+    },
+    {
+     "id": "T4",
+     "tool": "get_card",
+     "result": {
+      "id": "BURY",
+      "name": "埋葬",
+      "description": "造成52点伤害。",
+      "cost": 4,
+      "type": "攻击",
+      "rarity": "罕见",
+      "color": "necrobinder",
+      "target": "AnyEnemy",
+      "damage": 52,
+      "upgrade_description": "造成63点伤害。"
+     }
+    },
+    {
+     "id": "T5",
+     "tool": "get_card",
+     "result": {
+      "id": "DEFILE",
+      "name": "玷污",
+      "description": "造成13点伤害。",
+      "cost": 1,
+      "type": "攻击",
+      "rarity": "普通",
+      "color": "necrobinder",
+      "target": "AnyEnemy",
+      "damage": 13,
+      "keywords": [
+       "虚无"
+      ],
+      "upgrade_description": "造成17点伤害。"
+     }
+    }
+   ],
+   "toolCalls": 5,
+   "repairs": 1,
+   "usage": {
+    "prompt_tokens": 18524,
+    "completion_tokens": 859,
+    "cost_usd": 0.008743944,
+    "llm_calls": 4
+   },
+   "finding": {
+    "decision_id": "F15-card",
+    "reasons": [
+     {
+      "factor": "deck_fitness:frontload",
+      "evidence": "T3",
+      "text": "埋葬把前期输出从每回合 14.6 提到 23.5，接近需求 24.7；玷污只提到 17.6，差距 3.75 是最大因子。"
+     },
+     {
+      "factor": "deck_fitness:defense",
+      "evidence": "T3",
+      "text": "埋葬会让防御从 10.4 降到 8.2（略低于需求 8.4），玷污只降到 9.7，但防御差距只有 1.24，小于输出差距。"
+     }
+    ],
+    "advice": "当前牌组前期输出远低于需求，遇到高伤害攻击牌（如埋葬）时优先补输出，而不是低费小伤害牌。"
+   }
+  },
+  {
+   "flag": "F03-shop",
+   "status": "dropped",
+   "errors": [
+    "reasons[1]: T2 does not contain factor merchant:deck"
+   ],
+   "evidence": [
+    {
+     "id": "T0",
+     "tool": "get_decision",
+     "result": {
+      "id": "F03-shop",
+      "kind": "shop",
+      "floor": 3,
+      "act": 1,
+      "hp": 66,
+      "max_hp": 66,
+      "gold": 119,
+      "engine_top": "leave",
+      "confidence": "medium",
+      "chosen": "removal",
+      "tier": 1,
+      "gap": 2.19,
+      "pick_margin": 1,
+      "options": [
+       {
+        "id": "leave",
+        "kind": "leave",
+        "entity_id": null,
+        "name": "离开商店",
+        "score": 50,
+        "deck_score": 50,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "merchant_leave",
+          "delta": 0,
+          "message": "离开商店，保留金币。"
+         }
+        ]
+       },
+       {
+        "id": "removal",
+        "kind": "card_removal",
+        "entity_id": null,
+        "name": "删牌",
+        "score": 47.8118,
+        "deck_score": 47.81,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "merchant:deck",
+          "delta": 0.49,
+          "message": "移除 防御（可移除的牌中估值最好的一张）"
+         },
+         {
+          "code": "merchant:price",
+          "delta": -2.6782,
+          "message": "花 75 金币（现有 119）：这些金币在之后的商店能买到的价值；金币越多每枚越不值钱"
+         }
+        ]
+       },
+       {
+        "id": "card:2:PULL_AGGRO",
+        "kind": "card",
+        "entity_id": "PULL_AGGRO",
+        "name": "吸引仇恨",
+        "score": 47.5742,
+        "deck_score": 47.57,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "merchant:deck",
+          "delta": -0.6897,
+          "message": "加入 吸引仇恨 后的牌组适合度（计入本幕后续选牌）"
+         },
+         {
+          "code": "merchant:price",
+          "delta": -1.7361,
+          "message": "花 50 金币（现有 119）：这些金币在之后的商店能买到的价值；金币越多每枚越不值钱"
+         }
+        ]
+       },
+       {
+        "id": "card:3:DELAY",
+        "kind": "card",
+        "entity_id": "DELAY",
+        "name": "拖延",
+        "score": 47.5062,
+        "deck_score": 47.51,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "merchant:deck",
+          "delta": 0.1844,
+          "message": "加入 拖延 后的牌组适合度（计入本幕后续选牌）"
+         },
+         {
+          "code": "merchant:price",
+          "delta": -2.6782,
+          "message": "花 75 金币（现有 119）：这些金币在之后的商店能买到的价值；金币越多每枚越不值钱"
+         }
+        ]
+       },
+       {
+        "id": "card:5:PROLONG",
+        "kind": "card",
+        "entity_id": "PROLONG",
+        "name": "延伸",
+        "score": 47.3367,
+        "deck_score": 47.34,
+        "rank": 5,
+        "eligible": true,
+        "fully_scored": false,
+        "gaps": [
+         "card_effect_unsupported:PROLONG:power_effect_key:amount_text"
+        ],
+        "factors": [
+         {
+          "code": "merchant:deck",
+          "delta": 0.0149,
+          "message": "加入 延伸 后的牌组适合度（计入本幕后续选牌）"
+         },
+         {
+          "code": "merchant:price",
+          "delta": -2.6782,
+          "message": "花 75 金币（现有 119）：这些金币在之后的商店能买到的价值；金币越多每枚越不值钱"
+         },
+         {
+          "code": "unmodeled_mechanic",
+          "delta": 0,
+          "message": "部分效果尚未计入评分（见数据缺口），分数只反映已计入的部分。"
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "id": "T1",
+     "tool": "get_decision",
+     "result": {
+      "id": "F03-shop",
+      "kind": "shop",
+      "floor": 3,
+      "act": 1,
+      "hp": 66,
+      "max_hp": 66,
+      "gold": 119,
+      "engine_top": "leave",
+      "confidence": "medium",
+      "policy_status": "recommend",
+      "pick_margin": 1,
+      "options": [
+       {
+        "id": "leave",
+        "kind": "leave",
+        "entity_id": null,
+        "name": "离开商店",
+        "score": 50,
+        "deck_score": 50,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "merchant_leave",
+          "delta": 0,
+          "message": "离开商店，保留金币。"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0,
+         "survival": 0,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "deck_burden": 0,
+         "synergy": 0,
+         "route_fit": 0,
+         "data_completeness": 1
+        }
+       },
+       {
+        "id": "removal",
+        "kind": "card_removal",
+        "entity_id": null,
+        "name": "删牌",
+        "score": 47.8118,
+        "deck_score": 47.81,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "merchant:deck",
+          "delta": 0.49,
+          "message": "移除 防御（可移除的牌中估值最好的一张）"
+         },
+         {
+          "code": "merchant:price",
+          "delta": -2.6782,
+          "message": "花 75 金币（现有 119）：这些金币在之后的商店能买到的价值；金币越多每枚越不值钱"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0,
+         "survival": 0,
+         "long_term_growth": 0.49,
+         "resource_efficiency": -2.6782,
+         "deck_burden": 0,
+         "synergy": 0,
+         "route_fit": 0,
+         "data_completeness": 1
+        }
+       },
+       {
+        "id": "card:2:PULL_AGGRO",
+        "kind": "card",
+        "entity_id": "PULL_AGGRO",
+        "name": "吸引仇恨",
+        "score": 47.5742,
+        "deck_score": 47.57,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "merchant:deck",
+          "delta": -0.6897,
+          "message": "加入 吸引仇恨 后的牌组适合度（计入本幕后续选牌）"
+         },
+         {
+          "code": "merchant:price",
+          "delta": -1.7361,
+          "message": "花 50 金币（现有 119）：这些金币在之后的商店能买到的价值；金币越多每枚越不值钱"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0,
+         "survival": 0,
+         "long_term_growth": -0.6897,
+         "resource_efficiency": -1.7361,
+         "deck_burden": 0,
+         "synergy": 0,
+         "route_fit": 0,
+         "data_completeness": 1
+        }
+       },
+       {
+        "id": "card:3:DELAY",
+        "kind": "card",
+        "entity_id": "DELAY",
+        "name": "拖延",
+        "score": 47.5062,
+        "deck_score": 47.51,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "merchant:deck",
+          "delta": 0.1844,
+          "message": "加入 拖延 后的牌组适合度（计入本幕后续选牌）"
+         },
+         {
+          "code": "merchant:price",
+          "delta": -2.6782,
+          "message": "花 75 金币（现有 119）：这些金币在之后的商店能买到的价值；金币越多每枚越不值钱"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0,
+         "survival": 0,
+         "long_term_growth": 0.1844,
+         "resource_efficiency": -2.6782,
+         "deck_burden": 0,
+         "synergy": 0,
+         "route_fit": 0,
+         "data_completeness": 1
+        }
+       },
+       {
+        "id": "card:5:PROLONG",
+        "kind": "card",
+        "entity_id": "PROLONG",
+        "name": "延伸",
+        "score": 47.3367,
+        "deck_score": 47.34,
+        "rank": 5,
+        "eligible": true,
+        "fully_scored": false,
+        "gaps": [
+         "card_effect_unsupported:PROLONG:power_effect_key:amount_text"
+        ],
+        "factors": [
+         {
+          "code": "merchant:deck",
+          "delta": 0.0149,
+          "message": "加入 延伸 后的牌组适合度（计入本幕后续选牌）"
+         },
+         {
+          "code": "merchant:price",
+          "delta": -2.6782,
+          "message": "花 75 金币（现有 119）：这些金币在之后的商店能买到的价值；金币越多每枚越不值钱"
+         },
+         {
+          "code": "unmodeled_mechanic",
+          "delta": 0,
+          "message": "部分效果尚未计入评分（见数据缺口），分数只反映已计入的部分。"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0,
+         "survival": 0,
+         "long_term_growth": 0.0149,
+         "resource_efficiency": -2.6782,
+         "deck_burden": 0,
+         "synergy": 0,
+         "route_fit": 0,
+         "data_completeness": 1
+        }
+       },
+       {
+        "id": "card:4:LETHALITY",
+        "kind": "card",
+        "entity_id": "LETHALITY",
+        "name": "致死性",
+        "score": 46.4359,
+        "deck_score": 46.44,
+        "rank": 6,
+        "eligible": true,
+        "fully_scored": false,
+        "gaps": [
+         "power_mechanic_unsupported:LETHALITY:key:applies_to"
+        ],
+        "factors": [
+         {
+          "code": "merchant:deck",
+          "delta": -0.8859,
+          "message": "加入 致死性 后的牌组适合度（计入本幕后续选牌）"
+         },
+         {
+          "code": "merchant:price",
+          "delta": -2.6782,
+          "message": "花 75 金币（现有 119）：这些金币在之后的商店能买到的价值；金币越多每枚越不值钱"
+         },
+         {
+          "code": "unmodeled_mechanic",
+          "delta": 0,
+          "message": "部分效果尚未计入评分（见数据缺口），分数只反映已计入的部分。"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0,
+         "survival": 0,
+         "long_term_growth": -0.8859,
+         "resource_efficiency": -2.6782,
+         "deck_burden": 0,
+         "synergy": 0,
+         "route_fit": 0,
+         "data_completeness": 1
+        }
+       },
+       {
+        "id": "card:0:BANSHEES_CRY",
+        "kind": "card",
+        "entity_id": "BANSHEES_CRY",
+        "name": "女妖之嚎",
+        "score": null,
+        "deck_score": null,
+        "rank": null,
+        "eligible": false,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [],
+        "dimensions": {
+         "immediate_power": 0,
+         "survival": 0,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "deck_burden": 0,
+         "synergy": 0,
+         "route_fit": 0,
+         "data_completeness": 1
+        }
+       },
+       {
+        "id": "card:1:TIMES_UP",
+        "kind": "card",
+        "entity_id": "TIMES_UP",
+        "name": "大限已至",
+        "score": null,
+        "deck_score": null,
+        "rank": null,
+        "eligible": false,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [],
+        "dimensions": {
+         "immediate_power": 0,
+         "survival": 0,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "deck_burden": 0,
+         "synergy": 0,
+         "route_fit": 0,
+         "data_completeness": 1
+        }
+       },
+       {
+        "id": "card:6:REND",
+        "kind": "card",
+        "entity_id": "REND",
+        "name": "撕碎",
+        "score": null,
+        "deck_score": null,
+        "rank": null,
+        "eligible": false,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [],
+        "dimensions": {
+         "immediate_power": 0,
+         "survival": 0,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "deck_burden": 0,
+         "synergy": 0,
+         "route_fit": 0,
+         "data_completeness": 1
+        }
+       },
+       {
+        "id": "relic:0:PARRYING_SHIELD",
+        "kind": "relic",
+        "entity_id": "PARRYING_SHIELD",
+        "name": "招架盾",
+        "score": null,
+        "deck_score": null,
+        "rank": null,
+        "eligible": false,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [],
+        "dimensions": {
+         "immediate_power": 0,
+         "survival": 0,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "deck_burden": 0,
+         "synergy": 0,
+         "route_fit": 0,
+         "data_completeness": 1
+        }
+       },
+       {
+        "id": "relic:1:BRONZE_SCALES",
+        "kind": "relic",
+        "entity_id": "BRONZE_SCALES",
+        "name": "铜质鳞片",
+        "score": null,
+        "deck_score": null,
+        "rank": null,
+        "eligible": false,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [],
+        "dimensions": {
+         "immediate_power": 0,
+         "survival": 0,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "deck_burden": 0,
+         "synergy": 0,
+         "route_fit": 0,
+         "data_completeness": 1
+        }
+       },
+       {
+        "id": "relic:2:BREAD",
+        "kind": "relic",
+        "entity_id": "BREAD",
+        "name": "面包",
+        "score": null,
+        "deck_score": null,
+        "rank": null,
+        "eligible": false,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [],
+        "dimensions": {
+         "immediate_power": 0,
+         "survival": 0,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "deck_burden": 0,
+         "synergy": 0,
+         "route_fit": 0,
+         "data_completeness": 1
+        }
+       },
+       {
+        "id": "potion:0:VULNERABLE_POTION",
+        "kind": "potion",
+        "entity_id": "VULNERABLE_POTION",
+        "name": "易伤药水",
+        "score": null,
+        "deck_score": null,
+        "rank": null,
+        "eligible": true,
+        "fully_scored": false,
+        "gaps": [
+         "merchant:potion_unmodeled:VULNERABLE_POTION"
+        ],
+        "factors": [
+         {
+          "code": "insufficient_data",
+          "delta": 0,
+          "message": "药水还没有经程序集核对的效果事实，暂不评分。"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0,
+         "survival": 0,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "deck_burden": 0,
+         "synergy": 0,
+         "route_fit": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "potion:1:LIQUID_MEMORIES",
+        "kind": "potion",
+        "entity_id": "LIQUID_MEMORIES",
+        "name": "液态记忆",
+        "score": null,
+        "deck_score": null,
+        "rank": null,
+        "eligible": true,
+        "fully_scored": false,
+        "gaps": [
+         "merchant:potion_unmodeled:LIQUID_MEMORIES"
+        ],
+        "factors": [
+         {
+          "code": "insufficient_data",
+          "delta": 0,
+          "message": "药水还没有经程序集核对的效果事实，暂不评分。"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0,
+         "survival": 0,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "deck_burden": 0,
+         "synergy": 0,
+         "route_fit": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "potion:2:BLESSING_OF_THE_FORGE",
+        "kind": "potion",
+        "entity_id": "BLESSING_OF_THE_FORGE",
+        "name": "熔炉的祝福",
+        "score": null,
+        "deck_score": null,
+        "rank": null,
+        "eligible": true,
+        "fully_scored": false,
+        "gaps": [
+         "merchant:potion_unmodeled:BLESSING_OF_THE_FORGE"
+        ],
+        "factors": [
+         {
+          "code": "insufficient_data",
+          "delta": 0,
+          "message": "药水还没有经程序集核对的效果事实，暂不评分。"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0,
+         "survival": 0,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "deck_burden": 0,
+         "synergy": 0,
+         "route_fit": 0,
+         "data_completeness": 0
+        }
+       }
+      ],
+      "bought": [
+       "removal"
+      ],
+      "bought_unscored": 0,
+      "chosen": "removal",
+      "tier": 1,
+      "gap": 2.19,
+      "not_strict_because": []
+     }
+    },
+    {
+     "id": "T2",
+     "tool": "get_deck",
+     "result": {
+      "decision_id": "F03-shop",
+      "floor": 3,
+      "act": 1,
+      "hp": 66,
+      "max_hp": 66,
+      "gold": 44,
+      "deck_size": 11,
+      "deck": [
+       {
+        "card": "BODYGUARD",
+        "name": "护卫",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "DEATHS_DOOR",
+        "name": "死亡之门",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "DEFEND_NECROBINDER",
+        "name": "防御",
+        "upgrades": 0,
+        "count": 4
+       },
+       {
+        "card": "STRIKE_NECROBINDER",
+        "name": "打击",
+        "upgrades": 0,
+        "count": 4
+       },
+       {
+        "card": "UNLEASH",
+        "name": "出击",
+        "upgrades": 0,
+        "count": 1
+       }
+      ],
+      "relics": [
+       {
+        "relic": "BOUND_PHYLACTERY",
+        "name": "缚魂命匣"
+       },
+       {
+        "relic": "LAVA_ROCK",
+        "name": "熔岩石"
+       }
+      ],
+      "potions": []
+     }
+    },
+    {
+     "id": "T3",
+     "tool": "compare_options",
+     "result": {
+      "decision_id": "F03-shop",
+      "a": {
+       "id": "leave",
+       "name": "离开商店",
+       "deck_score": 50,
+       "fully_scored": true
+      },
+      "b": {
+       "id": "removal",
+       "name": "删牌",
+       "deck_score": 47.81,
+       "fully_scored": true
+      },
+      "deck_score_difference": 2.19,
+      "factors": [
+       {
+        "factor": "merchant:price",
+        "a": 0,
+        "b": -2.68,
+        "difference": 2.68,
+        "a_message": null,
+        "b_message": "花 75 金币（现有 119）：这些金币在之后的商店能买到的价值；金币越多每枚越不值钱"
+       },
+       {
+        "factor": "merchant:deck",
+        "a": 0,
+        "b": 0.49,
+        "difference": -0.49,
+        "a_message": null,
+        "b_message": "移除 防御（可移除的牌中估值最好的一张）"
+       },
+       {
+        "factor": "merchant_leave",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "离开商店，保留金币。",
+        "b_message": null
+       }
+      ],
+      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
+     }
+    },
+    {
+     "id": "T4",
+     "tool": "what_if_choices",
+     "result": {
+      "remove": [
+       "BODYGUARD",
+       "DEATHS_DOOR",
+       "DEFEND_NECROBINDER",
+       "STRIKE_NECROBINDER",
+       "UNLEASH"
+      ],
+      "upgrade": [
+       "BODYGUARD",
+       "DEATHS_DOOR",
+       "DEFEND_NECROBINDER",
+       "STRIKE_NECROBINDER",
+       "UNLEASH"
+      ],
+      "add": [
+       {
+        "card": "DEATHS_DOOR",
+        "name": "死亡之门"
+       },
+       {
+        "card": "DEBILITATE",
+        "name": "摧残"
+       },
+       {
+        "card": "INVOKE",
+        "name": "唤起"
+       }
+      ]
+     }
+    }
+   ],
+   "toolCalls": 5,
+   "repairs": 1,
+   "usage": {
+    "prompt_tokens": 32781,
+    "completion_tokens": 1079,
+    "cost_usd": 0.011448271999999999,
+    "llm_calls": 6
+   }
+  }
+ ],
+ "summary": {
+  "text": "引擎点出 2 个值得想一想的决定，其中 1 个主要和前期输出有关。",
+  "source": "program",
+  "cost_usd": 0
+ },
+ "meta": {
+  "model": "deepseek-v4-pro",
+  "cost_usd": 0.020192216,
+  "seconds": 14.603,
+  "generated_at": "2026-11-01 14:47"
+ }
+}
