@@ -16,13 +16,9 @@ export const Reason = z.object({
 export const Finding = z.object({
   decision_id: z.string(),
   reasons: z.array(Reason).min(1).max(3).describe("why the engine prefers its pick, largest factor first"),
-  what_if: z
-    .object({
-      evidence: z.string().describe("ID of a what_if tool result"),
-      text: z.string().min(4).max(120),
-    })
-    .optional()
-    .describe("only if a what_if call showed something useful, e.g. which earlier pick would have changed this"),
+  // Flat fields: models handed a nested what_if object in as a JSON string.
+  what_if_evidence: z.string().optional().describe("ID of a what_if tool result, only if it showed something useful"),
+  what_if_text: z.string().min(4).max(120).optional().describe("what that what_if call showed, e.g. which earlier pick would have changed this"),
   advice: z.string().min(4).max(120).describe("one sentence: what to look for next time, in simplified Chinese"),
 });
 export type Finding = z.infer<typeof Finding>;

@@ -42,7 +42,7 @@ function flagCard(detail: DecisionDetail, result: FlagResult | undefined, index:
   <div class="where">第 ${detail.act} 幕 · 第 ${detail.floor} 层 · ${esc(KIND_LABELS[detail.kind] ?? detail.kind)} · 生命 ${detail.hp}/${detail.max_hp} · 金币 ${detail.gold}</div>
   <h3>${index + 1}. ${esc(headline(detail))}${esc(main)}</h3>
   <ul class="reasons">${reasons}</ul>
-  ${f.what_if ? `<p class="whatif"><b>如果当时…</b>${esc(f.what_if.text)}</p>` : ""}
+  ${f.what_if_text ? `<p class="whatif"><b>如果当时…</b>${esc(f.what_if_text)}</p>` : ""}
   <p class="advice"><b>下次可以注意：</b>${esc(f.advice)}</p>
   ${caveat}
   <div class="rate" role="group" aria-label="这条建议">

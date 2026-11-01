@@ -1,0 +1,163 @@
+{
+ "run": "1773317604",
+ "set": "dev",
+ "model": "deepseek-flash",
+ "prompt_version": "p3",
+ "pre": {
+  "summary": {
+   "run_id": "1773317604",
+   "character": "SILENT",
+   "ascension": 2,
+   "build_id": "v0.98.3",
+   "win": false,
+   "killed_by": "感染棱柱",
+   "acts_reached": 2,
+   "last_scored_floor": 17,
+   "final_deck_size": 24,
+   "decisions_scored": {
+    "shop": 2,
+    "rest": 3,
+    "card_reward": 1
+   },
+   "decisions_skipped": {
+    "no_boss": 3
+   },
+   "agreement": {
+    "agree": 5,
+    "judged": 6,
+    "rate": 0.833
+   },
+   "tier1": [],
+   "tier2": [
+    "F17-card"
+   ],
+   "warnings": [
+    "floor 16: 4 potions replayed for 3 slots"
+   ]
+  },
+  "decisions": {
+   "decisions": [
+    {
+     "id": "F05-shop",
+     "kind": "shop",
+     "floor": 5,
+     "act": 1,
+     "chosen": "card:0:PREDATOR",
+     "chosen_name": "猎杀者",
+     "engine_top": "card:0:PREDATOR",
+     "engine_top_name": "猎杀者",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F07-rest",
+     "kind": "rest",
+     "floor": 7,
+     "act": 1,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F08-shop",
+     "kind": "shop",
+     "floor": 8,
+     "act": 1,
+     "chosen": "leave",
+     "chosen_name": "离开商店",
+     "engine_top": "leave",
+     "engine_top_name": "离开商店",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F13-rest",
+     "kind": "rest",
+     "floor": 13,
+     "act": 1,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F16-rest",
+     "kind": "rest",
+     "floor": 16,
+     "act": 1,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F17-card",
+     "kind": "card_reward",
+     "floor": 17,
+     "act": 1,
+     "chosen": "0:THE_HUNT",
+     "chosen_name": "狩猎",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": 0.9,
+     "not_strict_because": [
+      "partly_scored",
+      "small_gap"
+     ]
+    }
+   ],
+   "skipped": [
+    {
+     "id": "F23-rest",
+     "kind": "rest",
+     "floor": 23,
+     "reason": "no_boss"
+    },
+    {
+     "id": "F24-shop",
+     "kind": "shop",
+     "floor": 24,
+     "reason": "no_boss"
+    },
+    {
+     "id": "F28-rest",
+     "kind": "rest",
+     "floor": 28,
+     "reason": "no_boss"
+    }
+   ]
+  },
+  "flags": []
+ },
+ "explained": [],
+ "summary": {
+  "text": "这局没有引擎有把握的分歧：你的选择和引擎的看法没有明显差距。",
+  "source": "program",
+  "cost_usd": 0
+ },
+ "meta": {
+  "model": "deepseek-flash",
+  "cost_usd": 0,
+  "seconds": 0.934,
+  "generated_at": "2026-11-01 14:42"
+ }
+}

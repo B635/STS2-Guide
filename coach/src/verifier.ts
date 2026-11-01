@@ -104,10 +104,11 @@ export function verifyFinding(
     text: r.text,
     cites: [r.evidence, "T0"],
   }));
-  if (finding.what_if) {
-    const cited = byId.get(finding.what_if.evidence);
-    if (!cited || cited.tool !== "what_if") errors.push(`what_if cites ${finding.what_if.evidence}, which is not a what_if result`);
-    texts.push({ where: "what_if", text: finding.what_if.text, cites: [finding.what_if.evidence, "T0"] });
+  if (finding.what_if_text !== undefined || finding.what_if_evidence !== undefined) {
+    const id = finding.what_if_evidence ?? "";
+    const cited = byId.get(id);
+    if (!cited || cited.tool !== "what_if") errors.push(`what_if cites ${id || "nothing"}, which is not a what_if result`);
+    texts.push({ where: "what_if", text: finding.what_if_text ?? "", cites: [id, "T0"] });
   }
   const everything = evidence.map((e) => e.id);
   texts.push({ where: "advice", text: finding.advice, cites: everything });

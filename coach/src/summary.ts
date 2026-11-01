@@ -16,7 +16,7 @@ export interface Summary {
 }
 
 const PROMPT = `下面是一局《杀戮尖塔 2》里，引擎有把握与玩家不同的几个决定（已核对过的结论）。
-用简体中文写一句话（不超过 60 字）总结它们的共同点，比如反复出现的同一种需求。
+用简体中文写一句话（不超过 60 字）：指出这些决定的共同点（例如反复出现的同一种不足），并给一个可以照做的方向。不要罗列卡牌名称。
 只能用下面出现过的数字和卡牌名称；不要说“失误”“错误”。只输出这一句话。`;
 
 export function programSummary(verified: FlagResult[], tier1Count: number): string {

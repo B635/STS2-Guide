@@ -1,17 +1,26 @@
 #!/usr/bin/env node
 // coach review <file.run> [--no-llm] [--model M] [--thinking] [--out DIR] [--json]
 //   score one finished run, explain its flags and write the HTML report
+// coach eval run <dev|test> [--model M] [--thinking]   review every run of the set and keep the outputs
+// coach eval metrics <dev|test> [--model M]            metrics from the kept outputs (no model calls)
+// coach ratings import <file>                          keep the text the report's "复制评分" copied
 
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { parseArgs } from "node:util";
 import { Engine } from "./engine.js";
+import { EVAL_DIR, importRatings, loadRecorded, metrics, record } from "./evaluate.js";
+import type { EvalSet } from "./evaluate.js";
 import { DEFAULT_MODEL } from "./llm.js";
 import type { Prepass } from "./prepass.js";
 import { renderReport } from "./report.js";
 import { runReview } from "./review.js";
 
-const USAGE = "usage: coach review <file.run> [--no-llm] [--model M] [--thinking] [--out DIR] [--json]";
+const USAGE = [
+  "usage: coach review <file.run> [--no-llm] [--model M] [--thinking] [--out DIR] [--json]",
+  "       coach eval run|metrics <dev|test> [--model M] [--thinking]",
+  "       coach ratings import <file>",
+].join("\n");
 
 function printPrepass({ summary, decisions, flags }: Prepass): void {
   const s = summary;
@@ -45,6 +54,24 @@ async function main(argv: string[]): Promise<number> {
     },
   });
   const [command, runFile] = positionals;
+  if (command === "eval" && (positionals[2] === "dev" || positionals[2] === "test")) {
+    const set = positionals[2] as EvalSet;
+    if (runFile === "run") await record(set, values.model, values.thinking);
+    else if (runFile !== "metrics") {
+      console.error(USAGE);
+      return 2;
+    }
+    const result = metrics(set, values.model, loadRecorded(set, values.model));
+    const file = path.join(EVAL_DIR, "metrics", `${set}-${values.model}.json`);
+    mkdirSync(path.dirname(file), { recursive: true });
+    writeFileSync(file, JSON.stringify(result, null, 1) + "\n", "utf-8");
+    console.log(JSON.stringify(result, null, 1));
+    return 0;
+  }
+  if (command === "ratings" && runFile === "import" && positionals[2]) {
+    console.log(`kept ${importRatings(readFileSync(positionals[2], "utf-8"))}`);
+    return 0;
+  }
   if (command !== "review" || !runFile) {
     console.error(USAGE);
     return 2;

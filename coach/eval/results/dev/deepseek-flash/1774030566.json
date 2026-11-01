@@ -1,0 +1,2843 @@
+{
+ "run": "1774030566",
+ "set": "dev",
+ "model": "deepseek-flash",
+ "prompt_version": "p3",
+ "pre": {
+  "summary": {
+   "run_id": "1774030566",
+   "character": "SILENT",
+   "ascension": 0,
+   "build_id": "v0.100.0",
+   "win": true,
+   "killed_by": null,
+   "acts_reached": 3,
+   "last_scored_floor": 44,
+   "final_deck_size": 26,
+   "decisions_scored": {
+    "card_reward": 16,
+    "shop": 3,
+    "rest": 8
+   },
+   "decisions_skipped": {
+    "unknown_card": 4
+   },
+   "agreement": {
+    "agree": 14,
+    "judged": 27,
+    "rate": 0.519
+   },
+   "tier1": [
+    "F20-card",
+    "F17-card"
+   ],
+   "tier2": [
+    "F04-card",
+    "F13-card",
+    "F16-rest",
+    "F19-card",
+    "F21-shop",
+    "F24-card",
+    "F31-card",
+    "F33-card",
+    "F35-card",
+    "F37-card",
+    "F40-rest"
+   ],
+   "warnings": [
+    "unrecorded upgrades: {('MAD_SCIENCE', 1): 1}"
+   ]
+  },
+  "decisions": {
+   "decisions": [
+    {
+     "id": "F02-card",
+     "kind": "card_reward",
+     "floor": 2,
+     "act": 1,
+     "chosen": "0:ACROBATICS",
+     "chosen_name": "杂技",
+     "engine_top": "0:ACROBATICS",
+     "engine_top_name": "杂技",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F04-card",
+     "kind": "card_reward",
+     "floor": 4,
+     "act": 1,
+     "chosen": "0:PIERCING_WAIL",
+     "chosen_name": "尖啸",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": 0.5,
+     "not_strict_because": [
+      "small_gap"
+     ]
+    },
+    {
+     "id": "F05-shop",
+     "kind": "shop",
+     "floor": 5,
+     "act": 1,
+     "chosen": "card:0:SUCKER_PUNCH",
+     "chosen_name": "突然一拳",
+     "engine_top": "card:0:SUCKER_PUNCH",
+     "engine_top_name": "突然一拳",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F09-rest",
+     "kind": "rest",
+     "floor": 9,
+     "act": 1,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F11-rest",
+     "kind": "rest",
+     "floor": 11,
+     "act": 1,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F13-card",
+     "kind": "card_reward",
+     "floor": 13,
+     "act": 1,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "0:SLICE",
+     "engine_top_name": "切割",
+     "confidence": "low",
+     "tier": 2,
+     "gap": 1.8,
+     "not_strict_because": [
+      "low_confidence"
+     ]
+    },
+    {
+     "id": "F16-rest",
+     "kind": "rest",
+     "floor": 16,
+     "act": 1,
+     "chosen": "rest:HEAL",
+     "chosen_name": "休息",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 2,
+     "gap": -12.25,
+     "not_strict_because": [
+      "partly_scored",
+      "low_confidence",
+      "small_gap"
+     ]
+    },
+    {
+     "id": "F17-card",
+     "kind": "card_reward",
+     "floor": 17,
+     "act": 1,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "1:ECHOING_SLASH",
+     "engine_top_name": "回响斩击",
+     "confidence": "medium",
+     "tier": 1,
+     "gap": 1.6,
+     "not_strict_because": []
+    },
+    {
+     "id": "F19-card",
+     "kind": "card_reward",
+     "floor": 19,
+     "act": 2,
+     "chosen": "0:SPEEDSTER",
+     "chosen_name": "速行者",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": 1.5,
+     "not_strict_because": [
+      "partly_scored",
+      "small_gap"
+     ]
+    },
+    {
+     "id": "F20-card",
+     "kind": "card_reward",
+     "floor": 20,
+     "act": 2,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "1:SNAKEBITE",
+     "engine_top_name": "蛇咬",
+     "confidence": "medium",
+     "tier": 1,
+     "gap": 3.9,
+     "not_strict_because": []
+    },
+    {
+     "id": "F21-shop",
+     "kind": "shop",
+     "floor": 21,
+     "act": 2,
+     "chosen": "relic:0:TINGSHA",
+     "chosen_name": "铜钹",
+     "engine_top": "leave",
+     "engine_top_name": "离开商店",
+     "confidence": "low",
+     "tier": 2,
+     "gap": null,
+     "not_strict_because": [
+      "choice_not_scored"
+     ]
+    },
+    {
+     "id": "F22-card",
+     "kind": "card_reward",
+     "floor": 22,
+     "act": 2,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F23-rest",
+     "kind": "rest",
+     "floor": 23,
+     "act": 2,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F24-card",
+     "kind": "card_reward",
+     "floor": 24,
+     "act": 2,
+     "chosen": "0:ESCAPE_PLAN",
+     "chosen_name": "逃脱计划",
+     "engine_top": "1:HIDDEN_DAGGERS",
+     "engine_top_name": "隐秘匕首",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": 2.2,
+     "not_strict_because": [
+      "partly_scored"
+     ]
+    },
+    {
+     "id": "F25-rest",
+     "kind": "rest",
+     "floor": 25,
+     "act": 2,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F28-rest",
+     "kind": "rest",
+     "floor": 28,
+     "act": 2,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F30-card",
+     "kind": "card_reward",
+     "floor": 30,
+     "act": 2,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F31-card",
+     "kind": "card_reward",
+     "floor": 31,
+     "act": 2,
+     "chosen": "0:AFTERIMAGE",
+     "chosen_name": "余像",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": -0.4,
+     "not_strict_because": [
+      "small_gap"
+     ]
+    },
+    {
+     "id": "F32-rest",
+     "kind": "rest",
+     "floor": 32,
+     "act": 2,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F33-card",
+     "kind": "card_reward",
+     "floor": 33,
+     "act": 2,
+     "chosen": "0:MASTER_PLANNER",
+     "chosen_name": "谋划专家",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": 1.4,
+     "not_strict_because": [
+      "partly_scored",
+      "small_gap"
+     ]
+    },
+    {
+     "id": "F35-card",
+     "kind": "card_reward",
+     "floor": 35,
+     "act": 3,
+     "chosen": "0:ACROBATICS",
+     "chosen_name": "杂技",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": -0.1,
+     "not_strict_because": [
+      "small_gap"
+     ]
+    },
+    {
+     "id": "F36-card",
+     "kind": "card_reward",
+     "floor": 36,
+     "act": 3,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F37-card",
+     "kind": "card_reward",
+     "floor": 37,
+     "act": 3,
+     "chosen": "0:CALCULATED_GAMBLE",
+     "chosen_name": "计算下注",
+     "engine_top": "2:OUTBREAK",
+     "engine_top_name": "毒性爆发",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": 2.6,
+     "not_strict_because": [
+      "partly_scored"
+     ]
+    },
+    {
+     "id": "F39-card",
+     "kind": "card_reward",
+     "floor": 39,
+     "act": 3,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F40-rest",
+     "kind": "rest",
+     "floor": 40,
+     "act": 3,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:HEAL",
+     "engine_top_name": "休息",
+     "confidence": "low",
+     "tier": 2,
+     "gap": 5.15,
+     "not_strict_because": [
+      "partly_scored",
+      "low_confidence"
+     ]
+    },
+    {
+     "id": "F43-card",
+     "kind": "card_reward",
+     "floor": 43,
+     "act": 3,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F44-shop",
+     "kind": "shop",
+     "floor": 44,
+     "act": 3,
+     "chosen": "card:1:SLICE",
+     "chosen_name": "切割",
+     "engine_top": "card:1:SLICE",
+     "engine_top_name": "切割",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    }
+   ],
+   "skipped": [
+    {
+     "id": "F12-card",
+     "kind": "card_reward",
+     "floor": 12,
+     "reason": "unknown_card:PREPARE"
+    },
+    {
+     "id": "F14-card",
+     "kind": "card_reward",
+     "floor": 14,
+     "reason": "unknown_card:FOLLOW_THROUGH"
+    },
+    {
+     "id": "F45-card",
+     "kind": "card_reward",
+     "floor": 45,
+     "reason": "unknown_card:PREPARE"
+    },
+    {
+     "id": "F47-rest",
+     "kind": "rest",
+     "floor": 47,
+     "reason": "unknown_card:PREPARE"
+    }
+   ]
+  },
+  "flags": [
+   {
+    "id": "F20-card",
+    "kind": "card_reward",
+    "floor": 20,
+    "act": 2,
+    "hp": 64,
+    "max_hp": 70,
+    "gold": 199,
+    "engine_top": "1:SNAKEBITE",
+    "confidence": "medium",
+    "chosen": "skip",
+    "tier": 1,
+    "gap": 3.9,
+    "pick_margin": 2,
+    "options": [
+     {
+      "id": "1:SNAKEBITE",
+      "kind": "card",
+      "entity_id": "SNAKEBITE",
+      "name": "蛇咬",
+      "score": 55.7,
+      "deck_score": 55.7,
+      "rank": 1,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 3 张牌、3 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 3 张牌（华丽收场、杂技、速行者）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 佩尔之翼、剃刀牙、钨合金棍 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": 6.87,
+        "message": "拿蛇咬后前期输出：每回合 11.3 → 23.0（需求 41.3）"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -0.95,
+        "message": "拿蛇咬后防御：每回合 11.9 → 9.5（需求 7.6）"
+       },
+       {
+        "code": "deck_fitness:aoe",
+        "delta": -0.66,
+        "message": "拿蛇咬后群伤：每回合 2.0 → 1.6（需求 8.6）"
+       },
+       {
+        "code": "deck_fitness:scaling",
+        "delta": -0.31,
+        "message": "拿蛇咬后成长：每回合 0.8 → 0.6（需求 17.8）"
+       },
+       {
+        "code": "deck_fitness:cycle",
+        "delta": -0.16,
+        "message": "拿蛇咬后循环：每回合额外抽牌 2.39 → 2.15（需求 1.0）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": -0.83,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 6.2051,
+       "survival": -0.9511,
+       "long_term_growth": -0.4666,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "2:FLICK_FLACK",
+      "kind": "card",
+      "entity_id": "FLICK_FLACK",
+      "name": "翻越撑击",
+      "score": 54.1,
+      "deck_score": 54.1,
+      "rank": 2,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 3 张牌、3 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 3 张牌（华丽收场、杂技、速行者）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 佩尔之翼、剃刀牙、钨合金棍 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:aoe",
+        "delta": 1.55,
+        "message": "拿翻越撑击后群伤：每回合 2.0 → 3.0（需求 8.6）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": 0.93,
+        "message": "拿翻越撑击后前期输出：每回合 11.3 → 12.8（需求 41.3）"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -0.52,
+        "message": "拿翻越撑击后防御：每回合 11.9 → 10.5（需求 7.6）"
+       },
+       {
+        "code": "deck_fitness:scaling",
+        "delta": 0.1,
+        "message": "拿翻越撑击后成长：每回合 0.8 → 0.9（需求 17.8）"
+       },
+       {
+        "code": "deck_fitness:cycle",
+        "delta": -0.05,
+        "message": "拿翻越撑击后循环：每回合额外抽牌 2.39 → 2.31（需求 1.0）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": 0.33,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 2.4814,
+       "survival": -0.5193,
+       "long_term_growth": 0.0475,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "skip",
+      "kind": "skip",
+      "entity_id": null,
+      "name": "跳过",
+      "score": 53.8,
+      "deck_score": 51.8,
+      "rank": 3,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 3 张牌、3 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 3 张牌（华丽收场、杂技、速行者）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 佩尔之翼、剃刀牙、钨合金棍 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": 0,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "code": "deck_fitness:pick_margin",
+        "delta": 2,
+        "message": "第 2 幕：候选要比跳过高出 2 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0,
+       "survival": 0,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "0:STRANGLE",
+      "kind": "card",
+      "entity_id": "STRANGLE",
+      "name": "紧勒",
+      "score": 51.7,
+      "deck_score": 51.7,
+      "rank": 4,
+      "eligible": true,
+      "fully_scored": false,
+      "gaps": [
+       "card_effect_unsupported:STRANGLE:power:Strangle:enemy"
+      ],
+      "factors": [
+       {
+        "code": "unmodeled_mechanic",
+        "delta": 0,
+        "message": "紧勒的部分效果尚未计入评分；牌组中 3 张牌、3 件遗物未完整计入评分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 3 张牌（华丽收场、杂技、速行者）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 佩尔之翼、剃刀牙、钨合金棍 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": 0.51,
+        "message": "拿紧勒后前期输出：每回合 11.3 → 12.1（需求 41.3）"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -0.28,
+        "message": "拿紧勒后防御：每回合 11.9 → 11.1（需求 7.6）"
+       },
+       {
+        "code": "deck_fitness:aoe",
+        "delta": -0.22,
+        "message": "拿紧勒后群伤：每回合 2.0 → 1.9（需求 8.6）"
+       },
+       {
+        "code": "deck_fitness:cycle",
+        "delta": -0.05,
+        "message": "拿紧勒后循环：每回合额外抽牌 2.39 → 2.31（需求 1.0）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": -0.08,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0.2909,
+       "survival": -0.2783,
+       "long_term_growth": -0.0208,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     }
+    ]
+   },
+   {
+    "id": "F17-card",
+    "kind": "card_reward",
+    "floor": 17,
+    "act": 1,
+    "hp": 43,
+    "max_hp": 70,
+    "gold": 170,
+    "engine_top": "1:ECHOING_SLASH",
+    "confidence": "medium",
+    "chosen": "skip",
+    "tier": 1,
+    "gap": 1.6,
+    "pick_margin": 1,
+    "options": [
+     {
+      "id": "1:ECHOING_SLASH",
+      "kind": "card",
+      "entity_id": "ECHOING_SLASH",
+      "name": "回响斩击",
+      "score": 57.5,
+      "deck_score": 57.5,
+      "rank": 1,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 2 张牌、2 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 2 张牌（华丽收场、杂技）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 剃刀牙、钨合金棍 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:aoe",
+        "delta": 1.3,
+        "message": "拿回响斩击后群伤：每回合 2.6 → 3.9（需求 12.2）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": 0.99,
+        "message": "拿回响斩击后前期输出：每回合 11.9 → 13.4（需求 35.5）"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -0.33,
+        "message": "拿回响斩击后防御：每回合 13.1 → 12.3（需求 8.7）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": -0.36,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 2.2885,
+       "survival": -0.3272,
+       "long_term_growth": -0.0133,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "skip",
+      "kind": "skip",
+      "entity_id": null,
+      "name": "跳过",
+      "score": 56.9,
+      "deck_score": 55.9,
+      "rank": 2,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 2 张牌、2 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 2 张牌（华丽收场、杂技）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 剃刀牙、钨合金棍 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": 0,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "code": "deck_fitness:pick_margin",
+        "delta": 1,
+        "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0,
+       "survival": 0,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "2:STORM_OF_STEEL",
+      "kind": "card",
+      "entity_id": "STORM_OF_STEEL",
+      "name": "钢铁风暴",
+      "score": 54.8,
+      "deck_score": 54.8,
+      "rank": 3,
+      "eligible": true,
+      "fully_scored": false,
+      "gaps": [
+       "card_effect_unsupported:STORM_OF_STEEL:add_card:count_scale"
+      ],
+      "factors": [
+       {
+        "code": "unmodeled_mechanic",
+        "delta": 0,
+        "message": "钢铁风暴的部分效果尚未计入评分；牌组中 2 张牌、2 件遗物未完整计入评分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 2 张牌（华丽收场、杂技）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 剃刀牙、钨合金棍 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": -0.52,
+        "message": "拿钢铁风暴后前期输出：每回合 11.9 → 11.1（需求 35.5）"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -0.32,
+        "message": "拿钢铁风暴后防御：每回合 13.1 → 12.3（需求 8.7）"
+       },
+       {
+        "code": "deck_fitness:aoe",
+        "delta": -0.17,
+        "message": "拿钢铁风暴后群伤：每回合 2.6 → 2.4（需求 12.2）"
+       },
+       {
+        "code": "deck_fitness:scaling",
+        "delta": -0.09,
+        "message": "拿钢铁风暴后成长：每回合 0.9 → 0.9（需求 15.5）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": 0.02,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": -0.6927,
+       "survival": -0.3189,
+       "long_term_growth": -0.1403,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "0:NIGHTMARE",
+      "kind": "card",
+      "entity_id": "NIGHTMARE",
+      "name": "夜魇",
+      "score": 53.9,
+      "deck_score": 53.9,
+      "rank": 4,
+      "eligible": true,
+      "fully_scored": false,
+      "gaps": [
+       "fact_unknowable:powers:NIGHTMARE",
+       "power_mechanic_unsupported:NIGHTMARE:effect:add_card"
+      ],
+      "factors": [
+       {
+        "code": "unmodeled_mechanic",
+        "delta": 0,
+        "message": "夜魇的部分效果尚未计入评分；牌组中 2 张牌、2 件遗物未完整计入评分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 2 张牌（华丽收场、杂技）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 剃刀牙、钨合金棍 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": -0.82,
+        "message": "拿夜魇后前期输出：每回合 11.9 → 10.7（需求 35.5）"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -0.53,
+        "message": "拿夜魇后防御：每回合 13.1 → 11.8（需求 8.7）"
+       },
+       {
+        "code": "deck_fitness:aoe",
+        "delta": -0.3,
+        "message": "拿夜魇后群伤：每回合 2.6 → 2.3（需求 12.2）"
+       },
+       {
+        "code": "deck_fitness:scaling",
+        "delta": -0.17,
+        "message": "拿夜魇后成长：每回合 0.9 → 0.8（需求 15.5）"
+       },
+       {
+        "code": "deck_fitness:cycle",
+        "delta": -0.08,
+        "message": "拿夜魇后循环：每回合额外抽牌 2.50 → 2.35（需求 1.0）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": -0.08,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": -1.1157,
+       "survival": -0.5326,
+       "long_term_growth": -0.2511,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "explained": [
+  {
+   "flag": "F20-card",
+   "status": "verified",
+   "errors": [],
+   "evidence": [
+    {
+     "id": "T0",
+     "tool": "get_decision",
+     "result": {
+      "id": "F20-card",
+      "kind": "card_reward",
+      "floor": 20,
+      "act": 2,
+      "hp": 64,
+      "max_hp": 70,
+      "gold": 199,
+      "engine_top": "1:SNAKEBITE",
+      "confidence": "medium",
+      "chosen": "skip",
+      "tier": 1,
+      "gap": 3.9,
+      "pick_margin": 2,
+      "options": [
+       {
+        "id": "1:SNAKEBITE",
+        "kind": "card",
+        "entity_id": "SNAKEBITE",
+        "name": "蛇咬",
+        "score": 55.7,
+        "deck_score": 55.7,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 3 张牌、3 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 3 张牌（华丽收场、杂技、速行者）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 佩尔之翼、剃刀牙、钨合金棍 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 6.87,
+          "message": "拿蛇咬后前期输出：每回合 11.3 → 23.0（需求 41.3）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.95,
+          "message": "拿蛇咬后防御：每回合 11.9 → 9.5（需求 7.6）"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": -0.66,
+          "message": "拿蛇咬后群伤：每回合 2.0 → 1.6（需求 8.6）"
+         },
+         {
+          "code": "deck_fitness:scaling",
+          "delta": -0.31,
+          "message": "拿蛇咬后成长：每回合 0.8 → 0.6（需求 17.8）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.16,
+          "message": "拿蛇咬后循环：每回合额外抽牌 2.39 → 2.15（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.83,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       },
+       {
+        "id": "2:FLICK_FLACK",
+        "kind": "card",
+        "entity_id": "FLICK_FLACK",
+        "name": "翻越撑击",
+        "score": 54.1,
+        "deck_score": 54.1,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 3 张牌、3 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 3 张牌（华丽收场、杂技、速行者）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 佩尔之翼、剃刀牙、钨合金棍 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": 1.55,
+          "message": "拿翻越撑击后群伤：每回合 2.0 → 3.0（需求 8.6）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.93,
+          "message": "拿翻越撑击后前期输出：每回合 11.3 → 12.8（需求 41.3）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.52,
+          "message": "拿翻越撑击后防御：每回合 11.9 → 10.5（需求 7.6）"
+         },
+         {
+          "code": "deck_fitness:scaling",
+          "delta": 0.1,
+          "message": "拿翻越撑击后成长：每回合 0.8 → 0.9（需求 17.8）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.05,
+          "message": "拿翻越撑击后循环：每回合额外抽牌 2.39 → 2.31（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0.33,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       },
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 53.8,
+        "deck_score": 51.8,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 3 张牌、3 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 3 张牌（华丽收场、杂技、速行者）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 佩尔之翼、剃刀牙、钨合金棍 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 2,
+          "message": "第 2 幕：候选要比跳过高出 2 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ]
+       },
+       {
+        "id": "0:STRANGLE",
+        "kind": "card",
+        "entity_id": "STRANGLE",
+        "name": "紧勒",
+        "score": 51.7,
+        "deck_score": 51.7,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": false,
+        "gaps": [
+         "card_effect_unsupported:STRANGLE:power:Strangle:enemy"
+        ],
+        "factors": [
+         {
+          "code": "unmodeled_mechanic",
+          "delta": 0,
+          "message": "紧勒的部分效果尚未计入评分；牌组中 3 张牌、3 件遗物未完整计入评分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 3 张牌（华丽收场、杂技、速行者）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 佩尔之翼、剃刀牙、钨合金棍 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.51,
+          "message": "拿紧勒后前期输出：每回合 11.3 → 12.1（需求 41.3）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.28,
+          "message": "拿紧勒后防御：每回合 11.9 → 11.1（需求 7.6）"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": -0.22,
+          "message": "拿紧勒后群伤：每回合 2.0 → 1.9（需求 8.6）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.05,
+          "message": "拿紧勒后循环：每回合额外抽牌 2.39 → 2.31（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.08,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "id": "T1",
+     "tool": "get_decision",
+     "result": {
+      "id": "F20-card",
+      "kind": "card_reward",
+      "floor": 20,
+      "act": 2,
+      "hp": 64,
+      "max_hp": 70,
+      "gold": 199,
+      "engine_top": "1:SNAKEBITE",
+      "confidence": "medium",
+      "policy_status": "recommend",
+      "pick_margin": 2,
+      "options": [
+       {
+        "id": "1:SNAKEBITE",
+        "kind": "card",
+        "entity_id": "SNAKEBITE",
+        "name": "蛇咬",
+        "score": 55.7,
+        "deck_score": 55.7,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 3 张牌、3 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 3 张牌（华丽收场、杂技、速行者）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 佩尔之翼、剃刀牙、钨合金棍 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 6.87,
+          "message": "拿蛇咬后前期输出：每回合 11.3 → 23.0（需求 41.3）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.95,
+          "message": "拿蛇咬后防御：每回合 11.9 → 9.5（需求 7.6）"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": -0.66,
+          "message": "拿蛇咬后群伤：每回合 2.0 → 1.6（需求 8.6）"
+         },
+         {
+          "code": "deck_fitness:scaling",
+          "delta": -0.31,
+          "message": "拿蛇咬后成长：每回合 0.8 → 0.6（需求 17.8）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.16,
+          "message": "拿蛇咬后循环：每回合额外抽牌 2.39 → 2.15（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.83,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 6.2051,
+         "survival": -0.9511,
+         "long_term_growth": -0.4666,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "2:FLICK_FLACK",
+        "kind": "card",
+        "entity_id": "FLICK_FLACK",
+        "name": "翻越撑击",
+        "score": 54.1,
+        "deck_score": 54.1,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 3 张牌、3 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 3 张牌（华丽收场、杂技、速行者）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 佩尔之翼、剃刀牙、钨合金棍 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": 1.55,
+          "message": "拿翻越撑击后群伤：每回合 2.0 → 3.0（需求 8.6）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.93,
+          "message": "拿翻越撑击后前期输出：每回合 11.3 → 12.8（需求 41.3）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.52,
+          "message": "拿翻越撑击后防御：每回合 11.9 → 10.5（需求 7.6）"
+         },
+         {
+          "code": "deck_fitness:scaling",
+          "delta": 0.1,
+          "message": "拿翻越撑击后成长：每回合 0.8 → 0.9（需求 17.8）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.05,
+          "message": "拿翻越撑击后循环：每回合额外抽牌 2.39 → 2.31（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0.33,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 2.4814,
+         "survival": -0.5193,
+         "long_term_growth": 0.0475,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 53.8,
+        "deck_score": 51.8,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 3 张牌、3 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 3 张牌（华丽收场、杂技、速行者）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 佩尔之翼、剃刀牙、钨合金棍 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 2,
+          "message": "第 2 幕：候选要比跳过高出 2 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0,
+         "survival": 0,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "0:STRANGLE",
+        "kind": "card",
+        "entity_id": "STRANGLE",
+        "name": "紧勒",
+        "score": 51.7,
+        "deck_score": 51.7,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": false,
+        "gaps": [
+         "card_effect_unsupported:STRANGLE:power:Strangle:enemy"
+        ],
+        "factors": [
+         {
+          "code": "unmodeled_mechanic",
+          "delta": 0,
+          "message": "紧勒的部分效果尚未计入评分；牌组中 3 张牌、3 件遗物未完整计入评分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 3 张牌（华丽收场、杂技、速行者）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 佩尔之翼、剃刀牙、钨合金棍 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.51,
+          "message": "拿紧勒后前期输出：每回合 11.3 → 12.1（需求 41.3）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.28,
+          "message": "拿紧勒后防御：每回合 11.9 → 11.1（需求 7.6）"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": -0.22,
+          "message": "拿紧勒后群伤：每回合 2.0 → 1.9（需求 8.6）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.05,
+          "message": "拿紧勒后循环：每回合额外抽牌 2.39 → 2.31（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.08,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0.2909,
+         "survival": -0.2783,
+         "long_term_growth": -0.0208,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       }
+      ],
+      "chosen": "skip",
+      "tier": 1,
+      "gap": 3.9,
+      "not_strict_because": []
+     }
+    },
+    {
+     "id": "T2",
+     "tool": "get_deck",
+     "result": {
+      "decision_id": "F20-card",
+      "floor": 20,
+      "act": 2,
+      "hp": 64,
+      "max_hp": 70,
+      "gold": 199,
+      "deck_size": 20,
+      "deck": [
+       {
+        "card": "ACROBATICS",
+        "name": "杂技",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "ADRENALINE",
+        "name": "肾上腺素",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "CALCULATED_GAMBLE",
+        "name": "计算下注",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "DAGGER_THROW",
+        "name": "投掷匕首",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "DEFEND_SILENT",
+        "name": "防御",
+        "upgrades": 0,
+        "count": 4
+       },
+       {
+        "card": "FLICK_FLACK",
+        "name": "翻越撑击",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "GRAND_FINALE",
+        "name": "华丽收场",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "GREED",
+        "name": "贪婪",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "NEUTRALIZE",
+        "name": "中和",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "PIERCING_WAIL",
+        "name": "尖啸",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "PROWESS",
+        "name": "非凡技艺",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "SPEEDSTER",
+        "name": "速行者",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "STRIKE_SILENT",
+        "name": "打击",
+        "upgrades": 0,
+        "count": 3
+       },
+       {
+        "card": "SURVIVOR",
+        "name": "生存者",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "UNTOUCHABLE",
+        "name": "触不可及",
+        "upgrades": 0,
+        "count": 1
+       }
+      ],
+      "relics": [
+       {
+        "relic": "RING_OF_THE_SNAKE",
+        "name": "蛇之戒指"
+       },
+       {
+        "relic": "CURSED_PEARL",
+        "name": "诅咒珍珠"
+       },
+       {
+        "relic": "TUNGSTEN_ROD",
+        "name": "钨合金棍"
+       },
+       {
+        "relic": "RAZOR_TOOTH",
+        "name": "剃刀牙"
+       },
+       {
+        "relic": "PAELS_WING",
+        "name": "佩尔之翼"
+       }
+      ],
+      "potions": []
+     }
+    },
+    {
+     "id": "T3",
+     "tool": "compare_options",
+     "result": {
+      "decision_id": "F20-card",
+      "a": {
+       "id": "1:SNAKEBITE",
+       "name": "蛇咬",
+       "deck_score": 55.7,
+       "fully_scored": true
+      },
+      "b": {
+       "id": "skip",
+       "name": "跳过",
+       "deck_score": 51.8,
+       "fully_scored": true
+      },
+      "deck_score_difference": 3.9,
+      "factors": [
+       {
+        "factor": "deck_fitness:frontload",
+        "a": 6.87,
+        "b": 0,
+        "difference": 6.87,
+        "a_message": "拿蛇咬后前期输出：每回合 11.3 → 23.0（需求 41.3）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:defense",
+        "a": -0.95,
+        "b": 0,
+        "difference": -0.95,
+        "a_message": "拿蛇咬后防御：每回合 11.9 → 9.5（需求 7.6）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:lookahead",
+        "a": -0.83,
+        "b": 0,
+        "difference": -0.83,
+        "a_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度",
+        "b_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "factor": "deck_fitness:aoe",
+        "a": -0.66,
+        "b": 0,
+        "difference": -0.66,
+        "a_message": "拿蛇咬后群伤：每回合 2.0 → 1.6（需求 8.6）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:scaling",
+        "a": -0.31,
+        "b": 0,
+        "difference": -0.31,
+        "a_message": "拿蛇咬后成长：每回合 0.8 → 0.6（需求 17.8）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:cycle",
+        "a": -0.16,
+        "b": 0,
+        "difference": -0.16,
+        "a_message": "拿蛇咬后循环：每回合额外抽牌 2.39 → 2.15（需求 1.0）",
+        "b_message": null
+       },
+       {
+        "factor": "estimate_scope",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 3 张牌、3 件遗物未完整计入评分，分数只反映已计入的部分。",
+        "b_message": "牌组中 3 张牌、3 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "factor": "partially_modeled_deck_cards",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 3 张牌（华丽收场、杂技、速行者）有部分效果尚未计入评分。",
+        "b_message": "牌组中 3 张牌（华丽收场、杂技、速行者）有部分效果尚未计入评分。"
+       },
+       {
+        "factor": "unmodeled_relics",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "遗物 佩尔之翼、剃刀牙、钨合金棍 尚未计入评分。",
+        "b_message": "遗物 佩尔之翼、剃刀牙、钨合金棍 尚未计入评分。"
+       }
+      ],
+      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
+     }
+    },
+    {
+     "id": "T4",
+     "tool": "what_if_choices",
+     "result": {
+      "remove": [
+       "ACROBATICS",
+       "ADRENALINE",
+       "CALCULATED_GAMBLE",
+       "DAGGER_THROW",
+       "DEFEND_SILENT",
+       "FLICK_FLACK",
+       "GRAND_FINALE",
+       "GREED",
+       "NEUTRALIZE",
+       "PIERCING_WAIL",
+       "PROWESS",
+       "SPEEDSTER",
+       "STRIKE_SILENT",
+       "SURVIVOR",
+       "UNTOUCHABLE"
+      ],
+      "upgrade": [
+       "ADRENALINE",
+       "CALCULATED_GAMBLE",
+       "DAGGER_THROW",
+       "DEFEND_SILENT",
+       "FLICK_FLACK",
+       "GRAND_FINALE",
+       "NEUTRALIZE",
+       "PIERCING_WAIL",
+       "SPEEDSTER",
+       "STRIKE_SILENT",
+       "SURVIVOR",
+       "UNTOUCHABLE"
+      ],
+      "add": [
+       {
+        "card": "ACCURACY",
+        "name": "精准"
+       },
+       {
+        "card": "ACROBATICS",
+        "name": "杂技"
+       },
+       {
+        "card": "ANOINTED",
+        "name": "天选"
+       },
+       {
+        "card": "BACKFLIP",
+        "name": "后空翻"
+       },
+       {
+        "card": "BACKSTAB",
+        "name": "背刺"
+       },
+       {
+        "card": "CLOAK_AND_DAGGER",
+        "name": "斗篷与匕首"
+       },
+       {
+        "card": "DEFLECT",
+        "name": "偏折"
+       },
+       {
+        "card": "ECHOING_SLASH",
+        "name": "回响斩击"
+       },
+       {
+        "card": "FLICK_FLACK",
+        "name": "翻越撑击"
+       },
+       {
+        "card": "FOLLOW_THROUGH",
+        "name": "FOLLOW_THROUGH"
+       },
+       {
+        "card": "GRAND_FINALE",
+        "name": "华丽收场"
+       },
+       {
+        "card": "KNIFE_TRAP",
+        "name": "刀刃陷阱"
+       },
+       {
+        "card": "NIGHTMARE",
+        "name": "夜魇"
+       },
+       {
+        "card": "PHANTOM_BLADES",
+        "name": "幻影之刃"
+       },
+       {
+        "card": "PIERCING_WAIL",
+        "name": "尖啸"
+       },
+       {
+        "card": "PRECISE_CUT",
+        "name": "精确切击"
+       },
+       {
+        "card": "PREPARE",
+        "name": "PREPARE"
+       },
+       {
+        "card": "RICOCHET",
+        "name": "连续反弹"
+       },
+       {
+        "card": "SLICE",
+        "name": "切割"
+       },
+       {
+        "card": "SNAKEBITE",
+        "name": "蛇咬"
+       },
+       {
+        "card": "SPEEDSTER",
+        "name": "速行者"
+       },
+       {
+        "card": "STORM_OF_STEEL",
+        "name": "钢铁风暴"
+       },
+       {
+        "card": "SUCKER_PUNCH",
+        "name": "突然一拳"
+       }
+      ]
+     }
+    },
+    {
+     "id": "T5",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F20-card",
+      "changes": [
+       {
+        "operation": "remove",
+        "card": "STRIKE_SILENT",
+        "name": "打击"
+       },
+       {
+        "operation": "remove",
+        "card": "STRIKE_SILENT",
+        "name": "打击"
+       }
+      ],
+      "engine_top_before": "1:SNAKEBITE",
+      "engine_top_after": "1:SNAKEBITE",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 4.5,
+      "options_after": [
+       {
+        "id": "1:SNAKEBITE",
+        "name": "蛇咬",
+        "deck_score": 56.9,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "2:FLICK_FLACK",
+        "name": "翻越撑击",
+        "deck_score": 55.1,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 52.4,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "0:STRANGLE",
+        "name": "紧勒",
+        "deck_score": 52.4,
+        "rank": 4,
+        "fully_scored": false
+       }
+      ]
+     }
+    }
+   ],
+   "toolCalls": 5,
+   "repairs": 0,
+   "usage": {
+    "prompt_tokens": 24032,
+    "completion_tokens": 615,
+    "cost_usd": 0.002603856,
+    "llm_calls": 4
+   },
+   "finding": {
+    "decision_id": "F20-card",
+    "reasons": [
+     {
+      "factor": "deck_fitness:frontload",
+      "evidence": "T3",
+      "text": "引擎最看重前期输出：拿蛇咬后每回合 11.3 → 23.0，而需求是 41.3，这是它领先跳过最多的一项。"
+     },
+     {
+      "factor": "deck_fitness:defense",
+      "evidence": "T3",
+      "text": "代价是防御每回合 11.9 → 9.5，仍高于需求 7.6，所以引擎认为这笔交换划算。"
+     },
+     {
+      "factor": "deck_fitness:lookahead",
+      "evidence": "T3",
+      "text": "但往后看 3 次选牌，蛇咬反而略拖后腿；跳过在长期上不吃亏，这也是差距只有 3.9 的原因。"
+     }
+    ],
+    "what_if_evidence": "T5",
+    "what_if_text": "假设当时少两张打击，引擎仍首选蛇咬，差距反而扩大到 4.5，说明这不是打击数量的问题。",
+    "advice": "若你更在意长期牌组质量，跳过是合理取舍；想补前期输出时，蛇咬这类低费攻击是引擎的首选方向。"
+   }
+  },
+  {
+   "flag": "F17-card",
+   "status": "verified",
+   "errors": [
+    "reasons[2]: deck_fitness:defense is not one of the largest differences here (deck_fitness:aoe, deck_fitness:frontload, deck_fitness:lookahead)"
+   ],
+   "evidence": [
+    {
+     "id": "T0",
+     "tool": "get_decision",
+     "result": {
+      "id": "F17-card",
+      "kind": "card_reward",
+      "floor": 17,
+      "act": 1,
+      "hp": 43,
+      "max_hp": 70,
+      "gold": 170,
+      "engine_top": "1:ECHOING_SLASH",
+      "confidence": "medium",
+      "chosen": "skip",
+      "tier": 1,
+      "gap": 1.6,
+      "pick_margin": 1,
+      "options": [
+       {
+        "id": "1:ECHOING_SLASH",
+        "kind": "card",
+        "entity_id": "ECHOING_SLASH",
+        "name": "回响斩击",
+        "score": 57.5,
+        "deck_score": 57.5,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 2 张牌、2 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 2 张牌（华丽收场、杂技）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 剃刀牙、钨合金棍 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": 1.3,
+          "message": "拿回响斩击后群伤：每回合 2.6 → 3.9（需求 12.2）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.99,
+          "message": "拿回响斩击后前期输出：每回合 11.9 → 13.4（需求 35.5）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.33,
+          "message": "拿回响斩击后防御：每回合 13.1 → 12.3（需求 8.7）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.36,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       },
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 56.9,
+        "deck_score": 55.9,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 2 张牌、2 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 2 张牌（华丽收场、杂技）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 剃刀牙、钨合金棍 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 1,
+          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ]
+       },
+       {
+        "id": "2:STORM_OF_STEEL",
+        "kind": "card",
+        "entity_id": "STORM_OF_STEEL",
+        "name": "钢铁风暴",
+        "score": 54.8,
+        "deck_score": 54.8,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": false,
+        "gaps": [
+         "card_effect_unsupported:STORM_OF_STEEL:add_card:count_scale"
+        ],
+        "factors": [
+         {
+          "code": "unmodeled_mechanic",
+          "delta": 0,
+          "message": "钢铁风暴的部分效果尚未计入评分；牌组中 2 张牌、2 件遗物未完整计入评分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 2 张牌（华丽收场、杂技）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 剃刀牙、钨合金棍 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.52,
+          "message": "拿钢铁风暴后前期输出：每回合 11.9 → 11.1（需求 35.5）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.32,
+          "message": "拿钢铁风暴后防御：每回合 13.1 → 12.3（需求 8.7）"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": -0.17,
+          "message": "拿钢铁风暴后群伤：每回合 2.6 → 2.4（需求 12.2）"
+         },
+         {
+          "code": "deck_fitness:scaling",
+          "delta": -0.09,
+          "message": "拿钢铁风暴后成长：每回合 0.9 → 0.9（需求 15.5）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0.02,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       },
+       {
+        "id": "0:NIGHTMARE",
+        "kind": "card",
+        "entity_id": "NIGHTMARE",
+        "name": "夜魇",
+        "score": 53.9,
+        "deck_score": 53.9,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": false,
+        "gaps": [
+         "fact_unknowable:powers:NIGHTMARE",
+         "power_mechanic_unsupported:NIGHTMARE:effect:add_card"
+        ],
+        "factors": [
+         {
+          "code": "unmodeled_mechanic",
+          "delta": 0,
+          "message": "夜魇的部分效果尚未计入评分；牌组中 2 张牌、2 件遗物未完整计入评分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 2 张牌（华丽收场、杂技）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 剃刀牙、钨合金棍 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.82,
+          "message": "拿夜魇后前期输出：每回合 11.9 → 10.7（需求 35.5）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.53,
+          "message": "拿夜魇后防御：每回合 13.1 → 11.8（需求 8.7）"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": -0.3,
+          "message": "拿夜魇后群伤：每回合 2.6 → 2.3（需求 12.2）"
+         },
+         {
+          "code": "deck_fitness:scaling",
+          "delta": -0.17,
+          "message": "拿夜魇后成长：每回合 0.9 → 0.8（需求 15.5）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.08,
+          "message": "拿夜魇后循环：每回合额外抽牌 2.50 → 2.35（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.08,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "id": "T1",
+     "tool": "get_decision",
+     "result": {
+      "id": "F17-card",
+      "kind": "card_reward",
+      "floor": 17,
+      "act": 1,
+      "hp": 43,
+      "max_hp": 70,
+      "gold": 170,
+      "engine_top": "1:ECHOING_SLASH",
+      "confidence": "medium",
+      "policy_status": "recommend",
+      "pick_margin": 1,
+      "options": [
+       {
+        "id": "1:ECHOING_SLASH",
+        "kind": "card",
+        "entity_id": "ECHOING_SLASH",
+        "name": "回响斩击",
+        "score": 57.5,
+        "deck_score": 57.5,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 2 张牌、2 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 2 张牌（华丽收场、杂技）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 剃刀牙、钨合金棍 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": 1.3,
+          "message": "拿回响斩击后群伤：每回合 2.6 → 3.9（需求 12.2）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.99,
+          "message": "拿回响斩击后前期输出：每回合 11.9 → 13.4（需求 35.5）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.33,
+          "message": "拿回响斩击后防御：每回合 13.1 → 12.3（需求 8.7）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.36,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 2.2885,
+         "survival": -0.3272,
+         "long_term_growth": -0.0133,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 56.9,
+        "deck_score": 55.9,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 2 张牌、2 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 2 张牌（华丽收场、杂技）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 剃刀牙、钨合金棍 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 1,
+          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0,
+         "survival": 0,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "2:STORM_OF_STEEL",
+        "kind": "card",
+        "entity_id": "STORM_OF_STEEL",
+        "name": "钢铁风暴",
+        "score": 54.8,
+        "deck_score": 54.8,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": false,
+        "gaps": [
+         "card_effect_unsupported:STORM_OF_STEEL:add_card:count_scale"
+        ],
+        "factors": [
+         {
+          "code": "unmodeled_mechanic",
+          "delta": 0,
+          "message": "钢铁风暴的部分效果尚未计入评分；牌组中 2 张牌、2 件遗物未完整计入评分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 2 张牌（华丽收场、杂技）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 剃刀牙、钨合金棍 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.52,
+          "message": "拿钢铁风暴后前期输出：每回合 11.9 → 11.1（需求 35.5）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.32,
+          "message": "拿钢铁风暴后防御：每回合 13.1 → 12.3（需求 8.7）"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": -0.17,
+          "message": "拿钢铁风暴后群伤：每回合 2.6 → 2.4（需求 12.2）"
+         },
+         {
+          "code": "deck_fitness:scaling",
+          "delta": -0.09,
+          "message": "拿钢铁风暴后成长：每回合 0.9 → 0.9（需求 15.5）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0.02,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": -0.6927,
+         "survival": -0.3189,
+         "long_term_growth": -0.1403,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "0:NIGHTMARE",
+        "kind": "card",
+        "entity_id": "NIGHTMARE",
+        "name": "夜魇",
+        "score": 53.9,
+        "deck_score": 53.9,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": false,
+        "gaps": [
+         "fact_unknowable:powers:NIGHTMARE",
+         "power_mechanic_unsupported:NIGHTMARE:effect:add_card"
+        ],
+        "factors": [
+         {
+          "code": "unmodeled_mechanic",
+          "delta": 0,
+          "message": "夜魇的部分效果尚未计入评分；牌组中 2 张牌、2 件遗物未完整计入评分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 2 张牌（华丽收场、杂技）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 剃刀牙、钨合金棍 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.82,
+          "message": "拿夜魇后前期输出：每回合 11.9 → 10.7（需求 35.5）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.53,
+          "message": "拿夜魇后防御：每回合 13.1 → 11.8（需求 8.7）"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": -0.3,
+          "message": "拿夜魇后群伤：每回合 2.6 → 2.3（需求 12.2）"
+         },
+         {
+          "code": "deck_fitness:scaling",
+          "delta": -0.17,
+          "message": "拿夜魇后成长：每回合 0.9 → 0.8（需求 15.5）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.08,
+          "message": "拿夜魇后循环：每回合额外抽牌 2.50 → 2.35（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.08,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": -1.1157,
+         "survival": -0.5326,
+         "long_term_growth": -0.2511,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       }
+      ],
+      "chosen": "skip",
+      "tier": 1,
+      "gap": 1.6,
+      "not_strict_because": []
+     }
+    },
+    {
+     "id": "T2",
+     "tool": "get_deck",
+     "result": {
+      "decision_id": "F17-card",
+      "floor": 17,
+      "act": 1,
+      "hp": 43,
+      "max_hp": 70,
+      "gold": 170,
+      "deck_size": 20,
+      "deck": [
+       {
+        "card": "ACROBATICS",
+        "name": "杂技",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "ADRENALINE",
+        "name": "肾上腺素",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "CALCULATED_GAMBLE",
+        "name": "计算下注",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "DAGGER_THROW",
+        "name": "投掷匕首",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "DEFEND_SILENT",
+        "name": "防御",
+        "upgrades": 0,
+        "count": 4
+       },
+       {
+        "card": "FLICK_FLACK",
+        "name": "翻越撑击",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "GRAND_FINALE",
+        "name": "华丽收场",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "GREED",
+        "name": "贪婪",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "GUILTY",
+        "name": "愧疚",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "NEUTRALIZE",
+        "name": "中和",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "PIERCING_WAIL",
+        "name": "尖啸",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "PROWESS",
+        "name": "非凡技艺",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "STRIKE_SILENT",
+        "name": "打击",
+        "upgrades": 0,
+        "count": 3
+       },
+       {
+        "card": "SURVIVOR",
+        "name": "生存者",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "UNTOUCHABLE",
+        "name": "触不可及",
+        "upgrades": 0,
+        "count": 1
+       }
+      ],
+      "relics": [
+       {
+        "relic": "RING_OF_THE_SNAKE",
+        "name": "蛇之戒指"
+       },
+       {
+        "relic": "CURSED_PEARL",
+        "name": "诅咒珍珠"
+       },
+       {
+        "relic": "TUNGSTEN_ROD",
+        "name": "钨合金棍"
+       },
+       {
+        "relic": "RAZOR_TOOTH",
+        "name": "剃刀牙"
+       }
+      ],
+      "potions": []
+     }
+    },
+    {
+     "id": "T3",
+     "tool": "compare_options",
+     "result": {
+      "decision_id": "F17-card",
+      "a": {
+       "id": "1:ECHOING_SLASH",
+       "name": "回响斩击",
+       "deck_score": 57.5,
+       "fully_scored": true
+      },
+      "b": {
+       "id": "skip",
+       "name": "跳过",
+       "deck_score": 55.9,
+       "fully_scored": true
+      },
+      "deck_score_difference": 1.6,
+      "factors": [
+       {
+        "factor": "deck_fitness:aoe",
+        "a": 1.3,
+        "b": 0,
+        "difference": 1.3,
+        "a_message": "拿回响斩击后群伤：每回合 2.6 → 3.9（需求 12.2）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:frontload",
+        "a": 0.99,
+        "b": 0,
+        "difference": 0.99,
+        "a_message": "拿回响斩击后前期输出：每回合 11.9 → 13.4（需求 35.5）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:lookahead",
+        "a": -0.36,
+        "b": 0,
+        "difference": -0.36,
+        "a_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度",
+        "b_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "factor": "deck_fitness:defense",
+        "a": -0.33,
+        "b": 0,
+        "difference": -0.33,
+        "a_message": "拿回响斩击后防御：每回合 13.1 → 12.3（需求 8.7）",
+        "b_message": null
+       },
+       {
+        "factor": "estimate_scope",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 2 张牌、2 件遗物未完整计入评分，分数只反映已计入的部分。",
+        "b_message": "牌组中 2 张牌、2 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "factor": "partially_modeled_deck_cards",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 2 张牌（华丽收场、杂技）有部分效果尚未计入评分。",
+        "b_message": "牌组中 2 张牌（华丽收场、杂技）有部分效果尚未计入评分。"
+       },
+       {
+        "factor": "unmodeled_relics",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "遗物 剃刀牙、钨合金棍 尚未计入评分。",
+        "b_message": "遗物 剃刀牙、钨合金棍 尚未计入评分。"
+       }
+      ],
+      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
+     }
+    },
+    {
+     "id": "T4",
+     "tool": "what_if_choices",
+     "result": {
+      "remove": [
+       "ACROBATICS",
+       "ADRENALINE",
+       "CALCULATED_GAMBLE",
+       "DAGGER_THROW",
+       "DEFEND_SILENT",
+       "FLICK_FLACK",
+       "GRAND_FINALE",
+       "GREED",
+       "GUILTY",
+       "NEUTRALIZE",
+       "PIERCING_WAIL",
+       "PROWESS",
+       "STRIKE_SILENT",
+       "SURVIVOR",
+       "UNTOUCHABLE"
+      ],
+      "upgrade": [
+       "ADRENALINE",
+       "CALCULATED_GAMBLE",
+       "DAGGER_THROW",
+       "DEFEND_SILENT",
+       "FLICK_FLACK",
+       "GRAND_FINALE",
+       "NEUTRALIZE",
+       "PIERCING_WAIL",
+       "STRIKE_SILENT",
+       "SURVIVOR",
+       "UNTOUCHABLE"
+      ],
+      "add": [
+       {
+        "card": "ACCURACY",
+        "name": "精准"
+       },
+       {
+        "card": "ACROBATICS",
+        "name": "杂技"
+       },
+       {
+        "card": "ANOINTED",
+        "name": "天选"
+       },
+       {
+        "card": "BACKFLIP",
+        "name": "后空翻"
+       },
+       {
+        "card": "BACKSTAB",
+        "name": "背刺"
+       },
+       {
+        "card": "CLOAK_AND_DAGGER",
+        "name": "斗篷与匕首"
+       },
+       {
+        "card": "FLICK_FLACK",
+        "name": "翻越撑击"
+       },
+       {
+        "card": "FOLLOW_THROUGH",
+        "name": "FOLLOW_THROUGH"
+       },
+       {
+        "card": "GRAND_FINALE",
+        "name": "华丽收场"
+       },
+       {
+        "card": "KNIFE_TRAP",
+        "name": "刀刃陷阱"
+       },
+       {
+        "card": "PHANTOM_BLADES",
+        "name": "幻影之刃"
+       },
+       {
+        "card": "PIERCING_WAIL",
+        "name": "尖啸"
+       },
+       {
+        "card": "PRECISE_CUT",
+        "name": "精确切击"
+       },
+       {
+        "card": "PREPARE",
+        "name": "PREPARE"
+       },
+       {
+        "card": "RICOCHET",
+        "name": "连续反弹"
+       },
+       {
+        "card": "SLICE",
+        "name": "切割"
+       },
+       {
+        "card": "SNAKEBITE",
+        "name": "蛇咬"
+       },
+       {
+        "card": "SUCKER_PUNCH",
+        "name": "突然一拳"
+       }
+      ]
+     }
+    },
+    {
+     "id": "T5",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F17-card",
+      "changes": [
+       {
+        "operation": "remove",
+        "card": "STRIKE_SILENT",
+        "name": "打击"
+       }
+      ],
+      "engine_top_before": "1:ECHOING_SLASH",
+      "engine_top_after": "1:ECHOING_SLASH",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 1.7,
+      "options_after": [
+       {
+        "id": "1:ECHOING_SLASH",
+        "name": "回响斩击",
+        "deck_score": 58,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 56.3,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "2:STORM_OF_STEEL",
+        "name": "钢铁风暴",
+        "deck_score": 55,
+        "rank": 3,
+        "fully_scored": false
+       },
+       {
+        "id": "0:NIGHTMARE",
+        "name": "夜魇",
+        "deck_score": 54.3,
+        "rank": 4,
+        "fully_scored": false
+       }
+      ]
+     }
+    }
+   ],
+   "toolCalls": 5,
+   "repairs": 1,
+   "usage": {
+    "prompt_tokens": 30602,
+    "completion_tokens": 936,
+    "cost_usd": 0.00296556,
+    "llm_calls": 5
+   },
+   "finding": {
+    "decision_id": "F17-card",
+    "reasons": [
+     {
+      "factor": "deck_fitness:aoe",
+      "evidence": "T3",
+      "text": "引擎最看重群伤：拿回响斩击后每回合群伤 2.6 → 3.9，而需求是 12.2，牌组这块缺口最大。"
+     },
+     {
+      "factor": "deck_fitness:frontload",
+      "evidence": "T3",
+      "text": "前期输出也从每回合 11.9 升到 13.4（需求 35.5），是第二个加分点。"
+     },
+     {
+      "factor": "deck_fitness:lookahead",
+      "evidence": "T3",
+      "text": "引擎也算了后续 3 次选牌，这一项对回响斩击是 -0.36，是它唯一的明显拖累。"
+     }
+    ],
+    "what_if_evidence": "T5",
+    "what_if_text": "假设少一张打击，引擎仍首选回响斩击，差距反而扩大到 1.7，说明这不是打击数量的问题。",
+    "advice": "跳过只差 1.6 分，属于边缘取舍；若之后想补群伤，回响斩击这类牌是引擎更看重的方向。"
+   }
+  }
+ ],
+ "summary": {
+  "text": "这些决定都偏向短期输出而低估后续选牌的长期代价；照做的方向是：把后续 3 次选牌的质量纳入取舍，优先补群伤与前期输出。",
+  "source": "model",
+  "cost_usd": 0.0001788
+ },
+ "meta": {
+  "model": "deepseek-flash",
+  "cost_usd": 0.005748216,
+  "seconds": 9.711,
+  "generated_at": "2026-11-01 14:43"
+ }
+}

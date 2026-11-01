@@ -1,0 +1,3634 @@
+{
+ "run": "1773984305",
+ "set": "dev",
+ "model": "deepseek-flash",
+ "prompt_version": "p3",
+ "pre": {
+  "summary": {
+   "run_id": "1773984305",
+   "character": "DEFECT",
+   "ascension": 4,
+   "build_id": "v0.100.0",
+   "win": false,
+   "killed_by": "猫头鹰法官",
+   "acts_reached": 3,
+   "last_scored_floor": 33,
+   "final_deck_size": 22,
+   "decisions_scored": {
+    "card_reward": 14,
+    "shop": 3,
+    "rest": 6
+   },
+   "decisions_skipped": {
+    "no_boss": 7
+   },
+   "agreement": {
+    "agree": 13,
+    "judged": 23,
+    "rate": 0.565
+   },
+   "tier1": [
+    "F07-card",
+    "F06-card",
+    "F14-card",
+    "F03-card"
+   ],
+   "tier2": [
+    "F12-card",
+    "F24-card",
+    "F25-rest",
+    "F28-card",
+    "F30-card",
+    "F33-card"
+   ],
+   "warnings": [
+    "floor 21: 3 potions replayed for 2 slots",
+    "floor 32: 3 potions replayed for 2 slots",
+    "CRACKED_CORE left at floor 18; its arrival was not recorded, counted from the start"
+   ]
+  },
+  "decisions": {
+   "decisions": [
+    {
+     "id": "F02-card",
+     "kind": "card_reward",
+     "floor": 2,
+     "act": 1,
+     "chosen": "0:LIGHTNING_ROD",
+     "chosen_name": "引雷针",
+     "engine_top": "0:LIGHTNING_ROD",
+     "engine_top_name": "引雷针",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F03-card",
+     "kind": "card_reward",
+     "floor": 3,
+     "act": 1,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "1:LIGHTNING_ROD",
+     "engine_top_name": "引雷针",
+     "confidence": "medium",
+     "tier": 1,
+     "gap": 1.7,
+     "not_strict_because": []
+    },
+    {
+     "id": "F05-shop",
+     "kind": "shop",
+     "floor": 5,
+     "act": 1,
+     "chosen": "card:4:PANACHE",
+     "chosen_name": "神气制胜",
+     "engine_top": "card:4:PANACHE",
+     "engine_top_name": "神气制胜",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F06-card",
+     "kind": "card_reward",
+     "floor": 6,
+     "act": 1,
+     "chosen": "0:DOUBLE_ENERGY",
+     "chosen_name": "双倍能量",
+     "engine_top": "2:BOOST_AWAY",
+     "engine_top_name": "高速脱离",
+     "confidence": "medium",
+     "tier": 1,
+     "gap": 2.3,
+     "not_strict_because": []
+    },
+    {
+     "id": "F07-card",
+     "kind": "card_reward",
+     "floor": 7,
+     "act": 1,
+     "chosen": "0:ROCKET_PUNCH",
+     "chosen_name": "火箭飞拳",
+     "engine_top": "1:ICE_LANCE",
+     "engine_top_name": "冰之长枪",
+     "confidence": "medium",
+     "tier": 1,
+     "gap": 4.7,
+     "not_strict_because": []
+    },
+    {
+     "id": "F08-rest",
+     "kind": "rest",
+     "floor": 8,
+     "act": 1,
+     "chosen": "rest:HEAL",
+     "chosen_name": "休息",
+     "engine_top": "rest:HEAL",
+     "engine_top_name": "休息",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F12-card",
+     "kind": "card_reward",
+     "floor": 12,
+     "act": 1,
+     "chosen": "0:BOOST_AWAY",
+     "chosen_name": "高速脱离",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": -0.4,
+     "not_strict_because": [
+      "small_gap"
+     ]
+    },
+    {
+     "id": "F13-shop",
+     "kind": "shop",
+     "floor": 13,
+     "act": 1,
+     "chosen": "card:6:OVERCLOCK",
+     "chosen_name": "超频",
+     "engine_top": "card:6:OVERCLOCK",
+     "engine_top_name": "超频",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F14-card",
+     "kind": "card_reward",
+     "floor": 14,
+     "act": 1,
+     "chosen": "0:COMPACT",
+     "chosen_name": "压缩",
+     "engine_top": "2:FLAK_CANNON",
+     "engine_top_name": "散射炮",
+     "confidence": "medium",
+     "tier": 1,
+     "gap": 1.8,
+     "not_strict_because": []
+    },
+    {
+     "id": "F16-rest",
+     "kind": "rest",
+     "floor": 16,
+     "act": 1,
+     "chosen": "rest:HEAL",
+     "chosen_name": "休息",
+     "engine_top": "rest:HEAL",
+     "engine_top_name": "休息",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F17-card",
+     "kind": "card_reward",
+     "floor": 17,
+     "act": 1,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F19-card",
+     "kind": "card_reward",
+     "floor": 19,
+     "act": 2,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F20-card",
+     "kind": "card_reward",
+     "floor": 20,
+     "act": 2,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F23-rest",
+     "kind": "rest",
+     "floor": 23,
+     "act": 2,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F24-card",
+     "kind": "card_reward",
+     "floor": 24,
+     "act": 2,
+     "chosen": "0:SCAVENGE",
+     "chosen_name": "内存清理",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": 0.8,
+     "not_strict_because": [
+      "small_gap"
+     ]
+    },
+    {
+     "id": "F25-rest",
+     "kind": "rest",
+     "floor": 25,
+     "act": 2,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:HEAL",
+     "engine_top_name": "休息",
+     "confidence": "low",
+     "tier": 2,
+     "gap": 7.78,
+     "not_strict_because": [
+      "partly_scored",
+      "low_confidence"
+     ]
+    },
+    {
+     "id": "F27-card",
+     "kind": "card_reward",
+     "floor": 27,
+     "act": 2,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F28-card",
+     "kind": "card_reward",
+     "floor": 28,
+     "act": 2,
+     "chosen": "0:SMOKESTACK",
+     "chosen_name": "烟囱",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "low",
+     "tier": 2,
+     "gap": 0.8,
+     "not_strict_because": [
+      "partly_scored",
+      "low_confidence",
+      "small_gap"
+     ]
+    },
+    {
+     "id": "F29-rest",
+     "kind": "rest",
+     "floor": 29,
+     "act": 2,
+     "chosen": "rest:HEAL",
+     "chosen_name": "休息",
+     "engine_top": "rest:HEAL",
+     "engine_top_name": "休息",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F30-card",
+     "kind": "card_reward",
+     "floor": 30,
+     "act": 2,
+     "chosen": "0:DOUBLE_ENERGY",
+     "chosen_name": "双倍能量",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": 0.7,
+     "not_strict_because": [
+      "small_gap"
+     ]
+    },
+    {
+     "id": "F31-shop",
+     "kind": "shop",
+     "floor": 31,
+     "act": 2,
+     "chosen": "card:4:THUNDER",
+     "chosen_name": "雷霆",
+     "engine_top": "card:4:THUNDER",
+     "engine_top_name": "雷霆",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F32-rest",
+     "kind": "rest",
+     "floor": 32,
+     "act": 2,
+     "chosen": "rest:HEAL",
+     "chosen_name": "休息",
+     "engine_top": "rest:HEAL",
+     "engine_top_name": "休息",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F33-card",
+     "kind": "card_reward",
+     "floor": 33,
+     "act": 2,
+     "chosen": "0:FLAK_CANNON",
+     "chosen_name": "散射炮",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": -0.5,
+     "not_strict_because": [
+      "small_gap"
+     ]
+    }
+   ],
+   "skipped": [
+    {
+     "id": "F35-card",
+     "kind": "card_reward",
+     "floor": 35,
+     "reason": "no_boss"
+    },
+    {
+     "id": "F36-card",
+     "kind": "card_reward",
+     "floor": 36,
+     "reason": "no_boss"
+    },
+    {
+     "id": "F37-card",
+     "kind": "card_reward",
+     "floor": 37,
+     "reason": "no_boss"
+    },
+    {
+     "id": "F40-rest",
+     "kind": "rest",
+     "floor": 40,
+     "reason": "no_boss"
+    },
+    {
+     "id": "F43-rest",
+     "kind": "rest",
+     "floor": 43,
+     "reason": "no_boss"
+    },
+    {
+     "id": "F44-card",
+     "kind": "card_reward",
+     "floor": 44,
+     "reason": "no_boss"
+    },
+    {
+     "id": "F45-card",
+     "kind": "card_reward",
+     "floor": 45,
+     "reason": "no_boss"
+    }
+   ]
+  },
+  "flags": [
+   {
+    "id": "F07-card",
+    "kind": "card_reward",
+    "floor": 7,
+    "act": 1,
+    "hp": 20,
+    "max_hp": 75,
+    "gold": 355,
+    "engine_top": "1:ICE_LANCE",
+    "confidence": "medium",
+    "chosen": "0:ROCKET_PUNCH",
+    "tier": 1,
+    "gap": 4.7,
+    "pick_margin": 1,
+    "options": [
+     {
+      "id": "1:ICE_LANCE",
+      "kind": "card",
+      "entity_id": "ICE_LANCE",
+      "name": "冰之长枪",
+      "score": 54.8,
+      "deck_score": 54.8,
+      "rank": 1,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "deck_fitness:defense",
+        "delta": 7.76,
+        "message": "拿冰之长枪后防御：每回合 5.7 → 9.7（需求 7.4）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": -1.69,
+        "message": "拿冰之长枪后前期输出：每回合 27.9 → 24.4（需求 31.1）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 双重释放、趁势打击 让冰之长枪更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": -0.78,
+        "message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": -1.6886,
+       "survival": 7.7621,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 1
+      }
+     },
+     {
+      "id": "2:SWEEPING_BEAM",
+      "kind": "card",
+      "entity_id": "SWEEPING_BEAM",
+      "name": "扫荡射线",
+      "score": 51.2,
+      "deck_score": 51.2,
+      "rank": 2,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "deck_fitness:defense",
+        "delta": -2.73,
+        "message": "拿扫荡射线后防御：每回合 5.7 → 5.2（需求 7.4）"
+       },
+       {
+        "code": "deck_fitness:cycle",
+        "delta": 2.73,
+        "message": "拿扫荡射线后循环：每回合额外抽牌 0.00 → 0.28（需求 1.0）"
+       },
+       {
+        "code": "deck_fitness:aoe",
+        "delta": 1.55,
+        "message": "拿扫荡射线后群伤：每回合 0.0 → 2.0（需求 16.2）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": -0.27,
+        "message": "拿扫荡射线后前期输出：每回合 27.9 → 27.3（需求 31.1）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 电击 让扫荡射线更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": 0.42,
+        "message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 1.2809,
+       "survival": -2.7321,
+       "long_term_growth": 2.7312,
+       "resource_efficiency": 0,
+       "data_completeness": 1
+      }
+     },
+     {
+      "id": "skip",
+      "kind": "skip",
+      "entity_id": null,
+      "name": "跳过",
+      "score": 50.5,
+      "deck_score": 49.5,
+      "rank": 3,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": 0,
+        "message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "code": "deck_fitness:pick_margin",
+        "delta": 1,
+        "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0,
+       "survival": 0,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 1
+      }
+     },
+     {
+      "id": "0:ROCKET_PUNCH",
+      "kind": "card",
+      "entity_id": "ROCKET_PUNCH",
+      "name": "火箭飞拳",
+      "score": 50.1,
+      "deck_score": 50.1,
+      "rank": 4,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "deck_fitness:defense",
+        "delta": -3.23,
+        "message": "拿火箭飞拳后防御：每回合 5.7 → 5.0（需求 7.4）"
+       },
+       {
+        "code": "deck_fitness:cycle",
+        "delta": 2.63,
+        "message": "拿火箭飞拳后循环：每回合额外抽牌 0.00 → 0.27（需求 1.0）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": 0.2,
+        "message": "拿火箭飞拳后前期输出：每回合 27.9 → 28.3（需求 31.1）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 电击、双重释放 让火箭飞拳更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": 0.96,
+        "message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0.1974,
+       "survival": -3.2324,
+       "long_term_growth": 2.6265,
+       "resource_efficiency": 0,
+       "data_completeness": 1
+      }
+     }
+    ]
+   },
+   {
+    "id": "F06-card",
+    "kind": "card_reward",
+    "floor": 6,
+    "act": 1,
+    "hp": 57,
+    "max_hp": 75,
+    "gold": 344,
+    "engine_top": "2:BOOST_AWAY",
+    "confidence": "medium",
+    "chosen": "0:DOUBLE_ENERGY",
+    "tier": 1,
+    "gap": 2.3,
+    "pick_margin": 1,
+    "options": [
+     {
+      "id": "2:BOOST_AWAY",
+      "kind": "card",
+      "entity_id": "BOOST_AWAY",
+      "name": "高速脱离",
+      "score": 53,
+      "deck_score": 53,
+      "rank": 1,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "deck_fitness:defense",
+        "delta": 4.58,
+        "message": "拿高速脱离后防御：每回合 5.7 → 7.7（需求 7.2）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": -0.26,
+        "message": "拿高速脱离后前期输出：每回合 28.0 → 27.5（需求 29.3）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 双重释放、趁势打击 让高速脱离更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": -2.23,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": -0.2595,
+       "survival": 4.5809,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 1
+      }
+     },
+     {
+      "id": "skip",
+      "kind": "skip",
+      "entity_id": null,
+      "name": "跳过",
+      "score": 51.9,
+      "deck_score": 50.9,
+      "rank": 2,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": 0,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "code": "deck_fitness:pick_margin",
+        "delta": 1,
+        "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0,
+       "survival": 0,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 1
+      }
+     },
+     {
+      "id": "0:DOUBLE_ENERGY",
+      "kind": "card",
+      "entity_id": "DOUBLE_ENERGY",
+      "name": "双倍能量",
+      "score": 50.7,
+      "deck_score": 50.7,
+      "rank": 3,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "deck_fitness:frontload",
+        "delta": -0.14,
+        "message": "拿双倍能量后前期输出：每回合 28.0 → 27.7（需求 29.3）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": -0.06,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": -0.1429,
+       "survival": 0.0103,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 1
+      }
+     },
+     {
+      "id": "1:SUBROUTINE",
+      "kind": "card",
+      "entity_id": "SUBROUTINE",
+      "name": "子程序",
+      "score": 50.1,
+      "deck_score": 50.1,
+      "rank": 4,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "deck_fitness:defense",
+        "delta": -0.53,
+        "message": "拿子程序后防御：每回合 5.7 → 5.6（需求 7.2）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": -0.48,
+        "message": "拿子程序后前期输出：每回合 28.0 → 27.1（需求 29.3）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": 0.27,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": -0.4807,
+       "survival": -0.5281,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 1
+      }
+     }
+    ]
+   },
+   {
+    "id": "F14-card",
+    "kind": "card_reward",
+    "floor": 14,
+    "act": 1,
+    "hp": 11,
+    "max_hp": 85,
+    "gold": 174,
+    "engine_top": "2:FLAK_CANNON",
+    "confidence": "medium",
+    "chosen": "0:COMPACT",
+    "tier": 1,
+    "gap": 1.8,
+    "pick_margin": 1,
+    "options": [
+     {
+      "id": "2:FLAK_CANNON",
+      "kind": "card",
+      "entity_id": "FLAK_CANNON",
+      "name": "散射炮",
+      "score": 62.6,
+      "deck_score": 62.6,
+      "rank": 1,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 2 张牌未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 2 张牌（内核加速、超频）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": 1.86,
+        "message": "拿散射炮后前期输出：每回合 31.5 → 36.7（需求 43.9）"
+       },
+       {
+        "code": "deck_fitness:cycle",
+        "delta": -0.15,
+        "message": "拿散射炮后循环：每回合额外抽牌 1.24 → 1.10（需求 1.0）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 内核加速、高速脱离 让散射炮更有价值（说明，不另加分）"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 1.8452,
+       "survival": 0.0155,
+       "long_term_growth": -0.1458,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "skip",
+      "kind": "skip",
+      "entity_id": null,
+      "name": "跳过",
+      "score": 61.9,
+      "deck_score": 60.9,
+      "rank": 2,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 2 张牌未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 2 张牌（内核加速、超频）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:pick_margin",
+        "delta": 1,
+        "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0,
+       "survival": 0,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "1:CHARGE_BATTERY",
+      "kind": "card",
+      "entity_id": "CHARGE_BATTERY",
+      "name": "充电",
+      "score": 60.9,
+      "deck_score": 60.9,
+      "rank": 3,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 2 张牌未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 2 张牌（内核加速、超频）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": 0.87,
+        "message": "拿充电后防御：每回合 9.7 → 11.2（需求 7.8）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": -0.66,
+        "message": "拿充电后前期输出：每回合 31.5 → 29.7（需求 43.9）"
+       },
+       {
+        "code": "deck_fitness:cycle",
+        "delta": -0.09,
+        "message": "拿充电后循环：每回合额外抽牌 1.24 → 1.15（需求 1.0）"
+       },
+       {
+        "code": "deck_fitness:aoe",
+        "delta": -0.08,
+        "message": "拿充电后群伤：每回合 3.8 → 3.6（需求 29.2）"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": -0.746,
+       "survival": 0.865,
+       "long_term_growth": -0.0942,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "0:COMPACT",
+      "kind": "card",
+      "entity_id": "COMPACT",
+      "name": "压缩",
+      "score": 60.8,
+      "deck_score": 60.8,
+      "rank": 4,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 2 张牌未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 2 张牌（内核加速、超频）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": 0.72,
+        "message": "拿压缩后防御：每回合 9.7 → 11.0（需求 7.8）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": -0.66,
+        "message": "拿压缩后前期输出：每回合 31.5 → 29.7（需求 43.9）"
+       },
+       {
+        "code": "deck_fitness:cycle",
+        "delta": -0.09,
+        "message": "拿压缩后循环：每回合额外抽牌 1.24 → 1.15（需求 1.0）"
+       },
+       {
+        "code": "deck_fitness:aoe",
+        "delta": -0.08,
+        "message": "拿压缩后群伤：每回合 3.8 → 3.6（需求 29.2）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 内核加速 让压缩更有价值（说明，不另加分）"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": -0.746,
+       "survival": 0.7181,
+       "long_term_growth": -0.0942,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     }
+    ]
+   },
+   {
+    "id": "F03-card",
+    "kind": "card_reward",
+    "floor": 3,
+    "act": 1,
+    "hp": 57,
+    "max_hp": 75,
+    "gold": 458,
+    "engine_top": "1:LIGHTNING_ROD",
+    "confidence": "medium",
+    "chosen": "skip",
+    "tier": 1,
+    "gap": 1.7,
+    "pick_margin": 1,
+    "options": [
+     {
+      "id": "1:LIGHTNING_ROD",
+      "kind": "card",
+      "entity_id": "LIGHTNING_ROD",
+      "name": "引雷针",
+      "score": 52.3,
+      "deck_score": 52.3,
+      "rank": 1,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "deck_fitness:frontload",
+        "delta": 2.1,
+        "message": "拿引雷针后前期输出：每回合 20.8 → 24.1（需求 27.1）"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": 1.62,
+        "message": "拿引雷针后防御：每回合 6.3 → 6.8（需求 6.8）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 双重释放、电击 让引雷针更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": -1.99,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 2.1006,
+       "survival": 1.6192,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 1
+      }
+     },
+     {
+      "id": "skip",
+      "kind": "skip",
+      "entity_id": null,
+      "name": "跳过",
+      "score": 51.6,
+      "deck_score": 50.6,
+      "rank": 2,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": 0,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "code": "deck_fitness:pick_margin",
+        "delta": 1,
+        "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0,
+       "survival": 0,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 1
+      }
+     },
+     {
+      "id": "2:HAILSTORM",
+      "kind": "card",
+      "entity_id": "HAILSTORM",
+      "name": "冰雹风暴",
+      "score": 49.2,
+      "deck_score": 49.2,
+      "rank": 3,
+      "eligible": true,
+      "fully_scored": false,
+      "gaps": [
+       "power_mechanic_unsupported:HAILSTORM:condition:frost_orbs_at_least"
+      ],
+      "factors": [
+       {
+        "code": "unmodeled_mechanic",
+        "delta": 0,
+        "message": "冰雹风暴的部分效果尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -1.2,
+        "message": "拿冰雹风暴后防御：每回合 6.3 → 6.0（需求 6.8）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": -0.57,
+        "message": "拿冰雹风暴后前期输出：每回合 20.8 → 20.0（需求 27.1）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 引雷针 让冰雹风暴更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": 0.43,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": -0.5711,
+       "survival": -1.1996,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "0:CHAOS",
+      "kind": "card",
+      "entity_id": "CHAOS",
+      "name": "混沌",
+      "score": 48.1,
+      "deck_score": 48.1,
+      "rank": 4,
+      "eligible": true,
+      "fully_scored": false,
+      "gaps": [
+       "card_effect_unsupported:CHAOS:orb:random"
+      ],
+      "factors": [
+       {
+        "code": "unmodeled_mechanic",
+        "delta": 0,
+        "message": "混沌的部分效果尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -2.45,
+        "message": "拿混沌后防御：每回合 6.3 → 5.8（需求 6.8）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": -1.11,
+        "message": "拿混沌后前期输出：每回合 20.8 → 19.2（需求 27.1）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 引雷针 让混沌更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": 1.12,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": -1.1087,
+       "survival": -2.4495,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "explained": [
+  {
+   "flag": "F07-card",
+   "status": "verified",
+   "errors": [],
+   "evidence": [
+    {
+     "id": "T0",
+     "tool": "get_decision",
+     "result": {
+      "id": "F07-card",
+      "kind": "card_reward",
+      "floor": 7,
+      "act": 1,
+      "hp": 20,
+      "max_hp": 75,
+      "gold": 355,
+      "engine_top": "1:ICE_LANCE",
+      "confidence": "medium",
+      "chosen": "0:ROCKET_PUNCH",
+      "tier": 1,
+      "gap": 4.7,
+      "pick_margin": 1,
+      "options": [
+       {
+        "id": "1:ICE_LANCE",
+        "kind": "card",
+        "entity_id": "ICE_LANCE",
+        "name": "冰之长枪",
+        "score": 54.8,
+        "deck_score": 54.8,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:defense",
+          "delta": 7.76,
+          "message": "拿冰之长枪后防御：每回合 5.7 → 9.7（需求 7.4）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -1.69,
+          "message": "拿冰之长枪后前期输出：每回合 27.9 → 24.4（需求 31.1）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 双重释放、趁势打击 让冰之长枪更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.78,
+          "message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       },
+       {
+        "id": "2:SWEEPING_BEAM",
+        "kind": "card",
+        "entity_id": "SWEEPING_BEAM",
+        "name": "扫荡射线",
+        "score": 51.2,
+        "deck_score": 51.2,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:defense",
+          "delta": -2.73,
+          "message": "拿扫荡射线后防御：每回合 5.7 → 5.2（需求 7.4）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": 2.73,
+          "message": "拿扫荡射线后循环：每回合额外抽牌 0.00 → 0.28（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": 1.55,
+          "message": "拿扫荡射线后群伤：每回合 0.0 → 2.0（需求 16.2）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.27,
+          "message": "拿扫荡射线后前期输出：每回合 27.9 → 27.3（需求 31.1）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 电击 让扫荡射线更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0.42,
+          "message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       },
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 50.5,
+        "deck_score": 49.5,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0,
+          "message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 1,
+          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ]
+       },
+       {
+        "id": "0:ROCKET_PUNCH",
+        "kind": "card",
+        "entity_id": "ROCKET_PUNCH",
+        "name": "火箭飞拳",
+        "score": 50.1,
+        "deck_score": 50.1,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:defense",
+          "delta": -3.23,
+          "message": "拿火箭飞拳后防御：每回合 5.7 → 5.0（需求 7.4）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": 2.63,
+          "message": "拿火箭飞拳后循环：每回合额外抽牌 0.00 → 0.27（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.2,
+          "message": "拿火箭飞拳后前期输出：每回合 27.9 → 28.3（需求 31.1）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 电击、双重释放 让火箭飞拳更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0.96,
+          "message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "id": "T1",
+     "tool": "get_decision",
+     "result": {
+      "id": "F07-card",
+      "kind": "card_reward",
+      "floor": 7,
+      "act": 1,
+      "hp": 20,
+      "max_hp": 75,
+      "gold": 355,
+      "engine_top": "1:ICE_LANCE",
+      "confidence": "medium",
+      "policy_status": "recommend",
+      "pick_margin": 1,
+      "options": [
+       {
+        "id": "1:ICE_LANCE",
+        "kind": "card",
+        "entity_id": "ICE_LANCE",
+        "name": "冰之长枪",
+        "score": 54.8,
+        "deck_score": 54.8,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:defense",
+          "delta": 7.76,
+          "message": "拿冰之长枪后防御：每回合 5.7 → 9.7（需求 7.4）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -1.69,
+          "message": "拿冰之长枪后前期输出：每回合 27.9 → 24.4（需求 31.1）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 双重释放、趁势打击 让冰之长枪更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.78,
+          "message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": -1.6886,
+         "survival": 7.7621,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "data_completeness": 1
+        }
+       },
+       {
+        "id": "2:SWEEPING_BEAM",
+        "kind": "card",
+        "entity_id": "SWEEPING_BEAM",
+        "name": "扫荡射线",
+        "score": 51.2,
+        "deck_score": 51.2,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:defense",
+          "delta": -2.73,
+          "message": "拿扫荡射线后防御：每回合 5.7 → 5.2（需求 7.4）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": 2.73,
+          "message": "拿扫荡射线后循环：每回合额外抽牌 0.00 → 0.28（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": 1.55,
+          "message": "拿扫荡射线后群伤：每回合 0.0 → 2.0（需求 16.2）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.27,
+          "message": "拿扫荡射线后前期输出：每回合 27.9 → 27.3（需求 31.1）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 电击 让扫荡射线更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0.42,
+          "message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 1.2809,
+         "survival": -2.7321,
+         "long_term_growth": 2.7312,
+         "resource_efficiency": 0,
+         "data_completeness": 1
+        }
+       },
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 50.5,
+        "deck_score": 49.5,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0,
+          "message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 1,
+          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0,
+         "survival": 0,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "data_completeness": 1
+        }
+       },
+       {
+        "id": "0:ROCKET_PUNCH",
+        "kind": "card",
+        "entity_id": "ROCKET_PUNCH",
+        "name": "火箭飞拳",
+        "score": 50.1,
+        "deck_score": 50.1,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:defense",
+          "delta": -3.23,
+          "message": "拿火箭飞拳后防御：每回合 5.7 → 5.0（需求 7.4）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": 2.63,
+          "message": "拿火箭飞拳后循环：每回合额外抽牌 0.00 → 0.27（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.2,
+          "message": "拿火箭飞拳后前期输出：每回合 27.9 → 28.3（需求 31.1）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 电击、双重释放 让火箭飞拳更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0.96,
+          "message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0.1974,
+         "survival": -3.2324,
+         "long_term_growth": 2.6265,
+         "resource_efficiency": 0,
+         "data_completeness": 1
+        }
+       }
+      ],
+      "chosen": "0:ROCKET_PUNCH",
+      "tier": 1,
+      "gap": 4.7,
+      "not_strict_because": []
+     }
+    },
+    {
+     "id": "T2",
+     "tool": "compare_options",
+     "result": {
+      "decision_id": "F07-card",
+      "a": {
+       "id": "1:ICE_LANCE",
+       "name": "冰之长枪",
+       "deck_score": 54.8,
+       "fully_scored": true
+      },
+      "b": {
+       "id": "0:ROCKET_PUNCH",
+       "name": "火箭飞拳",
+       "deck_score": 50.1,
+       "fully_scored": true
+      },
+      "deck_score_difference": 4.7,
+      "factors": [
+       {
+        "factor": "deck_fitness:defense",
+        "a": 7.76,
+        "b": -3.23,
+        "difference": 10.99,
+        "a_message": "拿冰之长枪后防御：每回合 5.7 → 9.7（需求 7.4）",
+        "b_message": "拿火箭飞拳后防御：每回合 5.7 → 5.0（需求 7.4）"
+       },
+       {
+        "factor": "deck_fitness:cycle",
+        "a": 0,
+        "b": 2.63,
+        "difference": -2.63,
+        "a_message": null,
+        "b_message": "拿火箭飞拳后循环：每回合额外抽牌 0.00 → 0.27（需求 1.0）"
+       },
+       {
+        "factor": "deck_fitness:frontload",
+        "a": -1.69,
+        "b": 0.2,
+        "difference": -1.89,
+        "a_message": "拿冰之长枪后前期输出：每回合 27.9 → 24.4（需求 31.1）",
+        "b_message": "拿火箭飞拳后前期输出：每回合 27.9 → 28.3（需求 31.1）"
+       },
+       {
+        "factor": "deck_fitness:lookahead",
+        "a": -0.78,
+        "b": 0.96,
+        "difference": -1.74,
+        "a_message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度",
+        "b_message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "factor": "deck_fitness:synergy",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组里的 双重释放、趁势打击 让冰之长枪更有价值（说明，不另加分）",
+        "b_message": "牌组里的 电击、双重释放 让火箭飞拳更有价值（说明，不另加分）"
+       }
+      ],
+      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
+     }
+    },
+    {
+     "id": "T3",
+     "tool": "get_deck",
+     "result": {
+      "decision_id": "F07-card",
+      "floor": 7,
+      "act": 1,
+      "hp": 20,
+      "max_hp": 75,
+      "gold": 355,
+      "deck_size": 13,
+      "deck": [
+       {
+        "card": "DEFEND_DEFECT",
+        "name": "防御",
+        "upgrades": 0,
+        "count": 3
+       },
+       {
+        "card": "DOUBLE_ENERGY",
+        "name": "双倍能量",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "DUALCAST",
+        "name": "双重释放",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "GREED",
+        "name": "贪婪",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "LIGHTNING_ROD",
+        "name": "引雷针",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "MOMENTUM_STRIKE",
+        "name": "趁势打击",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "STRIKE_DEFECT",
+        "name": "打击",
+        "upgrades": 0,
+        "count": 4
+       },
+       {
+        "card": "ZAP",
+        "name": "电击",
+        "upgrades": 1,
+        "count": 1
+       }
+      ],
+      "relics": [
+       {
+        "relic": "CURSED_PEARL",
+        "name": "诅咒珍珠"
+       },
+       {
+        "relic": "CRACKED_CORE",
+        "name": "破损核心"
+       }
+      ],
+      "potions": []
+     }
+    },
+    {
+     "id": "T4",
+     "tool": "what_if_choices",
+     "result": {
+      "remove": [
+       "DEFEND_DEFECT",
+       "DOUBLE_ENERGY",
+       "DUALCAST",
+       "GREED",
+       "LIGHTNING_ROD",
+       "MOMENTUM_STRIKE",
+       "STRIKE_DEFECT",
+       "ZAP"
+      ],
+      "upgrade": [
+       "DEFEND_DEFECT",
+       "DOUBLE_ENERGY",
+       "DUALCAST",
+       "LIGHTNING_ROD",
+       "MOMENTUM_STRIKE",
+       "STRIKE_DEFECT"
+      ],
+      "add": [
+       {
+        "card": "BOOST_AWAY",
+        "name": "高速脱离"
+       },
+       {
+        "card": "BOOT_SEQUENCE",
+        "name": "启动流程"
+       },
+       {
+        "card": "CAPACITOR",
+        "name": "扩容"
+       },
+       {
+        "card": "CHAOS",
+        "name": "混沌"
+       },
+       {
+        "card": "CLAW",
+        "name": "爪击"
+       },
+       {
+        "card": "DOUBLE_ENERGY",
+        "name": "双倍能量"
+       },
+       {
+        "card": "GUNK_UP",
+        "name": "污秽攻击"
+       },
+       {
+        "card": "HAILSTORM",
+        "name": "冰雹风暴"
+       },
+       {
+        "card": "HOTFIX",
+        "name": "热修复"
+       },
+       {
+        "card": "LIGHTNING_ROD",
+        "name": "引雷针"
+       },
+       {
+        "card": "PANACHE",
+        "name": "神气制胜"
+       },
+       {
+        "card": "SALVO",
+        "name": "箭雨"
+       },
+       {
+        "card": "SUBROUTINE",
+        "name": "子程序"
+       },
+       {
+        "card": "SYNCHRONIZE",
+        "name": "同步"
+       }
+      ]
+     }
+    },
+    {
+     "id": "T5",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F07-card",
+      "changes": [
+       {
+        "operation": "add",
+        "card": "HAILSTORM",
+        "name": "冰雹风暴"
+       }
+      ],
+      "engine_top_before": "1:ICE_LANCE",
+      "engine_top_after": "1:ICE_LANCE",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 5.9,
+      "options_after": [
+       {
+        "id": "1:ICE_LANCE",
+        "name": "冰之长枪",
+        "deck_score": 54,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "2:SWEEPING_BEAM",
+        "name": "扫荡射线",
+        "deck_score": 48.9,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "0:ROCKET_PUNCH",
+        "name": "火箭飞拳",
+        "deck_score": 48.1,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 47,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    }
+   ],
+   "toolCalls": 5,
+   "repairs": 0,
+   "usage": {
+    "prompt_tokens": 18765,
+    "completion_tokens": 652,
+    "cost_usd": 0.002121852,
+    "llm_calls": 4
+   },
+   "finding": {
+    "decision_id": "F07-card",
+    "reasons": [
+     {
+      "factor": "deck_fitness:defense",
+      "evidence": "T2",
+      "text": "差距最大的是防御：拿冰之长枪后每回合 5.7 → 9.7，已超过需求 7.4；拿火箭飞拳则降到 5.0，离需求更远。"
+     },
+     {
+      "factor": "deck_fitness:cycle",
+      "evidence": "T2",
+      "text": "火箭飞拳的长处是循环：每回合额外抽牌 0.00 → 0.27，但需求是 1.0，补得有限。"
+     },
+     {
+      "factor": "deck_fitness:frontload",
+      "evidence": "T2",
+      "text": "前期输出两边都不够：冰之长枪 27.9 → 24.4，火箭飞拳 27.9 → 28.3，需求 31.1，火箭飞拳略好但没解决问题。"
+     }
+    ],
+    "what_if_evidence": "T5",
+    "what_if_text": "假设之前拿过冰雹风暴，引擎仍首选冰之长枪，差距反而拉大到 5.9，说明这不是某张牌缺失造成的。",
+    "advice": "当前血量 20/75、防御每回合只有 5.7，下次遇到冰系防御牌可以优先考虑，先把每回合防御拉到 7.4 以上。"
+   }
+  },
+  {
+   "flag": "F06-card",
+   "status": "verified",
+   "errors": [],
+   "evidence": [
+    {
+     "id": "T0",
+     "tool": "get_decision",
+     "result": {
+      "id": "F06-card",
+      "kind": "card_reward",
+      "floor": 6,
+      "act": 1,
+      "hp": 57,
+      "max_hp": 75,
+      "gold": 344,
+      "engine_top": "2:BOOST_AWAY",
+      "confidence": "medium",
+      "chosen": "0:DOUBLE_ENERGY",
+      "tier": 1,
+      "gap": 2.3,
+      "pick_margin": 1,
+      "options": [
+       {
+        "id": "2:BOOST_AWAY",
+        "kind": "card",
+        "entity_id": "BOOST_AWAY",
+        "name": "高速脱离",
+        "score": 53,
+        "deck_score": 53,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:defense",
+          "delta": 4.58,
+          "message": "拿高速脱离后防御：每回合 5.7 → 7.7（需求 7.2）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.26,
+          "message": "拿高速脱离后前期输出：每回合 28.0 → 27.5（需求 29.3）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 双重释放、趁势打击 让高速脱离更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -2.23,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       },
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 51.9,
+        "deck_score": 50.9,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 1,
+          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ]
+       },
+       {
+        "id": "0:DOUBLE_ENERGY",
+        "kind": "card",
+        "entity_id": "DOUBLE_ENERGY",
+        "name": "双倍能量",
+        "score": 50.7,
+        "deck_score": 50.7,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.14,
+          "message": "拿双倍能量后前期输出：每回合 28.0 → 27.7（需求 29.3）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.06,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       },
+       {
+        "id": "1:SUBROUTINE",
+        "kind": "card",
+        "entity_id": "SUBROUTINE",
+        "name": "子程序",
+        "score": 50.1,
+        "deck_score": 50.1,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.53,
+          "message": "拿子程序后防御：每回合 5.7 → 5.6（需求 7.2）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.48,
+          "message": "拿子程序后前期输出：每回合 28.0 → 27.1（需求 29.3）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0.27,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "id": "T1",
+     "tool": "get_decision",
+     "result": {
+      "id": "F06-card",
+      "kind": "card_reward",
+      "floor": 6,
+      "act": 1,
+      "hp": 57,
+      "max_hp": 75,
+      "gold": 344,
+      "engine_top": "2:BOOST_AWAY",
+      "confidence": "medium",
+      "policy_status": "recommend",
+      "pick_margin": 1,
+      "options": [
+       {
+        "id": "2:BOOST_AWAY",
+        "kind": "card",
+        "entity_id": "BOOST_AWAY",
+        "name": "高速脱离",
+        "score": 53,
+        "deck_score": 53,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:defense",
+          "delta": 4.58,
+          "message": "拿高速脱离后防御：每回合 5.7 → 7.7（需求 7.2）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.26,
+          "message": "拿高速脱离后前期输出：每回合 28.0 → 27.5（需求 29.3）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 双重释放、趁势打击 让高速脱离更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -2.23,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": -0.2595,
+         "survival": 4.5809,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "data_completeness": 1
+        }
+       },
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 51.9,
+        "deck_score": 50.9,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 1,
+          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0,
+         "survival": 0,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "data_completeness": 1
+        }
+       },
+       {
+        "id": "0:DOUBLE_ENERGY",
+        "kind": "card",
+        "entity_id": "DOUBLE_ENERGY",
+        "name": "双倍能量",
+        "score": 50.7,
+        "deck_score": 50.7,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.14,
+          "message": "拿双倍能量后前期输出：每回合 28.0 → 27.7（需求 29.3）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.06,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": -0.1429,
+         "survival": 0.0103,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "data_completeness": 1
+        }
+       },
+       {
+        "id": "1:SUBROUTINE",
+        "kind": "card",
+        "entity_id": "SUBROUTINE",
+        "name": "子程序",
+        "score": 50.1,
+        "deck_score": 50.1,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.53,
+          "message": "拿子程序后防御：每回合 5.7 → 5.6（需求 7.2）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.48,
+          "message": "拿子程序后前期输出：每回合 28.0 → 27.1（需求 29.3）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0.27,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": -0.4807,
+         "survival": -0.5281,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "data_completeness": 1
+        }
+       }
+      ],
+      "chosen": "0:DOUBLE_ENERGY",
+      "tier": 1,
+      "gap": 2.3,
+      "not_strict_because": []
+     }
+    },
+    {
+     "id": "T2",
+     "tool": "get_deck",
+     "result": {
+      "decision_id": "F06-card",
+      "floor": 6,
+      "act": 1,
+      "hp": 57,
+      "max_hp": 75,
+      "gold": 344,
+      "deck_size": 12,
+      "deck": [
+       {
+        "card": "DEFEND_DEFECT",
+        "name": "防御",
+        "upgrades": 0,
+        "count": 3
+       },
+       {
+        "card": "DUALCAST",
+        "name": "双重释放",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "GREED",
+        "name": "贪婪",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "LIGHTNING_ROD",
+        "name": "引雷针",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "MOMENTUM_STRIKE",
+        "name": "趁势打击",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "STRIKE_DEFECT",
+        "name": "打击",
+        "upgrades": 0,
+        "count": 4
+       },
+       {
+        "card": "ZAP",
+        "name": "电击",
+        "upgrades": 1,
+        "count": 1
+       }
+      ],
+      "relics": [
+       {
+        "relic": "CURSED_PEARL",
+        "name": "诅咒珍珠"
+       },
+       {
+        "relic": "CRACKED_CORE",
+        "name": "破损核心"
+       }
+      ],
+      "potions": []
+     }
+    },
+    {
+     "id": "T3",
+     "tool": "compare_options",
+     "result": {
+      "decision_id": "F06-card",
+      "a": {
+       "id": "2:BOOST_AWAY",
+       "name": "高速脱离",
+       "deck_score": 53,
+       "fully_scored": true
+      },
+      "b": {
+       "id": "0:DOUBLE_ENERGY",
+       "name": "双倍能量",
+       "deck_score": 50.7,
+       "fully_scored": true
+      },
+      "deck_score_difference": 2.3,
+      "factors": [
+       {
+        "factor": "deck_fitness:defense",
+        "a": 4.58,
+        "b": 0,
+        "difference": 4.58,
+        "a_message": "拿高速脱离后防御：每回合 5.7 → 7.7（需求 7.2）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:lookahead",
+        "a": -2.23,
+        "b": -0.06,
+        "difference": -2.17,
+        "a_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度",
+        "b_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "factor": "deck_fitness:frontload",
+        "a": -0.26,
+        "b": -0.14,
+        "difference": -0.12,
+        "a_message": "拿高速脱离后前期输出：每回合 28.0 → 27.5（需求 29.3）",
+        "b_message": "拿双倍能量后前期输出：每回合 28.0 → 27.7（需求 29.3）"
+       },
+       {
+        "factor": "deck_fitness:synergy",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组里的 双重释放、趁势打击 让高速脱离更有价值（说明，不另加分）",
+        "b_message": null
+       }
+      ],
+      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
+     }
+    },
+    {
+     "id": "T4",
+     "tool": "get_card",
+     "result": {
+      "id": "BOOST_AWAY",
+      "name": "高速脱离",
+      "description": "获得6点格挡。\n将一张晕眩添加到你的弃牌堆中。",
+      "cost": 0,
+      "type": "技能",
+      "rarity": "普通",
+      "color": "defect",
+      "target": "Self",
+      "block": 6,
+      "upgrade_description": "获得9点格挡。\n将一张晕眩添加到你的弃牌堆中。"
+     }
+    },
+    {
+     "id": "T5",
+     "tool": "what_if_choices",
+     "result": {
+      "remove": [
+       "DEFEND_DEFECT",
+       "DUALCAST",
+       "GREED",
+       "LIGHTNING_ROD",
+       "MOMENTUM_STRIKE",
+       "STRIKE_DEFECT",
+       "ZAP"
+      ],
+      "upgrade": [
+       "DEFEND_DEFECT",
+       "DUALCAST",
+       "LIGHTNING_ROD",
+       "MOMENTUM_STRIKE",
+       "STRIKE_DEFECT"
+      ],
+      "add": [
+       {
+        "card": "BOOT_SEQUENCE",
+        "name": "启动流程"
+       },
+       {
+        "card": "CAPACITOR",
+        "name": "扩容"
+       },
+       {
+        "card": "CHAOS",
+        "name": "混沌"
+       },
+       {
+        "card": "CLAW",
+        "name": "爪击"
+       },
+       {
+        "card": "GUNK_UP",
+        "name": "污秽攻击"
+       },
+       {
+        "card": "HAILSTORM",
+        "name": "冰雹风暴"
+       },
+       {
+        "card": "HOTFIX",
+        "name": "热修复"
+       },
+       {
+        "card": "LIGHTNING_ROD",
+        "name": "引雷针"
+       },
+       {
+        "card": "PANACHE",
+        "name": "神气制胜"
+       },
+       {
+        "card": "SALVO",
+        "name": "箭雨"
+       },
+       {
+        "card": "SYNCHRONIZE",
+        "name": "同步"
+       }
+      ]
+     }
+    },
+    {
+     "id": "T6",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F06-card",
+      "changes": [
+       {
+        "operation": "add",
+        "card": "HAILSTORM",
+        "name": "冰雹风暴"
+       }
+      ],
+      "engine_top_before": "2:BOOST_AWAY",
+      "engine_top_after": "2:BOOST_AWAY",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 2.7,
+      "options_after": [
+       {
+        "id": "2:BOOST_AWAY",
+        "name": "高速脱离",
+        "deck_score": 52.1,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 49.7,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "0:DOUBLE_ENERGY",
+        "name": "双倍能量",
+        "deck_score": 49.4,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "1:SUBROUTINE",
+        "name": "子程序",
+        "deck_score": 49.3,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    }
+   ],
+   "toolCalls": 6,
+   "repairs": 0,
+   "usage": {
+    "prompt_tokens": 20157,
+    "completion_tokens": 665,
+    "cost_usd": 0.002931372,
+    "llm_calls": 5
+   },
+   "finding": {
+    "decision_id": "F06-card",
+    "reasons": [
+     {
+      "factor": "deck_fitness:defense",
+      "evidence": "T3",
+      "text": "差距最大的是防御：拿高速脱离后每回合格挡 5.7 → 7.7，正好越过 7.2 的需求；双倍能量对防御没有提升。"
+     },
+     {
+      "factor": "deck_fitness:lookahead",
+      "evidence": "T3",
+      "text": "往后看三次选牌，高速脱离的长期适合度反而低 2.17，这是它唯一的明显代价。"
+     },
+     {
+      "factor": "deck_fitness:frontload",
+      "evidence": "T3",
+      "text": "前期输出两边都略降：高速脱离 28.0 → 27.5，双倍能量 28.0 → 27.7，都低于 29.3 的需求。"
+     }
+    ],
+    "what_if_evidence": "T6",
+    "what_if_text": "即使先加一张冰雹风暴，引擎仍选高速脱离，差距还扩大到 2.7，说明这次分歧不取决于某张前置牌。",
+    "advice": "第 1 幕格挡只有 5.7、需求 7.2 时，优先补防御牌；双倍能量这类能量牌更适合已有足够格挡后再拿。"
+   }
+  },
+  {
+   "flag": "F14-card",
+   "status": "verified",
+   "errors": [
+    "reasons[2]: deck_fitness:cycle is not one of the largest differences here (deck_fitness:frontload, deck_fitness:defense, deck_fitness:aoe)"
+   ],
+   "evidence": [
+    {
+     "id": "T0",
+     "tool": "get_decision",
+     "result": {
+      "id": "F14-card",
+      "kind": "card_reward",
+      "floor": 14,
+      "act": 1,
+      "hp": 11,
+      "max_hp": 85,
+      "gold": 174,
+      "engine_top": "2:FLAK_CANNON",
+      "confidence": "medium",
+      "chosen": "0:COMPACT",
+      "tier": 1,
+      "gap": 1.8,
+      "pick_margin": 1,
+      "options": [
+       {
+        "id": "2:FLAK_CANNON",
+        "kind": "card",
+        "entity_id": "FLAK_CANNON",
+        "name": "散射炮",
+        "score": 62.6,
+        "deck_score": 62.6,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 2 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 2 张牌（内核加速、超频）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 1.86,
+          "message": "拿散射炮后前期输出：每回合 31.5 → 36.7（需求 43.9）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.15,
+          "message": "拿散射炮后循环：每回合额外抽牌 1.24 → 1.10（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 内核加速、高速脱离 让散射炮更有价值（说明，不另加分）"
+         }
+        ]
+       },
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 61.9,
+        "deck_score": 60.9,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 2 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 2 张牌（内核加速、超频）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 1,
+          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ]
+       },
+       {
+        "id": "1:CHARGE_BATTERY",
+        "kind": "card",
+        "entity_id": "CHARGE_BATTERY",
+        "name": "充电",
+        "score": 60.9,
+        "deck_score": 60.9,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 2 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 2 张牌（内核加速、超频）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": 0.87,
+          "message": "拿充电后防御：每回合 9.7 → 11.2（需求 7.8）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.66,
+          "message": "拿充电后前期输出：每回合 31.5 → 29.7（需求 43.9）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.09,
+          "message": "拿充电后循环：每回合额外抽牌 1.24 → 1.15（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": -0.08,
+          "message": "拿充电后群伤：每回合 3.8 → 3.6（需求 29.2）"
+         }
+        ]
+       },
+       {
+        "id": "0:COMPACT",
+        "kind": "card",
+        "entity_id": "COMPACT",
+        "name": "压缩",
+        "score": 60.8,
+        "deck_score": 60.8,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 2 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 2 张牌（内核加速、超频）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": 0.72,
+          "message": "拿压缩后防御：每回合 9.7 → 11.0（需求 7.8）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.66,
+          "message": "拿压缩后前期输出：每回合 31.5 → 29.7（需求 43.9）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.09,
+          "message": "拿压缩后循环：每回合额外抽牌 1.24 → 1.15（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": -0.08,
+          "message": "拿压缩后群伤：每回合 3.8 → 3.6（需求 29.2）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 内核加速 让压缩更有价值（说明，不另加分）"
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "id": "T1",
+     "tool": "compare_options",
+     "result": {
+      "decision_id": "F14-card",
+      "a": {
+       "id": "2:FLAK_CANNON",
+       "name": "散射炮",
+       "deck_score": 62.6,
+       "fully_scored": true
+      },
+      "b": {
+       "id": "0:COMPACT",
+       "name": "压缩",
+       "deck_score": 60.8,
+       "fully_scored": true
+      },
+      "deck_score_difference": 1.8,
+      "factors": [
+       {
+        "factor": "deck_fitness:frontload",
+        "a": 1.86,
+        "b": -0.66,
+        "difference": 2.52,
+        "a_message": "拿散射炮后前期输出：每回合 31.5 → 36.7（需求 43.9）",
+        "b_message": "拿压缩后前期输出：每回合 31.5 → 29.7（需求 43.9）"
+       },
+       {
+        "factor": "deck_fitness:defense",
+        "a": 0,
+        "b": 0.72,
+        "difference": -0.72,
+        "a_message": null,
+        "b_message": "拿压缩后防御：每回合 9.7 → 11.0（需求 7.8）"
+       },
+       {
+        "factor": "deck_fitness:aoe",
+        "a": 0,
+        "b": -0.08,
+        "difference": 0.08,
+        "a_message": null,
+        "b_message": "拿压缩后群伤：每回合 3.8 → 3.6（需求 29.2）"
+       },
+       {
+        "factor": "deck_fitness:cycle",
+        "a": -0.15,
+        "b": -0.09,
+        "difference": -0.06,
+        "a_message": "拿散射炮后循环：每回合额外抽牌 1.24 → 1.10（需求 1.0）",
+        "b_message": "拿压缩后循环：每回合额外抽牌 1.24 → 1.15（需求 1.0）"
+       },
+       {
+        "factor": "deck_fitness:synergy",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组里的 内核加速、高速脱离 让散射炮更有价值（说明，不另加分）",
+        "b_message": "牌组里的 内核加速 让压缩更有价值（说明，不另加分）"
+       },
+       {
+        "factor": "estimate_scope",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 2 张牌未完整计入评分，分数只反映已计入的部分。",
+        "b_message": "牌组中 2 张牌未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "factor": "partially_modeled_deck_cards",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 2 张牌（内核加速、超频）有部分效果尚未计入评分。",
+        "b_message": "牌组中 2 张牌（内核加速、超频）有部分效果尚未计入评分。"
+       }
+      ],
+      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
+     }
+    },
+    {
+     "id": "T2",
+     "tool": "get_deck",
+     "result": {
+      "decision_id": "F14-card",
+      "floor": 14,
+      "act": 1,
+      "hp": 11,
+      "max_hp": 85,
+      "gold": 174,
+      "deck_size": 17,
+      "deck": [
+       {
+        "card": "BOOST_AWAY",
+        "name": "高速脱离",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "DEFEND_DEFECT",
+        "name": "防御",
+        "upgrades": 0,
+        "count": 3
+       },
+       {
+        "card": "DOUBLE_ENERGY",
+        "name": "双倍能量",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "DUALCAST",
+        "name": "双重释放",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "GREED",
+        "name": "贪婪",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "LIGHTNING_ROD",
+        "name": "引雷针",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "MOMENTUM_STRIKE",
+        "name": "趁势打击",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "OVERCLOCK",
+        "name": "超频",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "ROCKET_PUNCH",
+        "name": "火箭飞拳",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "STRIKE_DEFECT",
+        "name": "打击",
+        "upgrades": 0,
+        "count": 3
+       },
+       {
+        "card": "SWEEPING_BEAM",
+        "name": "扫荡射线",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "TURBO",
+        "name": "内核加速",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "ZAP",
+        "name": "电击",
+        "upgrades": 1,
+        "count": 1
+       }
+      ],
+      "relics": [
+       {
+        "relic": "CURSED_PEARL",
+        "name": "诅咒珍珠"
+       },
+       {
+        "relic": "CAPTAINS_WHEEL",
+        "name": "舵盘"
+       },
+       {
+        "relic": "PEAR",
+        "name": "梨子"
+       },
+       {
+        "relic": "CRACKED_CORE",
+        "name": "破损核心"
+       }
+      ],
+      "potions": [
+       {
+        "potion": "STRENGTH_POTION",
+        "name": "力量药水"
+       },
+       {
+        "potion": "OROBIC_ACID",
+        "name": "欧洛巴斯之酸"
+       }
+      ]
+     }
+    },
+    {
+     "id": "T3",
+     "tool": "what_if_choices",
+     "result": {
+      "remove": [
+       "BOOST_AWAY",
+       "DEFEND_DEFECT",
+       "DOUBLE_ENERGY",
+       "DUALCAST",
+       "GREED",
+       "LIGHTNING_ROD",
+       "MOMENTUM_STRIKE",
+       "OVERCLOCK",
+       "ROCKET_PUNCH",
+       "STRIKE_DEFECT",
+       "SWEEPING_BEAM",
+       "TURBO",
+       "ZAP"
+      ],
+      "upgrade": [
+       "BOOST_AWAY",
+       "DEFEND_DEFECT",
+       "DOUBLE_ENERGY",
+       "DUALCAST",
+       "LIGHTNING_ROD",
+       "MOMENTUM_STRIKE",
+       "OVERCLOCK",
+       "ROCKET_PUNCH",
+       "STRIKE_DEFECT",
+       "SWEEPING_BEAM",
+       "TURBO"
+      ],
+      "add": [
+       {
+        "card": "BEAT_DOWN",
+        "name": "狠揍"
+       },
+       {
+        "card": "BOOST_AWAY",
+        "name": "高速脱离"
+       },
+       {
+        "card": "BOOT_SEQUENCE",
+        "name": "启动流程"
+       },
+       {
+        "card": "BULK_UP",
+        "name": "暴涨"
+       },
+       {
+        "card": "CAPACITOR",
+        "name": "扩容"
+       },
+       {
+        "card": "CHAOS",
+        "name": "混沌"
+       },
+       {
+        "card": "CLAW",
+        "name": "爪击"
+       },
+       {
+        "card": "COMPILE_DRIVER",
+        "name": "编译冲击"
+       },
+       {
+        "card": "DARKNESS",
+        "name": "漆黑"
+       },
+       {
+        "card": "DARK_SHACKLES",
+        "name": "黑暗镣铐"
+       },
+       {
+        "card": "DOUBLE_ENERGY",
+        "name": "双倍能量"
+       },
+       {
+        "card": "GO_FOR_THE_EYES",
+        "name": "眼部攻击"
+       },
+       {
+        "card": "GUNK_UP",
+        "name": "污秽攻击"
+       },
+       {
+        "card": "HAILSTORM",
+        "name": "冰雹风暴"
+       },
+       {
+        "card": "HOTFIX",
+        "name": "热修复"
+       },
+       {
+        "card": "ICE_LANCE",
+        "name": "冰之长枪"
+       },
+       {
+        "card": "LEAP",
+        "name": "飞跃"
+       },
+       {
+        "card": "LIGHTNING_ROD",
+        "name": "引雷针"
+       },
+       {
+        "card": "PANACHE",
+        "name": "神气制胜"
+       },
+       {
+        "card": "ROCKET_PUNCH",
+        "name": "火箭飞拳"
+       },
+       {
+        "card": "SALVO",
+        "name": "箭雨"
+       },
+       {
+        "card": "SUBROUTINE",
+        "name": "子程序"
+       },
+       {
+        "card": "SWEEPING_BEAM",
+        "name": "扫荡射线"
+       },
+       {
+        "card": "SYNCHRONIZE",
+        "name": "同步"
+       },
+       {
+        "card": "TESLA_COIL",
+        "name": "特斯拉线圈"
+       }
+      ]
+     }
+    },
+    {
+     "id": "T4",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F14-card",
+      "changes": [
+       {
+        "operation": "remove",
+        "card": "STRIKE_DEFECT",
+        "name": "打击"
+       }
+      ],
+      "engine_top_before": "2:FLAK_CANNON",
+      "engine_top_after": "2:FLAK_CANNON",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 2.7,
+      "options_after": [
+       {
+        "id": "2:FLAK_CANNON",
+        "name": "散射炮",
+        "deck_score": 63.9,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 61.2,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "1:CHARGE_BATTERY",
+        "name": "充电",
+        "deck_score": 61.4,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "0:COMPACT",
+        "name": "压缩",
+        "deck_score": 61.2,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    }
+   ],
+   "toolCalls": 4,
+   "repairs": 1,
+   "usage": {
+    "prompt_tokens": 22209,
+    "completion_tokens": 918,
+    "cost_usd": 0.002270028,
+    "llm_calls": 5
+   },
+   "finding": {
+    "decision_id": "F14-card",
+    "reasons": [
+     {
+      "factor": "deck_fitness:frontload",
+      "evidence": "T1",
+      "text": "差距主要在前期的输出：拿散射炮每回合 31.5 → 36.7，拿压缩则降到 29.7，而需求是 43.9。"
+     },
+     {
+      "factor": "deck_fitness:defense",
+      "evidence": "T1",
+      "text": "压缩的长处是防御：每回合 9.7 → 11.0，需求只有 7.8，这块本来就够用。"
+     },
+     {
+      "factor": "deck_fitness:aoe",
+      "evidence": "T1",
+      "text": "群伤方面两者都帮不上忙：拿压缩后每回合 3.8 → 3.6，需求是 29.2。"
+     }
+    ],
+    "what_if_evidence": "T4",
+    "what_if_text": "试着少一张打击后，引擎仍选散射炮，差距反而从 1.8 拉到 2.7，说明这不是牌组厚度的问题。",
+    "advice": "第 1 幕输出需求 43.9 明显高于当前 31.5，下次可优先补前期伤害，防御够用时不必再加。"
+   }
+  },
+  {
+   "flag": "F03-card",
+   "status": "verified",
+   "errors": [],
+   "evidence": [
+    {
+     "id": "T0",
+     "tool": "get_decision",
+     "result": {
+      "id": "F03-card",
+      "kind": "card_reward",
+      "floor": 3,
+      "act": 1,
+      "hp": 57,
+      "max_hp": 75,
+      "gold": 458,
+      "engine_top": "1:LIGHTNING_ROD",
+      "confidence": "medium",
+      "chosen": "skip",
+      "tier": 1,
+      "gap": 1.7,
+      "pick_margin": 1,
+      "options": [
+       {
+        "id": "1:LIGHTNING_ROD",
+        "kind": "card",
+        "entity_id": "LIGHTNING_ROD",
+        "name": "引雷针",
+        "score": 52.3,
+        "deck_score": 52.3,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 2.1,
+          "message": "拿引雷针后前期输出：每回合 20.8 → 24.1（需求 27.1）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": 1.62,
+          "message": "拿引雷针后防御：每回合 6.3 → 6.8（需求 6.8）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 双重释放、电击 让引雷针更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -1.99,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       },
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 51.6,
+        "deck_score": 50.6,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 1,
+          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ]
+       },
+       {
+        "id": "2:HAILSTORM",
+        "kind": "card",
+        "entity_id": "HAILSTORM",
+        "name": "冰雹风暴",
+        "score": 49.2,
+        "deck_score": 49.2,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": false,
+        "gaps": [
+         "power_mechanic_unsupported:HAILSTORM:condition:frost_orbs_at_least"
+        ],
+        "factors": [
+         {
+          "code": "unmodeled_mechanic",
+          "delta": 0,
+          "message": "冰雹风暴的部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -1.2,
+          "message": "拿冰雹风暴后防御：每回合 6.3 → 6.0（需求 6.8）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.57,
+          "message": "拿冰雹风暴后前期输出：每回合 20.8 → 20.0（需求 27.1）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 引雷针 让冰雹风暴更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0.43,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       },
+       {
+        "id": "0:CHAOS",
+        "kind": "card",
+        "entity_id": "CHAOS",
+        "name": "混沌",
+        "score": 48.1,
+        "deck_score": 48.1,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": false,
+        "gaps": [
+         "card_effect_unsupported:CHAOS:orb:random"
+        ],
+        "factors": [
+         {
+          "code": "unmodeled_mechanic",
+          "delta": 0,
+          "message": "混沌的部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -2.45,
+          "message": "拿混沌后防御：每回合 6.3 → 5.8（需求 6.8）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -1.11,
+          "message": "拿混沌后前期输出：每回合 20.8 → 19.2（需求 27.1）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 引雷针 让混沌更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 1.12,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "id": "T1",
+     "tool": "get_decision",
+     "result": {
+      "id": "F03-card",
+      "kind": "card_reward",
+      "floor": 3,
+      "act": 1,
+      "hp": 57,
+      "max_hp": 75,
+      "gold": 458,
+      "engine_top": "1:LIGHTNING_ROD",
+      "confidence": "medium",
+      "policy_status": "recommend",
+      "pick_margin": 1,
+      "options": [
+       {
+        "id": "1:LIGHTNING_ROD",
+        "kind": "card",
+        "entity_id": "LIGHTNING_ROD",
+        "name": "引雷针",
+        "score": 52.3,
+        "deck_score": 52.3,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 2.1,
+          "message": "拿引雷针后前期输出：每回合 20.8 → 24.1（需求 27.1）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": 1.62,
+          "message": "拿引雷针后防御：每回合 6.3 → 6.8（需求 6.8）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 双重释放、电击 让引雷针更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -1.99,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 2.1006,
+         "survival": 1.6192,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "data_completeness": 1
+        }
+       },
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 51.6,
+        "deck_score": 50.6,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 1,
+          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0,
+         "survival": 0,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "data_completeness": 1
+        }
+       },
+       {
+        "id": "2:HAILSTORM",
+        "kind": "card",
+        "entity_id": "HAILSTORM",
+        "name": "冰雹风暴",
+        "score": 49.2,
+        "deck_score": 49.2,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": false,
+        "gaps": [
+         "power_mechanic_unsupported:HAILSTORM:condition:frost_orbs_at_least"
+        ],
+        "factors": [
+         {
+          "code": "unmodeled_mechanic",
+          "delta": 0,
+          "message": "冰雹风暴的部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -1.2,
+          "message": "拿冰雹风暴后防御：每回合 6.3 → 6.0（需求 6.8）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.57,
+          "message": "拿冰雹风暴后前期输出：每回合 20.8 → 20.0（需求 27.1）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 引雷针 让冰雹风暴更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0.43,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": -0.5711,
+         "survival": -1.1996,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "0:CHAOS",
+        "kind": "card",
+        "entity_id": "CHAOS",
+        "name": "混沌",
+        "score": 48.1,
+        "deck_score": 48.1,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": false,
+        "gaps": [
+         "card_effect_unsupported:CHAOS:orb:random"
+        ],
+        "factors": [
+         {
+          "code": "unmodeled_mechanic",
+          "delta": 0,
+          "message": "混沌的部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -2.45,
+          "message": "拿混沌后防御：每回合 6.3 → 5.8（需求 6.8）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -1.11,
+          "message": "拿混沌后前期输出：每回合 20.8 → 19.2（需求 27.1）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 引雷针 让混沌更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 1.12,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": -1.1087,
+         "survival": -2.4495,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       }
+      ],
+      "chosen": "skip",
+      "tier": 1,
+      "gap": 1.7,
+      "not_strict_because": []
+     }
+    },
+    {
+     "id": "T2",
+     "tool": "get_deck",
+     "result": {
+      "decision_id": "F03-card",
+      "floor": 3,
+      "act": 1,
+      "hp": 57,
+      "max_hp": 75,
+      "gold": 458,
+      "deck_size": 12,
+      "deck": [
+       {
+        "card": "DEFEND_DEFECT",
+        "name": "防御",
+        "upgrades": 0,
+        "count": 4
+       },
+       {
+        "card": "DUALCAST",
+        "name": "双重释放",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "GREED",
+        "name": "贪婪",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "LIGHTNING_ROD",
+        "name": "引雷针",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "STRIKE_DEFECT",
+        "name": "打击",
+        "upgrades": 0,
+        "count": 4
+       },
+       {
+        "card": "ZAP",
+        "name": "电击",
+        "upgrades": 0,
+        "count": 1
+       }
+      ],
+      "relics": [
+       {
+        "relic": "CURSED_PEARL",
+        "name": "诅咒珍珠"
+       },
+       {
+        "relic": "CRACKED_CORE",
+        "name": "破损核心"
+       }
+      ],
+      "potions": []
+     }
+    },
+    {
+     "id": "T3",
+     "tool": "compare_options",
+     "result": {
+      "decision_id": "F03-card",
+      "a": {
+       "id": "1:LIGHTNING_ROD",
+       "name": "引雷针",
+       "deck_score": 52.3,
+       "fully_scored": true
+      },
+      "b": {
+       "id": "skip",
+       "name": "跳过",
+       "deck_score": 50.6,
+       "fully_scored": true
+      },
+      "deck_score_difference": 1.7,
+      "factors": [
+       {
+        "factor": "deck_fitness:frontload",
+        "a": 2.1,
+        "b": 0,
+        "difference": 2.1,
+        "a_message": "拿引雷针后前期输出：每回合 20.8 → 24.1（需求 27.1）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:lookahead",
+        "a": -1.99,
+        "b": 0,
+        "difference": -1.99,
+        "a_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度",
+        "b_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "factor": "deck_fitness:defense",
+        "a": 1.62,
+        "b": 0,
+        "difference": 1.62,
+        "a_message": "拿引雷针后防御：每回合 6.3 → 6.8（需求 6.8）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:synergy",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组里的 双重释放、电击 让引雷针更有价值（说明，不另加分）",
+        "b_message": null
+       }
+      ],
+      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
+     }
+    },
+    {
+     "id": "T4",
+     "tool": "what_if_choices",
+     "result": {
+      "remove": [
+       "DEFEND_DEFECT",
+       "DUALCAST",
+       "GREED",
+       "LIGHTNING_ROD",
+       "STRIKE_DEFECT",
+       "ZAP"
+      ],
+      "upgrade": [
+       "DEFEND_DEFECT",
+       "DUALCAST",
+       "LIGHTNING_ROD",
+       "STRIKE_DEFECT",
+       "ZAP"
+      ],
+      "add": [
+       {
+        "card": "BOOT_SEQUENCE",
+        "name": "启动流程"
+       },
+       {
+        "card": "GUNK_UP",
+        "name": "污秽攻击"
+       },
+       {
+        "card": "LIGHTNING_ROD",
+        "name": "引雷针"
+       }
+      ]
+     }
+    },
+    {
+     "id": "T5",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F03-card",
+      "changes": [
+       {
+        "operation": "remove",
+        "card": "STRIKE_DEFECT",
+        "name": "打击"
+       }
+      ],
+      "engine_top_before": "1:LIGHTNING_ROD",
+      "engine_top_after": "1:LIGHTNING_ROD",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 1.8,
+      "options_after": [
+       {
+        "id": "1:LIGHTNING_ROD",
+        "name": "引雷针",
+        "deck_score": 53.6,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 51.8,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "2:HAILSTORM",
+        "name": "冰雹风暴",
+        "deck_score": 50.8,
+        "rank": 3,
+        "fully_scored": false
+       },
+       {
+        "id": "0:CHAOS",
+        "name": "混沌",
+        "deck_score": 49.8,
+        "rank": 4,
+        "fully_scored": false
+       }
+      ]
+     }
+    }
+   ],
+   "toolCalls": 5,
+   "repairs": 0,
+   "usage": {
+    "prompt_tokens": 17073,
+    "completion_tokens": 623,
+    "cost_usd": 0.0018805080000000001,
+    "llm_calls": 4
+   },
+   "finding": {
+    "decision_id": "F03-card",
+    "reasons": [
+     {
+      "factor": "deck_fitness:frontload",
+      "evidence": "T3",
+      "text": "拿引雷针后前期输出每回合 20.8 → 24.1，离需求 27.1 更近，这是两边差距最大的一项。"
+     },
+     {
+      "factor": "deck_fitness:defense",
+      "evidence": "T3",
+      "text": "防御每回合 6.3 → 6.8，正好补到需求 6.8，跳过则停在 6.3。"
+     },
+     {
+      "factor": "deck_fitness:lookahead",
+      "evidence": "T3",
+      "text": "引擎也承认往后看三次选牌时引雷针略吃亏（-1.99），所以它只领先 1.7 分，信心为中等。"
+     }
+    ],
+    "what_if_evidence": "T5",
+    "what_if_text": "假设当时少一张打击，引擎仍首选引雷针，差距还从 1.7 变成 1.8，说明结论不取决于某张打击。",
+    "advice": "牌组只有 12 张、输出离需求还差一截时，这类低费补输出的小牌通常值得先拿；若更看重后续成长，跳过也说得通。"
+   }
+  }
+ ],
+ "summary": {
+  "text": "这些决定都因前期输出或防御未达需求而优先补短板；照此在下一层先补对应不足，再考虑成长。",
+  "source": "model",
+  "cost_usd": 0.0002865
+ },
+ "meta": {
+  "model": "deepseek-flash",
+  "cost_usd": 0.00949026,
+  "seconds": 8.873,
+  "generated_at": "2026-11-01 14:42"
+ }
+}

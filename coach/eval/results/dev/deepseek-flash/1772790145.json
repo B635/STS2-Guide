@@ -1,0 +1,5555 @@
+{
+ "run": "1772790145",
+ "set": "dev",
+ "model": "deepseek-flash",
+ "prompt_version": "p3",
+ "pre": {
+  "summary": {
+   "run_id": "1772790145",
+   "character": "REGENT",
+   "ascension": 0,
+   "build_id": "v0.98.1",
+   "win": false,
+   "killed_by": "无厌沙虫",
+   "acts_reached": 2,
+   "last_scored_floor": 32,
+   "final_deck_size": 24,
+   "decisions_scored": {
+    "card_reward": 14,
+    "rest": 6,
+    "shop": 3
+   },
+   "decisions_skipped": {},
+   "agreement": {
+    "agree": 11,
+    "judged": 23,
+    "rate": 0.478
+   },
+   "tier1": [
+    "F17-card",
+    "F30-card",
+    "F29-card",
+    "F03-card",
+    "F05-card"
+   ],
+   "tier2": [
+    "F02-card",
+    "F09-card",
+    "F13-card",
+    "F14-card",
+    "F19-card",
+    "F22-card",
+    "F24-card"
+   ],
+   "warnings": [
+    "floor 21: 4 potions replayed for 3 slots"
+   ]
+  },
+  "decisions": {
+   "decisions": [
+    {
+     "id": "F02-card",
+     "kind": "card_reward",
+     "floor": 2,
+     "act": 1,
+     "chosen": "0:REFINE_BLADE",
+     "chosen_name": "淬炼刀刃",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": 0.9,
+     "not_strict_because": [
+      "small_gap"
+     ]
+    },
+    {
+     "id": "F03-card",
+     "kind": "card_reward",
+     "floor": 3,
+     "act": 1,
+     "chosen": "0:RESONANCE",
+     "chosen_name": "共鸣",
+     "engine_top": "1:CRUSH_UNDER",
+     "engine_top_name": "下砸",
+     "confidence": "medium",
+     "tier": 1,
+     "gap": 3.1,
+     "not_strict_because": []
+    },
+    {
+     "id": "F05-card",
+     "kind": "card_reward",
+     "floor": 5,
+     "act": 1,
+     "chosen": "0:CHARGE",
+     "chosen_name": "冲锋！！",
+     "engine_top": "1:GLOW",
+     "engine_top_name": "辉光",
+     "confidence": "medium",
+     "tier": 1,
+     "gap": 2,
+     "not_strict_because": []
+    },
+    {
+     "id": "F07-rest",
+     "kind": "rest",
+     "floor": 7,
+     "act": 1,
+     "chosen": "rest:HEAL",
+     "chosen_name": "休息",
+     "engine_top": "rest:HEAL",
+     "engine_top_name": "休息",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F08-shop",
+     "kind": "shop",
+     "floor": 8,
+     "act": 1,
+     "chosen": "card:0:CRUSH_UNDER",
+     "chosen_name": "下砸",
+     "engine_top": "card:0:CRUSH_UNDER",
+     "engine_top_name": "下砸",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F09-card",
+     "kind": "card_reward",
+     "floor": 9,
+     "act": 1,
+     "chosen": "0:GATHER_LIGHT",
+     "chosen_name": "收集光辉",
+     "engine_top": "2:SOLAR_STRIKE",
+     "engine_top_name": "太阳打击",
+     "confidence": "low",
+     "tier": 2,
+     "gap": 0.2,
+     "not_strict_because": [
+      "low_confidence",
+      "small_gap"
+     ]
+    },
+    {
+     "id": "F13-card",
+     "kind": "card_reward",
+     "floor": 13,
+     "act": 1,
+     "chosen": "0:BLACK_HOLE",
+     "chosen_name": "黑洞",
+     "engine_top": "2:PROPHESIZE",
+     "engine_top_name": "预言",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": 6.7,
+     "not_strict_because": [
+      "partly_scored"
+     ]
+    },
+    {
+     "id": "F14-card",
+     "kind": "card_reward",
+     "floor": 14,
+     "act": 1,
+     "chosen": "0:SHINING_STRIKE",
+     "chosen_name": "明耀打击",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "low",
+     "tier": 2,
+     "gap": -0.8,
+     "not_strict_because": [
+      "low_confidence",
+      "small_gap"
+     ]
+    },
+    {
+     "id": "F15-card",
+     "kind": "card_reward",
+     "floor": 15,
+     "act": 1,
+     "chosen": "0:GUIDING_STAR",
+     "chosen_name": "引导之星",
+     "engine_top": "0:GUIDING_STAR",
+     "engine_top_name": "引导之星",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F16-rest",
+     "kind": "rest",
+     "floor": 16,
+     "act": 1,
+     "chosen": "rest:HEAL",
+     "chosen_name": "休息",
+     "engine_top": "rest:HEAL",
+     "engine_top_name": "休息",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F17-card",
+     "kind": "card_reward",
+     "floor": 17,
+     "act": 1,
+     "chosen": "0:BEAT_INTO_SHAPE",
+     "chosen_name": "锻打成型",
+     "engine_top": "2:GUARDS",
+     "engine_top_name": "护驾！！！",
+     "confidence": "medium",
+     "tier": 1,
+     "gap": 5.8,
+     "not_strict_because": []
+    },
+    {
+     "id": "F19-card",
+     "kind": "card_reward",
+     "floor": 19,
+     "act": 2,
+     "chosen": "0:CRUSH_UNDER",
+     "chosen_name": "下砸",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "low",
+     "tier": 2,
+     "gap": 0,
+     "not_strict_because": [
+      "low_confidence",
+      "small_gap"
+     ]
+    },
+    {
+     "id": "F20-shop",
+     "kind": "shop",
+     "floor": 20,
+     "act": 2,
+     "chosen": "removal",
+     "chosen_name": "删牌",
+     "engine_top": "removal",
+     "engine_top_name": "删牌",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F22-card",
+     "kind": "card_reward",
+     "floor": 22,
+     "act": 2,
+     "chosen": "0:CRESCENT_SPEAR",
+     "chosen_name": "新月长矛",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "low",
+     "tier": 2,
+     "gap": 0.6,
+     "not_strict_because": [
+      "low_confidence",
+      "small_gap"
+     ]
+    },
+    {
+     "id": "F23-rest",
+     "kind": "rest",
+     "floor": 23,
+     "act": 2,
+     "chosen": "rest:HEAL",
+     "chosen_name": "休息",
+     "engine_top": "rest:HEAL",
+     "engine_top_name": "休息",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F24-card",
+     "kind": "card_reward",
+     "floor": 24,
+     "act": 2,
+     "chosen": "0:ASTRAL_PULSE",
+     "chosen_name": "星界脉冲",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": 0.5,
+     "not_strict_because": [
+      "small_gap"
+     ]
+    },
+    {
+     "id": "F25-rest",
+     "kind": "rest",
+     "floor": 25,
+     "act": 2,
+     "chosen": "rest:HEAL",
+     "chosen_name": "休息",
+     "engine_top": "rest:HEAL",
+     "engine_top_name": "休息",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F27-rest",
+     "kind": "rest",
+     "floor": 27,
+     "act": 2,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F28-card",
+     "kind": "card_reward",
+     "floor": 28,
+     "act": 2,
+     "chosen": "0:CLOAK_OF_STARS",
+     "chosen_name": "群星斗篷",
+     "engine_top": "0:CLOAK_OF_STARS",
+     "engine_top_name": "群星斗篷",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F29-card",
+     "kind": "card_reward",
+     "floor": 29,
+     "act": 2,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "2:GATHER_LIGHT",
+     "engine_top_name": "收集光辉",
+     "confidence": "medium",
+     "tier": 1,
+     "gap": 4,
+     "not_strict_because": []
+    },
+    {
+     "id": "F30-card",
+     "kind": "card_reward",
+     "floor": 30,
+     "act": 2,
+     "chosen": "0:WROUGHT_IN_WAR",
+     "chosen_name": "战火铸就",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 1,
+     "gap": 5.3,
+     "not_strict_because": []
+    },
+    {
+     "id": "F31-shop",
+     "kind": "shop",
+     "floor": 31,
+     "act": 2,
+     "chosen": "removal",
+     "chosen_name": "删牌",
+     "engine_top": "removal",
+     "engine_top_name": "删牌",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F32-rest",
+     "kind": "rest",
+     "floor": 32,
+     "act": 2,
+     "chosen": "rest:HEAL",
+     "chosen_name": "休息",
+     "engine_top": "rest:HEAL",
+     "engine_top_name": "休息",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    }
+   ],
+   "skipped": []
+  },
+  "flags": [
+   {
+    "id": "F17-card",
+    "kind": "card_reward",
+    "floor": 17,
+    "act": 1,
+    "hp": 20,
+    "max_hp": 79,
+    "gold": 184,
+    "engine_top": "2:GUARDS",
+    "confidence": "medium",
+    "chosen": "0:BEAT_INTO_SHAPE",
+    "tier": 1,
+    "gap": 5.8,
+    "pick_margin": 1,
+    "options": [
+     {
+      "id": "2:GUARDS",
+      "kind": "card",
+      "entity_id": "GUARDS",
+      "name": "护驾！！！",
+      "score": 51.1,
+      "deck_score": 51.1,
+      "rank": 1,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 5 张牌未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": 6.69,
+        "message": "拿护驾！！！后防御：每回合 7.0 → 8.1（需求 8.3）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": -0.81,
+        "message": "拿护驾！！！后前期输出：每回合 18.3 → 16.9（需求 34.8）"
+       },
+       {
+        "code": "deck_fitness:cycle",
+        "delta": -0.17,
+        "message": "拿护驾！！！后循环：每回合额外抽牌 0.25 → 0.23（需求 1.0）"
+       },
+       {
+        "code": "deck_fitness:scaling",
+        "delta": -0.09,
+        "message": "拿护驾！！！后成长：每回合 0.5 → 0.4（需求 14.1）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 淬炼刀刃、明耀打击 让护驾！！！更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": -3.5,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": -0.8103,
+       "survival": 6.6931,
+       "long_term_growth": -0.253,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "skip",
+      "kind": "skip",
+      "entity_id": null,
+      "name": "跳过",
+      "score": 50,
+      "deck_score": 49,
+      "rank": 2,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 5 张牌未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": 0,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "code": "deck_fitness:pick_margin",
+        "delta": 1,
+        "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0,
+       "survival": 0,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "1:MONARCHS_GAZE",
+      "kind": "card",
+      "entity_id": "MONARCHS_GAZE",
+      "name": "王之凝视",
+      "score": 45.9,
+      "deck_score": 45.9,
+      "rank": 3,
+      "eligible": true,
+      "fully_scored": false,
+      "gaps": [
+       "fact_unknowable:powers:MONARCHS_GAZE",
+       "power_mechanic_unsupported:MONARCHS_GAZE:effect_key:power_effect"
+      ],
+      "factors": [
+       {
+        "code": "unmodeled_mechanic",
+        "delta": 0,
+        "message": "王之凝视的部分效果尚未计入评分；牌组中 5 张牌未完整计入评分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -4.71,
+        "message": "拿王之凝视后防御：每回合 7.0 → 6.4（需求 8.3）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": -0.81,
+        "message": "拿王之凝视后前期输出：每回合 18.3 → 16.9（需求 34.8）"
+       },
+       {
+        "code": "deck_fitness:cycle",
+        "delta": -0.17,
+        "message": "拿王之凝视后循环：每回合额外抽牌 0.25 → 0.23（需求 1.0）"
+       },
+       {
+        "code": "deck_fitness:scaling",
+        "delta": -0.09,
+        "message": "拿王之凝视后成长：每回合 0.5 → 0.4（需求 14.1）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 收集光辉、君权自授 让王之凝视更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": 2.71,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": -0.8103,
+       "survival": -4.7057,
+       "long_term_growth": -0.253,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "0:BEAT_INTO_SHAPE",
+      "kind": "card",
+      "entity_id": "BEAT_INTO_SHAPE",
+      "name": "锻打成型",
+      "score": 45.3,
+      "deck_score": 45.3,
+      "rank": 4,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 5 张牌未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -5.89,
+        "message": "拿锻打成型后防御：每回合 7.0 → 6.1（需求 8.3）"
+       },
+       {
+        "code": "deck_fitness:cycle",
+        "delta": -0.44,
+        "message": "拿锻打成型后循环：每回合额外抽牌 0.25 → 0.20（需求 1.0）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": 0.26,
+        "message": "拿锻打成型后前期输出：每回合 18.3 → 18.8（需求 34.8）"
+       },
+       {
+        "code": "deck_fitness:scaling",
+        "delta": -0.06,
+        "message": "拿锻打成型后成长：每回合 0.5 → 0.4（需求 14.1）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 淬炼刀刃、陨星 让锻打成型更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": 2.41,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0.2627,
+       "survival": -5.8895,
+       "long_term_growth": -0.4967,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     }
+    ]
+   },
+   {
+    "id": "F30-card",
+    "kind": "card_reward",
+    "floor": 30,
+    "act": 2,
+    "hp": 10,
+    "max_hp": 79,
+    "gold": 159,
+    "engine_top": "skip",
+    "confidence": "medium",
+    "chosen": "0:WROUGHT_IN_WAR",
+    "tier": 1,
+    "gap": 5.3,
+    "pick_margin": 2,
+    "options": [
+     {
+      "id": "skip",
+      "kind": "skip",
+      "entity_id": null,
+      "name": "跳过",
+      "score": 50.5,
+      "deck_score": 48.5,
+      "rank": 1,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 5 张牌未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:pick_margin",
+        "delta": 2,
+        "message": "第 2 幕：候选要比跳过高出 2 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0,
+       "survival": 0,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "2:COLLISION_COURSE",
+      "kind": "card",
+      "entity_id": "COLLISION_COURSE",
+      "name": "碰撞轨迹",
+      "score": 48.9,
+      "deck_score": 48.9,
+      "rank": 2,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 5 张牌未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": 0.65,
+        "message": "拿碰撞轨迹后前期输出：每回合 22.5 → 24.1（需求 45.9）"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -0.27,
+        "message": "拿碰撞轨迹后防御：每回合 7.0 → 6.8（需求 9.8）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 明耀打击、陨星 让碰撞轨迹更有价值（说明，不另加分）"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0.6452,
+       "survival": -0.2711,
+       "long_term_growth": 0.0081,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "1:CRESCENT_SPEAR",
+      "kind": "card",
+      "entity_id": "CRESCENT_SPEAR",
+      "name": "新月长矛",
+      "score": 46.3,
+      "deck_score": 46.3,
+      "rank": 3,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 5 张牌未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -2.36,
+        "message": "拿新月长矛后防御：每回合 7.0 → 6.7（需求 9.8）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": 0.22,
+        "message": "拿新月长矛后前期输出：每回合 22.5 → 23.0（需求 45.9）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 新月长矛、明耀打击 让新月长矛更有价值（说明，不另加分）"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0.22,
+       "survival": -2.3555,
+       "long_term_growth": -0.0384,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "0:WROUGHT_IN_WAR",
+      "kind": "card",
+      "entity_id": "WROUGHT_IN_WAR",
+      "name": "战火铸就",
+      "score": 43.2,
+      "deck_score": 43.2,
+      "rank": 4,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 5 张牌未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -5.45,
+        "message": "拿战火铸就后防御：每回合 7.0 → 6.3（需求 9.8）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": 0.19,
+        "message": "拿战火铸就后前期输出：每回合 22.5 → 22.9（需求 45.9）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 锻打成型、淬炼刀刃 让战火铸就更有价值（说明，不另加分）"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0.1859,
+       "survival": -5.4469,
+       "long_term_growth": -0.0838,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     }
+    ]
+   },
+   {
+    "id": "F29-card",
+    "kind": "card_reward",
+    "floor": 29,
+    "act": 2,
+    "hp": 28,
+    "max_hp": 79,
+    "gold": 148,
+    "engine_top": "2:GATHER_LIGHT",
+    "confidence": "medium",
+    "chosen": "skip",
+    "tier": 1,
+    "gap": 4,
+    "pick_margin": 2,
+    "options": [
+     {
+      "id": "2:GATHER_LIGHT",
+      "kind": "card",
+      "entity_id": "GATHER_LIGHT",
+      "name": "收集光辉",
+      "score": 51.4,
+      "deck_score": 51.4,
+      "rank": 1,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 5 张牌未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": 4.58,
+        "message": "拿收集光辉后防御：每回合 7.1 → 7.9（需求 9.0）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": -0.08,
+        "message": "拿收集光辉后前期输出：每回合 22.0 → 21.9（需求 42.3）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 星界脉冲、锻打成型 让收集光辉更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": -0.56,
+        "message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": -0.0354,
+       "survival": 4.5791,
+       "long_term_growth": 0.0134,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "skip",
+      "kind": "skip",
+      "entity_id": null,
+      "name": "跳过",
+      "score": 49.4,
+      "deck_score": 47.4,
+      "rank": 2,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 5 张牌未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": 0,
+        "message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "code": "deck_fitness:pick_margin",
+        "delta": 2,
+        "message": "第 2 幕：候选要比跳过高出 2 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0,
+       "survival": 0,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "1:COLLISION_COURSE",
+      "kind": "card",
+      "entity_id": "COLLISION_COURSE",
+      "name": "碰撞轨迹",
+      "score": 47.5,
+      "deck_score": 47.5,
+      "rank": 3,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 5 张牌未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": 0.75,
+        "message": "拿碰撞轨迹后前期输出：每回合 22.0 → 23.7（需求 42.3）"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -0.58,
+        "message": "拿碰撞轨迹后防御：每回合 7.1 → 6.9（需求 9.0）"
+       },
+       {
+        "code": "deck_fitness:aoe",
+        "delta": -0.06,
+        "message": "拿碰撞轨迹后群伤：每回合 0.6 → 0.6（需求 3.7）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 明耀打击、锻打成型 让碰撞轨迹更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": -0.06,
+        "message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0.6918,
+       "survival": -0.5822,
+       "long_term_growth": 0.0157,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "0:BULWARK",
+      "kind": "card",
+      "entity_id": "BULWARK",
+      "name": "铸墙",
+      "score": 47.4,
+      "deck_score": 47.4,
+      "rank": 4,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 5 张牌未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": 0.87,
+        "message": "拿铸墙后防御：每回合 7.1 → 7.4（需求 9.0）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": -0.5,
+        "message": "拿铸墙后前期输出：每回合 22.0 → 21.0（需求 42.3）"
+       },
+       {
+        "code": "deck_fitness:aoe",
+        "delta": -0.23,
+        "message": "拿铸墙后群伤：每回合 0.6 → 0.6（需求 3.7）"
+       },
+       {
+        "code": "deck_fitness:scaling",
+        "delta": -0.09,
+        "message": "拿铸墙后成长：每回合 0.4 → 0.3（需求 21.6）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 淬炼刀刃、锻打成型 让铸墙更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": -0.11,
+        "message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": -0.7268,
+       "survival": 0.8687,
+       "long_term_growth": -0.1249,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     }
+    ]
+   },
+   {
+    "id": "F03-card",
+    "kind": "card_reward",
+    "floor": 3,
+    "act": 1,
+    "hp": 68,
+    "max_hp": 75,
+    "gold": 132,
+    "engine_top": "1:CRUSH_UNDER",
+    "confidence": "medium",
+    "chosen": "0:RESONANCE",
+    "tier": 1,
+    "gap": 3.1,
+    "pick_margin": 1,
+    "options": [
+     {
+      "id": "1:CRUSH_UNDER",
+      "kind": "card",
+      "entity_id": "CRUSH_UNDER",
+      "name": "下砸",
+      "score": 52.1,
+      "deck_score": 52.1,
+      "rank": 1,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 1 张牌（独白）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:aoe",
+        "delta": 2.67,
+        "message": "拿下砸后群伤：每回合 0.0 → 0.9（需求 4.9）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": 0.62,
+        "message": "拿下砸后前期输出：每回合 16.9 → 17.6（需求 21.7）"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -0.16,
+        "message": "拿下砸后防御：每回合 6.0 → 5.8（需求 5.5）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": -1.07,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 3.2877,
+       "survival": -0.1567,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "skip",
+      "kind": "skip",
+      "entity_id": null,
+      "name": "跳过",
+      "score": 51.1,
+      "deck_score": 50.1,
+      "rank": 2,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 1 张牌（独白）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": 0,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "code": "deck_fitness:pick_margin",
+        "delta": 1,
+        "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0,
+       "survival": 0,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "0:RESONANCE",
+      "kind": "card",
+      "entity_id": "RESONANCE",
+      "name": "共鸣",
+      "score": 49,
+      "deck_score": 49,
+      "rank": 3,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 1 张牌（独白）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": -2.41,
+        "message": "拿共鸣后前期输出：每回合 16.9 → 14.2（需求 21.7）"
+       },
+       {
+        "code": "deck_fitness:scaling",
+        "delta": 1.6,
+        "message": "拿共鸣后成长：每回合 0.0 → 0.7（需求 9.4）"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -0.14,
+        "message": "拿共鸣后防御：每回合 6.0 → 5.8（需求 5.5）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 崇拜、独白 让共鸣更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": -0.08,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": -2.4145,
+       "survival": -0.1398,
+       "long_term_growth": 1.5976,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "2:WROUGHT_IN_WAR",
+      "kind": "card",
+      "entity_id": "WROUGHT_IN_WAR",
+      "name": "战火铸就",
+      "score": 49,
+      "deck_score": 49,
+      "rank": 4,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 1 张牌（独白）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -2.22,
+        "message": "拿战火铸就后防御：每回合 6.0 → 5.0（需求 5.5）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": 1.98,
+        "message": "拿战火铸就后前期输出：每回合 16.9 → 19.3（需求 21.7）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 陨星 让战火铸就更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": -0.82,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 1.9785,
+       "survival": -2.2247,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     }
+    ]
+   },
+   {
+    "id": "F05-card",
+    "kind": "card_reward",
+    "floor": 5,
+    "act": 1,
+    "hp": 61,
+    "max_hp": 75,
+    "gold": 144,
+    "engine_top": "1:GLOW",
+    "confidence": "medium",
+    "chosen": "0:CHARGE",
+    "tier": 1,
+    "gap": 2,
+    "pick_margin": 1,
+    "options": [
+     {
+      "id": "1:GLOW",
+      "kind": "card",
+      "entity_id": "GLOW",
+      "name": "辉光",
+      "score": 51.8,
+      "deck_score": 51.8,
+      "rank": 1,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 1 张牌（独白）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:cycle",
+        "delta": 4.11,
+        "message": "拿辉光后循环：每回合额外抽牌 0.00 → 0.38（需求 1.0）"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -0.18,
+        "message": "拿辉光后防御：每回合 6.3 → 6.0（需求 5.6）"
+       },
+       {
+        "code": "deck_fitness:scaling",
+        "delta": 0.16,
+        "message": "拿辉光后成长：每回合 0.7 → 0.8（需求 10.2）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": 0.09,
+        "message": "拿辉光后前期输出：每回合 13.5 → 13.6（需求 23.0）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 陨星、共鸣 让辉光更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": -1.41,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0.0852,
+       "survival": -0.176,
+       "long_term_growth": 4.2745,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "skip",
+      "kind": "skip",
+      "entity_id": null,
+      "name": "跳过",
+      "score": 50,
+      "deck_score": 49,
+      "rank": 2,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 1 张牌（独白）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": 0,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "code": "deck_fitness:pick_margin",
+        "delta": 1,
+        "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0,
+       "survival": 0,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "2:HIDDEN_CACHE",
+      "kind": "card",
+      "entity_id": "HIDDEN_CACHE",
+      "name": "隐秘藏品",
+      "score": 49.9,
+      "deck_score": 49.9,
+      "rank": 3,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 1 张牌（独白）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:scaling",
+        "delta": 0.35,
+        "message": "拿隐秘藏品后成长：每回合 0.7 → 0.9（需求 10.2）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": 0.24,
+        "message": "拿隐秘藏品后前期输出：每回合 13.5 → 13.8（需求 23.0）"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -0.11,
+        "message": "拿隐秘藏品后防御：每回合 6.3 → 6.1（需求 5.6）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 陨星、共鸣 让隐秘藏品更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": 0.38,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0.2437,
+       "survival": -0.1112,
+       "long_term_growth": 0.3491,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "0:CHARGE",
+      "kind": "card",
+      "entity_id": "CHARGE",
+      "name": "冲锋！！",
+      "score": 49.8,
+      "deck_score": 49.8,
+      "rank": 4,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 1 张牌（独白）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": 3.1,
+        "message": "拿冲锋！！后前期输出：每回合 13.5 → 17.1（需求 23.0）"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -0.35,
+        "message": "拿冲锋！！后防御：每回合 6.3 → 5.8（需求 5.6）"
+       },
+       {
+        "code": "deck_fitness:scaling",
+        "delta": 0.14,
+        "message": "拿冲锋！！后成长：每回合 0.7 → 0.8（需求 10.2）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 陨星、共鸣 让冲锋！！更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": -2.07,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 3.1026,
+       "survival": -0.3499,
+       "long_term_growth": 0.1421,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "explained": [
+  {
+   "flag": "F17-card",
+   "status": "verified",
+   "errors": [],
+   "evidence": [
+    {
+     "id": "T0",
+     "tool": "get_decision",
+     "result": {
+      "id": "F17-card",
+      "kind": "card_reward",
+      "floor": 17,
+      "act": 1,
+      "hp": 20,
+      "max_hp": 79,
+      "gold": 184,
+      "engine_top": "2:GUARDS",
+      "confidence": "medium",
+      "chosen": "0:BEAT_INTO_SHAPE",
+      "tier": 1,
+      "gap": 5.8,
+      "pick_margin": 1,
+      "options": [
+       {
+        "id": "2:GUARDS",
+        "kind": "card",
+        "entity_id": "GUARDS",
+        "name": "护驾！！！",
+        "score": 51.1,
+        "deck_score": 51.1,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 5 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": 6.69,
+          "message": "拿护驾！！！后防御：每回合 7.0 → 8.1（需求 8.3）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.81,
+          "message": "拿护驾！！！后前期输出：每回合 18.3 → 16.9（需求 34.8）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.17,
+          "message": "拿护驾！！！后循环：每回合额外抽牌 0.25 → 0.23（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:scaling",
+          "delta": -0.09,
+          "message": "拿护驾！！！后成长：每回合 0.5 → 0.4（需求 14.1）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 淬炼刀刃、明耀打击 让护驾！！！更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -3.5,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       },
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 50,
+        "deck_score": 49,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 5 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 1,
+          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ]
+       },
+       {
+        "id": "1:MONARCHS_GAZE",
+        "kind": "card",
+        "entity_id": "MONARCHS_GAZE",
+        "name": "王之凝视",
+        "score": 45.9,
+        "deck_score": 45.9,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": false,
+        "gaps": [
+         "fact_unknowable:powers:MONARCHS_GAZE",
+         "power_mechanic_unsupported:MONARCHS_GAZE:effect_key:power_effect"
+        ],
+        "factors": [
+         {
+          "code": "unmodeled_mechanic",
+          "delta": 0,
+          "message": "王之凝视的部分效果尚未计入评分；牌组中 5 张牌未完整计入评分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -4.71,
+          "message": "拿王之凝视后防御：每回合 7.0 → 6.4（需求 8.3）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.81,
+          "message": "拿王之凝视后前期输出：每回合 18.3 → 16.9（需求 34.8）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.17,
+          "message": "拿王之凝视后循环：每回合额外抽牌 0.25 → 0.23（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:scaling",
+          "delta": -0.09,
+          "message": "拿王之凝视后成长：每回合 0.5 → 0.4（需求 14.1）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 收集光辉、君权自授 让王之凝视更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 2.71,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       },
+       {
+        "id": "0:BEAT_INTO_SHAPE",
+        "kind": "card",
+        "entity_id": "BEAT_INTO_SHAPE",
+        "name": "锻打成型",
+        "score": 45.3,
+        "deck_score": 45.3,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 5 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -5.89,
+          "message": "拿锻打成型后防御：每回合 7.0 → 6.1（需求 8.3）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.44,
+          "message": "拿锻打成型后循环：每回合额外抽牌 0.25 → 0.20（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.26,
+          "message": "拿锻打成型后前期输出：每回合 18.3 → 18.8（需求 34.8）"
+         },
+         {
+          "code": "deck_fitness:scaling",
+          "delta": -0.06,
+          "message": "拿锻打成型后成长：每回合 0.5 → 0.4（需求 14.1）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 淬炼刀刃、陨星 让锻打成型更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 2.41,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "id": "T1",
+     "tool": "get_decision",
+     "result": {
+      "id": "F17-card",
+      "kind": "card_reward",
+      "floor": 17,
+      "act": 1,
+      "hp": 20,
+      "max_hp": 79,
+      "gold": 184,
+      "engine_top": "2:GUARDS",
+      "confidence": "medium",
+      "policy_status": "recommend",
+      "pick_margin": 1,
+      "options": [
+       {
+        "id": "2:GUARDS",
+        "kind": "card",
+        "entity_id": "GUARDS",
+        "name": "护驾！！！",
+        "score": 51.1,
+        "deck_score": 51.1,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 5 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": 6.69,
+          "message": "拿护驾！！！后防御：每回合 7.0 → 8.1（需求 8.3）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.81,
+          "message": "拿护驾！！！后前期输出：每回合 18.3 → 16.9（需求 34.8）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.17,
+          "message": "拿护驾！！！后循环：每回合额外抽牌 0.25 → 0.23（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:scaling",
+          "delta": -0.09,
+          "message": "拿护驾！！！后成长：每回合 0.5 → 0.4（需求 14.1）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 淬炼刀刃、明耀打击 让护驾！！！更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -3.5,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": -0.8103,
+         "survival": 6.6931,
+         "long_term_growth": -0.253,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 50,
+        "deck_score": 49,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 5 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 1,
+          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0,
+         "survival": 0,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "1:MONARCHS_GAZE",
+        "kind": "card",
+        "entity_id": "MONARCHS_GAZE",
+        "name": "王之凝视",
+        "score": 45.9,
+        "deck_score": 45.9,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": false,
+        "gaps": [
+         "fact_unknowable:powers:MONARCHS_GAZE",
+         "power_mechanic_unsupported:MONARCHS_GAZE:effect_key:power_effect"
+        ],
+        "factors": [
+         {
+          "code": "unmodeled_mechanic",
+          "delta": 0,
+          "message": "王之凝视的部分效果尚未计入评分；牌组中 5 张牌未完整计入评分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -4.71,
+          "message": "拿王之凝视后防御：每回合 7.0 → 6.4（需求 8.3）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.81,
+          "message": "拿王之凝视后前期输出：每回合 18.3 → 16.9（需求 34.8）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.17,
+          "message": "拿王之凝视后循环：每回合额外抽牌 0.25 → 0.23（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:scaling",
+          "delta": -0.09,
+          "message": "拿王之凝视后成长：每回合 0.5 → 0.4（需求 14.1）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 收集光辉、君权自授 让王之凝视更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 2.71,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": -0.8103,
+         "survival": -4.7057,
+         "long_term_growth": -0.253,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "0:BEAT_INTO_SHAPE",
+        "kind": "card",
+        "entity_id": "BEAT_INTO_SHAPE",
+        "name": "锻打成型",
+        "score": 45.3,
+        "deck_score": 45.3,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 5 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -5.89,
+          "message": "拿锻打成型后防御：每回合 7.0 → 6.1（需求 8.3）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.44,
+          "message": "拿锻打成型后循环：每回合额外抽牌 0.25 → 0.20（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.26,
+          "message": "拿锻打成型后前期输出：每回合 18.3 → 18.8（需求 34.8）"
+         },
+         {
+          "code": "deck_fitness:scaling",
+          "delta": -0.06,
+          "message": "拿锻打成型后成长：每回合 0.5 → 0.4（需求 14.1）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 淬炼刀刃、陨星 让锻打成型更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 2.41,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0.2627,
+         "survival": -5.8895,
+         "long_term_growth": -0.4967,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       }
+      ],
+      "chosen": "0:BEAT_INTO_SHAPE",
+      "tier": 1,
+      "gap": 5.8,
+      "not_strict_because": []
+     }
+    },
+    {
+     "id": "T2",
+     "tool": "compare_options",
+     "result": {
+      "decision_id": "F17-card",
+      "a": {
+       "id": "2:GUARDS",
+       "name": "护驾！！！",
+       "deck_score": 51.1,
+       "fully_scored": true
+      },
+      "b": {
+       "id": "0:BEAT_INTO_SHAPE",
+       "name": "锻打成型",
+       "deck_score": 45.3,
+       "fully_scored": true
+      },
+      "deck_score_difference": 5.8,
+      "factors": [
+       {
+        "factor": "deck_fitness:defense",
+        "a": 6.69,
+        "b": -5.89,
+        "difference": 12.58,
+        "a_message": "拿护驾！！！后防御：每回合 7.0 → 8.1（需求 8.3）",
+        "b_message": "拿锻打成型后防御：每回合 7.0 → 6.1（需求 8.3）"
+       },
+       {
+        "factor": "deck_fitness:lookahead",
+        "a": -3.5,
+        "b": 2.41,
+        "difference": -5.91,
+        "a_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度",
+        "b_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "factor": "deck_fitness:frontload",
+        "a": -0.81,
+        "b": 0.26,
+        "difference": -1.07,
+        "a_message": "拿护驾！！！后前期输出：每回合 18.3 → 16.9（需求 34.8）",
+        "b_message": "拿锻打成型后前期输出：每回合 18.3 → 18.8（需求 34.8）"
+       },
+       {
+        "factor": "deck_fitness:cycle",
+        "a": -0.17,
+        "b": -0.44,
+        "difference": 0.27,
+        "a_message": "拿护驾！！！后循环：每回合额外抽牌 0.25 → 0.23（需求 1.0）",
+        "b_message": "拿锻打成型后循环：每回合额外抽牌 0.25 → 0.20（需求 1.0）"
+       },
+       {
+        "factor": "deck_fitness:scaling",
+        "a": -0.09,
+        "b": -0.06,
+        "difference": -0.03,
+        "a_message": "拿护驾！！！后成长：每回合 0.5 → 0.4（需求 14.1）",
+        "b_message": "拿锻打成型后成长：每回合 0.5 → 0.4（需求 14.1）"
+       },
+       {
+        "factor": "deck_fitness:synergy",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组里的 淬炼刀刃、明耀打击 让护驾！！！更有价值（说明，不另加分）",
+        "b_message": "牌组里的 淬炼刀刃、陨星 让锻打成型更有价值（说明，不另加分）"
+       },
+       {
+        "factor": "estimate_scope",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 5 张牌未完整计入评分，分数只反映已计入的部分。",
+        "b_message": "牌组中 5 张牌未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "factor": "partially_modeled_deck_cards",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）有部分效果尚未计入评分。",
+        "b_message": "牌组中 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）有部分效果尚未计入评分。"
+       }
+      ],
+      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
+     }
+    },
+    {
+     "id": "T3",
+     "tool": "get_deck",
+     "result": {
+      "decision_id": "F17-card",
+      "floor": 17,
+      "act": 1,
+      "hp": 20,
+      "max_hp": 79,
+      "gold": 184,
+      "deck_size": 20,
+      "deck": [
+       {
+        "card": "BLACK_HOLE",
+        "name": "黑洞",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "CHARGE",
+        "name": "冲锋！！",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "COSMIC_INDIFFERENCE",
+        "name": "宇宙冷漠",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "DEFEND_REGENT",
+        "name": "防御",
+        "upgrades": 0,
+        "count": 4
+       },
+       {
+        "card": "FALLING_STAR",
+        "name": "陨星",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "GATHER_LIGHT",
+        "name": "收集光辉",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "GUIDING_STAR",
+        "name": "引导之星",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "MANIFEST_AUTHORITY",
+        "name": "君权自授",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "MONOLOGUE",
+        "name": "独白",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "REFINE_BLADE",
+        "name": "淬炼刀刃",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "RESONANCE",
+        "name": "共鸣",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "SHINING_STRIKE",
+        "name": "明耀打击",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "SOLAR_STRIKE",
+        "name": "太阳打击",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "SPECTRUM_SHIFT",
+        "name": "光谱偏移",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "STRIKE_REGENT",
+        "name": "打击",
+        "upgrades": 0,
+        "count": 2
+       },
+       {
+        "card": "VENERATE",
+        "name": "崇拜",
+        "upgrades": 0,
+        "count": 1
+       }
+      ],
+      "relics": [
+       {
+        "relic": "DIVINE_RIGHT",
+        "name": "天赋君权"
+       },
+       {
+        "relic": "LOST_COFFER",
+        "name": "失物盒"
+       },
+       {
+        "relic": "JUZU_BRACELET",
+        "name": "佛珠手链"
+       },
+       {
+        "relic": "STRIKE_DUMMY",
+        "name": "打击木偶"
+       }
+      ],
+      "potions": [
+       {
+        "potion": "ENERGY_POTION",
+        "name": "能量药水"
+       }
+      ]
+     }
+    },
+    {
+     "id": "T4",
+     "tool": "what_if_choices",
+     "result": {
+      "remove": [
+       "BLACK_HOLE",
+       "CHARGE",
+       "COSMIC_INDIFFERENCE",
+       "DEFEND_REGENT",
+       "FALLING_STAR",
+       "GATHER_LIGHT",
+       "GUIDING_STAR",
+       "MANIFEST_AUTHORITY",
+       "MONOLOGUE",
+       "REFINE_BLADE",
+       "RESONANCE",
+       "SHINING_STRIKE",
+       "SOLAR_STRIKE",
+       "SPECTRUM_SHIFT",
+       "STRIKE_REGENT",
+       "VENERATE"
+      ],
+      "upgrade": [
+       "BLACK_HOLE",
+       "CHARGE",
+       "COSMIC_INDIFFERENCE",
+       "DEFEND_REGENT",
+       "GATHER_LIGHT",
+       "GUIDING_STAR",
+       "MANIFEST_AUTHORITY",
+       "MONOLOGUE",
+       "REFINE_BLADE",
+       "RESONANCE",
+       "SHINING_STRIKE",
+       "SOLAR_STRIKE",
+       "SPECTRUM_SHIFT",
+       "STRIKE_REGENT",
+       "VENERATE"
+      ],
+      "add": [
+       {
+        "card": "BIG_BANG",
+        "name": "大爆炸"
+       },
+       {
+        "card": "BLACK_HOLE",
+        "name": "黑洞"
+       },
+       {
+        "card": "CHARGE",
+        "name": "冲锋！！"
+       },
+       {
+        "card": "CLOAK_OF_STARS",
+        "name": "群星斗篷"
+       },
+       {
+        "card": "CRUSH_UNDER",
+        "name": "下砸"
+       },
+       {
+        "card": "DYING_STAR",
+        "name": "星灭"
+       },
+       {
+        "card": "ENTROPY",
+        "name": "熵"
+       },
+       {
+        "card": "GATHER_LIGHT",
+        "name": "收集光辉"
+       },
+       {
+        "card": "GLITTERSTREAM",
+        "name": "流光溢彩"
+       },
+       {
+        "card": "GLOW",
+        "name": "辉光"
+       },
+       {
+        "card": "GUIDING_STAR",
+        "name": "引导之星"
+       },
+       {
+        "card": "HIDDEN_CACHE",
+        "name": "隐秘藏品"
+       },
+       {
+        "card": "OMNISLICE",
+        "name": "万向斩"
+       },
+       {
+        "card": "PALE_BLUE_DOT",
+        "name": "暗淡蓝点"
+       },
+       {
+        "card": "PROPHESIZE",
+        "name": "预言"
+       },
+       {
+        "card": "QUASAR",
+        "name": "类星体"
+       },
+       {
+        "card": "REFINE_BLADE",
+        "name": "淬炼刀刃"
+       },
+       {
+        "card": "RESONANCE",
+        "name": "共鸣"
+       },
+       {
+        "card": "ROYAL_GAMBLE",
+        "name": "胜券在王"
+       },
+       {
+        "card": "SEVEN_STARS",
+        "name": "七星"
+       },
+       {
+        "card": "SHINING_STRIKE",
+        "name": "明耀打击"
+       },
+       {
+        "card": "SOLAR_STRIKE",
+        "name": "太阳打击"
+       },
+       {
+        "card": "SUMMON_FORTH",
+        "name": "征召上前"
+       },
+       {
+        "card": "WROUGHT_IN_WAR",
+        "name": "战火铸就"
+       }
+      ]
+     }
+    },
+    {
+     "id": "T5",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F17-card",
+      "changes": [
+       {
+        "operation": "remove",
+        "card": "STRIKE_REGENT",
+        "name": "打击"
+       },
+       {
+        "operation": "remove",
+        "card": "STRIKE_REGENT",
+        "name": "打击"
+       }
+      ],
+      "engine_top_before": "2:GUARDS",
+      "engine_top_after": "skip",
+      "pick_changed": true,
+      "agrees_with_player_after": false,
+      "confidence_after": "low",
+      "gap_after": 3.7,
+      "options_after": [
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 51.6,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "2:GUARDS",
+        "name": "护驾！！！",
+        "deck_score": 52.5,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "1:MONARCHS_GAZE",
+        "name": "王之凝视",
+        "deck_score": 48.4,
+        "rank": 3,
+        "fully_scored": false
+       },
+       {
+        "id": "0:BEAT_INTO_SHAPE",
+        "name": "锻打成型",
+        "deck_score": 47.9,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    }
+   ],
+   "toolCalls": 5,
+   "repairs": 0,
+   "usage": {
+    "prompt_tokens": 24130,
+    "completion_tokens": 638,
+    "cost_usd": 0.002623224,
+    "llm_calls": 4
+   },
+   "finding": {
+    "decision_id": "F17-card",
+    "reasons": [
+     {
+      "factor": "deck_fitness:defense",
+      "evidence": "T2",
+      "text": "防御是最大差距：拿护驾！！！每回合 7.0 → 8.1（需求 8.3），拿锻打成型反而降到 6.1。"
+     },
+     {
+      "factor": "deck_fitness:lookahead",
+      "evidence": "T2",
+      "text": "后续 3 次选牌的适配上锻打成型更好，护驾！！！在这项是负的，但补不回防御的差距。"
+     },
+     {
+      "factor": "deck_fitness:frontload",
+      "evidence": "T2",
+      "text": "前期输出两边都远低于需求 34.8：护驾！！！ 18.3 → 16.9，锻打成型 18.3 → 18.8，差别很小。"
+     }
+    ],
+    "what_if_evidence": "T5",
+    "what_if_text": "若牌组里少两张打击，引擎首选会变成跳过，护驾！！！仍排在锻打成型之前。",
+    "advice": "当前 20 血、防御每回合只有 7.0 而需求 8.3，这类局面优先考虑能立刻补防御的牌。"
+   }
+  },
+  {
+   "flag": "F30-card",
+   "status": "verified",
+   "errors": [
+    "reasons[2]: deck_fitness:pick_margin is not one of the largest differences here (deck_fitness:defense, deck_fitness:frontload)"
+   ],
+   "evidence": [
+    {
+     "id": "T0",
+     "tool": "get_decision",
+     "result": {
+      "id": "F30-card",
+      "kind": "card_reward",
+      "floor": 30,
+      "act": 2,
+      "hp": 10,
+      "max_hp": 79,
+      "gold": 159,
+      "engine_top": "skip",
+      "confidence": "medium",
+      "chosen": "0:WROUGHT_IN_WAR",
+      "tier": 1,
+      "gap": 5.3,
+      "pick_margin": 2,
+      "options": [
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 50.5,
+        "deck_score": 48.5,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 5 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 2,
+          "message": "第 2 幕：候选要比跳过高出 2 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ]
+       },
+       {
+        "id": "2:COLLISION_COURSE",
+        "kind": "card",
+        "entity_id": "COLLISION_COURSE",
+        "name": "碰撞轨迹",
+        "score": 48.9,
+        "deck_score": 48.9,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 5 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.65,
+          "message": "拿碰撞轨迹后前期输出：每回合 22.5 → 24.1（需求 45.9）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.27,
+          "message": "拿碰撞轨迹后防御：每回合 7.0 → 6.8（需求 9.8）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 明耀打击、陨星 让碰撞轨迹更有价值（说明，不另加分）"
+         }
+        ]
+       },
+       {
+        "id": "1:CRESCENT_SPEAR",
+        "kind": "card",
+        "entity_id": "CRESCENT_SPEAR",
+        "name": "新月长矛",
+        "score": 46.3,
+        "deck_score": 46.3,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 5 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -2.36,
+          "message": "拿新月长矛后防御：每回合 7.0 → 6.7（需求 9.8）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.22,
+          "message": "拿新月长矛后前期输出：每回合 22.5 → 23.0（需求 45.9）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 新月长矛、明耀打击 让新月长矛更有价值（说明，不另加分）"
+         }
+        ]
+       },
+       {
+        "id": "0:WROUGHT_IN_WAR",
+        "kind": "card",
+        "entity_id": "WROUGHT_IN_WAR",
+        "name": "战火铸就",
+        "score": 43.2,
+        "deck_score": 43.2,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 5 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -5.45,
+          "message": "拿战火铸就后防御：每回合 7.0 → 6.3（需求 9.8）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.19,
+          "message": "拿战火铸就后前期输出：每回合 22.5 → 22.9（需求 45.9）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 锻打成型、淬炼刀刃 让战火铸就更有价值（说明，不另加分）"
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "id": "T1",
+     "tool": "get_decision",
+     "result": {
+      "id": "F30-card",
+      "kind": "card_reward",
+      "floor": 30,
+      "act": 2,
+      "hp": 10,
+      "max_hp": 79,
+      "gold": 159,
+      "engine_top": "skip",
+      "confidence": "medium",
+      "policy_status": "skip",
+      "pick_margin": 2,
+      "options": [
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 50.5,
+        "deck_score": 48.5,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 5 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 2,
+          "message": "第 2 幕：候选要比跳过高出 2 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0,
+         "survival": 0,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "2:COLLISION_COURSE",
+        "kind": "card",
+        "entity_id": "COLLISION_COURSE",
+        "name": "碰撞轨迹",
+        "score": 48.9,
+        "deck_score": 48.9,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 5 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.65,
+          "message": "拿碰撞轨迹后前期输出：每回合 22.5 → 24.1（需求 45.9）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.27,
+          "message": "拿碰撞轨迹后防御：每回合 7.0 → 6.8（需求 9.8）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 明耀打击、陨星 让碰撞轨迹更有价值（说明，不另加分）"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0.6452,
+         "survival": -0.2711,
+         "long_term_growth": 0.0081,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "1:CRESCENT_SPEAR",
+        "kind": "card",
+        "entity_id": "CRESCENT_SPEAR",
+        "name": "新月长矛",
+        "score": 46.3,
+        "deck_score": 46.3,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 5 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -2.36,
+          "message": "拿新月长矛后防御：每回合 7.0 → 6.7（需求 9.8）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.22,
+          "message": "拿新月长矛后前期输出：每回合 22.5 → 23.0（需求 45.9）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 新月长矛、明耀打击 让新月长矛更有价值（说明，不另加分）"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0.22,
+         "survival": -2.3555,
+         "long_term_growth": -0.0384,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "0:WROUGHT_IN_WAR",
+        "kind": "card",
+        "entity_id": "WROUGHT_IN_WAR",
+        "name": "战火铸就",
+        "score": 43.2,
+        "deck_score": 43.2,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 5 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -5.45,
+          "message": "拿战火铸就后防御：每回合 7.0 → 6.3（需求 9.8）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.19,
+          "message": "拿战火铸就后前期输出：每回合 22.5 → 22.9（需求 45.9）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 锻打成型、淬炼刀刃 让战火铸就更有价值（说明，不另加分）"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0.1859,
+         "survival": -5.4469,
+         "long_term_growth": -0.0838,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       }
+      ],
+      "chosen": "0:WROUGHT_IN_WAR",
+      "tier": 1,
+      "gap": 5.3,
+      "not_strict_because": []
+     }
+    },
+    {
+     "id": "T2",
+     "tool": "get_deck",
+     "result": {
+      "decision_id": "F30-card",
+      "floor": 30,
+      "act": 2,
+      "hp": 10,
+      "max_hp": 79,
+      "gold": 159,
+      "deck_size": 24,
+      "deck": [
+       {
+        "card": "ASTRAL_PULSE",
+        "name": "星界脉冲",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "BEAT_INTO_SHAPE",
+        "name": "锻打成型",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "BLACK_HOLE",
+        "name": "黑洞",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "CHARGE",
+        "name": "冲锋！！",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "CLOAK_OF_STARS",
+        "name": "群星斗篷",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "COSMIC_INDIFFERENCE",
+        "name": "宇宙冷漠",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "CRESCENT_SPEAR",
+        "name": "新月长矛",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "CRUSH_UNDER",
+        "name": "下砸",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "DEFEND_REGENT",
+        "name": "防御",
+        "upgrades": 0,
+        "count": 4
+       },
+       {
+        "card": "FALLING_STAR",
+        "name": "陨星",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "GATHER_LIGHT",
+        "name": "收集光辉",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "GUIDING_STAR",
+        "name": "引导之星",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "MANIFEST_AUTHORITY",
+        "name": "君权自授",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "MONOLOGUE",
+        "name": "独白",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "REFINE_BLADE",
+        "name": "淬炼刀刃",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "RESONANCE",
+        "name": "共鸣",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "SHINING_STRIKE",
+        "name": "明耀打击",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "SOLAR_STRIKE",
+        "name": "太阳打击",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "SPECTRUM_SHIFT",
+        "name": "光谱偏移",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "STRIKE_REGENT",
+        "name": "打击",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "VENERATE",
+        "name": "崇拜",
+        "upgrades": 0,
+        "count": 1
+       }
+      ],
+      "relics": [
+       {
+        "relic": "DIVINE_RIGHT",
+        "name": "天赋君权"
+       },
+       {
+        "relic": "LOST_COFFER",
+        "name": "失物盒"
+       },
+       {
+        "relic": "JUZU_BRACELET",
+        "name": "佛珠手链"
+       },
+       {
+        "relic": "STRIKE_DUMMY",
+        "name": "打击木偶"
+       },
+       {
+        "relic": "PAELS_BLOOD",
+        "name": "佩尔之血"
+       },
+       {
+        "relic": "STURDY_CLAMP",
+        "name": "坚固钳子"
+       }
+      ],
+      "potions": [
+       {
+        "potion": "ATTACK_POTION",
+        "name": "攻击药水"
+       },
+       {
+        "potion": "ATTACK_POTION",
+        "name": "攻击药水"
+       }
+      ]
+     }
+    },
+    {
+     "id": "T3",
+     "tool": "compare_options",
+     "result": {
+      "decision_id": "F30-card",
+      "a": {
+       "id": "skip",
+       "name": "跳过",
+       "deck_score": 48.5,
+       "fully_scored": true
+      },
+      "b": {
+       "id": "0:WROUGHT_IN_WAR",
+       "name": "战火铸就",
+       "deck_score": 43.2,
+       "fully_scored": true
+      },
+      "deck_score_difference": 5.3,
+      "factors": [
+       {
+        "factor": "deck_fitness:defense",
+        "a": 0,
+        "b": -5.45,
+        "difference": 5.45,
+        "a_message": null,
+        "b_message": "拿战火铸就后防御：每回合 7.0 → 6.3（需求 9.8）"
+       },
+       {
+        "factor": "deck_fitness:frontload",
+        "a": 0,
+        "b": 0.19,
+        "difference": -0.19,
+        "a_message": null,
+        "b_message": "拿战火铸就后前期输出：每回合 22.5 → 22.9（需求 45.9）"
+       },
+       {
+        "factor": "deck_fitness:synergy",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": null,
+        "b_message": "牌组里的 锻打成型、淬炼刀刃 让战火铸就更有价值（说明，不另加分）"
+       },
+       {
+        "factor": "estimate_scope",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 5 张牌未完整计入评分，分数只反映已计入的部分。",
+        "b_message": "牌组中 5 张牌未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "factor": "partially_modeled_deck_cards",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）有部分效果尚未计入评分。",
+        "b_message": "牌组中 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）有部分效果尚未计入评分。"
+       }
+      ],
+      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
+     }
+    },
+    {
+     "id": "T4",
+     "tool": "get_card",
+     "result": {
+      "id": "WROUGHT_IN_WAR",
+      "name": "战火铸就",
+      "description": "造成7点伤害。\n铸造7。",
+      "cost": 1,
+      "type": "攻击",
+      "rarity": "普通",
+      "color": "regent",
+      "target": "AnyEnemy",
+      "damage": 7,
+      "keywords": [
+       "消耗"
+      ],
+      "upgrade_description": "造成9点伤害。\n铸造9。"
+     }
+    },
+    {
+     "id": "T5",
+     "tool": "what_if_choices",
+     "result": {
+      "remove": [
+       "ASTRAL_PULSE",
+       "BEAT_INTO_SHAPE",
+       "BLACK_HOLE",
+       "CHARGE",
+       "CLOAK_OF_STARS",
+       "COSMIC_INDIFFERENCE",
+       "CRESCENT_SPEAR",
+       "CRUSH_UNDER",
+       "DEFEND_REGENT",
+       "FALLING_STAR",
+       "GATHER_LIGHT",
+       "GUIDING_STAR",
+       "MANIFEST_AUTHORITY",
+       "MONOLOGUE",
+       "REFINE_BLADE",
+       "RESONANCE",
+       "SHINING_STRIKE",
+       "SOLAR_STRIKE",
+       "SPECTRUM_SHIFT",
+       "STRIKE_REGENT",
+       "VENERATE"
+      ],
+      "upgrade": [
+       "ASTRAL_PULSE",
+       "BLACK_HOLE",
+       "CHARGE",
+       "COSMIC_INDIFFERENCE",
+       "CRESCENT_SPEAR",
+       "CRUSH_UNDER",
+       "DEFEND_REGENT",
+       "GATHER_LIGHT",
+       "GUIDING_STAR",
+       "MANIFEST_AUTHORITY",
+       "MONOLOGUE",
+       "REFINE_BLADE",
+       "RESONANCE",
+       "SHINING_STRIKE",
+       "SOLAR_STRIKE",
+       "SPECTRUM_SHIFT",
+       "STRIKE_REGENT",
+       "VENERATE"
+      ],
+      "add": [
+       {
+        "card": "ASTRAL_PULSE",
+        "name": "星界脉冲"
+       },
+       {
+        "card": "BEAT_INTO_SHAPE",
+        "name": "锻打成型"
+       },
+       {
+        "card": "BIG_BANG",
+        "name": "大爆炸"
+       },
+       {
+        "card": "BLACK_HOLE",
+        "name": "黑洞"
+       },
+       {
+        "card": "BULWARK",
+        "name": "铸墙"
+       },
+       {
+        "card": "CELESTIAL_MIGHT",
+        "name": "天穹之力"
+       },
+       {
+        "card": "CHARGE",
+        "name": "冲锋！！"
+       },
+       {
+        "card": "CLOAK_OF_STARS",
+        "name": "群星斗篷"
+       },
+       {
+        "card": "COLLISION_COURSE",
+        "name": "碰撞轨迹"
+       },
+       {
+        "card": "COSMIC_INDIFFERENCE",
+        "name": "宇宙冷漠"
+       },
+       {
+        "card": "CRESCENT_SPEAR",
+        "name": "新月长矛"
+       },
+       {
+        "card": "CRUSH_UNDER",
+        "name": "下砸"
+       },
+       {
+        "card": "DYING_STAR",
+        "name": "星灭"
+       },
+       {
+        "card": "ENTROPY",
+        "name": "熵"
+       },
+       {
+        "card": "GATHER_LIGHT",
+        "name": "收集光辉"
+       },
+       {
+        "card": "GLITTERSTREAM",
+        "name": "流光溢彩"
+       },
+       {
+        "card": "GLOW",
+        "name": "辉光"
+       },
+       {
+        "card": "GUARDS",
+        "name": "护驾！！！"
+       },
+       {
+        "card": "GUIDING_STAR",
+        "name": "引导之星"
+       },
+       {
+        "card": "HAND_OF_GREED",
+        "name": "贪婪之手"
+       },
+       {
+        "card": "HIDDEN_CACHE",
+        "name": "隐秘藏品"
+       },
+       {
+        "card": "MANIFEST_AUTHORITY",
+        "name": "君权自授"
+       },
+       {
+        "card": "MONARCHS_GAZE",
+        "name": "王之凝视"
+       },
+       {
+        "card": "OMNISLICE",
+        "name": "万向斩"
+       },
+       {
+        "card": "PALE_BLUE_DOT",
+        "name": "暗淡蓝点"
+       },
+       {
+        "card": "PHOTON_CUT",
+        "name": "光子切割"
+       },
+       {
+        "card": "PILLAR_OF_CREATION",
+        "name": "创世之柱"
+       },
+       {
+        "card": "PROLONG",
+        "name": "延伸"
+       },
+       {
+        "card": "PROPHESIZE",
+        "name": "预言"
+       },
+       {
+        "card": "QUASAR",
+        "name": "类星体"
+       },
+       {
+        "card": "REFINE_BLADE",
+        "name": "淬炼刀刃"
+       },
+       {
+        "card": "REFLECT",
+        "name": "倒映"
+       },
+       {
+        "card": "RESONANCE",
+        "name": "共鸣"
+       },
+       {
+        "card": "ROYAL_GAMBLE",
+        "name": "胜券在王"
+       },
+       {
+        "card": "SEVEN_STARS",
+        "name": "七星"
+       },
+       {
+        "card": "SHINING_STRIKE",
+        "name": "明耀打击"
+       },
+       {
+        "card": "SOLAR_STRIKE",
+        "name": "太阳打击"
+       },
+       {
+        "card": "SUMMON_FORTH",
+        "name": "征召上前"
+       },
+       {
+        "card": "WROUGHT_IN_WAR",
+        "name": "战火铸就"
+       }
+      ]
+     }
+    },
+    {
+     "id": "T6",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F30-card",
+      "changes": [
+       {
+        "operation": "add",
+        "card": "BULWARK",
+        "name": "铸墙"
+       },
+       {
+        "operation": "add",
+        "card": "GUARDS",
+        "name": "护驾！！！"
+       }
+      ],
+      "engine_top_before": "skip",
+      "engine_top_after": "skip",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 4.2,
+      "options_after": [
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 55.4,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "2:COLLISION_COURSE",
+        "name": "碰撞轨迹",
+        "deck_score": 54.8,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "1:CRESCENT_SPEAR",
+        "name": "新月长矛",
+        "deck_score": 53.6,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "0:WROUGHT_IN_WAR",
+        "name": "战火铸就",
+        "deck_score": 51.2,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    }
+   ],
+   "toolCalls": 6,
+   "repairs": 1,
+   "usage": {
+    "prompt_tokens": 32387,
+    "completion_tokens": 919,
+    "cost_usd": 0.004383827999999999,
+    "llm_calls": 6
+   },
+   "finding": {
+    "decision_id": "F30-card",
+    "reasons": [
+     {
+      "factor": "deck_fitness:defense",
+      "evidence": "T3",
+      "text": "拿战火铸就后防御每回合 7.0 → 6.3，而当前需求是 9.8，这是差距最大的一项。"
+     },
+     {
+      "factor": "deck_fitness:frontload",
+      "evidence": "T3",
+      "text": "前期输出只从 22.5 升到 22.9，需求 45.9，几乎没补上输出缺口。"
+     }
+    ],
+    "what_if_evidence": "T6",
+    "what_if_text": "即使牌组里多出铸墙和护驾！！！，引擎仍选跳过，战火铸就依旧排最后。",
+    "advice": "血量只有 10、防御需求 9.8 时，优先考虑能补防御的牌，纯输出小牌收益有限。"
+   }
+  },
+  {
+   "flag": "F29-card",
+   "status": "verified",
+   "errors": [],
+   "evidence": [
+    {
+     "id": "T0",
+     "tool": "get_decision",
+     "result": {
+      "id": "F29-card",
+      "kind": "card_reward",
+      "floor": 29,
+      "act": 2,
+      "hp": 28,
+      "max_hp": 79,
+      "gold": 148,
+      "engine_top": "2:GATHER_LIGHT",
+      "confidence": "medium",
+      "chosen": "skip",
+      "tier": 1,
+      "gap": 4,
+      "pick_margin": 2,
+      "options": [
+       {
+        "id": "2:GATHER_LIGHT",
+        "kind": "card",
+        "entity_id": "GATHER_LIGHT",
+        "name": "收集光辉",
+        "score": 51.4,
+        "deck_score": 51.4,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 5 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": 4.58,
+          "message": "拿收集光辉后防御：每回合 7.1 → 7.9（需求 9.0）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.08,
+          "message": "拿收集光辉后前期输出：每回合 22.0 → 21.9（需求 42.3）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 星界脉冲、锻打成型 让收集光辉更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.56,
+          "message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       },
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 49.4,
+        "deck_score": 47.4,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 5 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0,
+          "message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 2,
+          "message": "第 2 幕：候选要比跳过高出 2 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ]
+       },
+       {
+        "id": "1:COLLISION_COURSE",
+        "kind": "card",
+        "entity_id": "COLLISION_COURSE",
+        "name": "碰撞轨迹",
+        "score": 47.5,
+        "deck_score": 47.5,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 5 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.75,
+          "message": "拿碰撞轨迹后前期输出：每回合 22.0 → 23.7（需求 42.3）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.58,
+          "message": "拿碰撞轨迹后防御：每回合 7.1 → 6.9（需求 9.0）"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": -0.06,
+          "message": "拿碰撞轨迹后群伤：每回合 0.6 → 0.6（需求 3.7）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 明耀打击、锻打成型 让碰撞轨迹更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.06,
+          "message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       },
+       {
+        "id": "0:BULWARK",
+        "kind": "card",
+        "entity_id": "BULWARK",
+        "name": "铸墙",
+        "score": 47.4,
+        "deck_score": 47.4,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 5 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": 0.87,
+          "message": "拿铸墙后防御：每回合 7.1 → 7.4（需求 9.0）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.5,
+          "message": "拿铸墙后前期输出：每回合 22.0 → 21.0（需求 42.3）"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": -0.23,
+          "message": "拿铸墙后群伤：每回合 0.6 → 0.6（需求 3.7）"
+         },
+         {
+          "code": "deck_fitness:scaling",
+          "delta": -0.09,
+          "message": "拿铸墙后成长：每回合 0.4 → 0.3（需求 21.6）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 淬炼刀刃、锻打成型 让铸墙更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.11,
+          "message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "id": "T1",
+     "tool": "get_decision",
+     "result": {
+      "id": "F29-card",
+      "kind": "card_reward",
+      "floor": 29,
+      "act": 2,
+      "hp": 28,
+      "max_hp": 79,
+      "gold": 148,
+      "engine_top": "2:GATHER_LIGHT",
+      "confidence": "medium",
+      "policy_status": "recommend",
+      "pick_margin": 2,
+      "options": [
+       {
+        "id": "2:GATHER_LIGHT",
+        "kind": "card",
+        "entity_id": "GATHER_LIGHT",
+        "name": "收集光辉",
+        "score": 51.4,
+        "deck_score": 51.4,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 5 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": 4.58,
+          "message": "拿收集光辉后防御：每回合 7.1 → 7.9（需求 9.0）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.08,
+          "message": "拿收集光辉后前期输出：每回合 22.0 → 21.9（需求 42.3）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 星界脉冲、锻打成型 让收集光辉更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.56,
+          "message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": -0.0354,
+         "survival": 4.5791,
+         "long_term_growth": 0.0134,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 49.4,
+        "deck_score": 47.4,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 5 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0,
+          "message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 2,
+          "message": "第 2 幕：候选要比跳过高出 2 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0,
+         "survival": 0,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "1:COLLISION_COURSE",
+        "kind": "card",
+        "entity_id": "COLLISION_COURSE",
+        "name": "碰撞轨迹",
+        "score": 47.5,
+        "deck_score": 47.5,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 5 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.75,
+          "message": "拿碰撞轨迹后前期输出：每回合 22.0 → 23.7（需求 42.3）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.58,
+          "message": "拿碰撞轨迹后防御：每回合 7.1 → 6.9（需求 9.0）"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": -0.06,
+          "message": "拿碰撞轨迹后群伤：每回合 0.6 → 0.6（需求 3.7）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 明耀打击、锻打成型 让碰撞轨迹更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.06,
+          "message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0.6918,
+         "survival": -0.5822,
+         "long_term_growth": 0.0157,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "0:BULWARK",
+        "kind": "card",
+        "entity_id": "BULWARK",
+        "name": "铸墙",
+        "score": 47.4,
+        "deck_score": 47.4,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 5 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": 0.87,
+          "message": "拿铸墙后防御：每回合 7.1 → 7.4（需求 9.0）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.5,
+          "message": "拿铸墙后前期输出：每回合 22.0 → 21.0（需求 42.3）"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": -0.23,
+          "message": "拿铸墙后群伤：每回合 0.6 → 0.6（需求 3.7）"
+         },
+         {
+          "code": "deck_fitness:scaling",
+          "delta": -0.09,
+          "message": "拿铸墙后成长：每回合 0.4 → 0.3（需求 21.6）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 淬炼刀刃、锻打成型 让铸墙更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.11,
+          "message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": -0.7268,
+         "survival": 0.8687,
+         "long_term_growth": -0.1249,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       }
+      ],
+      "chosen": "skip",
+      "tier": 1,
+      "gap": 4,
+      "not_strict_because": []
+     }
+    },
+    {
+     "id": "T2",
+     "tool": "get_deck",
+     "result": {
+      "decision_id": "F29-card",
+      "floor": 29,
+      "act": 2,
+      "hp": 28,
+      "max_hp": 79,
+      "gold": 148,
+      "deck_size": 24,
+      "deck": [
+       {
+        "card": "ASTRAL_PULSE",
+        "name": "星界脉冲",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "BEAT_INTO_SHAPE",
+        "name": "锻打成型",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "BLACK_HOLE",
+        "name": "黑洞",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "CHARGE",
+        "name": "冲锋！！",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "CLOAK_OF_STARS",
+        "name": "群星斗篷",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "COSMIC_INDIFFERENCE",
+        "name": "宇宙冷漠",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "CRESCENT_SPEAR",
+        "name": "新月长矛",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "CRUSH_UNDER",
+        "name": "下砸",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "DEFEND_REGENT",
+        "name": "防御",
+        "upgrades": 0,
+        "count": 4
+       },
+       {
+        "card": "FALLING_STAR",
+        "name": "陨星",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "GATHER_LIGHT",
+        "name": "收集光辉",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "GUIDING_STAR",
+        "name": "引导之星",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "MANIFEST_AUTHORITY",
+        "name": "君权自授",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "MONOLOGUE",
+        "name": "独白",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "REFINE_BLADE",
+        "name": "淬炼刀刃",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "RESONANCE",
+        "name": "共鸣",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "SHINING_STRIKE",
+        "name": "明耀打击",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "SOLAR_STRIKE",
+        "name": "太阳打击",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "SPECTRUM_SHIFT",
+        "name": "光谱偏移",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "STRIKE_REGENT",
+        "name": "打击",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "VENERATE",
+        "name": "崇拜",
+        "upgrades": 0,
+        "count": 1
+       }
+      ],
+      "relics": [
+       {
+        "relic": "DIVINE_RIGHT",
+        "name": "天赋君权"
+       },
+       {
+        "relic": "LOST_COFFER",
+        "name": "失物盒"
+       },
+       {
+        "relic": "JUZU_BRACELET",
+        "name": "佛珠手链"
+       },
+       {
+        "relic": "STRIKE_DUMMY",
+        "name": "打击木偶"
+       },
+       {
+        "relic": "PAELS_BLOOD",
+        "name": "佩尔之血"
+       },
+       {
+        "relic": "STURDY_CLAMP",
+        "name": "坚固钳子"
+       }
+      ],
+      "potions": [
+       {
+        "potion": "SPEED_POTION",
+        "name": "速度药水"
+       },
+       {
+        "potion": "ATTACK_POTION",
+        "name": "攻击药水"
+       },
+       {
+        "potion": "ATTACK_POTION",
+        "name": "攻击药水"
+       }
+      ]
+     }
+    },
+    {
+     "id": "T3",
+     "tool": "compare_options",
+     "result": {
+      "decision_id": "F29-card",
+      "a": {
+       "id": "2:GATHER_LIGHT",
+       "name": "收集光辉",
+       "deck_score": 51.4,
+       "fully_scored": true
+      },
+      "b": {
+       "id": "skip",
+       "name": "跳过",
+       "deck_score": 47.4,
+       "fully_scored": true
+      },
+      "deck_score_difference": 4,
+      "factors": [
+       {
+        "factor": "deck_fitness:defense",
+        "a": 4.58,
+        "b": 0,
+        "difference": 4.58,
+        "a_message": "拿收集光辉后防御：每回合 7.1 → 7.9（需求 9.0）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:lookahead",
+        "a": -0.56,
+        "b": 0,
+        "difference": -0.56,
+        "a_message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度",
+        "b_message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "factor": "deck_fitness:frontload",
+        "a": -0.08,
+        "b": 0,
+        "difference": -0.08,
+        "a_message": "拿收集光辉后前期输出：每回合 22.0 → 21.9（需求 42.3）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:synergy",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组里的 星界脉冲、锻打成型 让收集光辉更有价值（说明，不另加分）",
+        "b_message": null
+       },
+       {
+        "factor": "estimate_scope",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 5 张牌未完整计入评分，分数只反映已计入的部分。",
+        "b_message": "牌组中 5 张牌未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "factor": "partially_modeled_deck_cards",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）有部分效果尚未计入评分。",
+        "b_message": "牌组中 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）有部分效果尚未计入评分。"
+       }
+      ],
+      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
+     }
+    },
+    {
+     "id": "T4",
+     "tool": "get_card",
+     "result": {
+      "id": "GATHER_LIGHT",
+      "name": "收集光辉",
+      "description": "获得8点格挡。\n获得。",
+      "cost": 1,
+      "type": "技能",
+      "rarity": "普通",
+      "color": "regent",
+      "target": "Self",
+      "block": 8,
+      "upgrade_description": "获得11点格挡。\n获得。"
+     }
+    },
+    {
+     "id": "T5",
+     "tool": "what_if_choices",
+     "result": {
+      "remove": [
+       "ASTRAL_PULSE",
+       "BEAT_INTO_SHAPE",
+       "BLACK_HOLE",
+       "CHARGE",
+       "CLOAK_OF_STARS",
+       "COSMIC_INDIFFERENCE",
+       "CRESCENT_SPEAR",
+       "CRUSH_UNDER",
+       "DEFEND_REGENT",
+       "FALLING_STAR",
+       "GATHER_LIGHT",
+       "GUIDING_STAR",
+       "MANIFEST_AUTHORITY",
+       "MONOLOGUE",
+       "REFINE_BLADE",
+       "RESONANCE",
+       "SHINING_STRIKE",
+       "SOLAR_STRIKE",
+       "SPECTRUM_SHIFT",
+       "STRIKE_REGENT",
+       "VENERATE"
+      ],
+      "upgrade": [
+       "ASTRAL_PULSE",
+       "BLACK_HOLE",
+       "CHARGE",
+       "COSMIC_INDIFFERENCE",
+       "CRESCENT_SPEAR",
+       "CRUSH_UNDER",
+       "DEFEND_REGENT",
+       "GATHER_LIGHT",
+       "GUIDING_STAR",
+       "MANIFEST_AUTHORITY",
+       "MONOLOGUE",
+       "REFINE_BLADE",
+       "RESONANCE",
+       "SHINING_STRIKE",
+       "SOLAR_STRIKE",
+       "SPECTRUM_SHIFT",
+       "STRIKE_REGENT",
+       "VENERATE"
+      ],
+      "add": [
+       {
+        "card": "ASTRAL_PULSE",
+        "name": "星界脉冲"
+       },
+       {
+        "card": "BEAT_INTO_SHAPE",
+        "name": "锻打成型"
+       },
+       {
+        "card": "BIG_BANG",
+        "name": "大爆炸"
+       },
+       {
+        "card": "BLACK_HOLE",
+        "name": "黑洞"
+       },
+       {
+        "card": "CELESTIAL_MIGHT",
+        "name": "天穹之力"
+       },
+       {
+        "card": "CHARGE",
+        "name": "冲锋！！"
+       },
+       {
+        "card": "CLOAK_OF_STARS",
+        "name": "群星斗篷"
+       },
+       {
+        "card": "COSMIC_INDIFFERENCE",
+        "name": "宇宙冷漠"
+       },
+       {
+        "card": "CRESCENT_SPEAR",
+        "name": "新月长矛"
+       },
+       {
+        "card": "CRUSH_UNDER",
+        "name": "下砸"
+       },
+       {
+        "card": "DYING_STAR",
+        "name": "星灭"
+       },
+       {
+        "card": "ENTROPY",
+        "name": "熵"
+       },
+       {
+        "card": "GATHER_LIGHT",
+        "name": "收集光辉"
+       },
+       {
+        "card": "GLITTERSTREAM",
+        "name": "流光溢彩"
+       },
+       {
+        "card": "GLOW",
+        "name": "辉光"
+       },
+       {
+        "card": "GUARDS",
+        "name": "护驾！！！"
+       },
+       {
+        "card": "GUIDING_STAR",
+        "name": "引导之星"
+       },
+       {
+        "card": "HAND_OF_GREED",
+        "name": "贪婪之手"
+       },
+       {
+        "card": "HIDDEN_CACHE",
+        "name": "隐秘藏品"
+       },
+       {
+        "card": "MANIFEST_AUTHORITY",
+        "name": "君权自授"
+       },
+       {
+        "card": "MONARCHS_GAZE",
+        "name": "王之凝视"
+       },
+       {
+        "card": "OMNISLICE",
+        "name": "万向斩"
+       },
+       {
+        "card": "PALE_BLUE_DOT",
+        "name": "暗淡蓝点"
+       },
+       {
+        "card": "PHOTON_CUT",
+        "name": "光子切割"
+       },
+       {
+        "card": "PILLAR_OF_CREATION",
+        "name": "创世之柱"
+       },
+       {
+        "card": "PROLONG",
+        "name": "延伸"
+       },
+       {
+        "card": "PROPHESIZE",
+        "name": "预言"
+       },
+       {
+        "card": "QUASAR",
+        "name": "类星体"
+       },
+       {
+        "card": "REFINE_BLADE",
+        "name": "淬炼刀刃"
+       },
+       {
+        "card": "REFLECT",
+        "name": "倒映"
+       },
+       {
+        "card": "RESONANCE",
+        "name": "共鸣"
+       },
+       {
+        "card": "ROYAL_GAMBLE",
+        "name": "胜券在王"
+       },
+       {
+        "card": "SEVEN_STARS",
+        "name": "七星"
+       },
+       {
+        "card": "SHINING_STRIKE",
+        "name": "明耀打击"
+       },
+       {
+        "card": "SOLAR_STRIKE",
+        "name": "太阳打击"
+       },
+       {
+        "card": "SUMMON_FORTH",
+        "name": "征召上前"
+       },
+       {
+        "card": "WROUGHT_IN_WAR",
+        "name": "战火铸就"
+       }
+      ]
+     }
+    },
+    {
+     "id": "T6",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F29-card",
+      "changes": [
+       {
+        "operation": "remove",
+        "card": "STRIKE_REGENT",
+        "name": "打击"
+       }
+      ],
+      "engine_top_before": "2:GATHER_LIGHT",
+      "engine_top_after": "2:GATHER_LIGHT",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 4.1,
+      "options_after": [
+       {
+        "id": "2:GATHER_LIGHT",
+        "name": "收集光辉",
+        "deck_score": 52.9,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 48.8,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "1:COLLISION_COURSE",
+        "name": "碰撞轨迹",
+        "deck_score": 48.7,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "0:BULWARK",
+        "name": "铸墙",
+        "deck_score": 48.7,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    }
+   ],
+   "toolCalls": 6,
+   "repairs": 0,
+   "usage": {
+    "prompt_tokens": 28488,
+    "completion_tokens": 641,
+    "cost_usd": 0.004272912,
+    "llm_calls": 5
+   },
+   "finding": {
+    "decision_id": "F29-card",
+    "reasons": [
+     {
+      "factor": "deck_fitness:defense",
+      "evidence": "T3",
+      "text": "引擎最看重防御：拿收集光辉后每回合格挡 7.1 → 7.9，需求 9.0，这是差距最大的一项。"
+     },
+     {
+      "factor": "deck_fitness:frontload",
+      "evidence": "T3",
+      "text": "代价很小：前期输出每回合 22.0 → 21.9，几乎不变，而需求是 42.3。"
+     },
+     {
+      "factor": "deck_fitness:lookahead",
+      "evidence": "T3",
+      "text": "唯一减分是后续选牌空间：计入下一次选牌后适合度略降，但幅度远小于防御收益。"
+     }
+    ],
+    "what_if_evidence": "T6",
+    "what_if_text": "试着去掉一张打击后，引擎首选仍是收集光辉，差距 4.1，说明这不是牌组里某张牌造成的偏差。",
+    "advice": "血量 28/79 偏低时，优先看每回合格挡能否接近 9.0 的需求，1 费 8 格挡的普通技能也能补上这块。"
+   }
+  },
+  {
+   "flag": "F03-card",
+   "status": "verified",
+   "errors": [],
+   "evidence": [
+    {
+     "id": "T0",
+     "tool": "get_decision",
+     "result": {
+      "id": "F03-card",
+      "kind": "card_reward",
+      "floor": 3,
+      "act": 1,
+      "hp": 68,
+      "max_hp": 75,
+      "gold": 132,
+      "engine_top": "1:CRUSH_UNDER",
+      "confidence": "medium",
+      "chosen": "0:RESONANCE",
+      "tier": 1,
+      "gap": 3.1,
+      "pick_margin": 1,
+      "options": [
+       {
+        "id": "1:CRUSH_UNDER",
+        "kind": "card",
+        "entity_id": "CRUSH_UNDER",
+        "name": "下砸",
+        "score": 52.1,
+        "deck_score": 52.1,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（独白）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": 2.67,
+          "message": "拿下砸后群伤：每回合 0.0 → 0.9（需求 4.9）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.62,
+          "message": "拿下砸后前期输出：每回合 16.9 → 17.6（需求 21.7）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.16,
+          "message": "拿下砸后防御：每回合 6.0 → 5.8（需求 5.5）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -1.07,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       },
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 51.1,
+        "deck_score": 50.1,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（独白）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 1,
+          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ]
+       },
+       {
+        "id": "0:RESONANCE",
+        "kind": "card",
+        "entity_id": "RESONANCE",
+        "name": "共鸣",
+        "score": 49,
+        "deck_score": 49,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（独白）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -2.41,
+          "message": "拿共鸣后前期输出：每回合 16.9 → 14.2（需求 21.7）"
+         },
+         {
+          "code": "deck_fitness:scaling",
+          "delta": 1.6,
+          "message": "拿共鸣后成长：每回合 0.0 → 0.7（需求 9.4）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.14,
+          "message": "拿共鸣后防御：每回合 6.0 → 5.8（需求 5.5）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 崇拜、独白 让共鸣更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.08,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       },
+       {
+        "id": "2:WROUGHT_IN_WAR",
+        "kind": "card",
+        "entity_id": "WROUGHT_IN_WAR",
+        "name": "战火铸就",
+        "score": 49,
+        "deck_score": 49,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（独白）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -2.22,
+          "message": "拿战火铸就后防御：每回合 6.0 → 5.0（需求 5.5）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 1.98,
+          "message": "拿战火铸就后前期输出：每回合 16.9 → 19.3（需求 21.7）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 陨星 让战火铸就更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.82,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "id": "T1",
+     "tool": "get_decision",
+     "result": {
+      "id": "F03-card",
+      "kind": "card_reward",
+      "floor": 3,
+      "act": 1,
+      "hp": 68,
+      "max_hp": 75,
+      "gold": 132,
+      "engine_top": "1:CRUSH_UNDER",
+      "confidence": "medium",
+      "policy_status": "recommend",
+      "pick_margin": 1,
+      "options": [
+       {
+        "id": "1:CRUSH_UNDER",
+        "kind": "card",
+        "entity_id": "CRUSH_UNDER",
+        "name": "下砸",
+        "score": 52.1,
+        "deck_score": 52.1,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（独白）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": 2.67,
+          "message": "拿下砸后群伤：每回合 0.0 → 0.9（需求 4.9）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.62,
+          "message": "拿下砸后前期输出：每回合 16.9 → 17.6（需求 21.7）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.16,
+          "message": "拿下砸后防御：每回合 6.0 → 5.8（需求 5.5）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -1.07,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 3.2877,
+         "survival": -0.1567,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 51.1,
+        "deck_score": 50.1,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（独白）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 1,
+          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0,
+         "survival": 0,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "0:RESONANCE",
+        "kind": "card",
+        "entity_id": "RESONANCE",
+        "name": "共鸣",
+        "score": 49,
+        "deck_score": 49,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（独白）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -2.41,
+          "message": "拿共鸣后前期输出：每回合 16.9 → 14.2（需求 21.7）"
+         },
+         {
+          "code": "deck_fitness:scaling",
+          "delta": 1.6,
+          "message": "拿共鸣后成长：每回合 0.0 → 0.7（需求 9.4）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.14,
+          "message": "拿共鸣后防御：每回合 6.0 → 5.8（需求 5.5）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 崇拜、独白 让共鸣更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.08,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": -2.4145,
+         "survival": -0.1398,
+         "long_term_growth": 1.5976,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "2:WROUGHT_IN_WAR",
+        "kind": "card",
+        "entity_id": "WROUGHT_IN_WAR",
+        "name": "战火铸就",
+        "score": 49,
+        "deck_score": 49,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（独白）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -2.22,
+          "message": "拿战火铸就后防御：每回合 6.0 → 5.0（需求 5.5）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 1.98,
+          "message": "拿战火铸就后前期输出：每回合 16.9 → 19.3（需求 21.7）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 陨星 让战火铸就更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.82,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 1.9785,
+         "survival": -2.2247,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       }
+      ],
+      "chosen": "0:RESONANCE",
+      "tier": 1,
+      "gap": 3.1,
+      "not_strict_because": []
+     }
+    },
+    {
+     "id": "T2",
+     "tool": "compare_options",
+     "result": {
+      "decision_id": "F03-card",
+      "a": {
+       "id": "1:CRUSH_UNDER",
+       "name": "下砸",
+       "deck_score": 52.1,
+       "fully_scored": true
+      },
+      "b": {
+       "id": "0:RESONANCE",
+       "name": "共鸣",
+       "deck_score": 49,
+       "fully_scored": true
+      },
+      "deck_score_difference": 3.1,
+      "factors": [
+       {
+        "factor": "deck_fitness:frontload",
+        "a": 0.62,
+        "b": -2.41,
+        "difference": 3.03,
+        "a_message": "拿下砸后前期输出：每回合 16.9 → 17.6（需求 21.7）",
+        "b_message": "拿共鸣后前期输出：每回合 16.9 → 14.2（需求 21.7）"
+       },
+       {
+        "factor": "deck_fitness:aoe",
+        "a": 2.67,
+        "b": 0,
+        "difference": 2.67,
+        "a_message": "拿下砸后群伤：每回合 0.0 → 0.9（需求 4.9）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:scaling",
+        "a": 0,
+        "b": 1.6,
+        "difference": -1.6,
+        "a_message": null,
+        "b_message": "拿共鸣后成长：每回合 0.0 → 0.7（需求 9.4）"
+       },
+       {
+        "factor": "deck_fitness:lookahead",
+        "a": -1.07,
+        "b": -0.08,
+        "difference": -0.99,
+        "a_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度",
+        "b_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "factor": "deck_fitness:defense",
+        "a": -0.16,
+        "b": -0.14,
+        "difference": -0.02,
+        "a_message": "拿下砸后防御：每回合 6.0 → 5.8（需求 5.5）",
+        "b_message": "拿共鸣后防御：每回合 6.0 → 5.8（需求 5.5）"
+       },
+       {
+        "factor": "deck_fitness:synergy",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": null,
+        "b_message": "牌组里的 崇拜、独白 让共鸣更有价值（说明，不另加分）"
+       },
+       {
+        "factor": "estimate_scope",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。",
+        "b_message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "factor": "partially_modeled_deck_cards",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 1 张牌（独白）有部分效果尚未计入评分。",
+        "b_message": "牌组中 1 张牌（独白）有部分效果尚未计入评分。"
+       }
+      ],
+      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
+     }
+    },
+    {
+     "id": "T3",
+     "tool": "get_deck",
+     "result": {
+      "decision_id": "F03-card",
+      "floor": 3,
+      "act": 1,
+      "hp": 68,
+      "max_hp": 75,
+      "gold": 132,
+      "deck_size": 12,
+      "deck": [
+       {
+        "card": "DEFEND_REGENT",
+        "name": "防御",
+        "upgrades": 0,
+        "count": 4
+       },
+       {
+        "card": "FALLING_STAR",
+        "name": "陨星",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "MONOLOGUE",
+        "name": "独白",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "REFINE_BLADE",
+        "name": "淬炼刀刃",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "STRIKE_REGENT",
+        "name": "打击",
+        "upgrades": 0,
+        "count": 4
+       },
+       {
+        "card": "VENERATE",
+        "name": "崇拜",
+        "upgrades": 0,
+        "count": 1
+       }
+      ],
+      "relics": [
+       {
+        "relic": "DIVINE_RIGHT",
+        "name": "天赋君权"
+       },
+       {
+        "relic": "LOST_COFFER",
+        "name": "失物盒"
+       }
+      ],
+      "potions": [
+       {
+        "potion": "COLORLESS_POTION",
+        "name": "无色药水"
+       },
+       {
+        "potion": "POWER_POTION",
+        "name": "能力药水"
+       }
+      ]
+     }
+    },
+    {
+     "id": "T4",
+     "tool": "what_if_choices",
+     "result": {
+      "remove": [
+       "DEFEND_REGENT",
+       "FALLING_STAR",
+       "MONOLOGUE",
+       "REFINE_BLADE",
+       "STRIKE_REGENT",
+       "VENERATE"
+      ],
+      "upgrade": [
+       "DEFEND_REGENT",
+       "FALLING_STAR",
+       "MONOLOGUE",
+       "REFINE_BLADE",
+       "STRIKE_REGENT",
+       "VENERATE"
+      ],
+      "add": [
+       {
+        "card": "REFINE_BLADE",
+        "name": "淬炼刀刃"
+       },
+       {
+        "card": "ROYAL_GAMBLE",
+        "name": "胜券在王"
+       },
+       {
+        "card": "SOLAR_STRIKE",
+        "name": "太阳打击"
+       }
+      ]
+     }
+    },
+    {
+     "id": "T5",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F03-card",
+      "changes": [
+       {
+        "operation": "add",
+        "card": "SOLAR_STRIKE",
+        "name": "太阳打击"
+       }
+      ],
+      "engine_top_before": "1:CRUSH_UNDER",
+      "engine_top_after": "1:CRUSH_UNDER",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 1.7,
+      "options_after": [
+       {
+        "id": "1:CRUSH_UNDER",
+        "name": "下砸",
+        "deck_score": 51.4,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 49.5,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "0:RESONANCE",
+        "name": "共鸣",
+        "deck_score": 49.7,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "2:WROUGHT_IN_WAR",
+        "name": "战火铸就",
+        "deck_score": 48.5,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    }
+   ],
+   "toolCalls": 5,
+   "repairs": 0,
+   "usage": {
+    "prompt_tokens": 20075,
+    "completion_tokens": 636,
+    "cost_usd": 0.002194596,
+    "llm_calls": 4
+   },
+   "finding": {
+    "decision_id": "F03-card",
+    "reasons": [
+     {
+      "factor": "deck_fitness:frontload",
+      "evidence": "T2",
+      "text": "前期输出是最大差距：拿下砸每回合 16.9 → 17.6，拿共鸣反而降到 14.2，而需求是 21.7。"
+     },
+     {
+      "factor": "deck_fitness:aoe",
+      "evidence": "T2",
+      "text": "群伤方面下砸从每回合 0.0 提到 0.9（需求 4.9），共鸣在这项没有贡献。"
+     },
+     {
+      "factor": "deck_fitness:scaling",
+      "evidence": "T2",
+      "text": "共鸣的长处是成长：每回合 0.0 → 0.7，但需求 9.4，离得还很远，抵不过前期输出的损失。"
+     }
+    ],
+    "what_if_evidence": "T5",
+    "what_if_text": "假设之前多拿一张太阳打击，引擎仍选下砸，差距从 3.1 缩到 1.7，说明补前期输出能拉近两者。",
+    "advice": "第 1 幕前期输出只有 16.9、需求 21.7，优先补能立刻打伤害的牌，成长牌可以等输出够用后再考虑。"
+   }
+  },
+  {
+   "flag": "F05-card",
+   "status": "verified",
+   "errors": [],
+   "evidence": [
+    {
+     "id": "T0",
+     "tool": "get_decision",
+     "result": {
+      "id": "F05-card",
+      "kind": "card_reward",
+      "floor": 5,
+      "act": 1,
+      "hp": 61,
+      "max_hp": 75,
+      "gold": 144,
+      "engine_top": "1:GLOW",
+      "confidence": "medium",
+      "chosen": "0:CHARGE",
+      "tier": 1,
+      "gap": 2,
+      "pick_margin": 1,
+      "options": [
+       {
+        "id": "1:GLOW",
+        "kind": "card",
+        "entity_id": "GLOW",
+        "name": "辉光",
+        "score": 51.8,
+        "deck_score": 51.8,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（独白）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": 4.11,
+          "message": "拿辉光后循环：每回合额外抽牌 0.00 → 0.38（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.18,
+          "message": "拿辉光后防御：每回合 6.3 → 6.0（需求 5.6）"
+         },
+         {
+          "code": "deck_fitness:scaling",
+          "delta": 0.16,
+          "message": "拿辉光后成长：每回合 0.7 → 0.8（需求 10.2）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.09,
+          "message": "拿辉光后前期输出：每回合 13.5 → 13.6（需求 23.0）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 陨星、共鸣 让辉光更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -1.41,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       },
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 50,
+        "deck_score": 49,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（独白）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 1,
+          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ]
+       },
+       {
+        "id": "2:HIDDEN_CACHE",
+        "kind": "card",
+        "entity_id": "HIDDEN_CACHE",
+        "name": "隐秘藏品",
+        "score": 49.9,
+        "deck_score": 49.9,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（独白）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:scaling",
+          "delta": 0.35,
+          "message": "拿隐秘藏品后成长：每回合 0.7 → 0.9（需求 10.2）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 0.24,
+          "message": "拿隐秘藏品后前期输出：每回合 13.5 → 13.8（需求 23.0）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.11,
+          "message": "拿隐秘藏品后防御：每回合 6.3 → 6.1（需求 5.6）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 陨星、共鸣 让隐秘藏品更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0.38,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       },
+       {
+        "id": "0:CHARGE",
+        "kind": "card",
+        "entity_id": "CHARGE",
+        "name": "冲锋！！",
+        "score": 49.8,
+        "deck_score": 49.8,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（独白）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 3.1,
+          "message": "拿冲锋！！后前期输出：每回合 13.5 → 17.1（需求 23.0）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.35,
+          "message": "拿冲锋！！后防御：每回合 6.3 → 5.8（需求 5.6）"
+         },
+         {
+          "code": "deck_fitness:scaling",
+          "delta": 0.14,
+          "message": "拿冲锋！！后成长：每回合 0.7 → 0.8（需求 10.2）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 陨星、共鸣 让冲锋！！更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -2.07,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "id": "T1",
+     "tool": "compare_options",
+     "result": {
+      "decision_id": "F05-card",
+      "a": {
+       "id": "1:GLOW",
+       "name": "辉光",
+       "deck_score": 51.8,
+       "fully_scored": true
+      },
+      "b": {
+       "id": "0:CHARGE",
+       "name": "冲锋！！",
+       "deck_score": 49.8,
+       "fully_scored": true
+      },
+      "deck_score_difference": 2,
+      "factors": [
+       {
+        "factor": "deck_fitness:cycle",
+        "a": 4.11,
+        "b": 0,
+        "difference": 4.11,
+        "a_message": "拿辉光后循环：每回合额外抽牌 0.00 → 0.38（需求 1.0）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:frontload",
+        "a": 0.09,
+        "b": 3.1,
+        "difference": -3.01,
+        "a_message": "拿辉光后前期输出：每回合 13.5 → 13.6（需求 23.0）",
+        "b_message": "拿冲锋！！后前期输出：每回合 13.5 → 17.1（需求 23.0）"
+       },
+       {
+        "factor": "deck_fitness:lookahead",
+        "a": -1.41,
+        "b": -2.07,
+        "difference": 0.66,
+        "a_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度",
+        "b_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "factor": "deck_fitness:defense",
+        "a": -0.18,
+        "b": -0.35,
+        "difference": 0.17,
+        "a_message": "拿辉光后防御：每回合 6.3 → 6.0（需求 5.6）",
+        "b_message": "拿冲锋！！后防御：每回合 6.3 → 5.8（需求 5.6）"
+       },
+       {
+        "factor": "deck_fitness:scaling",
+        "a": 0.16,
+        "b": 0.14,
+        "difference": 0.02,
+        "a_message": "拿辉光后成长：每回合 0.7 → 0.8（需求 10.2）",
+        "b_message": "拿冲锋！！后成长：每回合 0.7 → 0.8（需求 10.2）"
+       },
+       {
+        "factor": "deck_fitness:synergy",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组里的 陨星、共鸣 让辉光更有价值（说明，不另加分）",
+        "b_message": "牌组里的 陨星、共鸣 让冲锋！！更有价值（说明，不另加分）"
+       },
+       {
+        "factor": "estimate_scope",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。",
+        "b_message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "factor": "partially_modeled_deck_cards",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 1 张牌（独白）有部分效果尚未计入评分。",
+        "b_message": "牌组中 1 张牌（独白）有部分效果尚未计入评分。"
+       }
+      ],
+      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
+     }
+    },
+    {
+     "id": "T2",
+     "tool": "get_deck",
+     "result": {
+      "decision_id": "F05-card",
+      "floor": 5,
+      "act": 1,
+      "hp": 61,
+      "max_hp": 75,
+      "gold": 144,
+      "deck_size": 12,
+      "deck": [
+       {
+        "card": "DEFEND_REGENT",
+        "name": "防御",
+        "upgrades": 0,
+        "count": 4
+       },
+       {
+        "card": "FALLING_STAR",
+        "name": "陨星",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "MONOLOGUE",
+        "name": "独白",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "REFINE_BLADE",
+        "name": "淬炼刀刃",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "RESONANCE",
+        "name": "共鸣",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "STRIKE_REGENT",
+        "name": "打击",
+        "upgrades": 0,
+        "count": 3
+       },
+       {
+        "card": "VENERATE",
+        "name": "崇拜",
+        "upgrades": 0,
+        "count": 1
+       }
+      ],
+      "relics": [
+       {
+        "relic": "DIVINE_RIGHT",
+        "name": "天赋君权"
+       },
+       {
+        "relic": "LOST_COFFER",
+        "name": "失物盒"
+       }
+      ],
+      "potions": [
+       {
+        "potion": "COLORLESS_POTION",
+        "name": "无色药水"
+       },
+       {
+        "potion": "POWER_POTION",
+        "name": "能力药水"
+       }
+      ]
+     }
+    },
+    {
+     "id": "T3",
+     "tool": "what_if_choices",
+     "result": {
+      "remove": [
+       "DEFEND_REGENT",
+       "FALLING_STAR",
+       "MONOLOGUE",
+       "REFINE_BLADE",
+       "RESONANCE",
+       "STRIKE_REGENT",
+       "VENERATE"
+      ],
+      "upgrade": [
+       "DEFEND_REGENT",
+       "FALLING_STAR",
+       "MONOLOGUE",
+       "REFINE_BLADE",
+       "RESONANCE",
+       "STRIKE_REGENT",
+       "VENERATE"
+      ],
+      "add": [
+       {
+        "card": "CRUSH_UNDER",
+        "name": "下砸"
+       },
+       {
+        "card": "REFINE_BLADE",
+        "name": "淬炼刀刃"
+       },
+       {
+        "card": "RESONANCE",
+        "name": "共鸣"
+       },
+       {
+        "card": "ROYAL_GAMBLE",
+        "name": "胜券在王"
+       },
+       {
+        "card": "SOLAR_STRIKE",
+        "name": "太阳打击"
+       },
+       {
+        "card": "WROUGHT_IN_WAR",
+        "name": "战火铸就"
+       }
+      ]
+     }
+    },
+    {
+     "id": "T4",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F05-card",
+      "changes": [
+       {
+        "operation": "remove",
+        "card": "STRIKE_REGENT",
+        "name": "打击"
+       }
+      ],
+      "engine_top_before": "1:GLOW",
+      "engine_top_after": "1:GLOW",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 0.8,
+      "options_after": [
+       {
+        "id": "1:GLOW",
+        "name": "辉光",
+        "deck_score": 52.3,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "0:CHARGE",
+        "name": "冲锋！！",
+        "deck_score": 51.5,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "2:HIDDEN_CACHE",
+        "name": "隐秘藏品",
+        "deck_score": 50.3,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 49.1,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    }
+   ],
+   "toolCalls": 4,
+   "repairs": 0,
+   "usage": {
+    "prompt_tokens": 16625,
+    "completion_tokens": 569,
+    "cost_usd": 0.0017565719999999996,
+    "llm_calls": 4
+   },
+   "finding": {
+    "decision_id": "F05-card",
+    "reasons": [
+     {
+      "factor": "deck_fitness:cycle",
+      "evidence": "T1",
+      "text": "辉光把每回合额外抽牌从 0.00 提到 0.38（需求 1.0），这是两者差距最大的一项。"
+     },
+     {
+      "factor": "deck_fitness:frontload",
+      "evidence": "T1",
+      "text": "冲锋！！把前期输出从 13.5 提到 17.1（需求 23.0），辉光只到 13.6，这一项玩家选得更强。"
+     },
+     {
+      "factor": "deck_fitness:lookahead",
+      "evidence": "T1",
+      "text": "计入后续 3 次选牌后，辉光的适合度损失比冲锋！！小一些，引擎因此整体略偏辉光。"
+     }
+    ],
+    "what_if_evidence": "T4",
+    "what_if_text": "若当时少一张打击，两者差距从 2 缩到 0.8，引擎仍选辉光，但已很接近。",
+    "advice": "牌组只有 12 张、抽牌几乎为零时，优先考虑能补循环的牌；若更缺前期输出，冲锋！！也说得通。"
+   }
+  }
+ ],
+ "summary": {
+  "text": "这些决定都低估了当下最紧的防御或输出缺口，应优先按每回合需求补足格挡或伤害，再考虑成长与循环。",
+  "source": "model",
+  "cost_usd": 0.00031560000000000003
+ },
+ "meta": {
+  "model": "deepseek-flash",
+  "cost_usd": 0.015546731999999999,
+  "seconds": 10.057,
+  "generated_at": "2026-11-01 14:42"
+ }
+}

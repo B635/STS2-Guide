@@ -33,7 +33,8 @@ const names = new Set(["血墙", "剑柄打击", "打击", "完美打击"]);
 const good: Finding = {
   decision_id: "F06-card",
   reasons: [{ factor: "deck_fitness:defense", evidence: "T0", text: "血墙把每回合防御从 6.9 提到 8.9，剑柄打击降到 6.4。" }],
-  what_if: { evidence: "T1", text: "改动后引擎仍选血墙，差距缩到 0.6。" },
+  what_if_evidence: "T1",
+  what_if_text: "改动后引擎仍选血墙，差距缩到 0.6。",
   advice: "防御不到需求 8.5 时，先补防御牌。",
 };
 
@@ -71,7 +72,8 @@ describe("verifier", () => {
     const bad = {
       ...good,
       decision_id: "F07-card",
-      what_if: { evidence: "T0", text: "这是一个失误。" },
+      what_if_evidence: "T0",
+      what_if_text: "这是一个失误。",
     };
     const errors = verifyFinding(bad, detail, evidence, names).errors;
     expect(errors).toContain("decision_id must be F06-card, got F07-card");

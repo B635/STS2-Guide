@@ -1,0 +1,2749 @@
+{
+ "run": "1772783591",
+ "set": "dev",
+ "model": "deepseek-flash",
+ "prompt_version": "p3",
+ "pre": {
+  "summary": {
+   "run_id": "1772783591",
+   "character": "NECROBINDER",
+   "ascension": 0,
+   "build_id": "v0.98.1",
+   "win": false,
+   "killed_by": "帝皇蟹",
+   "acts_reached": 2,
+   "last_scored_floor": 32,
+   "final_deck_size": 24,
+   "decisions_scored": {
+    "card_reward": 14,
+    "shop": 3,
+    "rest": 6
+   },
+   "decisions_skipped": {},
+   "agreement": {
+    "agree": 11,
+    "judged": 23,
+    "rate": 0.478
+   },
+   "tier1": [
+    "F20-card",
+    "F27-card"
+   ],
+   "tier2": [
+    "F02-card",
+    "F06-card",
+    "F09-card",
+    "F11-card",
+    "F12-rest",
+    "F17-card",
+    "F24-card",
+    "F25-rest",
+    "F28-card",
+    "F30-card"
+   ],
+   "warnings": []
+  },
+  "decisions": {
+   "decisions": [
+    {
+     "id": "F02-card",
+     "kind": "card_reward",
+     "floor": 2,
+     "act": 1,
+     "chosen": "0:NO_ESCAPE",
+     "chosen_name": "无处可逃",
+     "engine_top": "2:INVOKE",
+     "engine_top_name": "唤起",
+     "confidence": "low",
+     "tier": 2,
+     "gap": 0.6,
+     "not_strict_because": [
+      "partly_scored",
+      "low_confidence",
+      "small_gap"
+     ]
+    },
+    {
+     "id": "F05-card",
+     "kind": "card_reward",
+     "floor": 5,
+     "act": 1,
+     "chosen": "0:POKE",
+     "chosen_name": "戳击",
+     "engine_top": "0:POKE",
+     "engine_top_name": "戳击",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F06-card",
+     "kind": "card_reward",
+     "floor": 6,
+     "act": 1,
+     "chosen": "0:SNAP",
+     "chosen_name": "响指",
+     "engine_top": "1:DELAY",
+     "engine_top_name": "拖延",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": 3.1,
+     "not_strict_because": [
+      "partly_scored"
+     ]
+    },
+    {
+     "id": "F08-shop",
+     "kind": "shop",
+     "floor": 8,
+     "act": 1,
+     "chosen": "leave",
+     "chosen_name": "离开商店",
+     "engine_top": "leave",
+     "engine_top_name": "离开商店",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F09-card",
+     "kind": "card_reward",
+     "floor": 9,
+     "act": 1,
+     "chosen": "0:DRAIN_POWER",
+     "chosen_name": "能量汲取",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "low",
+     "tier": 2,
+     "gap": 0.7,
+     "not_strict_because": [
+      "low_confidence",
+      "small_gap"
+     ]
+    },
+    {
+     "id": "F11-card",
+     "kind": "card_reward",
+     "floor": 11,
+     "act": 1,
+     "chosen": "0:REAVE",
+     "chosen_name": "剥夺",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": -0.2,
+     "not_strict_because": [
+      "small_gap"
+     ]
+    },
+    {
+     "id": "F12-rest",
+     "kind": "rest",
+     "floor": 12,
+     "act": 1,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:HEAL",
+     "engine_top_name": "休息",
+     "confidence": "low",
+     "tier": 2,
+     "gap": 13.28,
+     "not_strict_because": [
+      "partly_scored",
+      "low_confidence"
+     ]
+    },
+    {
+     "id": "F13-card",
+     "kind": "card_reward",
+     "floor": 13,
+     "act": 1,
+     "chosen": "0:NEGATIVE_PULSE",
+     "chosen_name": "负能量脉冲",
+     "engine_top": "0:NEGATIVE_PULSE",
+     "engine_top_name": "负能量脉冲",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F14-shop",
+     "kind": "shop",
+     "floor": 14,
+     "act": 1,
+     "chosen": "removal",
+     "chosen_name": "删牌",
+     "engine_top": "removal",
+     "engine_top_name": "删牌",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F16-rest",
+     "kind": "rest",
+     "floor": 16,
+     "act": 1,
+     "chosen": "rest:HEAL",
+     "chosen_name": "休息",
+     "engine_top": "rest:HEAL",
+     "engine_top_name": "休息",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F17-card",
+     "kind": "card_reward",
+     "floor": 17,
+     "act": 1,
+     "chosen": "0:REAPER_FORM",
+     "chosen_name": "死神形态",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": 6.8,
+     "not_strict_because": [
+      "partly_scored"
+     ]
+    },
+    {
+     "id": "F19-card",
+     "kind": "card_reward",
+     "floor": 19,
+     "act": 2,
+     "chosen": "0:NEGATIVE_PULSE",
+     "chosen_name": "负能量脉冲",
+     "engine_top": "0:NEGATIVE_PULSE",
+     "engine_top_name": "负能量脉冲",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F20-card",
+     "kind": "card_reward",
+     "floor": 20,
+     "act": 2,
+     "chosen": "0:REAP",
+     "chosen_name": "收割",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 1,
+     "gap": 6,
+     "not_strict_because": []
+    },
+    {
+     "id": "F21-card",
+     "kind": "card_reward",
+     "floor": 21,
+     "act": 2,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F22-shop",
+     "kind": "shop",
+     "floor": 22,
+     "act": 2,
+     "chosen": "removal",
+     "chosen_name": "删牌",
+     "engine_top": "removal",
+     "engine_top_name": "删牌",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F23-rest",
+     "kind": "rest",
+     "floor": 23,
+     "act": 2,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F24-card",
+     "kind": "card_reward",
+     "floor": 24,
+     "act": 2,
+     "chosen": "0:DEATHS_DOOR",
+     "chosen_name": "死亡之门",
+     "engine_top": "1:WISP",
+     "engine_top_name": "鬼火",
+     "confidence": "low",
+     "tier": 2,
+     "gap": 0.6,
+     "not_strict_because": [
+      "partly_scored",
+      "low_confidence",
+      "small_gap"
+     ]
+    },
+    {
+     "id": "F25-rest",
+     "kind": "rest",
+     "floor": 25,
+     "act": 2,
+     "chosen": "rest:HEAL",
+     "chosen_name": "休息",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 2,
+     "gap": -12.88,
+     "not_strict_because": [
+      "partly_scored",
+      "low_confidence",
+      "small_gap"
+     ]
+    },
+    {
+     "id": "F27-card",
+     "kind": "card_reward",
+     "floor": 27,
+     "act": 2,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "1:DELAY",
+     "engine_top_name": "拖延",
+     "confidence": "medium",
+     "tier": 1,
+     "gap": 4.5,
+     "not_strict_because": []
+    },
+    {
+     "id": "F28-card",
+     "kind": "card_reward",
+     "floor": 28,
+     "act": 2,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "0:NEGATIVE_PULSE",
+     "engine_top_name": "负能量脉冲",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": 3.4,
+     "not_strict_because": [
+      "partly_scored"
+     ]
+    },
+    {
+     "id": "F29-rest",
+     "kind": "rest",
+     "floor": 29,
+     "act": 2,
+     "chosen": "rest:HEAL",
+     "chosen_name": "休息",
+     "engine_top": "rest:HEAL",
+     "engine_top_name": "休息",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F30-card",
+     "kind": "card_reward",
+     "floor": 30,
+     "act": 2,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "0:NEGATIVE_PULSE",
+     "engine_top_name": "负能量脉冲",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": 3.6,
+     "not_strict_because": [
+      "partly_scored"
+     ]
+    },
+    {
+     "id": "F32-rest",
+     "kind": "rest",
+     "floor": 32,
+     "act": 2,
+     "chosen": "rest:HEAL",
+     "chosen_name": "休息",
+     "engine_top": "rest:HEAL",
+     "engine_top_name": "休息",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    }
+   ],
+   "skipped": []
+  },
+  "flags": [
+   {
+    "id": "F20-card",
+    "kind": "card_reward",
+    "floor": 20,
+    "act": 2,
+    "hp": 58,
+    "max_hp": 73,
+    "gold": 172,
+    "engine_top": "skip",
+    "confidence": "medium",
+    "chosen": "0:REAP",
+    "tier": 1,
+    "gap": 6,
+    "pick_margin": 2,
+    "options": [
+     {
+      "id": "skip",
+      "kind": "skip",
+      "entity_id": null,
+      "name": "跳过",
+      "score": 37.3,
+      "deck_score": 35.3,
+      "rank": 1,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 13 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 13 张牌（厄运之衣、响指、无处可逃、末日降临、死神形态、致死性、荒疫打击、负能量脉冲、防御）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 护喉甲 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": 0,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "code": "deck_fitness:pick_margin",
+        "delta": 2,
+        "message": "第 2 幕：候选要比跳过高出 2 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0,
+       "survival": 0,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "1:SHROUD",
+      "kind": "card",
+      "entity_id": "SHROUD",
+      "name": "厄运之衣",
+      "score": 33.2,
+      "deck_score": 33.2,
+      "rank": 2,
+      "eligible": true,
+      "fully_scored": false,
+      "gaps": [
+       "power_mechanic_unsupported:SHROUD:power_applied"
+      ],
+      "factors": [
+       {
+        "code": "unmodeled_mechanic",
+        "delta": 0,
+        "message": "厄运之衣的部分效果尚未计入评分；牌组中 13 张牌、1 件遗物未完整计入评分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 13 张牌（厄运之衣、响指、无处可逃、末日降临、死神形态、致死性、荒疫打击、负能量脉冲、防御）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 护喉甲 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -1.48,
+        "message": "拿厄运之衣后防御：每回合 5.5 → 5.3（需求 7.7）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": -0.45,
+        "message": "拿厄运之衣后前期输出：每回合 17.4 → 16.6（需求 41.6）"
+       },
+       {
+        "code": "deck_fitness:aoe",
+        "delta": -0.18,
+        "message": "拿厄运之衣后群伤：每回合 6.5 → 6.3（需求 20.3）"
+       },
+       {
+        "code": "deck_fitness:cycle",
+        "delta": -0.09,
+        "message": "拿厄运之衣后循环：每回合额外抽牌 0.10 → 0.09（需求 1.0）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 死神形态 让厄运之衣更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": 0.05,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": -0.6251,
+       "survival": -1.4791,
+       "long_term_growth": -0.0938,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "2:HIGH_FIVE",
+      "kind": "card",
+      "entity_id": "HIGH_FIVE",
+      "name": "击掌",
+      "score": 32.4,
+      "deck_score": 32.4,
+      "rank": 3,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 13 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 13 张牌（厄运之衣、响指、无处可逃、末日降临、死神形态、致死性、荒疫打击、负能量脉冲、防御）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 护喉甲 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -2.68,
+        "message": "拿击掌后防御：每回合 5.5 → 5.1（需求 7.7）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": -0.17,
+        "message": "拿击掌后前期输出：每回合 17.4 → 17.1（需求 41.6）"
+       },
+       {
+        "code": "deck_fitness:cycle",
+        "delta": -0.13,
+        "message": "拿击掌后循环：每回合额外抽牌 0.10 → 0.09（需求 1.0）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 死神形态、重压 让击掌更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": 0.07,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": -0.1303,
+       "survival": -2.6823,
+       "long_term_growth": -0.1334,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "0:REAP",
+      "kind": "card",
+      "entity_id": "REAP",
+      "name": "收割",
+      "score": 29.3,
+      "deck_score": 29.3,
+      "rank": 4,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 13 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 13 张牌（厄运之衣、响指、无处可逃、末日降临、死神形态、致死性、荒疫打击、负能量脉冲、防御）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 护喉甲 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -7.14,
+        "message": "拿收割后防御：每回合 5.5 → 4.6（需求 7.7）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": 1.71,
+        "message": "拿收割后前期输出：每回合 17.4 → 20.5（需求 41.6）"
+       },
+       {
+        "code": "deck_fitness:aoe",
+        "delta": -0.82,
+        "message": "拿收割后群伤：每回合 6.5 → 5.2（需求 20.3）"
+       },
+       {
+        "code": "deck_fitness:cycle",
+        "delta": -0.28,
+        "message": "拿收割后循环：每回合额外抽牌 0.10 → 0.08（需求 1.0）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 鬼火、荒疫打击 让收割更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": 0.56,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0.8898,
+       "survival": -7.145,
+       "long_term_growth": -0.2791,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     }
+    ]
+   },
+   {
+    "id": "F27-card",
+    "kind": "card_reward",
+    "floor": 27,
+    "act": 2,
+    "hp": 40,
+    "max_hp": 73,
+    "gold": 163,
+    "engine_top": "1:DELAY",
+    "confidence": "medium",
+    "chosen": "skip",
+    "tier": 1,
+    "gap": 4.5,
+    "pick_margin": 2,
+    "options": [
+     {
+      "id": "1:DELAY",
+      "kind": "card",
+      "entity_id": "DELAY",
+      "name": "拖延",
+      "score": 36.7,
+      "deck_score": 36.7,
+      "rank": 1,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 14 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 14 张牌（厄运之衣、响指、无处可逃、末日降临、死亡之门、死神形态、致死性、荒疫打击、负能量脉冲、防御）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 护喉甲 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": 5.73,
+        "message": "拿拖延后防御：每回合 5.8 → 6.6（需求 8.2）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": -0.32,
+        "message": "拿拖延后前期输出：每回合 18.7 → 18.1（需求 47.6）"
+       },
+       {
+        "code": "deck_fitness:aoe",
+        "delta": -0.1,
+        "message": "拿拖延后群伤：每回合 4.8 → 4.6（需求 23.5）"
+       },
+       {
+        "code": "deck_fitness:cycle",
+        "delta": -0.09,
+        "message": "拿拖延后循环：每回合额外抽牌 0.08 → 0.07（需求 1.0）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 收割 让拖延更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": -0.69,
+        "message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": -0.4223,
+       "survival": 5.7315,
+       "long_term_growth": -0.0927,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "skip",
+      "kind": "skip",
+      "entity_id": null,
+      "name": "跳过",
+      "score": 34.2,
+      "deck_score": 32.2,
+      "rank": 2,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 14 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 14 张牌（厄运之衣、响指、无处可逃、末日降临、死亡之门、死神形态、致死性、荒疫打击、负能量脉冲、防御）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 护喉甲 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": 0,
+        "message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "code": "deck_fitness:pick_margin",
+        "delta": 2,
+        "message": "第 2 幕：候选要比跳过高出 2 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0,
+       "survival": 0,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "2:SHROUD",
+      "kind": "card",
+      "entity_id": "SHROUD",
+      "name": "厄运之衣",
+      "score": 31.3,
+      "deck_score": 31.3,
+      "rank": 3,
+      "eligible": true,
+      "fully_scored": false,
+      "gaps": [
+       "power_mechanic_unsupported:SHROUD:power_applied"
+      ],
+      "factors": [
+       {
+        "code": "unmodeled_mechanic",
+        "delta": 0,
+        "message": "厄运之衣的部分效果尚未计入评分；牌组中 14 张牌、1 件遗物未完整计入评分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 14 张牌（厄运之衣、响指、无处可逃、末日降临、死亡之门、死神形态、致死性、荒疫打击、负能量脉冲、防御）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 护喉甲 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -0.36,
+        "message": "拿厄运之衣后防御：每回合 5.8 → 5.8（需求 8.2）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": -0.3,
+        "message": "拿厄运之衣后前期输出：每回合 18.7 → 18.1（需求 47.6）"
+       },
+       {
+        "code": "deck_fitness:aoe",
+        "delta": -0.07,
+        "message": "拿厄运之衣后群伤：每回合 4.8 → 4.7（需求 23.5）"
+       },
+       {
+        "code": "deck_fitness:cycle",
+        "delta": -0.06,
+        "message": "拿厄运之衣后循环：每回合额外抽牌 0.08 → 0.08（需求 1.0）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 收割 让厄运之衣更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": -0.16,
+        "message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": -0.3704,
+       "survival": -0.3637,
+       "long_term_growth": -0.0562,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "0:TRANSFIGURE",
+      "kind": "card",
+      "entity_id": "TRANSFIGURE",
+      "name": "重构",
+      "score": 30.8,
+      "deck_score": 30.8,
+      "rank": 4,
+      "eligible": true,
+      "fully_scored": false,
+      "gaps": [
+       "card_effect_unsupported:TRANSFIGURE:effect:add_replay"
+      ],
+      "factors": [
+       {
+        "code": "unmodeled_mechanic",
+        "delta": 0,
+        "message": "重构的部分效果尚未计入评分；牌组中 14 张牌、1 件遗物未完整计入评分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 14 张牌（厄运之衣、响指、无处可逃、末日降临、死亡之门、死神形态、致死性、荒疫打击、负能量脉冲、防御）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 护喉甲 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -0.87,
+        "message": "拿重构后防御：每回合 5.8 → 5.7（需求 8.2）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": -0.3,
+        "message": "拿重构后前期输出：每回合 18.7 → 18.1（需求 47.6）"
+       },
+       {
+        "code": "deck_fitness:aoe",
+        "delta": -0.07,
+        "message": "拿重构后群伤：每回合 4.8 → 4.7（需求 23.5）"
+       },
+       {
+        "code": "deck_fitness:cycle",
+        "delta": -0.06,
+        "message": "拿重构后循环：每回合额外抽牌 0.08 → 0.08（需求 1.0）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 收割 让重构更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": -0.12,
+        "message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": -0.3739,
+       "survival": -0.867,
+       "long_term_growth": -0.0562,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "explained": [
+  {
+   "flag": "F20-card",
+   "status": "verified",
+   "errors": [],
+   "evidence": [
+    {
+     "id": "T0",
+     "tool": "get_decision",
+     "result": {
+      "id": "F20-card",
+      "kind": "card_reward",
+      "floor": 20,
+      "act": 2,
+      "hp": 58,
+      "max_hp": 73,
+      "gold": 172,
+      "engine_top": "skip",
+      "confidence": "medium",
+      "chosen": "0:REAP",
+      "tier": 1,
+      "gap": 6,
+      "pick_margin": 2,
+      "options": [
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 37.3,
+        "deck_score": 35.3,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 13 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 13 张牌（厄运之衣、响指、无处可逃、末日降临、死神形态、致死性、荒疫打击、负能量脉冲、防御）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 护喉甲 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 2,
+          "message": "第 2 幕：候选要比跳过高出 2 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ]
+       },
+       {
+        "id": "1:SHROUD",
+        "kind": "card",
+        "entity_id": "SHROUD",
+        "name": "厄运之衣",
+        "score": 33.2,
+        "deck_score": 33.2,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": false,
+        "gaps": [
+         "power_mechanic_unsupported:SHROUD:power_applied"
+        ],
+        "factors": [
+         {
+          "code": "unmodeled_mechanic",
+          "delta": 0,
+          "message": "厄运之衣的部分效果尚未计入评分；牌组中 13 张牌、1 件遗物未完整计入评分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 13 张牌（厄运之衣、响指、无处可逃、末日降临、死神形态、致死性、荒疫打击、负能量脉冲、防御）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 护喉甲 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -1.48,
+          "message": "拿厄运之衣后防御：每回合 5.5 → 5.3（需求 7.7）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.45,
+          "message": "拿厄运之衣后前期输出：每回合 17.4 → 16.6（需求 41.6）"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": -0.18,
+          "message": "拿厄运之衣后群伤：每回合 6.5 → 6.3（需求 20.3）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.09,
+          "message": "拿厄运之衣后循环：每回合额外抽牌 0.10 → 0.09（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 死神形态 让厄运之衣更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0.05,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       },
+       {
+        "id": "2:HIGH_FIVE",
+        "kind": "card",
+        "entity_id": "HIGH_FIVE",
+        "name": "击掌",
+        "score": 32.4,
+        "deck_score": 32.4,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 13 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 13 张牌（厄运之衣、响指、无处可逃、末日降临、死神形态、致死性、荒疫打击、负能量脉冲、防御）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 护喉甲 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -2.68,
+          "message": "拿击掌后防御：每回合 5.5 → 5.1（需求 7.7）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.17,
+          "message": "拿击掌后前期输出：每回合 17.4 → 17.1（需求 41.6）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.13,
+          "message": "拿击掌后循环：每回合额外抽牌 0.10 → 0.09（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 死神形态、重压 让击掌更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0.07,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       },
+       {
+        "id": "0:REAP",
+        "kind": "card",
+        "entity_id": "REAP",
+        "name": "收割",
+        "score": 29.3,
+        "deck_score": 29.3,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 13 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 13 张牌（厄运之衣、响指、无处可逃、末日降临、死神形态、致死性、荒疫打击、负能量脉冲、防御）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 护喉甲 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -7.14,
+          "message": "拿收割后防御：每回合 5.5 → 4.6（需求 7.7）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 1.71,
+          "message": "拿收割后前期输出：每回合 17.4 → 20.5（需求 41.6）"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": -0.82,
+          "message": "拿收割后群伤：每回合 6.5 → 5.2（需求 20.3）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.28,
+          "message": "拿收割后循环：每回合额外抽牌 0.10 → 0.08（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 鬼火、荒疫打击 让收割更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0.56,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "id": "T1",
+     "tool": "compare_options",
+     "result": {
+      "decision_id": "F20-card",
+      "a": {
+       "id": "0:REAP",
+       "name": "收割",
+       "deck_score": 29.3,
+       "fully_scored": true
+      },
+      "b": {
+       "id": "skip",
+       "name": "跳过",
+       "deck_score": 35.3,
+       "fully_scored": true
+      },
+      "deck_score_difference": -6,
+      "factors": [
+       {
+        "factor": "deck_fitness:defense",
+        "a": -7.14,
+        "b": 0,
+        "difference": -7.14,
+        "a_message": "拿收割后防御：每回合 5.5 → 4.6（需求 7.7）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:frontload",
+        "a": 1.71,
+        "b": 0,
+        "difference": 1.71,
+        "a_message": "拿收割后前期输出：每回合 17.4 → 20.5（需求 41.6）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:aoe",
+        "a": -0.82,
+        "b": 0,
+        "difference": -0.82,
+        "a_message": "拿收割后群伤：每回合 6.5 → 5.2（需求 20.3）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:lookahead",
+        "a": 0.56,
+        "b": 0,
+        "difference": 0.56,
+        "a_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度",
+        "b_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "factor": "deck_fitness:cycle",
+        "a": -0.28,
+        "b": 0,
+        "difference": -0.28,
+        "a_message": "拿收割后循环：每回合额外抽牌 0.10 → 0.08（需求 1.0）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:synergy",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组里的 鬼火、荒疫打击 让收割更有价值（说明，不另加分）",
+        "b_message": null
+       },
+       {
+        "factor": "estimate_scope",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 13 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。",
+        "b_message": "牌组中 13 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "factor": "partially_modeled_deck_cards",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 13 张牌（厄运之衣、响指、无处可逃、末日降临、死神形态、致死性、荒疫打击、负能量脉冲、防御）有部分效果尚未计入评分。",
+        "b_message": "牌组中 13 张牌（厄运之衣、响指、无处可逃、末日降临、死神形态、致死性、荒疫打击、负能量脉冲、防御）有部分效果尚未计入评分。"
+       },
+       {
+        "factor": "unmodeled_relics",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "遗物 护喉甲 尚未计入评分。",
+        "b_message": "遗物 护喉甲 尚未计入评分。"
+       }
+      ],
+      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
+     }
+    },
+    {
+     "id": "T2",
+     "tool": "get_deck",
+     "result": {
+      "decision_id": "F20-card",
+      "floor": 20,
+      "act": 2,
+      "hp": 58,
+      "max_hp": 73,
+      "gold": 172,
+      "deck_size": 23,
+      "deck": [
+       {
+        "card": "BLIGHT_STRIKE",
+        "name": "荒疫打击",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "BODYGUARD",
+        "name": "护卫",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "DEFEND_NECROBINDER",
+        "name": "防御",
+        "upgrades": 0,
+        "count": 4
+       },
+       {
+        "card": "DRAIN_POWER",
+        "name": "能量汲取",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "END_OF_DAYS",
+        "name": "末日降临",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "FLATTEN",
+        "name": "重压",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "LETHALITY",
+        "name": "致死性",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "NEGATIVE_PULSE",
+        "name": "负能量脉冲",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "NEGATIVE_PULSE",
+        "name": "负能量脉冲",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "NO_ESCAPE",
+        "name": "无处可逃",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "POKE",
+        "name": "戳击",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "REAPER_FORM",
+        "name": "死神形态",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "REAVE",
+        "name": "剥夺",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "SHROUD",
+        "name": "厄运之衣",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "SNAP",
+        "name": "响指",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "STRIKE_NECROBINDER",
+        "name": "打击",
+        "upgrades": 0,
+        "count": 3
+       },
+       {
+        "card": "UNLEASH",
+        "name": "出击",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "WISP",
+        "name": "鬼火",
+        "upgrades": 0,
+        "count": 1
+       }
+      ],
+      "relics": [
+       {
+        "relic": "BOUND_PHYLACTERY",
+        "name": "缚魂命匣"
+       },
+       {
+        "relic": "SCROLL_BOXES",
+        "name": "卷轴箱"
+       },
+       {
+        "relic": "STRAWBERRY",
+        "name": "草莓"
+       },
+       {
+        "relic": "GORGET",
+        "name": "护喉甲"
+       },
+       {
+        "relic": "PAELS_CLAW",
+        "name": "佩尔之爪"
+       }
+      ],
+      "potions": [
+       {
+        "potion": "RADIANT_TINCTURE",
+        "name": "明耀酊剂"
+       }
+      ]
+     }
+    },
+    {
+     "id": "T3",
+     "tool": "what_if_choices",
+     "result": {
+      "remove": [
+       "BLIGHT_STRIKE",
+       "BODYGUARD",
+       "DEFEND_NECROBINDER",
+       "DRAIN_POWER",
+       "END_OF_DAYS",
+       "FLATTEN",
+       "LETHALITY",
+       "NEGATIVE_PULSE",
+       "NO_ESCAPE",
+       "POKE",
+       "REAPER_FORM",
+       "REAVE",
+       "SHROUD",
+       "SNAP",
+       "STRIKE_NECROBINDER",
+       "UNLEASH",
+       "WISP"
+      ],
+      "upgrade": [
+       "BLIGHT_STRIKE",
+       "BODYGUARD",
+       "DEFEND_NECROBINDER",
+       "FLATTEN",
+       "LETHALITY",
+       "NEGATIVE_PULSE",
+       "NO_ESCAPE",
+       "POKE",
+       "REAPER_FORM",
+       "REAVE",
+       "SHROUD",
+       "SNAP",
+       "STRIKE_NECROBINDER",
+       "UNLEASH",
+       "WISP"
+      ],
+      "add": [
+       {
+        "card": "BLIGHT_STRIKE",
+        "name": "荒疫打击"
+       },
+       {
+        "card": "BURY",
+        "name": "埋葬"
+       },
+       {
+        "card": "DANSE_MACABRE",
+        "name": "死亡之舞"
+       },
+       {
+        "card": "DEBILITATE",
+        "name": "摧残"
+       },
+       {
+        "card": "DEFILE",
+        "name": "玷污"
+       },
+       {
+        "card": "DELAY",
+        "name": "拖延"
+       },
+       {
+        "card": "DRAIN_POWER",
+        "name": "能量汲取"
+       },
+       {
+        "card": "ERADICATE",
+        "name": "根除"
+       },
+       {
+        "card": "FLATTEN",
+        "name": "重压"
+       },
+       {
+        "card": "GOLD_AXE",
+        "name": "金斧"
+       },
+       {
+        "card": "HAND_OF_GREED",
+        "name": "贪婪之手"
+       },
+       {
+        "card": "INVOKE",
+        "name": "唤起"
+       },
+       {
+        "card": "JACK_OF_ALL_TRADES",
+        "name": "花样百出"
+       },
+       {
+        "card": "NEGATIVE_PULSE",
+        "name": "负能量脉冲"
+       },
+       {
+        "card": "NO_ESCAPE",
+        "name": "无处可逃"
+       },
+       {
+        "card": "PARSE",
+        "name": "领会"
+       },
+       {
+        "card": "POKE",
+        "name": "戳击"
+       },
+       {
+        "card": "PULL_AGGRO",
+        "name": "吸引仇恨"
+       },
+       {
+        "card": "PULL_FROM_BELOW",
+        "name": "亡魂牵引"
+       },
+       {
+        "card": "RATTLE",
+        "name": "猛晃"
+       },
+       {
+        "card": "REAPER_FORM",
+        "name": "死神形态"
+       },
+       {
+        "card": "REAVE",
+        "name": "剥夺"
+       },
+       {
+        "card": "RESTLESSNESS",
+        "name": "心神不宁"
+       },
+       {
+        "card": "RIGHT_HAND_HAND",
+        "name": "得力助手"
+       },
+       {
+        "card": "SEANCE",
+        "name": "降灵"
+       },
+       {
+        "card": "SNAP",
+        "name": "响指"
+       },
+       {
+        "card": "SPIRIT_OF_ASH",
+        "name": "灰烬之灵"
+       },
+       {
+        "card": "SPUR",
+        "name": "增生"
+       },
+       {
+        "card": "WISP",
+        "name": "鬼火"
+       }
+      ]
+     }
+    },
+    {
+     "id": "T4",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F20-card",
+      "changes": [
+       {
+        "operation": "remove",
+        "card": "STRIKE_NECROBINDER",
+        "name": "打击"
+       },
+       {
+        "operation": "add",
+        "card": "DELAY",
+        "name": "拖延"
+       }
+      ],
+      "engine_top_before": "skip",
+      "engine_top_after": "skip",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 6.1,
+      "options_after": [
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 42.4,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "1:SHROUD",
+        "name": "厄运之衣",
+        "deck_score": 40.4,
+        "rank": 2,
+        "fully_scored": false
+       },
+       {
+        "id": "2:HIGH_FIVE",
+        "name": "击掌",
+        "deck_score": 39.8,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "0:REAP",
+        "name": "收割",
+        "deck_score": 36.3,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    }
+   ],
+   "toolCalls": 4,
+   "repairs": 0,
+   "usage": {
+    "prompt_tokens": 19588,
+    "completion_tokens": 564,
+    "cost_usd": 0.002074992,
+    "llm_calls": 4
+   },
+   "finding": {
+    "decision_id": "F20-card",
+    "reasons": [
+     {
+      "factor": "deck_fitness:defense",
+      "evidence": "T1",
+      "text": "拿收割后防御每回合 5.5 → 4.6，需求 7.7，防御缺口是差距最大的一项。"
+     },
+     {
+      "factor": "deck_fitness:frontload",
+      "evidence": "T1",
+      "text": "收割确实让前期输出 17.4 → 20.5，但需求 41.6，这点提升补不上防御的损失。"
+     },
+     {
+      "factor": "deck_fitness:aoe",
+      "evidence": "T1",
+      "text": "群伤每回合 6.5 → 5.2，需求 20.3，收割在群伤上也是往下走。"
+     }
+    ],
+    "what_if_evidence": "T4",
+    "what_if_text": "试过少一张打击、补一张拖延，引擎仍选跳过，收割依旧排第 4，差距 6.1。",
+    "advice": "下次在第 2 幕选牌时，优先看防御能否接近每回合 7.7 的需求，再考虑加输出牌。"
+   }
+  },
+  {
+   "flag": "F27-card",
+   "status": "verified",
+   "errors": [],
+   "evidence": [
+    {
+     "id": "T0",
+     "tool": "get_decision",
+     "result": {
+      "id": "F27-card",
+      "kind": "card_reward",
+      "floor": 27,
+      "act": 2,
+      "hp": 40,
+      "max_hp": 73,
+      "gold": 163,
+      "engine_top": "1:DELAY",
+      "confidence": "medium",
+      "chosen": "skip",
+      "tier": 1,
+      "gap": 4.5,
+      "pick_margin": 2,
+      "options": [
+       {
+        "id": "1:DELAY",
+        "kind": "card",
+        "entity_id": "DELAY",
+        "name": "拖延",
+        "score": 36.7,
+        "deck_score": 36.7,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 14 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 14 张牌（厄运之衣、响指、无处可逃、末日降临、死亡之门、死神形态、致死性、荒疫打击、负能量脉冲、防御）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 护喉甲 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": 5.73,
+          "message": "拿拖延后防御：每回合 5.8 → 6.6（需求 8.2）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.32,
+          "message": "拿拖延后前期输出：每回合 18.7 → 18.1（需求 47.6）"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": -0.1,
+          "message": "拿拖延后群伤：每回合 4.8 → 4.6（需求 23.5）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.09,
+          "message": "拿拖延后循环：每回合额外抽牌 0.08 → 0.07（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 收割 让拖延更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.69,
+          "message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       },
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 34.2,
+        "deck_score": 32.2,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 14 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 14 张牌（厄运之衣、响指、无处可逃、末日降临、死亡之门、死神形态、致死性、荒疫打击、负能量脉冲、防御）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 护喉甲 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0,
+          "message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 2,
+          "message": "第 2 幕：候选要比跳过高出 2 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ]
+       },
+       {
+        "id": "2:SHROUD",
+        "kind": "card",
+        "entity_id": "SHROUD",
+        "name": "厄运之衣",
+        "score": 31.3,
+        "deck_score": 31.3,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": false,
+        "gaps": [
+         "power_mechanic_unsupported:SHROUD:power_applied"
+        ],
+        "factors": [
+         {
+          "code": "unmodeled_mechanic",
+          "delta": 0,
+          "message": "厄运之衣的部分效果尚未计入评分；牌组中 14 张牌、1 件遗物未完整计入评分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 14 张牌（厄运之衣、响指、无处可逃、末日降临、死亡之门、死神形态、致死性、荒疫打击、负能量脉冲、防御）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 护喉甲 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.36,
+          "message": "拿厄运之衣后防御：每回合 5.8 → 5.8（需求 8.2）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.3,
+          "message": "拿厄运之衣后前期输出：每回合 18.7 → 18.1（需求 47.6）"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": -0.07,
+          "message": "拿厄运之衣后群伤：每回合 4.8 → 4.7（需求 23.5）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.06,
+          "message": "拿厄运之衣后循环：每回合额外抽牌 0.08 → 0.08（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 收割 让厄运之衣更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.16,
+          "message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       },
+       {
+        "id": "0:TRANSFIGURE",
+        "kind": "card",
+        "entity_id": "TRANSFIGURE",
+        "name": "重构",
+        "score": 30.8,
+        "deck_score": 30.8,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": false,
+        "gaps": [
+         "card_effect_unsupported:TRANSFIGURE:effect:add_replay"
+        ],
+        "factors": [
+         {
+          "code": "unmodeled_mechanic",
+          "delta": 0,
+          "message": "重构的部分效果尚未计入评分；牌组中 14 张牌、1 件遗物未完整计入评分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 14 张牌（厄运之衣、响指、无处可逃、末日降临、死亡之门、死神形态、致死性、荒疫打击、负能量脉冲、防御）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 护喉甲 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.87,
+          "message": "拿重构后防御：每回合 5.8 → 5.7（需求 8.2）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.3,
+          "message": "拿重构后前期输出：每回合 18.7 → 18.1（需求 47.6）"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": -0.07,
+          "message": "拿重构后群伤：每回合 4.8 → 4.7（需求 23.5）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.06,
+          "message": "拿重构后循环：每回合额外抽牌 0.08 → 0.08（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 收割 让重构更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.12,
+          "message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "id": "T1",
+     "tool": "get_decision",
+     "result": {
+      "id": "F27-card",
+      "kind": "card_reward",
+      "floor": 27,
+      "act": 2,
+      "hp": 40,
+      "max_hp": 73,
+      "gold": 163,
+      "engine_top": "1:DELAY",
+      "confidence": "medium",
+      "policy_status": "recommend",
+      "pick_margin": 2,
+      "options": [
+       {
+        "id": "1:DELAY",
+        "kind": "card",
+        "entity_id": "DELAY",
+        "name": "拖延",
+        "score": 36.7,
+        "deck_score": 36.7,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 14 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 14 张牌（厄运之衣、响指、无处可逃、末日降临、死亡之门、死神形态、致死性、荒疫打击、负能量脉冲、防御）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 护喉甲 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": 5.73,
+          "message": "拿拖延后防御：每回合 5.8 → 6.6（需求 8.2）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.32,
+          "message": "拿拖延后前期输出：每回合 18.7 → 18.1（需求 47.6）"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": -0.1,
+          "message": "拿拖延后群伤：每回合 4.8 → 4.6（需求 23.5）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.09,
+          "message": "拿拖延后循环：每回合额外抽牌 0.08 → 0.07（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 收割 让拖延更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.69,
+          "message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": -0.4223,
+         "survival": 5.7315,
+         "long_term_growth": -0.0927,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 34.2,
+        "deck_score": 32.2,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 14 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 14 张牌（厄运之衣、响指、无处可逃、末日降临、死亡之门、死神形态、致死性、荒疫打击、负能量脉冲、防御）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 护喉甲 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0,
+          "message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 2,
+          "message": "第 2 幕：候选要比跳过高出 2 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0,
+         "survival": 0,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "2:SHROUD",
+        "kind": "card",
+        "entity_id": "SHROUD",
+        "name": "厄运之衣",
+        "score": 31.3,
+        "deck_score": 31.3,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": false,
+        "gaps": [
+         "power_mechanic_unsupported:SHROUD:power_applied"
+        ],
+        "factors": [
+         {
+          "code": "unmodeled_mechanic",
+          "delta": 0,
+          "message": "厄运之衣的部分效果尚未计入评分；牌组中 14 张牌、1 件遗物未完整计入评分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 14 张牌（厄运之衣、响指、无处可逃、末日降临、死亡之门、死神形态、致死性、荒疫打击、负能量脉冲、防御）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 护喉甲 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.36,
+          "message": "拿厄运之衣后防御：每回合 5.8 → 5.8（需求 8.2）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.3,
+          "message": "拿厄运之衣后前期输出：每回合 18.7 → 18.1（需求 47.6）"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": -0.07,
+          "message": "拿厄运之衣后群伤：每回合 4.8 → 4.7（需求 23.5）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.06,
+          "message": "拿厄运之衣后循环：每回合额外抽牌 0.08 → 0.08（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 收割 让厄运之衣更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.16,
+          "message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": -0.3704,
+         "survival": -0.3637,
+         "long_term_growth": -0.0562,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "0:TRANSFIGURE",
+        "kind": "card",
+        "entity_id": "TRANSFIGURE",
+        "name": "重构",
+        "score": 30.8,
+        "deck_score": 30.8,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": false,
+        "gaps": [
+         "card_effect_unsupported:TRANSFIGURE:effect:add_replay"
+        ],
+        "factors": [
+         {
+          "code": "unmodeled_mechanic",
+          "delta": 0,
+          "message": "重构的部分效果尚未计入评分；牌组中 14 张牌、1 件遗物未完整计入评分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 14 张牌（厄运之衣、响指、无处可逃、末日降临、死亡之门、死神形态、致死性、荒疫打击、负能量脉冲、防御）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 护喉甲 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.87,
+          "message": "拿重构后防御：每回合 5.8 → 5.7（需求 8.2）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.3,
+          "message": "拿重构后前期输出：每回合 18.7 → 18.1（需求 47.6）"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": -0.07,
+          "message": "拿重构后群伤：每回合 4.8 → 4.7（需求 23.5）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.06,
+          "message": "拿重构后循环：每回合额外抽牌 0.08 → 0.08（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 收割 让重构更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.12,
+          "message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": -0.3739,
+         "survival": -0.867,
+         "long_term_growth": -0.0562,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       }
+      ],
+      "chosen": "skip",
+      "tier": 1,
+      "gap": 4.5,
+      "not_strict_because": []
+     }
+    },
+    {
+     "id": "T2",
+     "tool": "get_deck",
+     "result": {
+      "decision_id": "F27-card",
+      "floor": 27,
+      "act": 2,
+      "hp": 40,
+      "max_hp": 73,
+      "gold": 163,
+      "deck_size": 24,
+      "deck": [
+       {
+        "card": "BLIGHT_STRIKE",
+        "name": "荒疫打击",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "BODYGUARD",
+        "name": "护卫",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "DEATHS_DOOR",
+        "name": "死亡之门",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "DEFEND_NECROBINDER",
+        "name": "防御",
+        "upgrades": 0,
+        "count": 4
+       },
+       {
+        "card": "DRAIN_POWER",
+        "name": "能量汲取",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "END_OF_DAYS",
+        "name": "末日降临",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "FLATTEN",
+        "name": "重压",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "LETHALITY",
+        "name": "致死性",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "NEGATIVE_PULSE",
+        "name": "负能量脉冲",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "NEGATIVE_PULSE",
+        "name": "负能量脉冲",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "NO_ESCAPE",
+        "name": "无处可逃",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "POKE",
+        "name": "戳击",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "REAP",
+        "name": "收割",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "REAPER_FORM",
+        "name": "死神形态",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "REAVE",
+        "name": "剥夺",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "SHROUD",
+        "name": "厄运之衣",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "SNAP",
+        "name": "响指",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "STRIKE_NECROBINDER",
+        "name": "打击",
+        "upgrades": 0,
+        "count": 2
+       },
+       {
+        "card": "UNLEASH",
+        "name": "出击",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "WISP",
+        "name": "鬼火",
+        "upgrades": 0,
+        "count": 1
+       }
+      ],
+      "relics": [
+       {
+        "relic": "BOUND_PHYLACTERY",
+        "name": "缚魂命匣"
+       },
+       {
+        "relic": "SCROLL_BOXES",
+        "name": "卷轴箱"
+       },
+       {
+        "relic": "STRAWBERRY",
+        "name": "草莓"
+       },
+       {
+        "relic": "GORGET",
+        "name": "护喉甲"
+       },
+       {
+        "relic": "PAELS_CLAW",
+        "name": "佩尔之爪"
+       },
+       {
+        "relic": "PERMAFROST",
+        "name": "永冻冰晶"
+       }
+      ],
+      "potions": [
+       {
+        "potion": "LIQUID_BRONZE",
+        "name": "流动铜液"
+       }
+      ]
+     }
+    },
+    {
+     "id": "T3",
+     "tool": "compare_options",
+     "result": {
+      "decision_id": "F27-card",
+      "a": {
+       "id": "1:DELAY",
+       "name": "拖延",
+       "deck_score": 36.7,
+       "fully_scored": true
+      },
+      "b": {
+       "id": "skip",
+       "name": "跳过",
+       "deck_score": 32.2,
+       "fully_scored": true
+      },
+      "deck_score_difference": 4.5,
+      "factors": [
+       {
+        "factor": "deck_fitness:defense",
+        "a": 5.73,
+        "b": 0,
+        "difference": 5.73,
+        "a_message": "拿拖延后防御：每回合 5.8 → 6.6（需求 8.2）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:lookahead",
+        "a": -0.69,
+        "b": 0,
+        "difference": -0.69,
+        "a_message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度",
+        "b_message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "factor": "deck_fitness:frontload",
+        "a": -0.32,
+        "b": 0,
+        "difference": -0.32,
+        "a_message": "拿拖延后前期输出：每回合 18.7 → 18.1（需求 47.6）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:aoe",
+        "a": -0.1,
+        "b": 0,
+        "difference": -0.1,
+        "a_message": "拿拖延后群伤：每回合 4.8 → 4.6（需求 23.5）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:cycle",
+        "a": -0.09,
+        "b": 0,
+        "difference": -0.09,
+        "a_message": "拿拖延后循环：每回合额外抽牌 0.08 → 0.07（需求 1.0）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:synergy",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组里的 收割 让拖延更有价值（说明，不另加分）",
+        "b_message": null
+       },
+       {
+        "factor": "estimate_scope",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 14 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。",
+        "b_message": "牌组中 14 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "factor": "partially_modeled_deck_cards",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 14 张牌（厄运之衣、响指、无处可逃、末日降临、死亡之门、死神形态、致死性、荒疫打击、负能量脉冲、防御）有部分效果尚未计入评分。",
+        "b_message": "牌组中 14 张牌（厄运之衣、响指、无处可逃、末日降临、死亡之门、死神形态、致死性、荒疫打击、负能量脉冲、防御）有部分效果尚未计入评分。"
+       },
+       {
+        "factor": "unmodeled_relics",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "遗物 护喉甲 尚未计入评分。",
+        "b_message": "遗物 护喉甲 尚未计入评分。"
+       }
+      ],
+      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
+     }
+    },
+    {
+     "id": "T4",
+     "tool": "what_if_choices",
+     "result": {
+      "remove": [
+       "BLIGHT_STRIKE",
+       "BODYGUARD",
+       "DEATHS_DOOR",
+       "DEFEND_NECROBINDER",
+       "DRAIN_POWER",
+       "END_OF_DAYS",
+       "FLATTEN",
+       "LETHALITY",
+       "NEGATIVE_PULSE",
+       "NO_ESCAPE",
+       "POKE",
+       "REAP",
+       "REAPER_FORM",
+       "REAVE",
+       "SHROUD",
+       "SNAP",
+       "STRIKE_NECROBINDER",
+       "UNLEASH",
+       "WISP"
+      ],
+      "upgrade": [
+       "BLIGHT_STRIKE",
+       "BODYGUARD",
+       "DEFEND_NECROBINDER",
+       "FLATTEN",
+       "LETHALITY",
+       "NEGATIVE_PULSE",
+       "NO_ESCAPE",
+       "POKE",
+       "REAVE",
+       "SHROUD",
+       "SNAP",
+       "STRIKE_NECROBINDER",
+       "UNLEASH",
+       "WISP"
+      ],
+      "add": [
+       {
+        "card": "BLIGHT_STRIKE",
+        "name": "荒疫打击"
+       },
+       {
+        "card": "BURY",
+        "name": "埋葬"
+       },
+       {
+        "card": "DANSE_MACABRE",
+        "name": "死亡之舞"
+       },
+       {
+        "card": "DEATHS_DOOR",
+        "name": "死亡之门"
+       },
+       {
+        "card": "DEBILITATE",
+        "name": "摧残"
+       },
+       {
+        "card": "DEFILE",
+        "name": "玷污"
+       },
+       {
+        "card": "DELAY",
+        "name": "拖延"
+       },
+       {
+        "card": "DRAIN_POWER",
+        "name": "能量汲取"
+       },
+       {
+        "card": "ERADICATE",
+        "name": "根除"
+       },
+       {
+        "card": "FEAR",
+        "name": "恐惧"
+       },
+       {
+        "card": "FLATTEN",
+        "name": "重压"
+       },
+       {
+        "card": "GOLD_AXE",
+        "name": "金斧"
+       },
+       {
+        "card": "HAND_OF_GREED",
+        "name": "贪婪之手"
+       },
+       {
+        "card": "HAUNT",
+        "name": "纠缠"
+       },
+       {
+        "card": "HIGH_FIVE",
+        "name": "击掌"
+       },
+       {
+        "card": "INVOKE",
+        "name": "唤起"
+       },
+       {
+        "card": "JACK_OF_ALL_TRADES",
+        "name": "花样百出"
+       },
+       {
+        "card": "LETHALITY",
+        "name": "致死性"
+       },
+       {
+        "card": "MIND_BLAST",
+        "name": "心灵震慑"
+       },
+       {
+        "card": "NEGATIVE_PULSE",
+        "name": "负能量脉冲"
+       },
+       {
+        "card": "NO_ESCAPE",
+        "name": "无处可逃"
+       },
+       {
+        "card": "PARSE",
+        "name": "领会"
+       },
+       {
+        "card": "POKE",
+        "name": "戳击"
+       },
+       {
+        "card": "PULL_AGGRO",
+        "name": "吸引仇恨"
+       },
+       {
+        "card": "PULL_FROM_BELOW",
+        "name": "亡魂牵引"
+       },
+       {
+        "card": "RATTLE",
+        "name": "猛晃"
+       },
+       {
+        "card": "REAP",
+        "name": "收割"
+       },
+       {
+        "card": "REAPER_FORM",
+        "name": "死神形态"
+       },
+       {
+        "card": "REAVE",
+        "name": "剥夺"
+       },
+       {
+        "card": "RESTLESSNESS",
+        "name": "心神不宁"
+       },
+       {
+        "card": "RIGHT_HAND_HAND",
+        "name": "得力助手"
+       },
+       {
+        "card": "SALVO",
+        "name": "箭雨"
+       },
+       {
+        "card": "SEANCE",
+        "name": "降灵"
+       },
+       {
+        "card": "SHROUD",
+        "name": "厄运之衣"
+       },
+       {
+        "card": "SNAP",
+        "name": "响指"
+       },
+       {
+        "card": "SPIRIT_OF_ASH",
+        "name": "灰烬之灵"
+       },
+       {
+        "card": "SPUR",
+        "name": "增生"
+       },
+       {
+        "card": "WISP",
+        "name": "鬼火"
+       }
+      ]
+     }
+    },
+    {
+     "id": "T5",
+     "tool": "get_card",
+     "result": {
+      "id": "DELAY",
+      "name": "拖延",
+      "description": "获得11点格挡。\n在下个回合，\n获得。",
+      "cost": 2,
+      "type": "技能",
+      "rarity": "罕见",
+      "color": "necrobinder",
+      "target": "Self",
+      "block": 11,
+      "energy_gain": 1,
+      "upgrade_description": "获得13点格挡。\n在下个回合，\n获得。"
+     }
+    },
+    {
+     "id": "T6",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F27-card",
+      "changes": [
+       {
+        "operation": "remove",
+        "card": "STRIKE_NECROBINDER",
+        "name": "打击"
+       }
+      ],
+      "engine_top_before": "1:DELAY",
+      "engine_top_after": "1:DELAY",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 4.5,
+      "options_after": [
+       {
+        "id": "1:DELAY",
+        "name": "拖延",
+        "deck_score": 38.1,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 33.6,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "2:SHROUD",
+        "name": "厄运之衣",
+        "deck_score": 32.6,
+        "rank": 3,
+        "fully_scored": false
+       },
+       {
+        "id": "0:TRANSFIGURE",
+        "name": "重构",
+        "deck_score": 32.2,
+        "rank": 4,
+        "fully_scored": false
+       }
+      ]
+     }
+    }
+   ],
+   "toolCalls": 6,
+   "repairs": 0,
+   "usage": {
+    "prompt_tokens": 24680,
+    "completion_tokens": 627,
+    "cost_usd": 0.004694255999999999,
+    "llm_calls": 4
+   },
+   "finding": {
+    "decision_id": "F27-card",
+    "reasons": [
+     {
+      "factor": "deck_fitness:defense",
+      "evidence": "T3",
+      "text": "引擎最看重防御：拿拖延后每回合格挡 5.8 → 6.6，而当前需求是 8.2，防御缺口是最大的一项。"
+     },
+     {
+      "factor": "deck_fitness:lookahead",
+      "evidence": "T3",
+      "text": "往后看两次选牌，拖延的长期收益略降（-0.69），但幅度远小于防御收益。"
+     },
+     {
+      "factor": "deck_fitness:frontload",
+      "evidence": "T3",
+      "text": "代价是前期输出 18.7 → 18.1，群伤 4.8 → 4.6，都只是小幅下滑。"
+     }
+    ],
+    "what_if_evidence": "T6",
+    "what_if_text": "假设少一张打击，引擎首选仍是拖延，差距不变，说明这不是牌组张数的问题。",
+    "advice": "第 2 幕防御需求 8.2 而实际只有 5.8 时，优先考虑能补格挡的牌，比如拖延（11 点格挡、下回合 1 点能量）。"
+   }
+  }
+ ],
+ "summary": {
+  "text": "这两次都因防御低于需求而选了别的方向；下次在第 2 幕选牌时，先补格挡到接近需求，再考虑输出。",
+  "source": "model",
+  "cost_usd": 0.00017009999999999996
+ },
+ "meta": {
+  "model": "deepseek-flash",
+  "cost_usd": 0.006939347999999999,
+  "seconds": 9.96,
+  "generated_at": "2026-11-01 14:41"
+ }
+}

@@ -1,0 +1,2427 @@
+{
+ "run": "1772975275",
+ "set": "dev",
+ "model": "deepseek-flash",
+ "prompt_version": "p3",
+ "pre": {
+  "summary": {
+   "run_id": "1772975275",
+   "character": "NECROBINDER",
+   "ascension": 1,
+   "build_id": "v0.98.2",
+   "win": false,
+   "killed_by": "失落与遗忘之物",
+   "acts_reached": 3,
+   "last_scored_floor": 33,
+   "final_deck_size": 19,
+   "decisions_scored": {
+    "card_reward": 15,
+    "rest": 5,
+    "shop": 1
+   },
+   "decisions_skipped": {
+    "no_boss": 4
+   },
+   "agreement": {
+    "agree": 11,
+    "judged": 21,
+    "rate": 0.524
+   },
+   "tier1": [
+    "F04-card",
+    "F12-card"
+   ],
+   "tier2": [
+    "F05-card",
+    "F09-card",
+    "F13-rest",
+    "F14-card",
+    "F17-card",
+    "F22-card",
+    "F23-card",
+    "F33-card"
+   ],
+   "warnings": []
+  },
+  "decisions": {
+   "decisions": [
+    {
+     "id": "F02-card",
+     "kind": "card_reward",
+     "floor": 2,
+     "act": 1,
+     "chosen": "0:NEGATIVE_PULSE",
+     "chosen_name": "负能量脉冲",
+     "engine_top": "0:NEGATIVE_PULSE",
+     "engine_top_name": "负能量脉冲",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F04-card",
+     "kind": "card_reward",
+     "floor": 4,
+     "act": 1,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "1:SOW",
+     "engine_top_name": "播种",
+     "confidence": "medium",
+     "tier": 1,
+     "gap": 4,
+     "not_strict_because": []
+    },
+    {
+     "id": "F05-card",
+     "kind": "card_reward",
+     "floor": 5,
+     "act": 1,
+     "chosen": "0:FLATTEN",
+     "chosen_name": "重压",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "low",
+     "tier": 2,
+     "gap": 1.4,
+     "not_strict_because": [
+      "low_confidence"
+     ]
+    },
+    {
+     "id": "F07-rest",
+     "kind": "rest",
+     "floor": 7,
+     "act": 1,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F08-card",
+     "kind": "card_reward",
+     "floor": 8,
+     "act": 1,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F09-card",
+     "kind": "card_reward",
+     "floor": 9,
+     "act": 1,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "1:NEGATIVE_PULSE",
+     "engine_top_name": "负能量脉冲",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": 2.4,
+     "not_strict_because": [
+      "partly_scored"
+     ]
+    },
+    {
+     "id": "F12-card",
+     "kind": "card_reward",
+     "floor": 12,
+     "act": 1,
+     "chosen": "0:HAUNT",
+     "chosen_name": "纠缠",
+     "engine_top": "1:POKE",
+     "engine_top_name": "戳击",
+     "confidence": "medium",
+     "tier": 1,
+     "gap": 1.6,
+     "not_strict_because": []
+    },
+    {
+     "id": "F13-rest",
+     "kind": "rest",
+     "floor": 13,
+     "act": 1,
+     "chosen": "rest:HEAL",
+     "chosen_name": "休息",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 2,
+     "gap": -13.95,
+     "not_strict_because": [
+      "partly_scored",
+      "low_confidence",
+      "small_gap"
+     ]
+    },
+    {
+     "id": "F14-card",
+     "kind": "card_reward",
+     "floor": 14,
+     "act": 1,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "0:DEATHBRINGER",
+     "engine_top_name": "死亡使者",
+     "confidence": "low",
+     "tier": 2,
+     "gap": 1.3,
+     "not_strict_because": [
+      "partly_scored",
+      "low_confidence"
+     ]
+    },
+    {
+     "id": "F16-rest",
+     "kind": "rest",
+     "floor": 16,
+     "act": 1,
+     "chosen": "rest:SMITH",
+     "chosen_name": "锻造",
+     "engine_top": "rest:SMITH",
+     "engine_top_name": "锻造",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F17-card",
+     "kind": "card_reward",
+     "floor": 17,
+     "act": 1,
+     "chosen": "0:REAPER_FORM",
+     "chosen_name": "死神形态",
+     "engine_top": "1:MISERY",
+     "engine_top_name": "苦难",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": 4.2,
+     "not_strict_because": [
+      "partly_scored"
+     ]
+    },
+    {
+     "id": "F19-card",
+     "kind": "card_reward",
+     "floor": 19,
+     "act": 2,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F20-card",
+     "kind": "card_reward",
+     "floor": 20,
+     "act": 2,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F22-card",
+     "kind": "card_reward",
+     "floor": 22,
+     "act": 2,
+     "chosen": "0:SHROUD",
+     "chosen_name": "厄运之衣",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": 1,
+     "not_strict_because": [
+      "partly_scored",
+      "small_gap"
+     ]
+    },
+    {
+     "id": "F23-card",
+     "kind": "card_reward",
+     "floor": 23,
+     "act": 2,
+     "chosen": "0:COUNTDOWN",
+     "chosen_name": "倒数计时",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": 0.9,
+     "not_strict_because": [
+      "partly_scored",
+      "small_gap"
+     ]
+    },
+    {
+     "id": "F24-shop",
+     "kind": "shop",
+     "floor": 24,
+     "act": 2,
+     "chosen": "removal",
+     "chosen_name": "删牌",
+     "engine_top": "removal",
+     "engine_top_name": "删牌",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F28-card",
+     "kind": "card_reward",
+     "floor": 28,
+     "act": 2,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F29-rest",
+     "kind": "rest",
+     "floor": 29,
+     "act": 2,
+     "chosen": "rest:HEAL",
+     "chosen_name": "休息",
+     "engine_top": "rest:HEAL",
+     "engine_top_name": "休息",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F30-card",
+     "kind": "card_reward",
+     "floor": 30,
+     "act": 2,
+     "chosen": "skip",
+     "chosen_name": "跳过",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F32-rest",
+     "kind": "rest",
+     "floor": 32,
+     "act": 2,
+     "chosen": "rest:HEAL",
+     "chosen_name": "休息",
+     "engine_top": "rest:HEAL",
+     "engine_top_name": "休息",
+     "confidence": "low",
+     "tier": 0,
+     "gap": 0,
+     "not_strict_because": []
+    },
+    {
+     "id": "F33-card",
+     "kind": "card_reward",
+     "floor": 33,
+     "act": 2,
+     "chosen": "0:MISERY",
+     "chosen_name": "苦难",
+     "engine_top": "skip",
+     "engine_top_name": "跳过",
+     "confidence": "medium",
+     "tier": 2,
+     "gap": -0.8,
+     "not_strict_because": [
+      "partly_scored",
+      "small_gap"
+     ]
+    }
+   ],
+   "skipped": [
+    {
+     "id": "F35-card",
+     "kind": "card_reward",
+     "floor": 35,
+     "reason": "no_boss"
+    },
+    {
+     "id": "F36-card",
+     "kind": "card_reward",
+     "floor": 36,
+     "reason": "no_boss"
+    },
+    {
+     "id": "F37-card",
+     "kind": "card_reward",
+     "floor": 37,
+     "reason": "no_boss"
+    },
+    {
+     "id": "F38-card",
+     "kind": "card_reward",
+     "floor": 38,
+     "reason": "no_boss"
+    }
+   ]
+  },
+  "flags": [
+   {
+    "id": "F04-card",
+    "kind": "card_reward",
+    "floor": 4,
+    "act": 1,
+    "hp": 67,
+    "max_hp": 70,
+    "gold": 91,
+    "engine_top": "1:SOW",
+    "confidence": "medium",
+    "chosen": "skip",
+    "tier": 1,
+    "gap": 4,
+    "pick_margin": 1,
+    "options": [
+     {
+      "id": "1:SOW",
+      "kind": "card",
+      "entity_id": "SOW",
+      "name": "播种",
+      "score": 57.1,
+      "deck_score": 57.1,
+      "rank": 1,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 1 张牌（负能量脉冲）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:aoe",
+        "delta": 3.94,
+        "message": "拿播种后群伤：每回合 0.7 → 1.9（需求 3.6）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": 1.52,
+        "message": "拿播种后前期输出：每回合 11.1 → 12.6（需求 21.6）"
+       },
+       {
+        "code": "deck_fitness:cycle",
+        "delta": -0.41,
+        "message": "拿播种后循环：每回合额外抽牌 0.56 → 0.51（需求 1.0）"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -0.3,
+        "message": "拿播种后防御：每回合 8.9 → 8.3（需求 5.5）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": -0.74,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 5.4625,
+       "survival": -0.2973,
+       "long_term_growth": -0.4117,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "skip",
+      "kind": "skip",
+      "entity_id": null,
+      "name": "跳过",
+      "score": 54.1,
+      "deck_score": 53.1,
+      "rank": 2,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 1 张牌（负能量脉冲）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": 0,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "code": "deck_fitness:pick_margin",
+        "delta": 1,
+        "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0,
+       "survival": 0,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "2:FEAR",
+      "kind": "card",
+      "entity_id": "FEAR",
+      "name": "恐惧",
+      "score": 54.1,
+      "deck_score": 54.1,
+      "rank": 3,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 1 张牌（负能量脉冲）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": 2.01,
+        "message": "拿恐惧后前期输出：每回合 11.1 → 13.0（需求 21.6）"
+       },
+       {
+        "code": "deck_fitness:aoe",
+        "delta": -0.25,
+        "message": "拿恐惧后群伤：每回合 0.7 → 0.7（需求 3.6）"
+       },
+       {
+        "code": "deck_fitness:cycle",
+        "delta": -0.15,
+        "message": "拿恐惧后循环：每回合额外抽牌 0.56 → 0.54（需求 1.0）"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -0.09,
+        "message": "拿恐惧后防御：每回合 8.9 → 8.7（需求 5.5）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": -0.57,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 1.7643,
+       "survival": -0.089,
+       "long_term_growth": -0.1464,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "0:PULL_AGGRO",
+      "kind": "card",
+      "entity_id": "PULL_AGGRO",
+      "name": "吸引仇恨",
+      "score": 51.2,
+      "deck_score": 51.2,
+      "rank": 4,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 1 张牌（负能量脉冲）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": -1.44,
+        "message": "拿吸引仇恨后前期输出：每回合 11.1 → 9.8（需求 21.6）"
+       },
+       {
+        "code": "deck_fitness:cycle",
+        "delta": -0.52,
+        "message": "拿吸引仇恨后循环：每回合额外抽牌 0.56 → 0.50（需求 1.0）"
+       },
+       {
+        "code": "deck_fitness:aoe",
+        "delta": -0.46,
+        "message": "拿吸引仇恨后群伤：每回合 0.7 → 0.6（需求 3.6）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 出击 让吸引仇恨更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": 0.53,
+        "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": -1.8991,
+       "survival": -0.0074,
+       "long_term_growth": -0.5164,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     }
+    ]
+   },
+   {
+    "id": "F12-card",
+    "kind": "card_reward",
+    "floor": 12,
+    "act": 1,
+    "hp": 42,
+    "max_hp": 70,
+    "gold": 247,
+    "engine_top": "1:POKE",
+    "confidence": "medium",
+    "chosen": "0:HAUNT",
+    "tier": 1,
+    "gap": 1.6,
+    "pick_margin": 1,
+    "options": [
+     {
+      "id": "1:POKE",
+      "kind": "card",
+      "entity_id": "POKE",
+      "name": "戳击",
+      "score": 55.7,
+      "deck_score": 55.7,
+      "rank": 1,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 1 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 1 张牌（负能量脉冲）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 护喉甲 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": 1.47,
+        "message": "拿戳击后前期输出：每回合 13.9 → 15.9（需求 27.9）"
+       },
+       {
+        "code": "deck_fitness:cycle",
+        "delta": 0.29,
+        "message": "拿戳击后循环：每回合额外抽牌 0.55 → 0.58（需求 1.0）"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": 0.13,
+        "message": "拿戳击后防御：每回合 8.0 → 8.2（需求 6.0）"
+       },
+       {
+        "code": "deck_fitness:aoe",
+        "delta": 0.07,
+        "message": "拿戳击后群伤：每回合 0.3 → 0.3（需求 1.6）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 领域 让戳击更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": -0.14,
+        "message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 1.539,
+       "survival": 0.1288,
+       "long_term_growth": 0.2891,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "skip",
+      "kind": "skip",
+      "entity_id": null,
+      "name": "跳过",
+      "score": 54.8,
+      "deck_score": 53.8,
+      "rank": 2,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 1 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 1 张牌（负能量脉冲）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 护喉甲 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": 0,
+        "message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "code": "deck_fitness:pick_margin",
+        "delta": 1,
+        "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": 0,
+       "survival": 0,
+       "long_term_growth": 0,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "0:HAUNT",
+      "kind": "card",
+      "entity_id": "HAUNT",
+      "name": "纠缠",
+      "score": 54.1,
+      "deck_score": 54.1,
+      "rank": 3,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 1 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 1 张牌（负能量脉冲）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 护喉甲 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": -0.34,
+        "message": "拿纠缠后前期输出：每回合 13.9 → 13.5（需求 27.9）"
+       },
+       {
+        "code": "deck_fitness:cycle",
+        "delta": 0.14,
+        "message": "拿纠缠后循环：每回合额外抽牌 0.55 → 0.57（需求 1.0）"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -0.13,
+        "message": "拿纠缠后防御：每回合 8.0 → 7.8（需求 6.0）"
+       },
+       {
+        "code": "deck_fitness:aoe",
+        "delta": -0.07,
+        "message": "拿纠缠后群伤：每回合 0.3 → 0.3（需求 1.6）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": 0.69,
+        "message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": -0.4145,
+       "survival": -0.1289,
+       "long_term_growth": 0.142,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     },
+     {
+      "id": "2:FLATTEN",
+      "kind": "card",
+      "entity_id": "FLATTEN",
+      "name": "重压",
+      "score": 52.3,
+      "deck_score": 52.3,
+      "rank": 4,
+      "eligible": true,
+      "fully_scored": true,
+      "gaps": [],
+      "factors": [
+       {
+        "code": "estimate_scope",
+        "delta": 0,
+        "message": "牌组中 1 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "code": "partially_modeled_deck_cards",
+        "delta": 0,
+        "message": "牌组中 1 张牌（负能量脉冲）有部分效果尚未计入评分。"
+       },
+       {
+        "code": "unmodeled_relics",
+        "delta": 0,
+        "message": "遗物 护喉甲 尚未计入评分。"
+       },
+       {
+        "code": "deck_fitness:defense",
+        "delta": -0.57,
+        "message": "拿重压后防御：每回合 8.0 → 7.2（需求 6.0）"
+       },
+       {
+        "code": "deck_fitness:cycle",
+        "delta": -0.41,
+        "message": "拿重压后循环：每回合额外抽牌 0.55 → 0.50（需求 1.0）"
+       },
+       {
+        "code": "deck_fitness:aoe",
+        "delta": -0.31,
+        "message": "拿重压后群伤：每回合 0.3 → 0.3（需求 1.6）"
+       },
+       {
+        "code": "deck_fitness:frontload",
+        "delta": -0.16,
+        "message": "拿重压后前期输出：每回合 13.9 → 13.7（需求 27.9）"
+       },
+       {
+        "code": "deck_fitness:synergy",
+        "delta": 0,
+        "message": "牌组里的 重压 让重压更有价值（说明，不另加分）"
+       },
+       {
+        "code": "deck_fitness:lookahead",
+        "delta": -0.1,
+        "message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       }
+      ],
+      "dimensions": {
+       "immediate_power": -0.4632,
+       "survival": -0.5731,
+       "long_term_growth": -0.4065,
+       "resource_efficiency": 0,
+       "data_completeness": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "explained": [
+  {
+   "flag": "F04-card",
+   "status": "verified",
+   "errors": [
+    "reasons[2]: \"压缩\" is not in T3/T0"
+   ],
+   "evidence": [
+    {
+     "id": "T0",
+     "tool": "get_decision",
+     "result": {
+      "id": "F04-card",
+      "kind": "card_reward",
+      "floor": 4,
+      "act": 1,
+      "hp": 67,
+      "max_hp": 70,
+      "gold": 91,
+      "engine_top": "1:SOW",
+      "confidence": "medium",
+      "chosen": "skip",
+      "tier": 1,
+      "gap": 4,
+      "pick_margin": 1,
+      "options": [
+       {
+        "id": "1:SOW",
+        "kind": "card",
+        "entity_id": "SOW",
+        "name": "播种",
+        "score": 57.1,
+        "deck_score": 57.1,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（负能量脉冲）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": 3.94,
+          "message": "拿播种后群伤：每回合 0.7 → 1.9（需求 3.6）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 1.52,
+          "message": "拿播种后前期输出：每回合 11.1 → 12.6（需求 21.6）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.41,
+          "message": "拿播种后循环：每回合额外抽牌 0.56 → 0.51（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.3,
+          "message": "拿播种后防御：每回合 8.9 → 8.3（需求 5.5）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.74,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       },
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 54.1,
+        "deck_score": 53.1,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（负能量脉冲）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 1,
+          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ]
+       },
+       {
+        "id": "2:FEAR",
+        "kind": "card",
+        "entity_id": "FEAR",
+        "name": "恐惧",
+        "score": 54.1,
+        "deck_score": 54.1,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（负能量脉冲）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 2.01,
+          "message": "拿恐惧后前期输出：每回合 11.1 → 13.0（需求 21.6）"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": -0.25,
+          "message": "拿恐惧后群伤：每回合 0.7 → 0.7（需求 3.6）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.15,
+          "message": "拿恐惧后循环：每回合额外抽牌 0.56 → 0.54（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.09,
+          "message": "拿恐惧后防御：每回合 8.9 → 8.7（需求 5.5）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.57,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       },
+       {
+        "id": "0:PULL_AGGRO",
+        "kind": "card",
+        "entity_id": "PULL_AGGRO",
+        "name": "吸引仇恨",
+        "score": 51.2,
+        "deck_score": 51.2,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（负能量脉冲）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -1.44,
+          "message": "拿吸引仇恨后前期输出：每回合 11.1 → 9.8（需求 21.6）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.52,
+          "message": "拿吸引仇恨后循环：每回合额外抽牌 0.56 → 0.50（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": -0.46,
+          "message": "拿吸引仇恨后群伤：每回合 0.7 → 0.6（需求 3.6）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 出击 让吸引仇恨更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0.53,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "id": "T1",
+     "tool": "get_decision",
+     "result": {
+      "id": "F04-card",
+      "kind": "card_reward",
+      "floor": 4,
+      "act": 1,
+      "hp": 67,
+      "max_hp": 70,
+      "gold": 91,
+      "engine_top": "1:SOW",
+      "confidence": "medium",
+      "policy_status": "recommend",
+      "pick_margin": 1,
+      "options": [
+       {
+        "id": "1:SOW",
+        "kind": "card",
+        "entity_id": "SOW",
+        "name": "播种",
+        "score": 57.1,
+        "deck_score": 57.1,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（负能量脉冲）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": 3.94,
+          "message": "拿播种后群伤：每回合 0.7 → 1.9（需求 3.6）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 1.52,
+          "message": "拿播种后前期输出：每回合 11.1 → 12.6（需求 21.6）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.41,
+          "message": "拿播种后循环：每回合额外抽牌 0.56 → 0.51（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.3,
+          "message": "拿播种后防御：每回合 8.9 → 8.3（需求 5.5）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.74,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 5.4625,
+         "survival": -0.2973,
+         "long_term_growth": -0.4117,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 54.1,
+        "deck_score": 53.1,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（负能量脉冲）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 1,
+          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0,
+         "survival": 0,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "2:FEAR",
+        "kind": "card",
+        "entity_id": "FEAR",
+        "name": "恐惧",
+        "score": 54.1,
+        "deck_score": 54.1,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（负能量脉冲）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 2.01,
+          "message": "拿恐惧后前期输出：每回合 11.1 → 13.0（需求 21.6）"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": -0.25,
+          "message": "拿恐惧后群伤：每回合 0.7 → 0.7（需求 3.6）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.15,
+          "message": "拿恐惧后循环：每回合额外抽牌 0.56 → 0.54（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.09,
+          "message": "拿恐惧后防御：每回合 8.9 → 8.7（需求 5.5）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.57,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 1.7643,
+         "survival": -0.089,
+         "long_term_growth": -0.1464,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "0:PULL_AGGRO",
+        "kind": "card",
+        "entity_id": "PULL_AGGRO",
+        "name": "吸引仇恨",
+        "score": 51.2,
+        "deck_score": 51.2,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（负能量脉冲）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -1.44,
+          "message": "拿吸引仇恨后前期输出：每回合 11.1 → 9.8（需求 21.6）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.52,
+          "message": "拿吸引仇恨后循环：每回合额外抽牌 0.56 → 0.50（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": -0.46,
+          "message": "拿吸引仇恨后群伤：每回合 0.7 → 0.6（需求 3.6）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 出击 让吸引仇恨更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0.53,
+          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": -1.8991,
+         "survival": -0.0074,
+         "long_term_growth": -0.5164,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       }
+      ],
+      "chosen": "skip",
+      "tier": 1,
+      "gap": 4,
+      "not_strict_because": []
+     }
+    },
+    {
+     "id": "T2",
+     "tool": "get_deck",
+     "result": {
+      "decision_id": "F04-card",
+      "floor": 4,
+      "act": 1,
+      "hp": 67,
+      "max_hp": 70,
+      "gold": 91,
+      "deck_size": 12,
+      "deck": [
+       {
+        "card": "BODYGUARD",
+        "name": "护卫",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "DEFEND_NECROBINDER",
+        "name": "防御",
+        "upgrades": 0,
+        "count": 4
+       },
+       {
+        "card": "DEMESNE",
+        "name": "领域",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "NEGATIVE_PULSE",
+        "name": "负能量脉冲",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "STRIKE_NECROBINDER",
+        "name": "打击",
+        "upgrades": 0,
+        "count": 4
+       },
+       {
+        "card": "UNLEASH",
+        "name": "出击",
+        "upgrades": 0,
+        "count": 1
+       }
+      ],
+      "relics": [
+       {
+        "relic": "BOUND_PHYLACTERY",
+        "name": "缚魂命匣"
+       },
+       {
+        "relic": "ARCANE_SCROLL",
+        "name": "奥术卷轴"
+       }
+      ],
+      "potions": [
+       {
+        "potion": "COLORLESS_POTION",
+        "name": "无色药水"
+       }
+      ]
+     }
+    },
+    {
+     "id": "T3",
+     "tool": "compare_options",
+     "result": {
+      "decision_id": "F04-card",
+      "a": {
+       "id": "1:SOW",
+       "name": "播种",
+       "deck_score": 57.1,
+       "fully_scored": true
+      },
+      "b": {
+       "id": "skip",
+       "name": "跳过",
+       "deck_score": 53.1,
+       "fully_scored": true
+      },
+      "deck_score_difference": 4,
+      "factors": [
+       {
+        "factor": "deck_fitness:aoe",
+        "a": 3.94,
+        "b": 0,
+        "difference": 3.94,
+        "a_message": "拿播种后群伤：每回合 0.7 → 1.9（需求 3.6）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:frontload",
+        "a": 1.52,
+        "b": 0,
+        "difference": 1.52,
+        "a_message": "拿播种后前期输出：每回合 11.1 → 12.6（需求 21.6）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:lookahead",
+        "a": -0.74,
+        "b": 0,
+        "difference": -0.74,
+        "a_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度",
+        "b_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "factor": "deck_fitness:cycle",
+        "a": -0.41,
+        "b": 0,
+        "difference": -0.41,
+        "a_message": "拿播种后循环：每回合额外抽牌 0.56 → 0.51（需求 1.0）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:defense",
+        "a": -0.3,
+        "b": 0,
+        "difference": -0.3,
+        "a_message": "拿播种后防御：每回合 8.9 → 8.3（需求 5.5）",
+        "b_message": null
+       },
+       {
+        "factor": "estimate_scope",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。",
+        "b_message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "factor": "partially_modeled_deck_cards",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 1 张牌（负能量脉冲）有部分效果尚未计入评分。",
+        "b_message": "牌组中 1 张牌（负能量脉冲）有部分效果尚未计入评分。"
+       }
+      ],
+      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
+     }
+    },
+    {
+     "id": "T4",
+     "tool": "what_if_choices",
+     "result": {
+      "remove": [
+       "BODYGUARD",
+       "DEFEND_NECROBINDER",
+       "DEMESNE",
+       "NEGATIVE_PULSE",
+       "STRIKE_NECROBINDER",
+       "UNLEASH"
+      ],
+      "upgrade": [
+       "BODYGUARD",
+       "DEFEND_NECROBINDER",
+       "DEMESNE",
+       "NEGATIVE_PULSE",
+       "STRIKE_NECROBINDER",
+       "UNLEASH"
+      ],
+      "add": [
+       {
+        "card": "DEFILE",
+        "name": "玷污"
+       },
+       {
+        "card": "DRAIN_POWER",
+        "name": "能量汲取"
+       },
+       {
+        "card": "NEGATIVE_PULSE",
+        "name": "负能量脉冲"
+       }
+      ]
+     }
+    },
+    {
+     "id": "T5",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F04-card",
+      "changes": [
+       {
+        "operation": "add",
+        "card": "DEFILE",
+        "name": "玷污"
+       }
+      ],
+      "engine_top_before": "1:SOW",
+      "engine_top_after": "1:SOW",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 3.4,
+      "options_after": [
+       {
+        "id": "1:SOW",
+        "name": "播种",
+        "deck_score": 57.6,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 54.2,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "2:FEAR",
+        "name": "恐惧",
+        "deck_score": 55,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "0:PULL_AGGRO",
+        "name": "吸引仇恨",
+        "deck_score": 52.3,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    }
+   ],
+   "toolCalls": 5,
+   "repairs": 1,
+   "usage": {
+    "prompt_tokens": 26298,
+    "completion_tokens": 954,
+    "cost_usd": 0.002674392,
+    "llm_calls": 5
+   },
+   "finding": {
+    "decision_id": "F04-card",
+    "reasons": [
+     {
+      "factor": "deck_fitness:aoe",
+      "evidence": "T3",
+      "text": "引擎最看重群伤：拿播种后每回合群伤 0.7 → 1.9，需求 3.6，这是差距最大的一项。"
+     },
+     {
+      "factor": "deck_fitness:frontload",
+      "evidence": "T3",
+      "text": "前期输出也会从每回合 11.1 升到 12.6，虽然离需求 21.6 还远，但方向是对的。"
+     },
+     {
+      "factor": "deck_fitness:lookahead",
+      "evidence": "T3",
+      "text": "代价是后续 3 次选牌的适合度略降，防御也从 8.9 降到 8.3，仍高于需求 5.5。"
+     }
+    ],
+    "what_if_evidence": "T5",
+    "what_if_text": "假设之前多拿一张玷污，引擎首选仍是播种，差距只从 4 缩到 3.4，说明这不是关键变量。",
+    "advice": "第 1 幕群伤只有每回合 0.7、需求 3.6 时，可以优先考虑能补群伤的牌，而不是直接跳过。"
+   }
+  },
+  {
+   "flag": "F12-card",
+   "status": "verified",
+   "errors": [],
+   "evidence": [
+    {
+     "id": "T0",
+     "tool": "get_decision",
+     "result": {
+      "id": "F12-card",
+      "kind": "card_reward",
+      "floor": 12,
+      "act": 1,
+      "hp": 42,
+      "max_hp": 70,
+      "gold": 247,
+      "engine_top": "1:POKE",
+      "confidence": "medium",
+      "chosen": "0:HAUNT",
+      "tier": 1,
+      "gap": 1.6,
+      "pick_margin": 1,
+      "options": [
+       {
+        "id": "1:POKE",
+        "kind": "card",
+        "entity_id": "POKE",
+        "name": "戳击",
+        "score": 55.7,
+        "deck_score": 55.7,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（负能量脉冲）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 护喉甲 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 1.47,
+          "message": "拿戳击后前期输出：每回合 13.9 → 15.9（需求 27.9）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": 0.29,
+          "message": "拿戳击后循环：每回合额外抽牌 0.55 → 0.58（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": 0.13,
+          "message": "拿戳击后防御：每回合 8.0 → 8.2（需求 6.0）"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": 0.07,
+          "message": "拿戳击后群伤：每回合 0.3 → 0.3（需求 1.6）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 领域 让戳击更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.14,
+          "message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       },
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 54.8,
+        "deck_score": 53.8,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（负能量脉冲）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 护喉甲 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0,
+          "message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 1,
+          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ]
+       },
+       {
+        "id": "0:HAUNT",
+        "kind": "card",
+        "entity_id": "HAUNT",
+        "name": "纠缠",
+        "score": 54.1,
+        "deck_score": 54.1,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（负能量脉冲）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 护喉甲 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.34,
+          "message": "拿纠缠后前期输出：每回合 13.9 → 13.5（需求 27.9）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": 0.14,
+          "message": "拿纠缠后循环：每回合额外抽牌 0.55 → 0.57（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.13,
+          "message": "拿纠缠后防御：每回合 8.0 → 7.8（需求 6.0）"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": -0.07,
+          "message": "拿纠缠后群伤：每回合 0.3 → 0.3（需求 1.6）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0.69,
+          "message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       },
+       {
+        "id": "2:FLATTEN",
+        "kind": "card",
+        "entity_id": "FLATTEN",
+        "name": "重压",
+        "score": 52.3,
+        "deck_score": 52.3,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（负能量脉冲）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 护喉甲 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.57,
+          "message": "拿重压后防御：每回合 8.0 → 7.2（需求 6.0）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.41,
+          "message": "拿重压后循环：每回合额外抽牌 0.55 → 0.50（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": -0.31,
+          "message": "拿重压后群伤：每回合 0.3 → 0.3（需求 1.6）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.16,
+          "message": "拿重压后前期输出：每回合 13.9 → 13.7（需求 27.9）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 重压 让重压更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.1,
+          "message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "id": "T1",
+     "tool": "get_decision",
+     "result": {
+      "id": "F12-card",
+      "kind": "card_reward",
+      "floor": 12,
+      "act": 1,
+      "hp": 42,
+      "max_hp": 70,
+      "gold": 247,
+      "engine_top": "1:POKE",
+      "confidence": "medium",
+      "policy_status": "recommend",
+      "pick_margin": 1,
+      "options": [
+       {
+        "id": "1:POKE",
+        "kind": "card",
+        "entity_id": "POKE",
+        "name": "戳击",
+        "score": 55.7,
+        "deck_score": 55.7,
+        "rank": 1,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（负能量脉冲）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 护喉甲 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": 1.47,
+          "message": "拿戳击后前期输出：每回合 13.9 → 15.9（需求 27.9）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": 0.29,
+          "message": "拿戳击后循环：每回合额外抽牌 0.55 → 0.58（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": 0.13,
+          "message": "拿戳击后防御：每回合 8.0 → 8.2（需求 6.0）"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": 0.07,
+          "message": "拿戳击后群伤：每回合 0.3 → 0.3（需求 1.6）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 领域 让戳击更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.14,
+          "message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 1.539,
+         "survival": 0.1288,
+         "long_term_growth": 0.2891,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "skip",
+        "kind": "skip",
+        "entity_id": null,
+        "name": "跳过",
+        "score": 54.8,
+        "deck_score": 53.8,
+        "rank": 2,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（负能量脉冲）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 护喉甲 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0,
+          "message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         },
+         {
+          "code": "deck_fitness:pick_margin",
+          "delta": 1,
+          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": 0,
+         "survival": 0,
+         "long_term_growth": 0,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "0:HAUNT",
+        "kind": "card",
+        "entity_id": "HAUNT",
+        "name": "纠缠",
+        "score": 54.1,
+        "deck_score": 54.1,
+        "rank": 3,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（负能量脉冲）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 护喉甲 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.34,
+          "message": "拿纠缠后前期输出：每回合 13.9 → 13.5（需求 27.9）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": 0.14,
+          "message": "拿纠缠后循环：每回合额外抽牌 0.55 → 0.57（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.13,
+          "message": "拿纠缠后防御：每回合 8.0 → 7.8（需求 6.0）"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": -0.07,
+          "message": "拿纠缠后群伤：每回合 0.3 → 0.3（需求 1.6）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": 0.69,
+          "message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": -0.4145,
+         "survival": -0.1289,
+         "long_term_growth": 0.142,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       },
+       {
+        "id": "2:FLATTEN",
+        "kind": "card",
+        "entity_id": "FLATTEN",
+        "name": "重压",
+        "score": 52.3,
+        "deck_score": 52.3,
+        "rank": 4,
+        "eligible": true,
+        "fully_scored": true,
+        "gaps": [],
+        "factors": [
+         {
+          "code": "estimate_scope",
+          "delta": 0,
+          "message": "牌组中 1 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+         },
+         {
+          "code": "partially_modeled_deck_cards",
+          "delta": 0,
+          "message": "牌组中 1 张牌（负能量脉冲）有部分效果尚未计入评分。"
+         },
+         {
+          "code": "unmodeled_relics",
+          "delta": 0,
+          "message": "遗物 护喉甲 尚未计入评分。"
+         },
+         {
+          "code": "deck_fitness:defense",
+          "delta": -0.57,
+          "message": "拿重压后防御：每回合 8.0 → 7.2（需求 6.0）"
+         },
+         {
+          "code": "deck_fitness:cycle",
+          "delta": -0.41,
+          "message": "拿重压后循环：每回合额外抽牌 0.55 → 0.50（需求 1.0）"
+         },
+         {
+          "code": "deck_fitness:aoe",
+          "delta": -0.31,
+          "message": "拿重压后群伤：每回合 0.3 → 0.3（需求 1.6）"
+         },
+         {
+          "code": "deck_fitness:frontload",
+          "delta": -0.16,
+          "message": "拿重压后前期输出：每回合 13.9 → 13.7（需求 27.9）"
+         },
+         {
+          "code": "deck_fitness:synergy",
+          "delta": 0,
+          "message": "牌组里的 重压 让重压更有价值（说明，不另加分）"
+         },
+         {
+          "code": "deck_fitness:lookahead",
+          "delta": -0.1,
+          "message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
+         }
+        ],
+        "dimensions": {
+         "immediate_power": -0.4632,
+         "survival": -0.5731,
+         "long_term_growth": -0.4065,
+         "resource_efficiency": 0,
+         "data_completeness": 0
+        }
+       }
+      ],
+      "chosen": "0:HAUNT",
+      "tier": 1,
+      "gap": 1.6,
+      "not_strict_because": []
+     }
+    },
+    {
+     "id": "T2",
+     "tool": "compare_options",
+     "result": {
+      "decision_id": "F12-card",
+      "a": {
+       "id": "1:POKE",
+       "name": "戳击",
+       "deck_score": 55.7,
+       "fully_scored": true
+      },
+      "b": {
+       "id": "0:HAUNT",
+       "name": "纠缠",
+       "deck_score": 54.1,
+       "fully_scored": true
+      },
+      "deck_score_difference": 1.6,
+      "factors": [
+       {
+        "factor": "deck_fitness:frontload",
+        "a": 1.47,
+        "b": -0.34,
+        "difference": 1.81,
+        "a_message": "拿戳击后前期输出：每回合 13.9 → 15.9（需求 27.9）",
+        "b_message": "拿纠缠后前期输出：每回合 13.9 → 13.5（需求 27.9）"
+       },
+       {
+        "factor": "deck_fitness:lookahead",
+        "a": -0.14,
+        "b": 0.69,
+        "difference": -0.83,
+        "a_message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度",
+        "b_message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "factor": "deck_fitness:defense",
+        "a": 0.13,
+        "b": -0.13,
+        "difference": 0.26,
+        "a_message": "拿戳击后防御：每回合 8.0 → 8.2（需求 6.0）",
+        "b_message": "拿纠缠后防御：每回合 8.0 → 7.8（需求 6.0）"
+       },
+       {
+        "factor": "deck_fitness:cycle",
+        "a": 0.29,
+        "b": 0.14,
+        "difference": 0.15,
+        "a_message": "拿戳击后循环：每回合额外抽牌 0.55 → 0.58（需求 1.0）",
+        "b_message": "拿纠缠后循环：每回合额外抽牌 0.55 → 0.57（需求 1.0）"
+       },
+       {
+        "factor": "deck_fitness:aoe",
+        "a": 0.07,
+        "b": -0.07,
+        "difference": 0.14,
+        "a_message": "拿戳击后群伤：每回合 0.3 → 0.3（需求 1.6）",
+        "b_message": "拿纠缠后群伤：每回合 0.3 → 0.3（需求 1.6）"
+       },
+       {
+        "factor": "deck_fitness:synergy",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组里的 领域 让戳击更有价值（说明，不另加分）",
+        "b_message": null
+       },
+       {
+        "factor": "estimate_scope",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 1 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。",
+        "b_message": "牌组中 1 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "factor": "partially_modeled_deck_cards",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 1 张牌（负能量脉冲）有部分效果尚未计入评分。",
+        "b_message": "牌组中 1 张牌（负能量脉冲）有部分效果尚未计入评分。"
+       },
+       {
+        "factor": "unmodeled_relics",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "遗物 护喉甲 尚未计入评分。",
+        "b_message": "遗物 护喉甲 尚未计入评分。"
+       }
+      ],
+      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
+     }
+    },
+    {
+     "id": "T3",
+     "tool": "get_deck",
+     "result": {
+      "decision_id": "F12-card",
+      "floor": 12,
+      "act": 1,
+      "hp": 42,
+      "max_hp": 70,
+      "gold": 247,
+      "deck_size": 12,
+      "deck": [
+       {
+        "card": "BODYGUARD",
+        "name": "护卫",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "DEFEND_NECROBINDER",
+        "name": "防御",
+        "upgrades": 0,
+        "count": 3
+       },
+       {
+        "card": "DEMESNE",
+        "name": "领域",
+        "upgrades": 1,
+        "count": 1
+       },
+       {
+        "card": "FLATTEN",
+        "name": "重压",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "NEGATIVE_PULSE",
+        "name": "负能量脉冲",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "STRIKE_NECROBINDER",
+        "name": "打击",
+        "upgrades": 0,
+        "count": 4
+       },
+       {
+        "card": "UNLEASH",
+        "name": "出击",
+        "upgrades": 0,
+        "count": 1
+       }
+      ],
+      "relics": [
+       {
+        "relic": "BOUND_PHYLACTERY",
+        "name": "缚魂命匣"
+       },
+       {
+        "relic": "ARCANE_SCROLL",
+        "name": "奥术卷轴"
+       },
+       {
+        "relic": "GORGET",
+        "name": "护喉甲"
+       },
+       {
+        "relic": "AKABEKO",
+        "name": "赤牛"
+       }
+      ],
+      "potions": [
+       {
+        "potion": "COLORLESS_POTION",
+        "name": "无色药水"
+       },
+       {
+        "potion": "FIRE_POTION",
+        "name": "火焰药水"
+       }
+      ]
+     }
+    },
+    {
+     "id": "T4",
+     "tool": "what_if_choices",
+     "result": {
+      "remove": [
+       "BODYGUARD",
+       "DEFEND_NECROBINDER",
+       "DEMESNE",
+       "FLATTEN",
+       "NEGATIVE_PULSE",
+       "STRIKE_NECROBINDER",
+       "UNLEASH"
+      ],
+      "upgrade": [
+       "BODYGUARD",
+       "DEFEND_NECROBINDER",
+       "FLATTEN",
+       "NEGATIVE_PULSE",
+       "STRIKE_NECROBINDER",
+       "UNLEASH"
+      ],
+      "add": [
+       {
+        "card": "DEFILE",
+        "name": "玷污"
+       },
+       {
+        "card": "DRAIN_POWER",
+        "name": "能量汲取"
+       },
+       {
+        "card": "FEAR",
+        "name": "恐惧"
+       },
+       {
+        "card": "FLATTEN",
+        "name": "重压"
+       },
+       {
+        "card": "GRAVEBLAST",
+        "name": "坟冢爆射"
+       },
+       {
+        "card": "LETHALITY",
+        "name": "致死性"
+       },
+       {
+        "card": "NEGATIVE_PULSE",
+        "name": "负能量脉冲"
+       },
+       {
+        "card": "PULL_AGGRO",
+        "name": "吸引仇恨"
+       },
+       {
+        "card": "SHARED_FATE",
+        "name": "命运同担"
+       },
+       {
+        "card": "SHROUD",
+        "name": "厄运之衣"
+       },
+       {
+        "card": "SOW",
+        "name": "播种"
+       }
+      ]
+     }
+    },
+    {
+     "id": "T5",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F12-card",
+      "changes": [
+       {
+        "operation": "remove",
+        "card": "STRIKE_NECROBINDER",
+        "name": "打击"
+       }
+      ],
+      "engine_top_before": "1:POKE",
+      "engine_top_after": "1:POKE",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 1.6,
+      "options_after": [
+       {
+        "id": "1:POKE",
+        "name": "戳击",
+        "deck_score": 56.4,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 54.3,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "0:HAUNT",
+        "name": "纠缠",
+        "deck_score": 54.8,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "2:FLATTEN",
+        "name": "重压",
+        "deck_score": 52.7,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    }
+   ],
+   "toolCalls": 5,
+   "repairs": 0,
+   "usage": {
+    "prompt_tokens": 22844,
+    "completion_tokens": 614,
+    "cost_usd": 0.002434416,
+    "llm_calls": 4
+   },
+   "finding": {
+    "decision_id": "F12-card",
+    "reasons": [
+     {
+      "factor": "deck_fitness:frontload",
+      "evidence": "T2",
+      "text": "前期输出是最大差距：拿戳击每回合 13.9 → 15.9，拿纠缠反而降到 13.5，而需求是 27.9。"
+     },
+     {
+      "factor": "deck_fitness:lookahead",
+      "evidence": "T2",
+      "text": "纠缠在后续选牌上略占优（计入下一次选牌后适合度更高），这是它被选中的主要理由。"
+     },
+     {
+      "factor": "deck_fitness:defense",
+      "evidence": "T2",
+      "text": "防御上戳击 8.0 → 8.2，纠缠 8.0 → 7.8，两者都高于需求 6.0，差距不大。"
+     }
+    ],
+    "what_if_evidence": "T5",
+    "what_if_text": "试着少一张打击后，引擎仍首选戳击，差距保持 1.6，说明这不是牌组张数的问题。",
+    "advice": "第 1 幕输出离需求 27.9 还差很远时，优先考虑能直接抬高每回合输出的牌。"
+   }
+  }
+ ],
+ "summary": {
+  "text": "这些决定都低估了前期输出与群伤同需求的差距，可先按每回合输出和群伤补牌，再考虑后续选牌适合度。",
+  "source": "model",
+  "cost_usd": 0.00017309999999999998
+ },
+ "meta": {
+  "model": "deepseek-flash",
+  "cost_usd": 0.005281907999999999,
+  "seconds": 8.828,
+  "generated_at": "2026-11-01 14:42"
+ }
+}
