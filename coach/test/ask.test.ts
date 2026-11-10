@@ -209,6 +209,7 @@ describe("program check of an answer", () => {
     const evidence = [{ id: "E1", tool: "x", result: { a: "DEFEND_NECROBINDER F15-card 15" } }];
     expect(checkAnswer("只算了 DEFEND_NECROBINDER。", evidence, NAMES)[0]!.errors).toEqual(["answer: write names, not the internal ID DEFEND_NECROBINDER"]);
     expect(checkAnswer("见F15-card。", evidence, NAMES)).toHaveLength(1);
+    expect(checkAnswer("引擎的 what_if 里试过。", evidence, NAMES)).toHaveLength(1);
     expect(checkAnswer("第 15 层的选牌。", evidence, NAMES)).toEqual([]);
   });
 });

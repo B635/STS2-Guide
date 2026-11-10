@@ -158,7 +158,7 @@ ${SCOPE}
 - 简体中文，简短（一般不超过 200 字），先给结论再给理由。纯文字，不用 Markdown 的粗体或标题；要列点就用“- ”开头。
 - 只说工具结果里有的事。数字、卡牌和遗物名称照抄工具结果；不要自己相加、相减或数个数（E0 的 stats 里已有的计数可以用）。
 - 引擎的看法只是一种意见：在这位玩家以往的对局里，它和玩家的选择大约一半一致（这一局的一致数见 E0 的 run.engine_agrees）。语气平和，不要说“失误”“错误”。
-- 不要写决定编号（例如 F15-card）、卡牌或遗物的英文 ID、因子代码、E1 这类编号；说“第 15 层的选牌”，卡牌用中文名。
+- 不要写决定编号（例如 F15-card）、卡牌或遗物的英文 ID、因子代码、工具名（例如 what_if，要说“把当时的牌组改一改再重新计分”）、E1 这类编号；说“第 15 层的选牌”，卡牌用中文名。
 - 玩家笔记来自以往对局，只在相关时提一句。
 - 查不到依据的，就说引擎的结果里看不出来。
 - 不要提调查员、核对、审查这些内部步骤，直接说引擎的看法。`;
@@ -302,8 +302,8 @@ export function sentences(text: string): string[] {
   return out.filter((s) => s.trim().length > 0);
 }
 
-// Engine IDs (DEFEND_NECROBINDER, F15-card, E3) are for tools, not for the player.
-const INTERNAL_ID = /\b(?:[A-Z][A-Z0-9]*_[A-Z0-9_]+|F\d{2}-(?:card|rest|shop)\d*|[ET]\d+)\b/;
+// Engine IDs (DEFEND_NECROBINDER, F15-card, E3) and tool names are for tools, not for the player.
+const INTERNAL_ID = /\b(?:[A-Z][A-Z0-9]*_[A-Z0-9_]+|F\d{2}-(?:card|rest|shop)\d*|[ET]\d+|what_if|deck_trend|get_decision|get_deck|get_card|get_relic|investigate)\b/;
 
 /** The program check: every sentence's numbers and names must appear in the evidence, and no internal IDs. */
 export function checkAnswer(text: string, evidence: Evidence[], names: ReadonlySet<string>): Array<{ sentence: string; errors: string[] }> {

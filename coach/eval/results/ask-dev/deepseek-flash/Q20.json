@@ -5,7 +5,7 @@
  "question": "第 21 层商店我买了铜钹，值不值？",
  "expect": "说这次购买引擎没法评分（玩家的选择没法评分），不编造结论。",
  "model": "deepseek-flash",
- "prompt_version": "b3",
+ "prompt_version": "b4",
  "context": {
   "id": "E0",
   "tool": "overview",
@@ -403,14 +403,19 @@
   "question": "第 21 层商店我买了铜钹，值不值？",
   "plan": "看第 21 层商店买铜钹这个决定，引擎对它的评分和理由。",
   "plan_source": "model",
-  "draft": "引擎没法给这个决定打分：它只比较“买”和“离开商店”，而铜钹不在它能评分的选项里，所以“值不值”它答不上来。\n\n能看的是：这局商店共 3 次，引擎和你一致 2 次，第 21 层这次属于“你的选择没法评分”的那一类。另外，这局牌组在前期输出和群伤上一直低于需求，如果铜钹是往这两个方向补的，方向上和引擎的偏好不冲突；具体数值引擎的结果里看不出来。",
-  "rewrite": null,
-  "final": "引擎没法给这个决定打分：它只比较“买”和“离开商店”，而铜钹不在它能评分的选项里，所以“值不值”它答不上来。\n\n能看的是：这局商店共 3 次，引擎和你一致 2 次，第 21 层这次属于“你的选择没法评分”的那一类。另外，这局牌组在前期输出和群伤上一直低于需求，如果铜钹是往这两个方向补的，方向上和引擎的偏好不冲突；具体数值引擎的结果里看不出来。",
+  "draft": "引擎没法给这个选择打分：它把买遗物列为“你的选择没法评分”，所以没有铜钹的分数，只比较了离开商店和几张牌。\n\n- 引擎的首选是离开商店（牌组适合度 50），其次是先制打击 49.54、删牌 49.12、心灵震慑 48.5、精密瞄准 48.37，差距都很小，它自己也说把握不大。\n- 买铜钹后金币从 199 降到 7，之后商店基本买不了东西；引擎对金币的估值是“金币越多每枚越不值钱”，所以它更倾向留着。\n- 铜钹本身和你这时的牌组有配合：杂技、计算下注、生存者、投掷匕首都能弃牌，每次弃牌对随机敌人造成 3 点伤害，正好补一点群伤。\n\n值不值，引擎的结果里看不出来；它只能说明它当时更想让你留着金币。",
+  "rewrite": "引擎没法给这个选择打分：它把买遗物列为“你的选择没法评分”，所以没有铜钹的分数，只比较了离开商店和几张牌。\n\n- 引擎的首选是离开商店（牌组适合度 50），其次是先制打击 49.54、删牌 49.12、心灵震慑 48.5、精密瞄准 48.37，差距都很小，它自己也说把握不大。\n- 买铜钹后金币从 199 降到 7，之后商店基本买不了东西；引擎对金币的估值是“金币越多每枚越不值钱”，所以它更倾向留着。\n- 铜钹的说明是：每在你的回合丢弃一张牌，就对一名随机敌人造成 3 点伤害。你这时的牌组里有杂技、计算下注、生存者、投掷匕首。\n\n值不值，引擎的结果里看不出来；它只能说明它当时更想让你留着金币。",
+  "final": "引擎没法给这个选择打分：它把买遗物列为“你的选择没法评分”，所以没有铜钹的分数，只比较了离开商店和几张牌。\n\n- 引擎的首选是离开商店（牌组适合度 50），其次是先制打击 49.54、删牌 49.12、心灵震慑 48.5、精密瞄准 48.37，差距都很小，它自己也说把握不大。\n- 买铜钹后金币从 199 降到 7，之后商店基本买不了东西；引擎对金币的估值是“金币越多每枚越不值钱”，所以它更倾向留着。\n- 铜钹的说明是：每在你的回合丢弃一张牌，就对一名随机敌人造成 3 点伤害。你这时的牌组里有杂技、计算下注、生存者、投掷匕首。\n\n值不值，引擎的结果里看不出来；它只能说明它当时更想让你留着金币。",
   "notice": "",
-  "status": "passed",
+  "status": "rewritten",
   "checks": {
    "draft_program": [],
-   "draft_critic": [],
+   "draft_critic": [
+    {
+     "sentence": "铜钹本身和你这时的牌组有配合：杂技、计算下注、生存者、投掷匕首都能弃牌，每次弃牌对随机敌人造成 3 点伤害，正好补一点群伤。",
+     "reason": "E8 给出铜钹说明“每在你的回合丢弃一张牌，就对一名随机敌人造成3点伤害”；E7 牌组里有杂技、计算下注、生存者、投掷匕首。但“正好补一点群伤”是草稿自己的推断，引擎没有对铜钹评分，也没有给出这个配合的数值。"
+    }
+   ],
    "rewrite_program": [],
    "rewrite_critic": [],
    "critic_unparsed": 0,
@@ -418,13 +423,221 @@
   },
   "evidence": [
    {
-    "id": "E4",
-    "tool": "investigate",
+    "id": "E6",
+    "tool": "get_decision",
+    "result": {
+     "id": "F21-shop",
+     "kind": "商店",
+     "act": 2,
+     "floor": 21,
+     "hp": 64,
+     "max_hp": 70,
+     "gold": 199,
+     "player": "relic:0:TINGSHA",
+     "engine": "leave",
+     "confidence": "low",
+     "gap": null,
+     "verdict": "不同，引擎把握不大（你的选择没法评分）",
+     "options": [
+      {
+       "id": "leave",
+       "name": "离开商店",
+       "deck_score": 50,
+       "rank": 1,
+       "fully_scored": true,
+       "factors": [
+        "离开商店，保留金币。"
+       ]
+      },
+      {
+       "id": "card:1:LEADING_STRIKE",
+       "name": "先制打击",
+       "deck_score": 49.54,
+       "rank": 2,
+       "fully_scored": true,
+       "factors": [
+        "加入 先制打击 后的牌组适合度（计入本幕后续选牌）",
+        "花 50 金币（现有 199）：这些金币在之后的商店能买到的价值；金币越多每枚越不值钱"
+       ]
+      },
+      {
+       "id": "removal",
+       "name": "删牌",
+       "deck_score": 49.12,
+       "rank": 3,
+       "fully_scored": true,
+       "factors": [
+        "移除 触不可及（可移除的牌中估值最好的一张）",
+        "花 100 金币（现有 199）：这些金币在之后的商店能买到的价值；金币越多每枚越不值钱"
+       ]
+      },
+      {
+       "id": "card:5:MIND_BLAST",
+       "name": "心灵震慑",
+       "deck_score": 48.5,
+       "rank": 4,
+       "fully_scored": true,
+       "factors": [
+        "加入 心灵震慑 后的牌组适合度（计入本幕后续选牌）",
+        "花 75 金币（现有 199）：这些金币在之后的商店能买到的价值；金币越多每枚越不值钱"
+       ]
+      },
+      {
+       "id": "card:0:PINPOINT",
+       "name": "精密瞄准",
+       "deck_score": 48.37,
+       "rank": 5,
+       "fully_scored": true,
+       "factors": [
+        "加入 精密瞄准 后的牌组适合度（计入本幕后续选牌）",
+        "花 75 金币（现有 199）：这些金币在之后的商店能买到的价值；金币越多每枚越不值钱"
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "id": "E7",
+    "tool": "get_deck",
     "result": {
      "decision_id": "F21-shop",
-     "status": "unavailable",
-     "note": "玩家的选择引擎没法评分",
-     "headline": "引擎认为「离开商店」比你选的「铜钹」高 null 分"
+     "floor": 21,
+     "act": 2,
+     "hp": 64,
+     "max_hp": 70,
+     "gold": 7,
+     "deck_size": 20,
+     "deck": [
+      {
+       "card": "ACROBATICS",
+       "name": "杂技",
+       "upgrades": 1,
+       "count": 1
+      },
+      {
+       "card": "ADRENALINE",
+       "name": "肾上腺素",
+       "upgrades": 0,
+       "count": 1
+      },
+      {
+       "card": "CALCULATED_GAMBLE",
+       "name": "计算下注",
+       "upgrades": 0,
+       "count": 1
+      },
+      {
+       "card": "DAGGER_THROW",
+       "name": "投掷匕首",
+       "upgrades": 0,
+       "count": 1
+      },
+      {
+       "card": "DEFEND_SILENT",
+       "name": "防御",
+       "upgrades": 0,
+       "count": 4
+      },
+      {
+       "card": "FLICK_FLACK",
+       "name": "翻越撑击",
+       "upgrades": 0,
+       "count": 1
+      },
+      {
+       "card": "GRAND_FINALE",
+       "name": "华丽收场",
+       "upgrades": 0,
+       "count": 1
+      },
+      {
+       "card": "GREED",
+       "name": "贪婪",
+       "upgrades": 0,
+       "count": 1
+      },
+      {
+       "card": "NEUTRALIZE",
+       "name": "中和",
+       "upgrades": 0,
+       "count": 1
+      },
+      {
+       "card": "PIERCING_WAIL",
+       "name": "尖啸",
+       "upgrades": 0,
+       "count": 1
+      },
+      {
+       "card": "PROWESS",
+       "name": "非凡技艺",
+       "upgrades": 1,
+       "count": 1
+      },
+      {
+       "card": "SPEEDSTER",
+       "name": "速行者",
+       "upgrades": 0,
+       "count": 1
+      },
+      {
+       "card": "STRIKE_SILENT",
+       "name": "打击",
+       "upgrades": 0,
+       "count": 3
+      },
+      {
+       "card": "SURVIVOR",
+       "name": "生存者",
+       "upgrades": 0,
+       "count": 1
+      },
+      {
+       "card": "UNTOUCHABLE",
+       "name": "触不可及",
+       "upgrades": 0,
+       "count": 1
+      }
+     ],
+     "relics": [
+      {
+       "relic": "RING_OF_THE_SNAKE",
+       "name": "蛇之戒指"
+      },
+      {
+       "relic": "CURSED_PEARL",
+       "name": "诅咒珍珠"
+      },
+      {
+       "relic": "TUNGSTEN_ROD",
+       "name": "钨合金棍"
+      },
+      {
+       "relic": "RAZOR_TOOTH",
+       "name": "剃刀牙"
+      },
+      {
+       "relic": "PAELS_WING",
+       "name": "佩尔之翼"
+      }
+     ],
+     "potions": [
+      {
+       "potion": "LUCKY_TONIC",
+       "name": "幸运补剂"
+      }
+     ]
+    }
+   },
+   {
+    "id": "E8",
+    "tool": "get_relic",
+    "result": {
+     "id": "TINGSHA",
+     "name": "铜钹",
+     "description": "你每在你的回合丢弃一张牌，就对一名随机敌人造成3点伤害。",
+     "rarity": "罕见遗物",
+     "pool": "silent"
     }
    }
   ],
@@ -433,28 +646,25 @@
    "E1",
    "E2",
    "E3",
-   "E4"
+   "E4",
+   "E5",
+   "E6",
+   "E7",
+   "E8"
   ],
-  "tool_calls": 1,
-  "investigators": [
-   {
-    "decision": "F21-shop",
-    "status": "unavailable",
-    "relation": "none",
-    "cached": false
-   }
-  ],
+  "tool_calls": 3,
+  "investigators": [],
   "usage": {
-   "cost_usd": 0.002953224,
-   "llm_calls": 4,
-   "prompt_tokens": 19058,
-   "completion_tokens": 613,
+   "cost_usd": 0.007895652,
+   "llm_calls": 7,
+   "prompt_tokens": 40675,
+   "completion_tokens": 1554,
    "by_role": {
-    "lead": 0.00067662,
+    "lead": 0.0021014759999999997,
     "investigator": 0,
-    "critic": 0.002276604
+    "critic": 0.005794176
    }
   },
-  "seconds": 5.053
+  "seconds": 10.423
  }
 }
