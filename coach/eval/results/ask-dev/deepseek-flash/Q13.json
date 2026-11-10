@@ -5,7 +5,7 @@
  "question": "第 13 层我选了休息，引擎怎么看？",
  "expect": "说引擎首选锻造，但休息点升级价值只算得到下限、把握很低；不给强结论。",
  "model": "deepseek-flash",
- "prompt_version": "b4",
+ "prompt_version": "b5",
  "context": {
   "id": "E0",
   "tool": "overview",
@@ -335,11 +335,11 @@
  "answer": {
   "index": 2,
   "question": "第 13 层我选了休息，引擎怎么看？",
-  "plan": "看第 13 层休息点的休息与锻造比较，以及当时的牌组状态。",
+  "plan": "查第 13 层休息点这个决定，看引擎为什么更看好锻造、差距多大。",
   "plan_source": "model",
-  "draft": "引擎更看好锻造，但把握不大，差距也不大。\n\n- 当时生命 42/70（60%），引擎认为这个血量休息收益有限，锻造更划算。\n- 锻造的分数只算了部分效果：可估值的升级里最好的是防御，另有 5 张牌的升级没估值，所以锻造的实际价值可能更高。\n- 休息的分数是完整算出来的，按缺失生命和近期路线压力估。\n\n也就是说，引擎倾向“血量还够，先升级”，但它对这次判断信心低，你选休息不算离谱。",
+  "draft": "引擎更看好锻造，但差距其实不大，它自己也没把握。\n\n- 休息的分数几乎全来自回血：当时 42/70 生命，按缺失生命和路线压力估出 16.2 分。\n- 锻造只算出 2.25 分，因为能估值的升级只有一张防御，另有 5 张牌的升级没算进去。\n\n所以引擎的偏好建立在“升级收益被低估”上。如果你更担心第 1 幕后续掉血，休息是合理的；可以留意负能量脉冲这类没被估值的升级。",
   "rewrite": null,
-  "final": "引擎更看好锻造，但把握不大，差距也不大。\n\n- 当时生命 42/70（60%），引擎认为这个血量休息收益有限，锻造更划算。\n- 锻造的分数只算了部分效果：可估值的升级里最好的是防御，另有 5 张牌的升级没估值，所以锻造的实际价值可能更高。\n- 休息的分数是完整算出来的，按缺失生命和近期路线压力估。\n\n也就是说，引擎倾向“血量还够，先升级”，但它对这次判断信心低，你选休息不算离谱。",
+  "final": "引擎更看好锻造，但差距其实不大，它自己也没把握。\n\n- 休息的分数几乎全来自回血：当时 42/70 生命，按缺失生命和路线压力估出 16.2 分。\n- 锻造只算出 2.25 分，因为能估值的升级只有一张防御，另有 5 张牌的升级没算进去。\n\n所以引擎的偏好建立在“升级收益被低估”上。如果你更担心第 1 幕后续掉血，休息是合理的；可以留意负能量脉冲这类没被估值的升级。",
   "notice": "",
   "status": "passed",
   "checks": {
@@ -353,161 +353,66 @@
   "evidence": [
    {
     "id": "E2",
-    "tool": "get_decision",
-    "result": {
-     "id": "F13-rest",
-     "kind": "休息点",
-     "act": 1,
-     "floor": 13,
-     "hp": 42,
-     "max_hp": 70,
-     "gold": 247,
-     "player": "rest:HEAL",
-     "engine": "rest:SMITH",
-     "confidence": "low",
-     "gap": -13.95,
-     "verdict": "不同，引擎把握不大（有选项只算了部分效果、引擎把握不大、差距不大）",
-     "options": [
-      {
-       "id": "rest:SMITH",
-       "name": "锻造",
-       "deck_score": 52.25,
-       "rank": 1,
-       "fully_scored": false,
-       "factors": [
-        "可估值的升级中最好的是 DEFEND_NECROBINDER，另有 5 张牌的升级未估值，锻造至少值这么多。",
-        "生命 60%，不低于 60%：锻造更划算。"
-       ]
-      },
-      {
-       "id": "rest:HEAL",
-       "name": "休息",
-       "deck_score": 66.2,
-       "rank": 2,
-       "fully_scored": true,
-       "factors": [
-        "按缺失生命和近期真实路线压力计算恢复价值。",
-        "生命 60%，不低于 60%：休息收益有限。"
-       ]
-      }
-     ]
-    }
-   },
-   {
-    "id": "E3",
-    "tool": "get_deck",
+    "tool": "investigate",
     "result": {
      "decision_id": "F13-rest",
-     "floor": 13,
-     "act": 1,
-     "hp": 42,
-     "max_hp": 70,
-     "gold": 247,
-     "deck_size": 13,
-     "deck": [
+     "where": "第 1 幕第 13 层休息点",
+     "verdict": "不同，引擎把握不大（有选项只算了部分效果、引擎把握不大、差距不大）",
+     "headline": "引擎首选「锻造」，你选了「休息」；只看牌组分数两者相差 -13.95，引擎的首选来自它的取舍倾向（例如跳过门槛）",
+     "comparison": [
       {
-       "card": "BODYGUARD",
-       "name": "护卫",
-       "upgrades": 0,
-       "count": 1
+       "aspect": "hp_recovery",
+       "锻造": null,
+       "休息": "按缺失生命和近期真实路线压力计算恢复价值。"
       },
       {
-       "card": "DEFEND_NECROBINDER",
-       "name": "防御",
-       "upgrades": 0,
-       "count": 3
-      },
-      {
-       "card": "DEMESNE",
-       "name": "领域",
-       "upgrades": 1,
-       "count": 1
-      },
-      {
-       "card": "FLATTEN",
-       "name": "重压",
-       "upgrades": 0,
-       "count": 1
-      },
-      {
-       "card": "HAUNT",
-       "name": "纠缠",
-       "upgrades": 0,
-       "count": 1
-      },
-      {
-       "card": "NEGATIVE_PULSE",
-       "name": "负能量脉冲",
-       "upgrades": 0,
-       "count": 1
-      },
-      {
-       "card": "STRIKE_NECROBINDER",
-       "name": "打击",
-       "upgrades": 0,
-       "count": 4
-      },
-      {
-       "card": "UNLEASH",
-       "name": "出击",
-       "upgrades": 0,
-       "count": 1
+       "aspect": "deck_upgrade_opportunity",
+       "锻造": "可估值的升级中最好的是 DEFEND_NECROBINDER，另有 5 张牌的升级未估值，锻造至少值这么多。",
+       "休息": null
       }
      ],
-     "relics": [
-      {
-       "relic": "BOUND_PHYLACTERY",
-       "name": "缚魂命匣"
-      },
-      {
-       "relic": "ARCANE_SCROLL",
-       "name": "奥术卷轴"
-      },
-      {
-       "relic": "GORGET",
-       "name": "护喉甲"
-      },
-      {
-       "relic": "AKABEKO",
-       "name": "赤牛"
-      }
-     ],
-     "potions": [
-      {
-       "potion": "COLORLESS_POTION",
-       "name": "无色药水"
-      },
-      {
-       "potion": "FIRE_POTION",
-       "name": "火焰药水"
-      },
-      {
-       "potion": "STABLE_SERUM",
-       "name": "稳定血清"
-      }
-     ]
+     "status": "verified",
+     "finding": {
+      "reasons": [
+       {
+        "aspect": "hp_recovery",
+        "text": "休息的价值几乎全在回血：42/70 生命下按缺失生命和路线压力估出 16.2 分，锻造这一项是 0。"
+       },
+       {
+        "aspect": "deck_upgrade_opportunity",
+        "text": "锻造这边只算出 2.25 分，因为能估值的升级只有 DEFEND_NECROBINDER，另有 5 张牌的升级未估值。"
+       }
+      ],
+      "advice": "引擎自己也只算了一半升级收益、把握不大；若你更看重第 1 幕后续掉血风险，休息是合理的，可留意出击、负能量脉冲这类未估值的升级。"
+     }
     }
    }
   ],
   "window": [
    "E0",
    "E1",
-   "E2",
-   "E3"
+   "E2"
   ],
-  "tool_calls": 3,
-  "investigators": [],
+  "tool_calls": 2,
+  "investigators": [
+   {
+    "decision": "F13-rest",
+    "status": "verified",
+    "relation": "disagree",
+    "cached": false
+   }
+  ],
   "usage": {
-   "cost_usd": 0.002359452,
-   "llm_calls": 4,
-   "prompt_tokens": 16337,
-   "completion_tokens": 673,
+   "cost_usd": 0.003931416,
+   "llm_calls": 8,
+   "prompt_tokens": 27154,
+   "completion_tokens": 1568,
    "by_role": {
-    "lead": 0.000822348,
-    "investigator": 0,
-    "critic": 0.001537104
+    "lead": 0.00084228,
+    "investigator": 0.0015871320000000002,
+    "critic": 0.001502004
    }
   },
-  "seconds": 4.903
+  "seconds": 10.348
  }
 }

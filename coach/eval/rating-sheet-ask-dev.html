@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>追问评分 · dev</title><style>:root{--bg:#fbfaf7;--fg:#1d1b18;--muted:#6b665e;--card:#fff;--line:#e4e0d8;--accent:#9a4d1f;--tag:#f1e7dc;--ok:#2f6b3a}
+@media (prefers-color-scheme:dark){:root{--bg:#171614;--fg:#ece8e1;--muted:#a39d93;--card:#211f1c;--line:#36332e;--accent:#e09a62;--tag:#3a2c20;--ok:#7fc28c}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.65 system-ui,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:760px;margin:0 auto;padding:24px 16px 64px}h1{font-size:22px;margin:0 0 4px}h2{font-size:17px;margin:32px 0 12px}
+h3{font-size:16px;margin:4px 0 8px}.meta,.where,.note,.caveat,footer{color:var(--muted);font-size:13px}
+.summary{font-size:16px;padding:12px 14px;border-left:3px solid var(--accent);background:var(--card)}
+.flag{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin:12px 0}
+.reasons{padding-left:18px;margin:6px 0}.tag{display:inline-block;background:var(--tag);border-radius:4px;padding:0 6px;margin-right:6px;font-size:12px}
+.rate{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.rate button{border:1px solid var(--line);background:transparent;color:var(--fg);border-radius:6px;padding:3px 10px;cursor:pointer}
+.rate button.on{background:var(--accent);color:#fff;border-color:var(--accent)}.rate input{flex:1;min-width:140px;border:1px solid var(--line);background:transparent;color:var(--fg);border-radius:6px;padding:3px 8px}
+table{width:100%;border-collapse:collapse;font-size:13px}td,th{border-bottom:1px solid var(--line);padding:4px 6px;text-align:left}tr.t1 td{font-weight:600}
+.table{overflow-x:auto}#copy{margin-top:8px;padding:6px 14px;border-radius:6px;border:1px solid var(--accent);background:var(--accent);color:#fff;cursor:pointer}
+#copied{color:var(--ok);margin-left:8px}
+</style></head><body><main>
+<h1>复盘追问评分表（10 题）</h1>
+<p class="note">从开发集的 20 个固定问题里固定抽出 10 题。每题按你的判断选一个：<b>有用</b>（回答对，而且对你有帮助）、<b>没用</b>（不算错，但没帮助）、<b>说错了或答非所问</b>。可以加一句备注。全部评完后按最下面的“复制评分”，把复制的文字贴回对话（<code>coach ratings import</code> 会存成 <code>coach/eval/ratings/ask-dev.json</code>）。</p>
+<section class="flag" data-flag="ask-dev/Q02">
+  <div class="where">Q02 · 铁甲战士 · 败于 知识恶魔 · 对局 1773034032 · 同一段对话里前面问过：第 14 层我跳过了，引擎为什么觉得该拿放血？</div>
+  <h3>1. 那如果当时牌组里先有一张血墙，引擎还会这么选吗？</h3>
+  <p class="note">计划：查第 14 层选牌的完整比较，重点看“牌组里先有血墙”这一改动的重新计分结果。</p>
+  <p class="advice" style="white-space:pre-wrap">会。引擎试过“牌组里先有一张血墙”这一改动，重新计分后首选仍是放血，差距在 6.0–8.0 之间。
+
+引擎列出的三项里，拿放血后防御每回合 6.8 → 7.4（需求 11.8），前期输出 28.9 → 34.8（需求 36.0），每回合额外抽牌 0.47 → 0.57（需求 1.0）。引擎也试了加坚毅加铁斩波、加祭品加全身撞击、去掉两张打击再加血墙，首选都是放血。
+（有 1 句说法没能和引擎的结果核对上，已经删去。）</p>
+  <p class="caveat">重写后仍有说法对不上，已删去；查询 2 次，调查员 1 个。好的回答应该：用上一题的调查（what-if）回答：加了血墙首选是否仍是放血；查不到就说没试过。</p>
+  <div class="rate" role="group" aria-label="这个回答">
+    <button data-v="useful">有用</button><button data-v="not_useful">没用</button><button data-v="wrong">说错了或答非所问</button>
+    <input type="text" placeholder="备注（可不填）" maxlength="200">
+  </div>
+</section>
+<section class="flag" data-flag="ask-dev/Q07">
+  <div class="where">Q07 · 亡灵契约师 · 败于 帝皇蟹 · 对局 1772783591 · 同一段对话里前面问过：第 20 层我拿了收割，引擎为什么觉得还不如跳过？</div>
+  <h3>2. 这局我跳过选牌的次数多吗？引擎怎么看？</h3>
+  <p class="note">计划：看这局所有选牌决定里玩家跳过与引擎建议跳过的对比，重点看引擎认为该拿而玩家跳过的几处（第 27、28、30 层）。</p>
+  <p class="advice" style="white-space:pre-wrap">这局 14 次选牌里你跳过了 4 次，引擎自己会跳过的有 5 次，次数上差不多。
+
+- 第 21 层：你和引擎都选跳过，一致。
+- 第 27 层：引擎更看好拖延，高 4.5 分，这是它比较有把握的一处，主要因为防御每回合 5.8 → 6.6（需求 8.2）；但它也承认输出缺口更大（需求 47.6）。
+- 第 28、30 层：引擎更看好负能量脉冲，分别高 3.4 和 3.6 分，理由都是格挡小幅提升，这两处它把握不大，灾厄部分只算了一部分。
+
+所以引擎对第 27 层的跳过比较有看法，第 28、30 层只是略偏一点。</p>
+  <p class="caveat">审查后重写一次；查询 1 次，调查员 3 个。好的回答应该：用概况里的计数：玩家跳过几次、引擎会跳过几次，并点出两者不同的地方；不自己数出新数字。</p>
+  <div class="rate" role="group" aria-label="这个回答">
+    <button data-v="useful">有用</button><button data-v="not_useful">没用</button><button data-v="wrong">说错了或答非所问</button>
+    <input type="text" placeholder="备注（可不填）" maxlength="200">
+  </div>
+</section>
+<section class="flag" data-flag="ask-dev/Q08">
+  <div class="where">Q08 · 储君 · 败于 无厌沙虫 · 对局 1772790145</div>
+  <h3>3. 第 15 层我拿了引导之星，引擎也同意吗？为什么？</h3>
+  <p class="note">计划：第 15 层选牌引擎与玩家一致，只需确认引擎的首选和当时的牌组需求，不需要深入调查。</p>
+  <p class="advice" style="white-space:pre-wrap">是的，引擎也选了引导之星，和你的选择一致，差距为 0。
+
+理由：
+- 拿它后循环从每回合额外抽牌 0.00 升到 0.23（需求 1.0）。
+- 前期输出从 19.1 升到 20.2，防御从 6.4 略降到 6.1，仍高于需求 4.8。
+- 跳过只有 62.5 分，第 1 幕的门槛要求候选比跳过高出 1 分以上，引导之星 65 分过了线。
+
+不过引擎把握只是中等：牌组里有 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）的部分效果没计入评分，分数只反映已计入的部分。</p>
+  <p class="caveat">审查后重写一次；查询 2 次，调查员 0 个。好的回答应该：说引擎和玩家一致，并说明它比第二名好在哪里（逐项比较）。</p>
+  <div class="rate" role="group" aria-label="这个回答">
+    <button data-v="useful">有用</button><button data-v="not_useful">没用</button><button data-v="wrong">说错了或答非所问</button>
+    <input type="text" placeholder="备注（可不填）" maxlength="200">
+  </div>
+</section>
+<section class="flag" data-flag="ask-dev/Q11">
+  <div class="where">Q11 · 铁甲战士 · 胜利 · 对局 1772816067 · 同一段对话里前面问过：第三幕第 35 层的选牌，引擎怎么看？</div>
+  <h3>4. 第 7 层引擎为什么想让我拿放血？</h3>
+  <p class="note">计划：查第 7 层选牌这个决定，看引擎对跳过和放血的逐项比较与原因。</p>
+  <p class="advice" style="white-space:pre-wrap">引擎在第 7 层更看好放血，比跳过高出 3.7 分，主要理由有三点：
+
+- 防御：拿放血后预计战斗长度从标准的 0.88 倍降到 0.72 倍，挡不住的伤害随之减少，这是差距最大的一项。
+- 前期输出：每回合从 26.6 升到 32.9，需求是 23.5，等于把多余能量换成伤害。
+- 循环：每回合额外抽牌从 0.23 升到 0.29，需求是 1.0，过牌更快。
+
+把当时的牌组改一改再重新计分，比如加铁斩波、加岩石铠甲、加两张剑柄打击、去掉三张打击，首选仍然是放血。不过当时防御每回合只有 4.6，需求是 8.6，如果你更看重格挡，铁斩波这类牌也值得留意。</p>
+  <p class="caveat">草稿一次通过核对；查询 1 次，调查员 1 个。好的回答应该：说引擎首选放血、比跳过高 3.7 分及主要原因；可以提到试过的改动。</p>
+  <div class="rate" role="group" aria-label="这个回答">
+    <button data-v="useful">有用</button><button data-v="not_useful">没用</button><button data-v="wrong">说错了或答非所问</button>
+    <input type="text" placeholder="备注（可不填）" maxlength="200">
+  </div>
+</section>
+<section class="flag" data-flag="ask-dev/Q13">
+  <div class="where">Q13 · 亡灵契约师 · 败于 失落与遗忘之物 · 对局 1772975275 · 同一段对话里前面问过：第 17 层我拿了死神形态，引擎更想要苦难，差距大吗？</div>
+  <h3>5. 第 13 层我选了休息，引擎怎么看？</h3>
+  <p class="note">计划：查第 13 层休息点这个决定，看引擎为什么更看好锻造、差距多大。</p>
+  <p class="advice" style="white-space:pre-wrap">引擎更看好锻造，但差距其实不大，它自己也没把握。
+
+- 休息的分数几乎全来自回血：当时 42/70 生命，按缺失生命和路线压力估出 16.2 分。
+- 锻造只算出 2.25 分，因为能估值的升级只有一张防御，另有 5 张牌的升级没算进去。
+
+所以引擎的偏好建立在“升级收益被低估”上。如果你更担心第 1 幕后续掉血，休息是合理的；可以留意负能量脉冲这类没被估值的升级。</p>
+  <p class="caveat">草稿一次通过核对；查询 2 次，调查员 1 个。好的回答应该：说引擎首选锻造，但休息点升级价值只算得到下限、把握很低；不给强结论。</p>
+  <div class="rate" role="group" aria-label="这个回答">
+    <button data-v="useful">有用</button><button data-v="not_useful">没用</button><button data-v="wrong">说错了或答非所问</button>
+    <input type="text" placeholder="备注（可不填）" maxlength="200">
+  </div>
+</section>
+<section class="flag" data-flag="ask-dev/Q14">
+  <div class="where">Q14 · 静默猎手 · 败于 感染棱柱 · 对局 1773317604</div>
+  <h3>6. 这局有没有哪个决定值得再想想？</h3>
+  <p class="note">计划：这局只有第 17 层的选牌和引擎不一致，其余决定都一致，所以我重点看这次选牌，并查一下当时的牌组趋势。</p>
+  <p class="advice" style="white-space:pre-wrap">这局唯一和引擎看法不同的是第 17 层的选牌：你拿了狩猎，引擎更看好跳过，但差距只有 0.9 分，引擎把握不大。
+
+- 引擎反对的主要理由是防御：拿狩猎后每回合防御从 8.2 降到 7.8，而这一幕需求是 8.4，本来就差一点。
+- 前期输出几乎没变（30.2 → 30.0，需求 38.3），狩猎补不上输出缺口；它的额外奖励要斩杀才触发。
+- 往后看三次选牌，狩猎反而略加分（+0.63），所以这不是明显的坏选择。
+- 把当时的牌组改一改再重新计分，加扫腿和闪躲翻滚后差距缩到 0.3，最接近翻转；补灵动步法、去掉两张打击时，首选仍是跳过。
+
+其余 5 个决定（两次商店、三个休息点）都和引擎一致。</p>
+  <p class="caveat">草稿一次通过核对；查询 3 次，调查员 1 个。好的回答应该：说这局没有引擎有把握的分歧；最多提一下唯一的小分歧（第 17 层，差距不大）。</p>
+  <div class="rate" role="group" aria-label="这个回答">
+    <button data-v="useful">有用</button><button data-v="not_useful">没用</button><button data-v="wrong">说错了或答非所问</button>
+    <input type="text" placeholder="备注（可不填）" maxlength="200">
+  </div>
+</section>
+<section class="flag" data-flag="ask-dev/Q15">
+  <div class="where">Q15 · 储君 · 败于 知识恶魔 · 对局 1773664471</div>
+  <h3>7. 何人僭越这张牌有什么用？第 22 层引擎为什么更想要它而不是太阳打击？</h3>
+  <p class="note">计划：先查第 22 层选牌的引擎比较和当时牌组需求，再看「何人僭越」和「太阳打击」的卡牌说明。</p>
+  <p class="advice" style="white-space:pre-wrap">「何人僭越」是 0 费技能：给敌人 1 层虚弱、1 层易伤，带消耗。它本身不造成伤害，但虚弱能降低敌人输出，易伤能放大你后续的伤害。
+
+引擎在第 22 层更看好它，主要因为防御：
+- 拿「何人僭越」后，每回合防御从 9.2 升到 10.3，刚好超过 9.7 的需求；拿「太阳打击」反而降到 8.6。
+- 前期输出两边都远不够 35.5，但「何人僭越」把每回合前期输出从 23.0 提到 26.2，「太阳打击」只到 24.5。
+- 只有后续选牌模拟偏向「太阳打击」，多 0.49，抵不过防御上的差距。
+
+把当时的牌组改一改再重新计分，首选仍是「何人僭越」，差距最小也只缩到 1.9。引擎的建议是：当时 17 张牌里防御牌只有两张，下次选牌优先补防御。</p>
+  <p class="caveat">草稿一次通过核对；查询 5 次，调查员 1 个。好的回答应该：照游戏说明讲何人僭越的效果；第 22 层引擎首选它、比太阳打击高 3.2 分及原因。</p>
+  <div class="rate" role="group" aria-label="这个回答">
+    <button data-v="useful">有用</button><button data-v="not_useful">没用</button><button data-v="wrong">说错了或答非所问</button>
+    <input type="text" placeholder="备注（可不填）" maxlength="200">
+  </div>
+</section>
+<section class="flag" data-flag="ask-dev/Q17">
+  <div class="where">Q17 · 故障机器人 · 败于 女王 · 对局 1773939462 · 同一段对话里前面问过：第二幕我连着跳过了几次选牌，引擎是怎么看的？</div>
+  <h3>8. 打女王那场战斗，我应该先打哪个敌人？</h3>
+  <p class="note">计划：这个问题涉及战斗过程，引擎无法评分，先确认一下有没有相关决定可看。</p>
+  <p class="advice" style="white-space:pre-wrap">引擎回答不了这个问题。战斗过程不在它的评分范围内，包括出牌顺序、先打哪个敌人、为什么输掉某场战斗，它都看不到。
+
+它能看的是这局每个选牌、商店（只比较买或离开）、休息点决定上，引擎的首选和你的选择、分差和原因，以及每次选牌时牌组的每回合输出、防御等数值和那一幕的需求。比如第二幕那几次跳过选牌，引擎更看好折射、寒流、刮削，理由分别落在群伤和前期输出、防御、前期输出和循环上。</p>
+  <p class="caveat">审查后重写一次；查询 0 次，调查员 0 个。好的回答应该：说引擎不模拟战斗、回答不了出牌或目标选择；可以说它能看的是选牌、商店和休息点。</p>
+  <div class="rate" role="group" aria-label="这个回答">
+    <button data-v="useful">有用</button><button data-v="not_useful">没用</button><button data-v="wrong">说错了或答非所问</button>
+    <input type="text" placeholder="备注（可不填）" maxlength="200">
+  </div>
+</section>
+<section class="flag" data-flag="ask-dev/Q19">
+  <div class="where">Q19 · 静默猎手 · 胜利 · 对局 1774030566</div>
+  <h3>9. 跟我以前几局比，这局反复出现的问题是一样的吗？</h3>
+  <p class="note">计划：先看这局引擎与玩家分歧最大的几处选牌（第17层、第20层等），再对照以往对局笔记里反复出现的分歧类型，判断问题是否一致。</p>
+  <p class="advice" style="white-space:pre-wrap">不完全一样，但有一条主线贯穿。
+
+这局引擎和你的分歧集中在“跳过攻击牌”：第 17 层跳过而引擎看好回响斩击（群伤 2.6→3.9、前期输出 11.9→13.4，需求分别是 12.2 和 35.5），第 20 层跳过而引擎看好蛇咬（前期输出 11.3→23.0，需求 41.3），第 13 层跳过而引擎看好切割，第 37 层选计算下注而引擎看好毒性爆发（群伤 1.5→3.9，需求 8.7）。整局看，前期输出和群伤几乎每次选牌都低于需求，防御则一直够用。
+
+以往几局笔记里的分歧也多是“你跳过、引擎想补输出或群伤”（如第 1 幕第 3 层、第 12 层、第 14 层），但另有一批是引擎想补防御而你跳过。所以这局更偏向输出和群伤不足，防御那条线这局没出现。
+
+引擎的看法只是一种意见，这局 27 个决定里一致 14 个。</p>
+  <p class="caveat">草稿一次通过核对；查询 2 次，调查员 4 个。好的回答应该：用玩家笔记（以往对局的带头因素）和这局的分歧比较；笔记不足时如实说。</p>
+  <div class="rate" role="group" aria-label="这个回答">
+    <button data-v="useful">有用</button><button data-v="not_useful">没用</button><button data-v="wrong">说错了或答非所问</button>
+    <input type="text" placeholder="备注（可不填）" maxlength="200">
+  </div>
+</section>
+<section class="flag" data-flag="ask-dev/Q20">
+  <div class="where">Q20 · 静默猎手 · 胜利 · 对局 1774030566 · 同一段对话里前面问过：跟我以前几局比，这局反复出现的问题是一样的吗？</div>
+  <h3>10. 第 21 层商店我买了铜钹，值不值？</h3>
+  <p class="note">计划：看第 21 层商店买铜钹这个决定，引擎当时怎么比较买与离开。</p>
+  <p class="advice" style="white-space:pre-wrap">引擎没法给铜钹打分，所以这个决定在引擎结果里是“你的选择没法评分”，它只比较了买牌、删牌和离开。
+
+- 引擎首选离开商店（保留金币），其次是先制打击、删牌（会删触不可及）、心灵震慑、精密瞄准，彼此差距很小，引擎把握不大。
+- 你买铜钹后金币从 199 降到 7，之后商店的购买力基本没了。
+- 铜钹本身：每回合丢弃一张牌，就对随机敌人造成 3 点伤害。你的牌组里有杂技、计算下注、生存者、速行者这类弃牌手段，配合是有的；但引擎的评分体系里没有这件遗物，所以它值不值，引擎的结果里看不出来。
+
+顺带一提，这局引擎反复觉得群伤和前期输出偏低，铜钹的随机伤害算是往这个方向补了一点。</p>
+  <p class="caveat">草稿一次通过核对；查询 4 次，调查员 0 个。好的回答应该：说这次购买引擎没法评分（玩家的选择没法评分），不编造结论。</p>
+  <div class="rate" role="group" aria-label="这个回答">
+    <button data-v="useful">有用</button><button data-v="not_useful">没用</button><button data-v="wrong">说错了或答非所问</button>
+    <input type="text" placeholder="备注（可不填）" maxlength="200">
+  </div>
+</section>
+<button id="copy">复制评分</button><span id="copied" hidden>已复制</span>
+</main><script>
+const REVIEW = {"run_id":"SET:ask-dev","model":"deepseek-flash","prompt_version":"b5"};
+const ratings = {};
+document.querySelectorAll(".flag").forEach((card) => {
+  const flag = card.dataset.flag, note = card.querySelector("input");
+  card.querySelectorAll("button").forEach((b) => b.addEventListener("click", () => {
+    card.querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b));
+    ratings[flag] = { rating: b.dataset.v, note: note.value };
+  }));
+  note.addEventListener("input", () => { if (ratings[flag]) ratings[flag].note = note.value; });
+});
+const copy = document.getElementById("copy");
+if (copy) copy.addEventListener("click", async () => {
+  const text = "STS2-COACH-RATINGS " + JSON.stringify({ ...REVIEW, ratings });
+  try { await navigator.clipboard.writeText(text); }
+  catch { const t = document.createElement("textarea"); t.value = text; document.body.appendChild(t); t.select(); document.execCommand("copy"); t.remove(); }
+  document.getElementById("copied").hidden = false;
+});
+</script></body></html>

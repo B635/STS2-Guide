@@ -24,7 +24,7 @@ const PROMPT = `下面是一局《杀戮尖塔 2》里，引擎有把握与玩�
 只能用下面出现过的数字和卡牌名称；不要说“失误”“错误”。只输出这一句话。`;
 
 const EARLIER = `
-earlier_runs 是这位玩家以往对局的笔记统计（哪种不足在几局里带头出现过）。如果这局的共同点和以往反复出现的不足一样，可以点出“和以往几局一样”。`;
+earlier_runs 是这位玩家以往对局的笔记统计（哪种不足在几局里带头出现过）。只有这局大多数决定的第一条理由也是同一项时，才可以点出“和以往几局一样”；否则不要提以往对局。`;
 
 export function programSummary(verified: FlagResult[], tier1Count: number): string {
   if (tier1Count === 0) return "这局没有引擎有把握的分歧：你的选择和引擎的看法没有明显差距。";
