@@ -1,6 +1,7 @@
 #!/usr/bin/env node
-// coach review <file.run> [--no-llm] [--model M] [--thinking] [--out DIR] [--json]
-//   score one finished run, explain its flags and write the HTML report
+// coach review <file.run> [--no-llm] [--model M] [--thinking] [--out DIR] [--json] [--no-notes]
+//   score one finished run, explain its flags and write the HTML report; the verified
+//   flags become player notes (coach/notes/, at most 20) that later reviews and `coach ask` read
 // coach eval run <dev|test> [--model M] [--thinking]   review every run of the set and keep the outputs
 // coach eval metrics <dev|test> [--model M]            metrics from the kept outputs (no model calls)
 // coach ratings import <file>                          keep the text the report's "复制评分" copied
@@ -12,13 +13,15 @@ import { Engine } from "./engine.js";
 import { EVAL_DIR, importRatings, loadRecorded, metrics, record } from "./evaluate.js";
 import type { EvalSet } from "./evaluate.js";
 import { DEFAULT_MODEL } from "./llm.js";
+import { entityNames } from "./names.js";
+import { loadNotes, mergeNotes, notesFile, notesFromReview, saveNotes } from "./notes.js";
 import type { Prepass } from "./prepass.js";
 import { renderReport } from "./report.js";
 import { renderSheet } from "./sheet.js";
 import { runReview } from "./review.js";
 
 const USAGE = [
-  "usage: coach review <file.run> [--no-llm] [--model M] [--thinking] [--out DIR] [--json]",
+  "usage: coach review <file.run> [--no-llm] [--model M] [--thinking] [--out DIR] [--json] [--no-notes]",
   "       coach eval run|metrics|sheet <dev|test> [--model M] [--thinking]",
   "       coach ratings import <file>",
 ].join("\n");
@@ -52,6 +55,7 @@ async function main(argv: string[]): Promise<number> {
       model: { type: "string", default: DEFAULT_MODEL },
       thinking: { type: "boolean", default: false },
       out: { type: "string", default: "out" },
+      "no-notes": { type: "boolean", default: false },
     },
   });
   const [command, runFile] = positionals;
@@ -89,7 +93,13 @@ async function main(argv: string[]): Promise<number> {
       model: values["no-llm"] ? null : values.model,
       thinking: values.thinking,
       traceFile: path.join(values.out, "traces", `${run}.jsonl`),
+      notes: values["no-notes"] ? [] : loadNotes(),
     });
+    if (!values["no-notes"] && review.explained.length > 0) {
+      const fresh = notesFromReview(review.pre, review.explained, entityNames());
+      saveNotes(mergeNotes(loadNotes(), fresh));
+      if (!values.json) console.log(`player notes: ${fresh.length} from this run (${notesFile()})`);
+    }
     if (values.json) {
       console.log(JSON.stringify({ ...review.pre, explained: review.explained, summary: review.summary, meta: review.meta }, null, 1));
       return 0;

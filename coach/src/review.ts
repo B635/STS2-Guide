@@ -6,6 +6,7 @@ import type { FlagResult } from "./agent.js";
 import type { Engine } from "./engine.js";
 import { createClient } from "./llm.js";
 import { entityNames } from "./names.js";
+import type { PlayerNote } from "./notes.js";
 import { prepass } from "./prepass.js";
 import type { Prepass } from "./prepass.js";
 import { programSummary, summarize } from "./summary.js";
@@ -17,6 +18,8 @@ export interface ReviewOptions {
   model: string | null; // null: no model, the pre-pass only
   thinking?: boolean;
   traceFile?: string;
+  /** Player notes from earlier reviews, for the summary; the evaluation leaves them out. */
+  notes?: PlayerNote[];
 }
 
 export interface Review {
@@ -41,7 +44,7 @@ export async function runReview(engine: Engine, runPath: string, options: Review
     const ctx = { engine, llm, model: options.model, tools: await engine.agentTools(), names, trace, thinking: options.thinking ?? false };
     explained = await Promise.all(pre.flags.map((flag) => explainFlag(ctx, pre.summary, flag)));
     const verified = explained.filter((r) => r.status === "verified");
-    summary = await summarize(llm, options.model, verified, pre.summary.tier1.length, names, trace);
+    summary = await summarize(llm, options.model, verified, pre.summary.tier1.length, names, trace, options.notes, pre.summary.run_id);
   }
   const cost = explained.reduce((a, r) => a + r.usage.cost_usd, 0) + summary.cost_usd;
   const meta: ReportMeta = {

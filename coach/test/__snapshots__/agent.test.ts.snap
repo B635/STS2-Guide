@@ -1,0 +1,28 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`flag agent (part A) > sends the same request for a tier-1 flag as before the investigator was generalized 1`] = `
+[
+  {
+    "content": "你是《杀戮尖塔 2》的赛后复盘助手。确定性的牌组评分引擎已经算出：在某个决定上，引擎的首选和玩家的选择不同，而且差距明显。需要的资料已经查好给你（T0 决策细节、T1 两个选项逐项比较、T2 当时的牌组、T3 可以检验的改动）。你的工作是检验假设，再交出一条结构化结论。
+
+规则：
+1. 只能依据工具结果说话。每个理由都要注明依据的结果编号（T0–T3 是已给的资料，之后每次工具调用的结果会接着编号）。
+2. 理由要对应引擎的因子（factor 代码，例如 deck_fitness:defense），并选 T1 里差距最大的因子，最多 3 条。
+3. 用 what_if 检验假设：找出“改了什么，引擎就会同意玩家的选择”（结果里 agrees_with_player_after 为 true）。先根据 T1 的差距和 T2 的牌组想好最可能的改动再试，例如补上缺口最大的那一项、或拿了之前出现过的某张牌；一次没翻转就换一个思路再试，最多试 4 种。找到就写进 what_if；都没翻转，就如实写试了哪些改动、首选都没变。T3 为空时不用 what_if。
+4. 语气平和，用简体中文，每句话简短。不要说“失误”“错误”，这是引擎的看法，不是定论；引擎和玩家的一致率只有约一半。
+5. 文字里出现的数字和卡牌、遗物名称，必须出现在你引用的工具结果里。不要自己计算新数字。
+6. 写给玩家看：用每回合的实际数值说明（例如“防御每回合 6.9 → 8.9，需求 8.5”），不要写因子代码、“因子 +4.11”这类引擎内部分数，也不要写 T0、T1 这些编号。
+7. 工具调用最多 6 次。查完就调用 submit_finding 提交，不要输出其他文字。",
+    "role": "system",
+  },
+  {
+    "content": "角色 IRONCLAD，进阶 2，游戏版本 v0.98.2。
+要解释的决定：F06-card（第 1 幕第 6 层）。玩家选了 0:POMMEL_STRIKE，引擎首选 1:BLOOD_WALL，牌组分数差 2.4。
+T0（get_decision）= {"id":"F06-card","kind":"card_reward","floor":6,"act":1,"hp":60,"max_hp":80,"gold":99,"engine_top":"1:BLOOD_WALL","confidence":"medium","chosen":"0:POMMEL_STRIKE","tier":1,"gap":2.4,"pick_margin":1,"options":[{"id":"1:BLOOD_WALL","kind":"card","entity_id":"BLOOD_WALL","name":"血墙","score":40.1,"deck_score":40.1,"rank":1,"eligible":true,"fully_scored":true,"gaps":[],"factors":[{"code":"deck_fitness:defense","delta":3.1,"message":"拿血墙后防御：每回合 6.9 → 8.9（需求 8.5）"},{"code":"deck_fitness:frontload","delta":-0.5,"message":"拿血墙后前期输出：每回合 12.5 → 10.7（需求 25.0）"}]},{"id":"0:POMMEL_STRIKE","kind":"card","entity_id":"POMMEL_STRIKE","name":"剑柄打击","score":37.7,"deck_score":37.7,"rank":2,"eligible":true,"fully_scored":true,"gaps":[],"factors":[{"code":"deck_fitness:defense","delta":-0.6,"message":"拿剑柄打击后防御：每回合 6.9 → 6.4（需求 8.5）"},{"code":"deck_fitness:frontload","delta":0.4,"message":"拿剑柄打击后前期输出：每回合 12.5 → 14.1（需求 25.0）"}]},{"id":"skip","kind":"skip","entity_id":null,"name":"跳过","score":35,"deck_score":35,"rank":3,"eligible":true,"fully_scored":true,"gaps":[],"factors":[{"code":"deck_fitness:pick_margin","delta":1,"message":"门槛"}]}]}
+T1（compare_options）= {"decision_id":"F06-card","a":{"id":"1:BLOOD_WALL","name":"血墙","deck_score":40.1},"b":{"id":"0:POMMEL_STRIKE","name":"剑柄打击","deck_score":37.7},"factors":[{"factor":"deck_fitness:defense","a":3.1,"b":-0.6,"difference":3.7,"a_message":"拿血墙后防御：每回合 6.9 → 8.9（需求 8.5）","b_message":"拿剑柄打击后防御：每回合 6.9 → 6.4（需求 8.5）"},{"factor":"deck_fitness:frontload","a":-0.5,"b":0.4,"difference":-0.9,"a_message":"拿血墙后前期输出：每回合 12.5 → 10.7（需求 25.0）","b_message":"拿剑柄打击后前期输出：每回合 12.5 → 14.1（需求 25.0）"}]}
+T2（get_deck）= {"decision_id":"F06-card","deck_size":11,"deck":[{"card":"STRIKE_IRONCLAD","name":"打击","upgrades":0,"count":5},{"card":"DEFEND_IRONCLAD","name":"防御","upgrades":0,"count":4}],"relics":[{"relic":"BURNING_BLOOD","name":"燃烧之血"}]}
+T3（what_if_choices）= {"remove":["STRIKE_IRONCLAD"],"upgrade":[],"add":[{"card":"ANGER","name":"愤怒"}]}",
+    "role": "user",
+  },
+]
+`;

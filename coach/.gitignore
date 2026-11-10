@@ -1,3 +1,5 @@
 node_modules/
 dist/
 out/
+# the player's own notes across runs (coach review writes them)
+notes/

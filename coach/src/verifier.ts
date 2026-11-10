@@ -5,8 +5,9 @@
 // Rules:
 // - the finding is about the flagged decision;
 // - every reason names a factor that is among the largest differences
-//   between the engine's pick and the player's choice, and cites a result
-//   that contains that factor;
+//   between the engine's pick and the player's choice (when the two agree:
+//   between that pick and the runner-up), and cites a result that contains
+//   that factor;
 // - a what-if claim cites a what_if result (its text may sum up all what_if results);
 // - every number and every card / relic / potion name in the text appears in
 //   the cited results (the advice may use any result of this review);
@@ -30,10 +31,16 @@ export interface Verdict {
   errors: string[];
 }
 
-/** Factor codes by how much they separate the engine's pick from the player's choice. */
-export function separatingFactors(detail: DecisionDetail): string[] {
-  const top = detail.options.find((o) => o.id === detail.engine_top);
-  const chosen = detail.options.find((o) => o.id === detail.chosen);
+/** The two options a finding compares: by default the engine's pick (a) and the player's choice (b). */
+export interface Pair {
+  a: string | null;
+  b: string | null;
+}
+
+/** Factor codes by how much they separate option a from option b. */
+export function separatingFactors(detail: DecisionDetail, pair: Pair = { a: detail.engine_top, b: detail.chosen }): string[] {
+  const top = detail.options.find((o) => o.id === pair.a);
+  const chosen = detail.options.find((o) => o.id === pair.b);
   if (!top || !chosen) return [];
   const delta = (o: typeof top, code: string) => o.factors.find((f) => f.code === code)?.delta ?? 0;
   const codes = new Set([...top.factors, ...chosen.factors].map((f) => f.code).filter((c): c is string => !!c));
@@ -80,12 +87,13 @@ export function verifyFinding(
   detail: DecisionDetail,
   evidence: Evidence[],
   entityNames: ReadonlySet<string>,
+  pair?: Pair,
 ): Verdict {
   const errors: string[] = [];
   const byId = new Map(evidence.map((e) => [e.id, e]));
   if (finding.decision_id !== detail.id) errors.push(`decision_id must be ${detail.id}, got ${finding.decision_id}`);
 
-  const allowed = separatingFactors(detail).slice(0, TOP_FACTORS);
+  const allowed = separatingFactors(detail, pair).slice(0, TOP_FACTORS);
   for (const [i, reason] of finding.reasons.entries()) {
     const cited = byId.get(reason.evidence);
     if (!cited) errors.push(`reasons[${i}] cites ${reason.evidence}, which is not a tool result of this review`);
