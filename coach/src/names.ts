@@ -29,3 +29,10 @@ export function entityNames(): ReadonlySet<string> {
   }
   return cached;
 }
+
+/** A card's or relic's ID from its ID or its Chinese name (the model may give either). */
+export function lookupId(kind: "cards" | "relics", text: string): string | undefined {
+  const rows = load()[kind] ?? [];
+  const t = text.trim();
+  return rows.find((r) => r.id === t.toUpperCase())?.id ?? rows.find((r) => r.name === t)?.id;
+}

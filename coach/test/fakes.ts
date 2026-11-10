@@ -77,13 +77,19 @@ export function fakeLlm(respond: (request: Request, index: number) => Scripted |
 /** An engine that answers each tool from a table; unknown tools throw like the real one. */
 export function fakeEngine(answers: Record<string, (args: Record<string, unknown>) => unknown>) {
   const calls: Array<{ name: string; args: Record<string, unknown> }> = [];
-  const engine = {
-    call: async (name: string, args: Record<string, unknown>) => {
-      calls.push({ name, args });
-      const answer = answers[name];
-      if (!answer) throw new EngineToolError(`no tool ${name}`);
+  const call = async (name: string, args: Record<string, unknown>) => {
+    calls.push({ name, args });
+    const answer = answers[name];
+    if (!answer) throw new EngineToolError(`no tool ${name}`);
+    try {
       return answer(args);
-    },
+    } catch (error) {
+      throw new EngineToolError(String(error));
+    }
+  };
+  const engine = {
+    call,
+    callParsed: async (name: string, args: Record<string, unknown>, schema: { parse: (x: unknown) => unknown }) => schema.parse(await call(name, args)),
   };
   return { engine: engine as unknown as Engine, calls };
 }

@@ -5,14 +5,21 @@
 // coach eval run <dev|test> [--model M] [--thinking]   review every run of the set and keep the outputs
 // coach eval metrics <dev|test> [--model M]            metrics from the kept outputs (no model calls)
 // coach ratings import <file>                          keep the text the report's "复制评分" copied
+// coach ask <file.run> [--question Q]... [--questions FILE] [--json] [--no-notes] [--out DIR]
+//   follow-up questions about one run: a terminal chat, or the given questions answered in order
+// coach eval ask run|metrics|sheet dev [--only RUN_OR_ID,...]   the fixed follow-up questions (dev runs only)
 
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { parseArgs } from "node:util";
+import { openSession } from "./ask.js";
+import { askMetrics, loadAskRecorded, recordAsk, renderAskSheet } from "./askeval.js";
+import { askAll, chat, parseQuestions } from "./chat.js";
 import { Engine } from "./engine.js";
 import { EVAL_DIR, importRatings, loadRecorded, metrics, record } from "./evaluate.js";
 import type { EvalSet } from "./evaluate.js";
-import { DEFAULT_MODEL } from "./llm.js";
+import { DEFAULT_MODEL, createClient } from "./llm.js";
+import { Trace } from "./trace.js";
 import { entityNames } from "./names.js";
 import { loadNotes, mergeNotes, notesFile, notesFromReview, saveNotes } from "./notes.js";
 import type { Prepass } from "./prepass.js";
@@ -24,7 +31,47 @@ const USAGE = [
   "usage: coach review <file.run> [--no-llm] [--model M] [--thinking] [--out DIR] [--json] [--no-notes]",
   "       coach eval run|metrics|sheet <dev|test> [--model M] [--thinking]",
   "       coach ratings import <file>",
+  "       coach ask <file.run> [--question Q]... [--questions FILE] [--json] [--no-notes] [--out DIR]",
+  "       coach eval ask run|metrics|sheet dev [--only RUN_OR_ID,...]",
 ].join("\n");
+
+async function askCommand(runFile: string, options: { model: string; out: string; json: boolean; notes: boolean; questions: string[] }): Promise<number> {
+  const engine = await Engine.start();
+  try {
+    const run = path.basename(runFile, path.extname(runFile));
+    const trace = new Trace(path.join(options.out, "traces", `ask-${run}.jsonl`));
+    const session = await openSession(engine, path.resolve(runFile), options.notes ? loadNotes() : []);
+    const ctx = { engine, llm: createClient(), model: options.model, tools: await engine.agentTools(), names: entityNames(), trace, thinking: false };
+    const answers = options.questions.length
+      ? await askAll(ctx, session, options.questions, options.json)
+      : await chat(ctx, session);
+    if (options.json) console.log(JSON.stringify(answers, null, 1));
+    const cost = answers.reduce((s, a) => s + a.usage.cost_usd, 0);
+    process.stderr.write(`${answers.length} answers, $${cost.toFixed(4)}; trace: ${path.resolve(options.out, "traces", `ask-${run}.jsonl`)}\n`);
+    return 0;
+  } finally {
+    await engine.close();
+  }
+}
+
+async function evalAsk(action: string | undefined, model: string, only: string | undefined): Promise<number> {
+  if (action === "run") await recordAsk(model, only ? new Set(only.split(",")) : undefined);
+  else if (action === "sheet") {
+    const file = path.join(EVAL_DIR, "rating-sheet-ask-dev.html");
+    writeFileSync(file, renderAskSheet(loadAskRecorded(model)), "utf-8");
+    console.log(`rating sheet: ${file}`);
+    return 0;
+  } else if (action !== "metrics") {
+    console.error(USAGE);
+    return 2;
+  }
+  const result = askMetrics(model, loadAskRecorded(model));
+  const file = path.join(EVAL_DIR, "metrics", `ask-dev-${model}.json`);
+  mkdirSync(path.dirname(file), { recursive: true });
+  writeFileSync(file, JSON.stringify(result, null, 1) + "\n", "utf-8");
+  console.log(JSON.stringify(result, null, 1));
+  return 0;
+}
 
 function printPrepass({ summary, decisions, flags }: Prepass): void {
   const s = summary;
@@ -56,9 +103,24 @@ async function main(argv: string[]): Promise<number> {
       thinking: { type: "boolean", default: false },
       out: { type: "string", default: "out" },
       "no-notes": { type: "boolean", default: false },
+      question: { type: "string", multiple: true, default: [] },
+      questions: { type: "string" },
+      only: { type: "string" },
     },
   });
   const [command, runFile] = positionals;
+  if (command === "eval" && runFile === "ask") {
+    // Part B is evaluated on the development runs only.
+    if (positionals[3] !== "dev") {
+      console.error("coach eval ask works on the dev set only\n" + USAGE);
+      return 2;
+    }
+    return evalAsk(positionals[2], values.model, values.only);
+  }
+  if (command === "ask" && runFile) {
+    const questions = [...values.question, ...(values.questions ? parseQuestions(readFileSync(values.questions, "utf-8")) : [])];
+    return askCommand(runFile, { model: values.model, out: values.out, json: values.json, notes: !values["no-notes"], questions });
+  }
   if (command === "eval" && (positionals[2] === "dev" || positionals[2] === "test")) {
     const set = positionals[2] as EvalSet;
     if (runFile === "run") await record(set, values.model, values.thinking);
