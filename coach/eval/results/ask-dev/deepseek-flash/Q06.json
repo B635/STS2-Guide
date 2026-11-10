@@ -5,7 +5,7 @@
  "question": "第 20 层我拿了收割，引擎为什么觉得还不如跳过？",
  "expect": "说引擎首选跳过、比收割高 6 分及其原因（收割让哪些数值变差或没帮助）；语气平和。",
  "model": "deepseek-flash",
- "prompt_version": "b2",
+ "prompt_version": "b3",
  "context": {
   "id": "E0",
   "tool": "overview",
@@ -332,11 +332,11 @@
  "answer": {
   "index": 1,
   "question": "第 20 层我拿了收割，引擎为什么觉得还不如跳过？",
-  "plan": "先看第 20 层选牌（收割 vs 跳过）的逐项比较和当时的牌组需求，再顺带看第 27 层跳过这个引擎标为“值得想一想”的决定。",
+  "plan": "先看第 20 层选牌（收割 vs 跳过）的逐项比较和当时的牌组需求，再结合第 2 幕的牌组趋势解释原因。",
   "plan_source": "model",
-  "draft": "引擎更看重防御缺口，所以它把收割排在跳过之后，差距 6 分。\n\n- 防御：收割要 3 费，拿后每回合防御 5.5 → 4.6，而需求是 7.7，这是差距最大的一项。\n- 前期输出：确实有补，17.4 → 20.5，但需求 41.6，补得有限。\n- 群伤：6.5 → 5.2，需求 20.3，对第 2 幕多敌场面帮助不大。\n\n引擎的假设是补三张拖延后差距缩到 1 分，但首选仍是跳过。第 27 层跳过也是同一逻辑：拖延能把防御从 5.8 提到 6.6（需求 8.2），引擎认为它比跳过好 4.5 分。这只是引擎的看法，它和你以往的选择大约一半一致。",
+  "draft": "引擎认为跳过比收割高约 6 分，主要卡在防御上。\n\n- 防御：拿收割后每回合格挡从 5.5 降到 4.6，而第 2 幕的需求是 7.7，本来就差得远，收割还让它更薄。\n- 前期输出：这是收割唯一明显加分的地方，17.4 → 20.5，但需求 41.6，补得很有限。\n- 群伤：6.5 → 5.2，需求 20.3，收割帮不上这块。\n\n引擎还试过补防御（加拖延）、加增生、去掉 3 张打击，首选都仍是跳过；补防御后差距从 6 缩到 5.8，没有翻转。它的建议是：第 2 幕选牌先看防御离每回合 7.7 差多少，缺口没补上时，单体高费攻击牌很难改变取舍。",
   "rewrite": null,
-  "final": "引擎更看重防御缺口，所以它把收割排在跳过之后，差距 6 分。\n\n- 防御：收割要 3 费，拿后每回合防御 5.5 → 4.6，而需求是 7.7，这是差距最大的一项。\n- 前期输出：确实有补，17.4 → 20.5，但需求 41.6，补得有限。\n- 群伤：6.5 → 5.2，需求 20.3，对第 2 幕多敌场面帮助不大。\n\n引擎的假设是补三张拖延后差距缩到 1 分，但首选仍是跳过。第 27 层跳过也是同一逻辑：拖延能把防御从 5.8 提到 6.6（需求 8.2），引擎认为它比跳过好 4.5 分。这只是引擎的看法，它和你以往的选择大约一半一致。",
+  "final": "引擎认为跳过比收割高约 6 分，主要卡在防御上。\n\n- 防御：拿收割后每回合格挡从 5.5 降到 4.6，而第 2 幕的需求是 7.7，本来就差得远，收割还让它更薄。\n- 前期输出：这是收割唯一明显加分的地方，17.4 → 20.5，但需求 41.6，补得很有限。\n- 群伤：6.5 → 5.2，需求 20.3，收割帮不上这块。\n\n引擎还试过补防御（加拖延）、加增生、去掉 3 张打击，首选都仍是跳过；补防御后差距从 6 缩到 5.8，没有翻转。它的建议是：第 2 幕选牌先看防御离每回合 7.7 差多少，缺口没补上时，单体高费攻击牌很难改变取舍。",
   "notice": "",
   "status": "passed",
   "checks": {
@@ -378,100 +378,749 @@
       "reasons": [
        {
         "aspect": "防御",
-        "text": "收割要 3 费，拿后防御每回合 5.5 → 4.6，而需求是 7.7，这是两边差距最大的一项。"
+        "text": "差距最大的是防御：拿收割后每回合格挡 5.5 → 4.6，而需求是 7.7，本来就差得远。"
        },
        {
         "aspect": "前期输出",
-        "text": "收割确实补前期输出，每回合 17.4 → 20.5，但需求 41.6，补得有限，抵不过防御的损失。"
+        "text": "收割唯一明显加分是前期输出 17.4 → 20.5，但需求 41.6，补得有限。"
        },
        {
         "aspect": "群伤",
-        "text": "群伤每回合 6.5 → 5.2，需求 20.3，收割对第 2 幕的多敌场面帮助不大。"
+        "text": "群伤也从 6.5 降到 5.2，需求 20.3，收割帮不上群伤这一块。"
        }
       ],
-      "what_if": "补三张拖延后差距从 6 缩到 1，但首选仍是跳过，收割仍排第四。",
-      "advice": "第 2 幕缺的是每回合格挡（需求 7.7，现在 5.5），下次优先拿拖延这类防御牌，而不是 3 费的单体攻击。"
+      "what_if": "试了补防御（加拖延）、加增生、去掉 3 张打击，首选都仍是跳过；补防御后差距从 6 缩到 5.8，仍未翻转。",
+      "advice": "下次在第 2 幕选牌时，先看防御是否接近每回合 7.7 的需求，缺口没补上时，单体高费攻击牌很难改变取舍。"
      }
     }
    },
    {
     "id": "E2",
-    "tool": "investigate",
+    "tool": "get_deck",
     "result": {
-     "decision_id": "F27-card",
-     "where": "第 2 幕第 27 层选牌",
-     "verdict": "不同，引擎有把握且差距明显（复盘报告里的“值得想一想”）",
-     "headline": "引擎认为「拖延」比你选的「跳过」高 4.5 分",
-     "comparison": [
+     "decision_id": "F20-card",
+     "floor": 20,
+     "act": 2,
+     "hp": 58,
+     "max_hp": 73,
+     "gold": 172,
+     "deck_size": 23,
+     "deck": [
       {
-       "aspect": "防御",
-       "拖延": "拿拖延后防御：每回合 5.8 → 6.6（需求 8.2）",
-       "跳过": null
+       "card": "BLIGHT_STRIKE",
+       "name": "荒疫打击",
+       "upgrades": 0,
+       "count": 1
       },
       {
-       "aspect": "后续选牌",
-       "拖延": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度",
-       "跳过": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       "card": "BODYGUARD",
+       "name": "护卫",
+       "upgrades": 0,
+       "count": 1
       },
       {
-       "aspect": "前期输出",
-       "拖延": "拿拖延后前期输出：每回合 18.7 → 18.1（需求 47.6）",
-       "跳过": null
+       "card": "DEFEND_NECROBINDER",
+       "name": "防御",
+       "upgrades": 0,
+       "count": 4
+      },
+      {
+       "card": "DRAIN_POWER",
+       "name": "能量汲取",
+       "upgrades": 1,
+       "count": 1
+      },
+      {
+       "card": "END_OF_DAYS",
+       "name": "末日降临",
+       "upgrades": 1,
+       "count": 1
+      },
+      {
+       "card": "FLATTEN",
+       "name": "重压",
+       "upgrades": 0,
+       "count": 1
+      },
+      {
+       "card": "LETHALITY",
+       "name": "致死性",
+       "upgrades": 0,
+       "count": 1
+      },
+      {
+       "card": "NEGATIVE_PULSE",
+       "name": "负能量脉冲",
+       "upgrades": 0,
+       "count": 1
+      },
+      {
+       "card": "NEGATIVE_PULSE",
+       "name": "负能量脉冲",
+       "upgrades": 1,
+       "count": 1
+      },
+      {
+       "card": "NO_ESCAPE",
+       "name": "无处可逃",
+       "upgrades": 0,
+       "count": 1
+      },
+      {
+       "card": "POKE",
+       "name": "戳击",
+       "upgrades": 0,
+       "count": 1
+      },
+      {
+       "card": "REAPER_FORM",
+       "name": "死神形态",
+       "upgrades": 0,
+       "count": 1
+      },
+      {
+       "card": "REAVE",
+       "name": "剥夺",
+       "upgrades": 0,
+       "count": 1
+      },
+      {
+       "card": "SHROUD",
+       "name": "厄运之衣",
+       "upgrades": 0,
+       "count": 1
+      },
+      {
+       "card": "SNAP",
+       "name": "响指",
+       "upgrades": 0,
+       "count": 1
+      },
+      {
+       "card": "STRIKE_NECROBINDER",
+       "name": "打击",
+       "upgrades": 0,
+       "count": 3
+      },
+      {
+       "card": "UNLEASH",
+       "name": "出击",
+       "upgrades": 0,
+       "count": 1
+      },
+      {
+       "card": "WISP",
+       "name": "鬼火",
+       "upgrades": 0,
+       "count": 1
       }
      ],
-     "status": "verified",
-     "finding": {
-      "reasons": [
-       {
-        "aspect": "防御",
-        "text": "拖延让防御从每回合 5.8 升到 6.6，是两边差距最大的一项；跳过则停在 5.8。"
-       },
-       {
-        "aspect": "后续选牌",
-        "text": "往后两次选牌看，拿拖延略降适合度，但幅度远小于防御的收益。"
-       },
-       {
-        "aspect": "前期输出",
-        "text": "拖延几乎不加输出，前期输出 18.7 → 18.1，离需求 47.6 仍很远；跳过不改变这一点。"
+     "relics": [
+      {
+       "relic": "BOUND_PHYLACTERY",
+       "name": "缚魂命匣"
+      },
+      {
+       "relic": "SCROLL_BOXES",
+       "name": "卷轴箱"
+      },
+      {
+       "relic": "STRAWBERRY",
+       "name": "草莓"
+      },
+      {
+       "relic": "GORGET",
+       "name": "护喉甲"
+      },
+      {
+       "relic": "PAELS_CLAW",
+       "name": "佩尔之爪"
+      }
+     ],
+     "potions": [
+      {
+       "potion": "RADIANT_TINCTURE",
+       "name": "明耀酊剂"
+      }
+     ]
+    }
+   },
+   {
+    "id": "E3",
+    "tool": "deck_trend",
+    "result": {
+     "labels": {
+      "frontload": "前期输出",
+      "aoe": "群伤",
+      "defense": "防御",
+      "scaling": "成长",
+      "cycle": "循环",
+      "energy": "能量"
+     },
+     "decisions": [
+      {
+       "decision_id": "F02-card",
+       "floor": 2,
+       "act": 1,
+       "deck_size": 13,
+       "values": {
+        "frontload": {
+         "have": 9.2,
+         "need": 25.4,
+         "below_need": true
+        },
+        "aoe": {
+         "have": 0,
+         "need": 12.7,
+         "below_need": true
+        },
+        "defense": {
+         "have": 7.3,
+         "need": 6.5,
+         "below_need": false
+        },
+        "scaling": {
+         "have": 0,
+         "need": 11.7,
+         "below_need": true
+        },
+        "cycle": {
+         "have": 0,
+         "need": 1,
+         "below_need": true
+        },
+        "energy": {
+         "have": 0.7,
+         "need": 1,
+         "below_need": true
+        }
        }
-      ],
-      "what_if": "再补两张拖延后，引擎就改选跳过：防御够了，多拿一张的边际收益变小。",
-      "advice": "第 27 层防御每回合只有 5.8、需求 8.2，引擎优先补格挡；收割是 3 费 27 点单体伤害，引擎更看重防御缺口。"
-     }
+      },
+      {
+       "decision_id": "F05-card",
+       "floor": 5,
+       "act": 1,
+       "deck_size": 15,
+       "values": {
+        "frontload": {
+         "have": 12,
+         "need": 27.1,
+         "below_need": true
+        },
+        "aoe": {
+         "have": 0,
+         "need": 13.8,
+         "below_need": true
+        },
+        "defense": {
+         "have": 6.4,
+         "need": 6.8,
+         "below_need": true
+        },
+        "scaling": {
+         "have": 0,
+         "need": 12.7,
+         "below_need": true
+        },
+        "cycle": {
+         "have": 0,
+         "need": 1,
+         "below_need": true
+        },
+        "energy": {
+         "have": 0.7,
+         "need": 1,
+         "below_need": true
+        }
+       }
+      },
+      {
+       "decision_id": "F06-card",
+       "floor": 6,
+       "act": 1,
+       "deck_size": 16,
+       "values": {
+        "frontload": {
+         "have": 13,
+         "need": 29.3,
+         "below_need": true
+        },
+        "aoe": {
+         "have": 0,
+         "need": 15.2,
+         "below_need": true
+        },
+        "defense": {
+         "have": 6.4,
+         "need": 7.2,
+         "below_need": true
+        },
+        "scaling": {
+         "have": 0,
+         "need": 14.1,
+         "below_need": true
+        },
+        "cycle": {
+         "have": 0,
+         "need": 1,
+         "below_need": true
+        },
+        "energy": {
+         "have": 0.7,
+         "need": 1,
+         "below_need": true
+        }
+       }
+      },
+      {
+       "decision_id": "F09-card",
+       "floor": 9,
+       "act": 1,
+       "deck_size": 18,
+       "values": {
+        "frontload": {
+         "have": 12.2,
+         "need": 33.7,
+         "below_need": true
+        },
+        "aoe": {
+         "have": 0,
+         "need": 21.3,
+         "below_need": true
+        },
+        "defense": {
+         "have": 5.8,
+         "need": 7,
+         "below_need": true
+        },
+        "scaling": {
+         "have": 0,
+         "need": 16.9,
+         "below_need": true
+        },
+        "cycle": {
+         "have": 0,
+         "need": 1,
+         "below_need": true
+        },
+        "energy": {
+         "have": 0.7,
+         "need": 1,
+         "below_need": true
+        }
+       }
+      },
+      {
+       "decision_id": "F11-card",
+       "floor": 11,
+       "act": 1,
+       "deck_size": 19,
+       "values": {
+        "frontload": {
+         "have": 13.2,
+         "need": 37.5,
+         "below_need": true
+        },
+        "aoe": {
+         "have": 0,
+         "need": 24.3,
+         "below_need": true
+        },
+        "defense": {
+         "have": 5.5,
+         "need": 7.3,
+         "below_need": true
+        },
+        "scaling": {
+         "have": 0,
+         "need": 20,
+         "below_need": true
+        },
+        "cycle": {
+         "have": 0,
+         "need": 1,
+         "below_need": true
+        },
+        "energy": {
+         "have": 0.7,
+         "need": 1,
+         "below_need": true
+        }
+       }
+      },
+      {
+       "decision_id": "F13-card",
+       "floor": 13,
+       "act": 1,
+       "deck_size": 20,
+       "values": {
+        "frontload": {
+         "have": 14.3,
+         "need": 43.9,
+         "below_need": true
+        },
+        "aoe": {
+         "have": 0,
+         "need": 29.2,
+         "below_need": true
+        },
+        "defense": {
+         "have": 5.3,
+         "need": 7.8,
+         "below_need": true
+        },
+        "scaling": {
+         "have": 0,
+         "need": 25.1,
+         "below_need": true
+        },
+        "cycle": {
+         "have": 0.24,
+         "need": 1,
+         "below_need": true
+        },
+        "energy": {
+         "have": 0.7,
+         "need": 1,
+         "below_need": true
+        }
+       }
+      },
+      {
+       "decision_id": "F17-card",
+       "floor": 17,
+       "act": 1,
+       "deck_size": 21,
+       "values": {
+        "frontload": {
+         "have": 18.9,
+         "need": 35.1,
+         "below_need": true
+        },
+        "aoe": {
+         "have": 4.3,
+         "need": 12.5,
+         "below_need": true
+        },
+        "defense": {
+         "have": 5.5,
+         "need": 8.5,
+         "below_need": true
+        },
+        "scaling": {
+         "have": 0,
+         "need": 14.7,
+         "below_need": true
+        },
+        "cycle": {
+         "have": 0.13,
+         "need": 1,
+         "below_need": true
+        },
+        "energy": {
+         "have": 0.6,
+         "need": 1,
+         "below_need": true
+        }
+       }
+      },
+      {
+       "decision_id": "F19-card",
+       "floor": 19,
+       "act": 2,
+       "deck_size": 22,
+       "values": {
+        "frontload": {
+         "have": 16.7,
+         "need": 39.2,
+         "below_need": true
+        },
+        "aoe": {
+         "have": 5.4,
+         "need": 19,
+         "below_need": true
+        },
+        "defense": {
+         "have": 4.9,
+         "need": 7.7,
+         "below_need": true
+        },
+        "scaling": {
+         "have": 0,
+         "need": 16.1,
+         "below_need": true
+        },
+        "cycle": {
+         "have": 0.11,
+         "need": 1,
+         "below_need": true
+        },
+        "energy": {
+         "have": 0.6,
+         "need": 1,
+         "below_need": true
+        }
+       }
+      },
+      {
+       "decision_id": "F20-card",
+       "floor": 20,
+       "act": 2,
+       "deck_size": 23,
+       "values": {
+        "frontload": {
+         "have": 17.4,
+         "need": 41.6,
+         "below_need": true
+        },
+        "aoe": {
+         "have": 6.5,
+         "need": 20.3,
+         "below_need": true
+        },
+        "defense": {
+         "have": 5.5,
+         "need": 7.7,
+         "below_need": true
+        },
+        "scaling": {
+         "have": 0,
+         "need": 17.4,
+         "below_need": true
+        },
+        "cycle": {
+         "have": 0.1,
+         "need": 1,
+         "below_need": true
+        },
+        "energy": {
+         "have": 0.6,
+         "need": 1,
+         "below_need": true
+        }
+       }
+      },
+      {
+       "decision_id": "F21-card",
+       "floor": 21,
+       "act": 2,
+       "deck_size": 24,
+       "values": {
+        "frontload": {
+         "have": 20.6,
+         "need": 43.1,
+         "below_need": true
+        },
+        "aoe": {
+         "have": 5.3,
+         "need": 21.1,
+         "below_need": true
+        },
+        "defense": {
+         "have": 4.6,
+         "need": 7.8,
+         "below_need": true
+        },
+        "scaling": {
+         "have": 0,
+         "need": 18.8,
+         "below_need": true
+        },
+        "cycle": {
+         "have": 0.08,
+         "need": 1,
+         "below_need": true
+        },
+        "energy": {
+         "have": 0.5,
+         "need": 1,
+         "below_need": true
+        }
+       }
+      },
+      {
+       "decision_id": "F24-card",
+       "floor": 24,
+       "act": 2,
+       "deck_size": 23,
+       "values": {
+        "frontload": {
+         "have": 19.2,
+         "need": 45,
+         "below_need": true
+        },
+        "aoe": {
+         "have": 4.9,
+         "need": 22.1,
+         "below_need": true
+        },
+        "defense": {
+         "have": 4.3,
+         "need": 8,
+         "below_need": true
+        },
+        "scaling": {
+         "have": 0,
+         "need": 20.6,
+         "below_need": true
+        },
+        "cycle": {
+         "have": 0.08,
+         "need": 1,
+         "below_need": true
+        },
+        "energy": {
+         "have": 0.5,
+         "need": 1,
+         "below_need": true
+        }
+       }
+      },
+      {
+       "decision_id": "F27-card",
+       "floor": 27,
+       "act": 2,
+       "deck_size": 24,
+       "values": {
+        "frontload": {
+         "have": 18.7,
+         "need": 47.6,
+         "below_need": true
+        },
+        "aoe": {
+         "have": 4.8,
+         "need": 23.5,
+         "below_need": true
+        },
+        "defense": {
+         "have": 5.8,
+         "need": 8.2,
+         "below_need": true
+        },
+        "scaling": {
+         "have": 0,
+         "need": 23.1,
+         "below_need": true
+        },
+        "cycle": {
+         "have": 0.08,
+         "need": 1,
+         "below_need": true
+        },
+        "energy": {
+         "have": 0.5,
+         "need": 1,
+         "below_need": true
+        }
+       }
+      },
+      {
+       "decision_id": "F28-card",
+       "floor": 28,
+       "act": 2,
+       "deck_size": 24,
+       "values": {
+        "frontload": {
+         "have": 18.9,
+         "need": 51.6,
+         "below_need": true
+        },
+        "aoe": {
+         "have": 5,
+         "need": 25.6,
+         "below_need": true
+        },
+        "defense": {
+         "have": 5.8,
+         "need": 8.6,
+         "below_need": true
+        },
+        "scaling": {
+         "have": 0,
+         "need": 27,
+         "below_need": true
+        },
+        "cycle": {
+         "have": 0.09,
+         "need": 1,
+         "below_need": true
+        },
+        "energy": {
+         "have": 0.6,
+         "need": 1,
+         "below_need": true
+        }
+       }
+      },
+      {
+       "decision_id": "F30-card",
+       "floor": 30,
+       "act": 2,
+       "deck_size": 24,
+       "values": {
+        "frontload": {
+         "have": 19.2,
+         "need": 58.3,
+         "below_need": true
+        },
+        "aoe": {
+         "have": 5.2,
+         "need": 29.1,
+         "below_need": true
+        },
+        "defense": {
+         "have": 5.8,
+         "need": 9.2,
+         "below_need": true
+        },
+        "scaling": {
+         "have": 0,
+         "need": 33.3,
+         "below_need": true
+        },
+        "cycle": {
+         "have": 0.11,
+         "need": 1,
+         "below_need": true
+        },
+        "energy": {
+         "have": 0.6,
+         "need": 1,
+         "below_need": true
+        }
+       }
+      }
+     ],
+     "note": "have: what the deck does per turn before that pick (cycle: extra cards drawn per turn); need: what the coming fights of that act need per turn"
     }
    }
   ],
   "window": [
    "E0",
    "E1",
-   "E2"
+   "E2",
+   "E3"
   ],
-  "tool_calls": 1,
+  "tool_calls": 3,
   "investigators": [
    {
     "decision": "F20-card",
     "status": "verified",
     "relation": "flag",
     "cached": false
-   },
-   {
-    "decision": "F27-card",
-    "status": "verified",
-    "relation": "flag",
-    "cached": false
    }
   ],
   "usage": {
-   "cost_usd": 0.00781314,
-   "llm_calls": 17,
-   "prompt_tokens": 93119,
-   "completion_tokens": 2988,
+   "cost_usd": 0.00749064,
+   "llm_calls": 11,
+   "prompt_tokens": 61104,
+   "completion_tokens": 2099,
    "by_role": {
-    "lead": 0.0018246120000000002,
-    "investigator": 0.004358724,
-    "critic": 0.001629804
+    "lead": 0.002559912,
+    "investigator": 0.002551824,
+    "critic": 0.002378904
    }
   },
-  "seconds": 13.827
+  "seconds": 15.046
  }
 }

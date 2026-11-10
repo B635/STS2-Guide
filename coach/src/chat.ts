@@ -3,7 +3,7 @@
 // then the checks run; if they change it, the checked version follows.
 // Tool activity shows as short grey lines.
 
-import { createInterface } from "node:readline/promises";
+import { createInterface } from "node:readline";
 import { ask, shownAnswer } from "./ask.js";
 import type { Answer, AskContext, AskEvent, Session } from "./ask.js";
 
@@ -35,7 +35,7 @@ export function printer(progress: Out, answer: Out, color: boolean) {
         case "investigate":
           return line(`  · 调查 ${e.decisions.join("、")}`);
         case "investigated":
-          return line(`    ${e.decision}：${e.status === "verified" ? "结论已核对" : "结论没通过核对，只用引擎的比较"}`);
+          return line(`    ${e.decision}：${e.status === "verified" ? "结论已核对" : e.status === "cached" ? "沿用前面的调查" : "结论没通过核对，只用引擎的比较"}`);
         case "draft":
         case "rewrite":
           if (streaming !== e.type) {
@@ -70,25 +70,27 @@ export const EXIT_WORDS = new Set(["exit", "quit", "退出"]);
 /** Interactive chat until exit / Ctrl+C / end of input. */
 export async function chat(ctx: AskContext, session: Session): Promise<Answer[]> {
   const answers: Answer[] = [];
-  const rl = createInterface({ input: process.stdin, output: process.stdout });
+  const tty = process.stdin.isTTY ?? false;
+  const rl = createInterface({ input: process.stdin, output: process.stdout, terminal: tty });
   const p = printer(process.stdout, process.stdout, process.stdout.isTTY ?? false);
+  rl.on("SIGINT", () => rl.close()); // Ctrl+C: end the loop below, then exit normally
   let closed = false;
-  rl.on("close", () => (closed = true));
-  rl.on("SIGINT", () => rl.close());
+  rl.on("close", () => (closed = true)); // piped input ends early; its lines are still read below
   process.stdout.write("问这局的任何决定（输入 exit 结束）。\n");
+  rl.setPrompt("\n你：");
+  rl.prompt();
   try {
-    while (!closed) {
-      let question: string;
-      try {
-        question = (await rl.question("\n你：")).trim();
-      } catch {
-        break; // closed while waiting (Ctrl+C or end of input)
-      }
-      if (!question) continue;
+    // The line iterator buffers what arrives while an answer is being written (typed ahead or piped in).
+    for await (const line of rl) {
+      const question = line.trim();
+      if (!tty) process.stdout.write(question + "\n"); // piped input is not echoed
       if (EXIT_WORDS.has(question.toLowerCase())) break;
-      const a = await ask(ctx, session, question, (e) => p.event(e));
-      p.done(a, true);
-      answers.push(a);
+      if (question) {
+        const a = await ask(ctx, session, question, (e) => p.event(e));
+        p.done(a, true);
+        answers.push(a);
+      }
+      if (!closed) rl.prompt();
     }
   } finally {
     rl.close();

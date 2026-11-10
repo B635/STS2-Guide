@@ -5,7 +5,7 @@
  "question": "第 15 层我拿了引导之星，引擎也同意吗？为什么？",
  "expect": "说引擎和玩家一致，并说明它比第二名好在哪里（逐项比较）。",
  "model": "deepseek-flash",
- "prompt_version": "b2",
+ "prompt_version": "b3",
  "context": {
   "id": "E0",
   "tool": "overview",
@@ -329,11 +329,11 @@
  "answer": {
   "index": 1,
   "question": "第 15 层我拿了引导之星，引擎也同意吗？为什么？",
-  "plan": "先确认第 15 层选牌引擎与玩家是否一致，再看当时的牌组趋势和引导之星的说明。",
+  "plan": "先确认第 15 层选牌引擎与玩家是否一致，再看当时的牌组需求，判断是否需要深入解释。",
   "plan_source": "model",
-  "draft": "是的，引擎也选了引导之星，两者一致，差距为 0，引擎把握中等。\n\n理由（引擎的逐项比较）：\n- 引导之星是 1 费攻击牌，造成 12 点伤害，并在下个回合抽 2 张牌；升级后造成 13 点伤害，抽 3 张牌。\n- 拿它之后，每回合额外抽牌从 0.00 升到 0.23（需求 1.0），前期输出从 19.1 升到 20.2（需求 30.1），防御从 6.4 降到 6.1（需求 4.8，仍够用）。\n- 它的评分 65 分，高于跳过的 62.5 分；第 1 幕的门槛是候选牌要比跳过高出 1 分以上才值得拿。\n- 引擎提示：牌组里有 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）的部分效果没有计入评分，所以分数只反映已计入的部分。\n\n另外，这一局成长一直低于需求（第 15 层时是 0.7，需求 17.2），引导之星补的是循环和输出，不是成长。",
+  "draft": "是的，引擎也选了引导之星，两者一致，差距为 0。\n\n- 引导之星评分 65，排第一；跳过 62.5，暗淡蓝点 61.8，征召上前 61.6。\n- 拿引导之星后，循环从每回合额外抽牌 0.00 升到 0.23（需求 1.0），前期输出从 19.1 升到 20.2（需求 30.1），防御从 6.4 略降到 6.1（需求 4.8）。\n- 引擎把握中等；牌组里有 5 张牌的部分效果没计入评分，所以分数只反映已计入的部分。\n\n另外，当时血量只有 9，这一点引擎的评分里没有体现。",
   "rewrite": null,
-  "final": "是的，引擎也选了引导之星，两者一致，差距为 0，引擎把握中等。\n\n理由（引擎的逐项比较）：\n- 引导之星是 1 费攻击牌，造成 12 点伤害，并在下个回合抽 2 张牌；升级后造成 13 点伤害，抽 3 张牌。\n- 拿它之后，每回合额外抽牌从 0.00 升到 0.23（需求 1.0），前期输出从 19.1 升到 20.2（需求 30.1），防御从 6.4 降到 6.1（需求 4.8，仍够用）。\n- 它的评分 65 分，高于跳过的 62.5 分；第 1 幕的门槛是候选牌要比跳过高出 1 分以上才值得拿。\n- 引擎提示：牌组里有 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）的部分效果没有计入评分，所以分数只反映已计入的部分。\n\n另外，这一局成长一直低于需求（第 15 层时是 0.7，需求 17.2），引导之星补的是循环和输出，不是成长。",
+  "final": "是的，引擎也选了引导之星，两者一致，差距为 0。\n\n- 引导之星评分 65，排第一；跳过 62.5，暗淡蓝点 61.8，征召上前 61.6。\n- 拿引导之星后，循环从每回合额外抽牌 0.00 升到 0.23（需求 1.0），前期输出从 19.1 升到 20.2（需求 30.1），防御从 6.4 略降到 6.1（需求 4.8）。\n- 引擎把握中等；牌组里有 5 张牌的部分效果没计入评分，所以分数只反映已计入的部分。\n\n另外，当时血量只有 9，这一点引擎的评分里没有体现。",
   "notice": "",
   "status": "passed",
   "checks": {
@@ -422,235 +422,156 @@
    },
    {
     "id": "E2",
-    "tool": "get_card",
+    "tool": "get_deck",
     "result": {
-     "id": "GUIDING_STAR",
-     "name": "引导之星",
-     "description": "造成12点伤害。\n在下个回合抽2张牌。",
-     "cost": 1,
-     "type": "攻击",
-     "rarity": "普通",
-     "color": "regent",
-     "target": "AnyEnemy",
-     "damage": 12,
-     "cards_draw": 2,
-     "upgrade_description": "造成13点伤害。\n在下个回合抽3张牌。"
-    }
-   },
-   {
-    "id": "E3",
-    "tool": "deck_trend",
-    "result": {
-     "labels": {
-      "scaling": "成长"
-     },
-     "decisions": [
+     "decision_id": "F15-card",
+     "floor": 15,
+     "act": 1,
+     "hp": 9,
+     "max_hp": 79,
+     "gold": 84,
+     "deck_size": 19,
+     "deck": [
       {
-       "decision_id": "F02-card",
-       "floor": 2,
-       "act": 1,
-       "deck_size": 11,
-       "values": {
-        "scaling": {
-         "have": 0,
-         "need": 8.7,
-         "below_need": true
-        }
-       }
+       "card": "BLACK_HOLE",
+       "name": "黑洞",
+       "upgrades": 0,
+       "count": 1
       },
       {
-       "decision_id": "F03-card",
-       "floor": 3,
-       "act": 1,
-       "deck_size": 12,
-       "values": {
-        "scaling": {
-         "have": 0,
-         "need": 9.4,
-         "below_need": true
-        }
-       }
+       "card": "CHARGE",
+       "name": "冲锋！！",
+       "upgrades": 0,
+       "count": 1
       },
       {
-       "decision_id": "F05-card",
-       "floor": 5,
-       "act": 1,
-       "deck_size": 12,
-       "values": {
-        "scaling": {
-         "have": 0.7,
-         "need": 10.2,
-         "below_need": true
-        }
-       }
+       "card": "COSMIC_INDIFFERENCE",
+       "name": "宇宙冷漠",
+       "upgrades": 0,
+       "count": 1
       },
       {
-       "decision_id": "F09-card",
-       "floor": 9,
-       "act": 1,
-       "deck_size": 14,
-       "values": {
-        "scaling": {
-         "have": 0.6,
-         "need": 11.1,
-         "below_need": true
-        }
-       }
+       "card": "DEFEND_REGENT",
+       "name": "防御",
+       "upgrades": 0,
+       "count": 4
       },
       {
-       "decision_id": "F13-card",
-       "floor": 13,
-       "act": 1,
-       "deck_size": 17,
-       "values": {
-        "scaling": {
-         "have": 0.6,
-         "need": 12.2,
-         "below_need": true
-        }
-       }
+       "card": "FALLING_STAR",
+       "name": "陨星",
+       "upgrades": 1,
+       "count": 1
       },
       {
-       "decision_id": "F14-card",
-       "floor": 14,
-       "act": 1,
-       "deck_size": 18,
-       "values": {
-        "scaling": {
-         "have": 0.6,
-         "need": 14,
-         "below_need": true
-        }
-       }
+       "card": "GATHER_LIGHT",
+       "name": "收集光辉",
+       "upgrades": 0,
+       "count": 1
       },
       {
-       "decision_id": "F15-card",
-       "floor": 15,
-       "act": 1,
-       "deck_size": 19,
-       "values": {
-        "scaling": {
-         "have": 0.7,
-         "need": 17.2,
-         "below_need": true
-        }
-       }
+       "card": "MANIFEST_AUTHORITY",
+       "name": "君权自授",
+       "upgrades": 0,
+       "count": 1
       },
       {
-       "decision_id": "F17-card",
-       "floor": 17,
-       "act": 1,
-       "deck_size": 20,
-       "values": {
-        "scaling": {
-         "have": 0.5,
-         "need": 14.1,
-         "below_need": true
-        }
-       }
+       "card": "MONOLOGUE",
+       "name": "独白",
+       "upgrades": 0,
+       "count": 1
       },
       {
-       "decision_id": "F19-card",
-       "floor": 19,
-       "act": 2,
-       "deck_size": 21,
-       "values": {
-        "scaling": {
-         "have": 0.5,
-         "need": 14.4,
-         "below_need": true
-        }
-       }
+       "card": "REFINE_BLADE",
+       "name": "淬炼刀刃",
+       "upgrades": 0,
+       "count": 1
       },
       {
-       "decision_id": "F22-card",
-       "floor": 22,
-       "act": 2,
-       "deck_size": 21,
-       "values": {
-        "scaling": {
-         "have": 0.5,
-         "need": 15.8,
-         "below_need": true
-        }
-       }
+       "card": "RESONANCE",
+       "name": "共鸣",
+       "upgrades": 0,
+       "count": 1
       },
       {
-       "decision_id": "F24-card",
-       "floor": 24,
-       "act": 2,
-       "deck_size": 22,
-       "values": {
-        "scaling": {
-         "have": 0.5,
-         "need": 17.1,
-         "below_need": true
-        }
-       }
+       "card": "SHINING_STRIKE",
+       "name": "明耀打击",
+       "upgrades": 0,
+       "count": 1
       },
       {
-       "decision_id": "F28-card",
-       "floor": 28,
-       "act": 2,
-       "deck_size": 23,
-       "values": {
-        "scaling": {
-         "have": 0.5,
-         "need": 18.9,
-         "below_need": true
-        }
-       }
+       "card": "SOLAR_STRIKE",
+       "name": "太阳打击",
+       "upgrades": 0,
+       "count": 1
       },
       {
-       "decision_id": "F29-card",
-       "floor": 29,
-       "act": 2,
-       "deck_size": 24,
-       "values": {
-        "scaling": {
-         "have": 0.4,
-         "need": 21.6,
-         "below_need": true
-        }
-       }
+       "card": "SPECTRUM_SHIFT",
+       "name": "光谱偏移",
+       "upgrades": 0,
+       "count": 1
       },
       {
-       "decision_id": "F30-card",
-       "floor": 30,
-       "act": 2,
-       "deck_size": 24,
-       "values": {
-        "scaling": {
-         "have": 0.4,
-         "need": 26.2,
-         "below_need": true
-        }
-       }
+       "card": "STRIKE_REGENT",
+       "name": "打击",
+       "upgrades": 0,
+       "count": 2
+      },
+      {
+       "card": "VENERATE",
+       "name": "崇拜",
+       "upgrades": 0,
+       "count": 1
       }
      ],
-     "note": "have: what the deck does per turn before that pick (cycle: extra cards drawn per turn); need: what the coming fights of that act need per turn"
+     "relics": [
+      {
+       "relic": "DIVINE_RIGHT",
+       "name": "天赋君权"
+      },
+      {
+       "relic": "LOST_COFFER",
+       "name": "失物盒"
+      },
+      {
+       "relic": "JUZU_BRACELET",
+       "name": "佛珠手链"
+      },
+      {
+       "relic": "STRIKE_DUMMY",
+       "name": "打击木偶"
+      }
+     ],
+     "potions": [
+      {
+       "potion": "ENERGY_POTION",
+       "name": "能量药水"
+      },
+      {
+       "potion": "POWER_POTION",
+       "name": "能力药水"
+      }
+     ]
     }
    }
   ],
   "window": [
    "E0",
    "E1",
-   "E2",
-   "E3"
+   "E2"
   ],
-  "tool_calls": 3,
+  "tool_calls": 2,
   "investigators": [],
   "usage": {
-   "cost_usd": 0.004158576000000001,
+   "cost_usd": 0.003225576,
    "llm_calls": 4,
-   "prompt_tokens": 16676,
-   "completion_tokens": 1084,
+   "prompt_tokens": 16026,
+   "completion_tokens": 469,
    "by_role": {
-    "lead": 0.002146872,
+    "lead": 0.0019062719999999999,
     "investigator": 0,
-    "critic": 0.002011704
+    "critic": 0.001319304
    }
   },
-  "seconds": 6.06
+  "seconds": 4.289
  }
 }

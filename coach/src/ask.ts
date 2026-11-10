@@ -151,7 +151,8 @@ ${SCOPE}
 1. 先调用 plan，用一两句话说明你打算看哪些决定、为什么。
 2. 需要事实就用查询工具（get_decision、get_deck、deck_trend、get_card、get_relic），不要猜。
 3. 问到某个决定“为什么”“该不该”，用 investigate 交给调查员（只是确认引擎和玩家一致、不需要解释原因的决定，不用调查）：每个调查员深入查一个决定，交回引擎的逐项比较（comparison）和核对过的结论（finding；其中 what_if 是引擎把当时的牌组改一改再重新计分的结果）。几个决定放在同一次 investigate 里一起交出去（每个问题最多 ${MAX_INVESTIGATORS} 个）。
-4. 查完就直接写回答，不再调用工具。回答会先由程序核对数字和名称，再由审查员核对每个说法。
+4. 只查回答这个问题需要的决定。调查报告只比较两个选项；问到别的选项（例如跳过）的分数，用 get_decision 查全部选项。
+5. 查完就直接写回答，不再调用工具。回答会先由程序核对数字和名称，再由审查员核对每个说法。
 
 回答规则：
 - 简体中文，简短（一般不超过 200 字），先给结论再给理由。纯文字，不用 Markdown 的粗体或标题；要列点就用“- ”开头。
@@ -469,6 +470,7 @@ export async function ask(ctx: AskContext, session: Session, question: string, o
       const cached = session.reports.get(id);
       if (cached) {
         answer.investigators.push({ decision: id, status: "cached", relation: "", cached: true });
+        onEvent({ type: "investigated", decision: id, status: "cached" });
         trace.event("investigate.cached", id, { question: label, result_id: cached.id });
         return { ...(cached.result as object), note_cached: `已在 ${cached.id} 查过` };
       }

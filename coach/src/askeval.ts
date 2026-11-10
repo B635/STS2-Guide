@@ -22,7 +22,7 @@ import { Trace } from "./trace.js";
 import type { Evidence } from "./verifier.js";
 
 /** Bump when the lead, critic or investigator prompts change. */
-export const ASK_PROMPT_VERSION = "b3";
+export const ASK_PROMPT_VERSION = "b4";
 export const QUESTIONS_FILE = path.join(EVAL_DIR, "ask-questions-dev.json");
 export const SHEET_SIZE = 10;
 const SHEET_SEED = 28;
