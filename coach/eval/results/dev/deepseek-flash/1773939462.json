@@ -2,7 +2,7 @@
  "run": "1773939462",
  "set": "dev",
  "model": "deepseek-flash",
- "prompt_version": "p3",
+ "prompt_version": "p4",
  "pre": {
   "summary": {
    "run_id": "1773939462",
@@ -1858,14 +1858,9 @@
       "decision_id": "F17-card",
       "changes": [
        {
-        "operation": "remove",
-        "card": "STRIKE_DEFECT",
-        "name": "打击"
-       },
-       {
-        "operation": "remove",
-        "card": "STRIKE_DEFECT",
-        "name": "打击"
+        "operation": "add",
+        "card": "SUNDER",
+        "name": "分离"
        }
       ],
       "engine_top_before": "2:METEOR_STRIKE",
@@ -1873,33 +1868,183 @@
       "pick_changed": false,
       "agrees_with_player_after": false,
       "confidence_after": "medium",
-      "gap_after": 3.2,
+      "gap_after": 6.3,
       "options_after": [
        {
         "id": "2:METEOR_STRIKE",
         "name": "陨石打击",
-        "deck_score": 63.4,
+        "deck_score": 62.5,
         "rank": 1,
-        "fully_scored": true
-       },
-       {
-        "id": "skip",
-        "name": "跳过",
-        "deck_score": 60.8,
-        "rank": 2,
         "fully_scored": true
        },
        {
         "id": "1:ICE_LANCE",
         "name": "冰之长枪",
-        "deck_score": 60.6,
+        "deck_score": 58.2,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 57,
         "rank": 3,
         "fully_scored": true
        },
        {
         "id": "0:DEFRAGMENT",
         "name": "碎片整理",
-        "deck_score": 60.2,
+        "deck_score": 56.2,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "T5",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F17-card",
+      "changes": [
+       {
+        "operation": "add",
+        "card": "CLAW",
+        "name": "爪击"
+       }
+      ],
+      "engine_top_before": "2:METEOR_STRIKE",
+      "engine_top_after": "2:METEOR_STRIKE",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 4.3,
+      "options_after": [
+       {
+        "id": "2:METEOR_STRIKE",
+        "name": "陨石打击",
+        "deck_score": 62.2,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 58.9,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "1:ICE_LANCE",
+        "name": "冰之长枪",
+        "deck_score": 59.2,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "0:DEFRAGMENT",
+        "name": "碎片整理",
+        "deck_score": 57.9,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "T6",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F17-card",
+      "changes": [
+       {
+        "operation": "add",
+        "card": "FOCUSED_STRIKE",
+        "name": "集中打击"
+       }
+      ],
+      "engine_top_before": "2:METEOR_STRIKE",
+      "engine_top_after": "2:METEOR_STRIKE",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 5.3,
+      "options_after": [
+       {
+        "id": "2:METEOR_STRIKE",
+        "name": "陨石打击",
+        "deck_score": 62.7,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 58.3,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "1:ICE_LANCE",
+        "name": "冰之长枪",
+        "deck_score": 58.9,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "0:DEFRAGMENT",
+        "name": "碎片整理",
+        "deck_score": 57.4,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "T7",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F17-card",
+      "changes": [
+       {
+        "operation": "add",
+        "card": "HOTFIX",
+        "name": "热修复"
+       }
+      ],
+      "engine_top_before": "2:METEOR_STRIKE",
+      "engine_top_after": "2:METEOR_STRIKE",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 4.2,
+      "options_after": [
+       {
+        "id": "2:METEOR_STRIKE",
+        "name": "陨石打击",
+        "deck_score": 62.2,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 58.9,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "1:ICE_LANCE",
+        "name": "冰之长枪",
+        "deck_score": 59.4,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "0:DEFRAGMENT",
+        "name": "碎片整理",
+        "deck_score": 58,
         "rank": 4,
         "fully_scored": true
        }
@@ -1910,10 +2055,10 @@
    "toolCalls": 4,
    "repairs": 0,
    "usage": {
-    "prompt_tokens": 18039,
-    "completion_tokens": 592,
-    "cost_usd": 0.001907316,
-    "llm_calls": 4
+    "prompt_tokens": 15274,
+    "completion_tokens": 615,
+    "cost_usd": 0.00118068,
+    "llm_calls": 3
    },
    "finding": {
     "decision_id": "F17-card",
@@ -1921,7 +2066,7 @@
      {
       "factor": "deck_fitness:frontload",
       "evidence": "T1",
-      "text": "前期输出是最大差距：拿陨石打击每回合 24.9 → 30.5，拿碎片整理只有 24.6，而需求是 34.8。"
+      "text": "引擎最看重前期输出：拿陨石打击每回合 24.9 → 30.5，拿碎片整理只有 24.6，而需求是 34.8。"
      },
      {
       "factor": "deck_fitness:lookahead",
@@ -1931,12 +2076,12 @@
      {
       "factor": "deck_fitness:defense",
       "evidence": "T1",
-      "text": "防御上陨石打击 8.8 → 9.4，碎片整理 8.8 → 8.3，刚好卡在需求 8.3 上。"
+      "text": "防御上陨石打击 8.8 → 9.4，碎片整理 8.8 → 8.3，正好卡在需求 8.3 上。"
      }
     ],
-    "what_if_evidence": "T4",
-    "what_if_text": "即使去掉两张打击，引擎仍首选陨石打击，差距从 4.7 缩到 3.2，碎片整理仍排第 4。",
-    "advice": "当前牌组输出离需求 34.8 还差不少，选牌时可优先补前期伤害，防御够用即可。"
+    "what_if_evidence": "T7",
+    "what_if_text": "试过加入分离、爪击、集中打击、热修复，首选都仍是陨石打击；热修复把差距缩到 4.2，仍未翻转。",
+    "advice": "这套牌前期输出离需求 34.8 还差不少，下次遇到能直接抬高每回合伤害的牌，可以优先考虑。"
    }
   },
   {
@@ -2175,265 +2320,6 @@
     },
     {
      "id": "T1",
-     "tool": "get_decision",
-     "result": {
-      "id": "F21-card",
-      "kind": "card_reward",
-      "floor": 21,
-      "act": 2,
-      "hp": 72,
-      "max_hp": 79,
-      "gold": 35,
-      "engine_top": "0:REFRACT",
-      "confidence": "medium",
-      "policy_status": "recommend",
-      "pick_margin": 2,
-      "options": [
-       {
-        "id": "0:REFRACT",
-        "kind": "card",
-        "entity_id": "REFRACT",
-        "name": "折射",
-        "score": 60.8,
-        "deck_score": 60.8,
-        "rank": 1,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "estimate_scope",
-          "delta": 0,
-          "message": "牌组中 3 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 3 张牌（化废为宝、烟囱）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "unmodeled_relics",
-          "delta": 0,
-          "message": "遗物 骨茶 尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:aoe",
-          "delta": 6.82,
-          "message": "拿折射后群伤：每回合 0.0 → 4.7（需求 9.1）"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": 2.55,
-          "message": "拿折射后前期输出：每回合 29.7 → 36.1（需求 34.9）"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": -2.26,
-          "message": "拿折射后防御：每回合 7.2 → 5.8（需求 9.1）"
-         },
-         {
-          "code": "deck_fitness:cycle",
-          "delta": -0.53,
-          "message": "拿折射后循环：每回合额外抽牌 1.38 → 0.99（需求 1.0）"
-         },
-         {
-          "code": "deck_fitness:synergy",
-          "delta": 0,
-          "message": "牌组里的 化废为宝、烟囱 让折射更有价值（说明，不另加分）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": -2.01,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 9.3707,
-         "survival": -2.264,
-         "long_term_growth": -0.5337,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
-       },
-       {
-        "id": "skip",
-        "kind": "skip",
-        "entity_id": null,
-        "name": "跳过",
-        "score": 58.2,
-        "deck_score": 56.2,
-        "rank": 2,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "estimate_scope",
-          "delta": 0,
-          "message": "牌组中 3 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 3 张牌（化废为宝、烟囱）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "unmodeled_relics",
-          "delta": 0,
-          "message": "遗物 骨茶 尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": 0,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         },
-         {
-          "code": "deck_fitness:pick_margin",
-          "delta": 2,
-          "message": "第 2 幕：候选要比跳过高出 2 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 0,
-         "survival": 0,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
-       },
-       {
-        "id": "2:ROCKET_PUNCH",
-        "kind": "card",
-        "entity_id": "ROCKET_PUNCH",
-        "name": "火箭飞拳",
-        "score": 58.1,
-        "deck_score": 58.1,
-        "rank": 3,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "estimate_scope",
-          "delta": 0,
-          "message": "牌组中 3 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 3 张牌（化废为宝、烟囱）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "unmodeled_relics",
-          "delta": 0,
-          "message": "遗物 骨茶 尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": 1.87,
-          "message": "拿火箭飞拳后前期输出：每回合 29.7 → 33.6（需求 34.9）"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": 0.46,
-          "message": "拿火箭飞拳后防御：每回合 7.2 → 7.2（需求 9.1）"
-         },
-         {
-          "code": "deck_fitness:cycle",
-          "delta": 0.18,
-          "message": "拿火箭飞拳后循环：每回合额外抽牌 1.38 → 1.56（需求 1.0）"
-         },
-         {
-          "code": "deck_fitness:synergy",
-          "delta": 0,
-          "message": "牌组里的 高速脱离、化废为宝 让火箭飞拳更有价值（说明，不另加分）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": -0.67,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 1.8691,
-         "survival": 0.4596,
-         "long_term_growth": 0.1833,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
-       },
-       {
-        "id": "1:UPROAR",
-        "kind": "card",
-        "entity_id": "UPROAR",
-        "name": "骚动",
-        "score": 53.4,
-        "deck_score": 53.4,
-        "rank": 4,
-        "eligible": true,
-        "fully_scored": false,
-        "gaps": [
-         "card_effect_unsupported:UPROAR:effect:auto_play_from_draw"
-        ],
-        "factors": [
-         {
-          "code": "unmodeled_mechanic",
-          "delta": 0,
-          "message": "骚动的部分效果尚未计入评分；牌组中 3 张牌、1 件遗物未完整计入评分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 3 张牌（化废为宝、烟囱）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "unmodeled_relics",
-          "delta": 0,
-          "message": "遗物 骨茶 尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": -3.16,
-          "message": "拿骚动后防御：每回合 7.2 → 6.2（需求 9.1）"
-         },
-         {
-          "code": "deck_fitness:cycle",
-          "delta": -0.35,
-          "message": "拿骚动后循环：每回合额外抽牌 1.38 → 1.10（需求 1.0）"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": -0.29,
-          "message": "拿骚动后前期输出：每回合 29.7 → 29.2（需求 34.9）"
-         },
-         {
-          "code": "deck_fitness:synergy",
-          "delta": 0,
-          "message": "牌组里的 电击、双重释放 让骚动更有价值（说明，不另加分）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": 0.94,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": -0.291,
-         "survival": -3.1577,
-         "long_term_growth": -0.3508,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
-       }
-      ],
-      "chosen": "skip",
-      "tier": 1,
-      "gap": 4.6,
-      "not_strict_because": []
-     }
-    },
-    {
-     "id": "T2",
      "tool": "compare_options",
      "result": {
       "decision_id": "F21-card",
@@ -2528,7 +2414,7 @@
      }
     },
     {
-     "id": "T3",
+     "id": "T2",
      "tool": "get_deck",
      "result": {
       "decision_id": "F21-card",
@@ -2651,7 +2537,7 @@
      }
     },
     {
-     "id": "T4",
+     "id": "T3",
      "tool": "what_if_choices",
      "result": {
       "remove": [
@@ -2807,6 +2693,23 @@
      }
     },
     {
+     "id": "T4",
+     "tool": "get_card",
+     "result": {
+      "id": "REFRACT",
+      "name": "折射",
+      "description": "造成10点伤害两次。\n生成2个玻璃充能球。",
+      "cost": 3,
+      "type": "攻击",
+      "rarity": "罕见",
+      "color": "defect",
+      "target": "AnyEnemy",
+      "damage": 10,
+      "hit_count": 2,
+      "upgrade_description": "造成13点伤害两次。\n生成2个玻璃充能球。"
+     }
+    },
+    {
      "id": "T5",
      "tool": "what_if",
      "result": {
@@ -2860,44 +2763,221 @@
        }
       ]
      }
+    },
+    {
+     "id": "T6",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F21-card",
+      "changes": [
+       {
+        "operation": "upgrade",
+        "card": "DEFRAGMENT",
+        "name": "碎片整理"
+       },
+       {
+        "operation": "upgrade",
+        "card": "SMOKESTACK",
+        "name": "烟囱"
+       }
+      ],
+      "engine_top_before": "0:REFRACT",
+      "engine_top_after": "0:REFRACT",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 4.6,
+      "options_after": [
+       {
+        "id": "0:REFRACT",
+        "name": "折射",
+        "deck_score": 61.6,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 57,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "2:ROCKET_PUNCH",
+        "name": "火箭飞拳",
+        "deck_score": 58.7,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "1:UPROAR",
+        "name": "骚动",
+        "deck_score": 54.2,
+        "rank": 4,
+        "fully_scored": false
+       }
+      ]
+     }
+    },
+    {
+     "id": "T7",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F21-card",
+      "changes": [
+       {
+        "operation": "remove",
+        "card": "STRIKE_DEFECT",
+        "name": "打击"
+       },
+       {
+        "operation": "remove",
+        "card": "STRIKE_DEFECT",
+        "name": "打击"
+       },
+       {
+        "operation": "remove",
+        "card": "GUNK_UP",
+        "name": "污秽攻击"
+       }
+      ],
+      "engine_top_before": "0:REFRACT",
+      "engine_top_after": "0:REFRACT",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 7.6,
+      "options_after": [
+       {
+        "id": "0:REFRACT",
+        "name": "折射",
+        "deck_score": 66.9,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 59.3,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "2:ROCKET_PUNCH",
+        "name": "火箭飞拳",
+        "deck_score": 60.9,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "1:UPROAR",
+        "name": "骚动",
+        "deck_score": 58.1,
+        "rank": 4,
+        "fully_scored": false
+       }
+      ]
+     }
+    },
+    {
+     "id": "T8",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F21-card",
+      "changes": [
+       {
+        "operation": "add",
+        "card": "CAPACITOR",
+        "name": "扩容"
+       },
+       {
+        "operation": "add",
+        "card": "DARKNESS",
+        "name": "漆黑"
+       },
+       {
+        "operation": "add",
+        "card": "LEAP",
+        "name": "飞跃"
+       }
+      ],
+      "engine_top_before": "0:REFRACT",
+      "engine_top_after": "0:REFRACT",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 4.5,
+      "options_after": [
+       {
+        "id": "0:REFRACT",
+        "name": "折射",
+        "deck_score": 57.3,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "2:ROCKET_PUNCH",
+        "name": "火箭飞拳",
+        "deck_score": 55.4,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 52.8,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "1:UPROAR",
+        "name": "骚动",
+        "deck_score": 50.1,
+        "rank": 4,
+        "fully_scored": false
+       }
+      ]
+     }
     }
    ],
    "toolCalls": 5,
    "repairs": 0,
    "usage": {
-    "prompt_tokens": 23459,
-    "completion_tokens": 626,
-    "cost_usd": 0.002558052,
-    "llm_calls": 4
+    "prompt_tokens": 27415,
+    "completion_tokens": 764,
+    "cost_usd": 0.001539636,
+    "llm_calls": 5
    },
    "finding": {
     "decision_id": "F21-card",
     "reasons": [
      {
       "factor": "deck_fitness:aoe",
-      "evidence": "T2",
+      "evidence": "T1",
       "text": "引擎最看重群伤：拿折射后每回合群伤 0.0 → 4.7，而需求是 9.1，这是差距最大的一项。"
      },
      {
       "factor": "deck_fitness:frontload",
-      "evidence": "T2",
-      "text": "前期输出也从每回合 29.7 升到 36.1，刚好越过 34.9 的需求线。"
+      "evidence": "T1",
+      "text": "前期输出每回合 29.7 → 36.1，刚好越过 34.9 的需求，引擎认为补上了短板。"
      },
      {
       "factor": "deck_fitness:defense",
-      "evidence": "T2",
-      "text": "代价是防御从每回合 7.2 降到 5.8，离 9.1 的需求更远，这是引擎也承认的短板。"
+      "evidence": "T1",
+      "text": "代价是防御每回合 7.2 → 5.8，离 9.1 更远；引擎仍认为群伤收益更大。"
      }
     ],
     "what_if_evidence": "T5",
-    "what_if_text": "补两张防御牌（飞跃、暗影之盾）后引擎仍选折射，差距 4.8，说明防御短板不是它改变主意的关键。",
-    "advice": "若你更在意防御，可以留意后续能否补上每回合约 3 点以上的格挡，再决定是否收群伤牌。"
+    "what_if_text": "试了补防御（飞跃、暗影之盾）、升级碎片整理与烟囱、删两张打击和污秽攻击、加扩容漆黑飞跃，首选都仍是折射，差距 4.5–7.6。",
+    "advice": "若想跳过这类三费群伤牌，先让防御每回合稳定到 9.1 附近，引擎才会更倾向跳过。"
    }
   },
   {
    "flag": "F22-card",
    "status": "verified",
-   "errors": [],
+   "errors": [
+    "reasons[2]: the number 6 is not in T1/T0"
+   ],
    "evidence": [
     {
      "id": "T0",
@@ -3123,254 +3203,89 @@
     },
     {
      "id": "T1",
-     "tool": "get_decision",
+     "tool": "compare_options",
      "result": {
-      "id": "F22-card",
-      "kind": "card_reward",
-      "floor": 22,
-      "act": 2,
-      "hp": 50,
-      "max_hp": 79,
-      "gold": 53,
-      "engine_top": "1:COLD_SNAP",
-      "confidence": "medium",
-      "policy_status": "recommend",
-      "pick_margin": 2,
-      "options": [
+      "decision_id": "F22-card",
+      "a": {
+       "id": "1:COLD_SNAP",
+       "name": "寒流",
+       "deck_score": 57.9,
+       "fully_scored": true
+      },
+      "b": {
+       "id": "skip",
+       "name": "跳过",
+       "deck_score": 55.3,
+       "fully_scored": true
+      },
+      "deck_score_difference": 2.6,
+      "factors": [
        {
-        "id": "1:COLD_SNAP",
-        "kind": "card",
-        "entity_id": "COLD_SNAP",
-        "name": "寒流",
-        "score": 57.9,
-        "deck_score": 57.9,
-        "rank": 1,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "estimate_scope",
-          "delta": 0,
-          "message": "牌组中 3 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 3 张牌（化废为宝、烟囱）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "unmodeled_relics",
-          "delta": 0,
-          "message": "遗物 骨茶 尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": 6.26,
-          "message": "拿寒流后防御：每回合 7.2 → 9.8（需求 9.4）"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": -1.04,
-          "message": "拿寒流后前期输出：每回合 29.8 → 27.6（需求 35.2）"
-         },
-         {
-          "code": "deck_fitness:cycle",
-          "delta": -0.16,
-          "message": "拿寒流后循环：每回合额外抽牌 1.38 → 1.23（需求 1.0）"
-         },
-         {
-          "code": "deck_fitness:synergy",
-          "delta": 0,
-          "message": "牌组里的 化废为宝、烟囱 让寒流更有价值（说明，不另加分）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": -2.48,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": -1.0359,
-         "survival": 6.2604,
-         "long_term_growth": -0.1627,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
+        "factor": "deck_fitness:defense",
+        "a": 6.26,
+        "b": 0,
+        "difference": 6.26,
+        "a_message": "拿寒流后防御：每回合 7.2 → 9.8（需求 9.4）",
+        "b_message": null
        },
        {
-        "id": "skip",
-        "kind": "skip",
-        "entity_id": null,
-        "name": "跳过",
-        "score": 57.3,
-        "deck_score": 55.3,
-        "rank": 2,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "estimate_scope",
-          "delta": 0,
-          "message": "牌组中 3 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 3 张牌（化废为宝、烟囱）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "unmodeled_relics",
-          "delta": 0,
-          "message": "遗物 骨茶 尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": 0,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         },
-         {
-          "code": "deck_fitness:pick_margin",
-          "delta": 2,
-          "message": "第 2 幕：候选要比跳过高出 2 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 0,
-         "survival": 0,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
+        "factor": "deck_fitness:lookahead",
+        "a": -2.48,
+        "b": 0,
+        "difference": -2.48,
+        "a_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度",
+        "b_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
        },
        {
-        "id": "0:COMPILE_DRIVER",
-        "kind": "card",
-        "entity_id": "COMPILE_DRIVER",
-        "name": "编译冲击",
-        "score": 55,
-        "deck_score": 55,
-        "rank": 3,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "estimate_scope",
-          "delta": 0,
-          "message": "牌组中 3 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 3 张牌（化废为宝、烟囱）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "unmodeled_relics",
-          "delta": 0,
-          "message": "遗物 骨茶 尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": -1.51,
-          "message": "拿编译冲击后防御：每回合 7.2 → 6.7（需求 9.4）"
-         },
-         {
-          "code": "deck_fitness:cycle",
-          "delta": 0.18,
-          "message": "拿编译冲击后循环：每回合额外抽牌 1.38 → 1.57（需求 1.0）"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": 0.17,
-          "message": "拿编译冲击后前期输出：每回合 29.8 → 30.1（需求 35.2）"
-         },
-         {
-          "code": "deck_fitness:synergy",
-          "delta": 0,
-          "message": "牌组里的 双重释放、电击 让编译冲击更有价值（说明，不另加分）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": 0.8,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 0.1652,
-         "survival": -1.5082,
-         "long_term_growth": 0.1768,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
+        "factor": "deck_fitness:frontload",
+        "a": -1.04,
+        "b": 0,
+        "difference": -1.04,
+        "a_message": "拿寒流后前期输出：每回合 29.8 → 27.6（需求 35.2）",
+        "b_message": null
        },
        {
-        "id": "2:DARKNESS",
-        "kind": "card",
-        "entity_id": "DARKNESS",
-        "name": "漆黑",
-        "score": 52.9,
-        "deck_score": 52.9,
-        "rank": 4,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "estimate_scope",
-          "delta": 0,
-          "message": "牌组中 3 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 3 张牌（化废为宝、烟囱）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "unmodeled_relics",
-          "delta": 0,
-          "message": "遗物 骨茶 尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": -2.77,
-          "message": "拿漆黑后防御：每回合 7.2 → 6.6（需求 9.4）"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": -0.9,
-          "message": "拿漆黑后前期输出：每回合 29.8 → 27.9（需求 35.2）"
-         },
-         {
-          "code": "deck_fitness:cycle",
-          "delta": -0.16,
-          "message": "拿漆黑后循环：每回合额外抽牌 1.38 → 1.23（需求 1.0）"
-         },
-         {
-          "code": "deck_fitness:synergy",
-          "delta": 0,
-          "message": "牌组里的 电击、高速脱离 让漆黑更有价值（说明，不另加分）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": 1.43,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": -0.8991,
-         "survival": -2.7744,
-         "long_term_growth": -0.1627,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
+        "factor": "deck_fitness:cycle",
+        "a": -0.16,
+        "b": 0,
+        "difference": -0.16,
+        "a_message": "拿寒流后循环：每回合额外抽牌 1.38 → 1.23（需求 1.0）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:synergy",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组里的 化废为宝、烟囱 让寒流更有价值（说明，不另加分）",
+        "b_message": null
+       },
+       {
+        "factor": "estimate_scope",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 3 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。",
+        "b_message": "牌组中 3 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "factor": "partially_modeled_deck_cards",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 3 张牌（化废为宝、烟囱）有部分效果尚未计入评分。",
+        "b_message": "牌组中 3 张牌（化废为宝、烟囱）有部分效果尚未计入评分。"
+       },
+       {
+        "factor": "unmodeled_relics",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "遗物 骨茶 尚未计入评分。",
+        "b_message": "遗物 骨茶 尚未计入评分。"
        }
       ],
-      "chosen": "skip",
-      "tier": 1,
-      "gap": 2.6,
-      "not_strict_because": []
+      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
      }
     },
     {
@@ -3502,93 +3417,6 @@
     },
     {
      "id": "T3",
-     "tool": "compare_options",
-     "result": {
-      "decision_id": "F22-card",
-      "a": {
-       "id": "1:COLD_SNAP",
-       "name": "寒流",
-       "deck_score": 57.9,
-       "fully_scored": true
-      },
-      "b": {
-       "id": "skip",
-       "name": "跳过",
-       "deck_score": 55.3,
-       "fully_scored": true
-      },
-      "deck_score_difference": 2.6,
-      "factors": [
-       {
-        "factor": "deck_fitness:defense",
-        "a": 6.26,
-        "b": 0,
-        "difference": 6.26,
-        "a_message": "拿寒流后防御：每回合 7.2 → 9.8（需求 9.4）",
-        "b_message": null
-       },
-       {
-        "factor": "deck_fitness:lookahead",
-        "a": -2.48,
-        "b": 0,
-        "difference": -2.48,
-        "a_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度",
-        "b_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-       },
-       {
-        "factor": "deck_fitness:frontload",
-        "a": -1.04,
-        "b": 0,
-        "difference": -1.04,
-        "a_message": "拿寒流后前期输出：每回合 29.8 → 27.6（需求 35.2）",
-        "b_message": null
-       },
-       {
-        "factor": "deck_fitness:cycle",
-        "a": -0.16,
-        "b": 0,
-        "difference": -0.16,
-        "a_message": "拿寒流后循环：每回合额外抽牌 1.38 → 1.23（需求 1.0）",
-        "b_message": null
-       },
-       {
-        "factor": "deck_fitness:synergy",
-        "a": 0,
-        "b": 0,
-        "difference": 0,
-        "a_message": "牌组里的 化废为宝、烟囱 让寒流更有价值（说明，不另加分）",
-        "b_message": null
-       },
-       {
-        "factor": "estimate_scope",
-        "a": 0,
-        "b": 0,
-        "difference": 0,
-        "a_message": "牌组中 3 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。",
-        "b_message": "牌组中 3 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
-       },
-       {
-        "factor": "partially_modeled_deck_cards",
-        "a": 0,
-        "b": 0,
-        "difference": 0,
-        "a_message": "牌组中 3 张牌（化废为宝、烟囱）有部分效果尚未计入评分。",
-        "b_message": "牌组中 3 张牌（化废为宝、烟囱）有部分效果尚未计入评分。"
-       },
-       {
-        "factor": "unmodeled_relics",
-        "a": 0,
-        "b": 0,
-        "difference": 0,
-        "a_message": "遗物 骨茶 尚未计入评分。",
-        "b_message": "遗物 骨茶 尚未计入评分。"
-       }
-      ],
-      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
-     }
-    },
-    {
-     "id": "T4",
      "tool": "what_if_choices",
      "result": {
       "remove": [
@@ -3752,49 +3580,65 @@
      }
     },
     {
+     "id": "T4",
+     "tool": "get_card",
+     "result": {
+      "id": "COLD_SNAP",
+      "name": "寒流",
+      "description": "造成6点伤害。\n生成1个冰霜充能球。",
+      "cost": 1,
+      "type": "攻击",
+      "rarity": "普通",
+      "color": "defect",
+      "target": "AnyEnemy",
+      "damage": 6,
+      "upgrade_description": "造成9点伤害。\n生成1个冰霜充能球。"
+     }
+    },
+    {
      "id": "T5",
      "tool": "what_if",
      "result": {
       "decision_id": "F22-card",
       "changes": [
        {
-        "operation": "remove",
-        "card": "STRIKE_DEFECT",
-        "name": "打击"
+        "operation": "add",
+        "card": "LEAP",
+        "name": "飞跃"
        }
       ],
       "engine_top_before": "1:COLD_SNAP",
-      "engine_top_after": "1:COLD_SNAP",
-      "pick_changed": false,
-      "agrees_with_player_after": false,
+      "engine_top_after": "skip",
+      "pick_changed": true,
+      "agrees_with_player_after": true,
       "confidence_after": "medium",
-      "gap_after": 2.6,
+      "gap_after": 0,
       "options_after": [
        {
-        "id": "1:COLD_SNAP",
-        "name": "寒流",
-        "deck_score": 58.9,
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 57.6,
         "rank": 1,
         "fully_scored": true
        },
        {
-        "id": "skip",
-        "name": "跳过",
-        "deck_score": 56.3,
+        "id": "1:COLD_SNAP",
+        "name": "寒流",
+        "deck_score": 57.7,
         "rank": 2,
         "fully_scored": true
        },
        {
         "id": "0:COMPILE_DRIVER",
         "name": "编译冲击",
-        "deck_score": 56.6,
+        "deck_score": 56.8,
         "rank": 3,
         "fully_scored": true
        },
        {
         "id": "2:DARKNESS",
         "name": "漆黑",
-        "deck_score": 54.6,
+        "deck_score": 55.2,
         "rank": 4,
         "fully_scored": true
        }
@@ -3802,48 +3646,48 @@
      }
     }
    ],
-   "toolCalls": 5,
-   "repairs": 0,
+   "toolCalls": 2,
+   "repairs": 1,
    "usage": {
-    "prompt_tokens": 22575,
-    "completion_tokens": 602,
-    "cost_usd": 0.0024898439999999997,
-    "llm_calls": 4
+    "prompt_tokens": 15054,
+    "completion_tokens": 755,
+    "cost_usd": 0.001132152,
+    "llm_calls": 3
    },
    "finding": {
     "decision_id": "F22-card",
     "reasons": [
      {
       "factor": "deck_fitness:defense",
-      "evidence": "T3",
-      "text": "引擎最看重防御：拿寒流后每回合防御 7.2 → 9.8，刚好越过 9.4 的需求，而跳过则停在 7.2。"
+      "evidence": "T1",
+      "text": "引擎最看重防御：拿寒流后每回合防御 7.2 → 9.8，刚好越过 9.4 的需求，这是它领先的主因。"
      },
      {
       "factor": "deck_fitness:lookahead",
-      "evidence": "T3",
-      "text": "往后看三次选牌，寒流会拖低牌组适合度，这是它唯一明显吃亏的地方。"
+      "evidence": "T1",
+      "text": "但往后看三次选牌，寒流反而拖低牌组适合度，这一项是它相对跳过最吃亏的地方。"
      },
      {
       "factor": "deck_fitness:frontload",
-      "evidence": "T3",
-      "text": "前期输出每回合 29.8 → 27.6，离 35.2 的需求更远，所以引擎的领先只有 2.6 分。"
+      "evidence": "T1",
+      "text": "前期输出每回合 29.8 → 27.6，离 35.2 的需求更远，寒流对输出帮助有限。"
      }
     ],
     "what_if_evidence": "T5",
-    "what_if_text": "假设当时少一张打击，引擎仍首选寒流，差距还是 2.6，结论不变。",
-    "advice": "第 2 幕防御缺口明显（7.2 对需求 9.4）时，寒流这类便宜冰牌值得考虑；但若更在意后续成长，跳过也说得通。"
+    "what_if_text": "若牌组里已有一张飞跃（防御牌），引擎的首选就会变成跳过，与你的选择一致。",
+    "advice": "下次遇到这类情况，先看防御是否已够用：若已有飞跃、强撑这类防御牌，跳过会更划算。"
    }
   }
  ],
  "summary": {
-  "text": "这些决定都因前期输出或防御离需求差 34.8、9.1 等而偏弱，可优先补前期伤害或每回合约 3 点格挡。",
+  "text": "这些决定都只顾眼前一项而拖累后续选牌，可先按防御是否够用来取舍。",
   "source": "model",
-  "cost_usd": 0.00035090399999999997
+  "cost_usd": 0.0002034
  },
  "meta": {
   "model": "deepseek-flash",
-  "cost_usd": 0.007306116,
-  "seconds": 9.504,
-  "generated_at": "2026-11-01 14:42"
+  "cost_usd": 0.004055868,
+  "seconds": 9.953,
+  "generated_at": "2026-11-11 00:27"
  }
 }

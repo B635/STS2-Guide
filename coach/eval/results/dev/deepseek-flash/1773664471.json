@@ -2,7 +2,7 @@
  "run": "1773664471",
  "set": "dev",
  "model": "deepseek-flash",
- "prompt_version": "p3",
+ "prompt_version": "p4",
  "pre": {
   "summary": {
    "run_id": "1773664471",
@@ -1053,258 +1053,6 @@
     },
     {
      "id": "T1",
-     "tool": "get_decision",
-     "result": {
-      "id": "F22-card",
-      "kind": "card_reward",
-      "floor": 22,
-      "act": 2,
-      "hp": 74,
-      "max_hp": 82,
-      "gold": 64,
-      "engine_top": "1:KNOW_THY_PLACE",
-      "confidence": "medium",
-      "policy_status": "recommend",
-      "pick_margin": 2,
-      "options": [
-       {
-        "id": "1:KNOW_THY_PLACE",
-        "kind": "card",
-        "entity_id": "KNOW_THY_PLACE",
-        "name": "何人僭越",
-        "score": 55.5,
-        "deck_score": 55.5,
-        "rank": 1,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "estimate_scope",
-          "delta": 0,
-          "message": "牌组中 3 张牌、3 件遗物未完整计入评分，分数只反映已计入的部分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 3 张牌（环绕轨道、虚空形态）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "unmodeled_relics",
-          "delta": 0,
-          "message": "遗物 招财异鱼、爬行动物饰品、石化蟾蜍 尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": 1.84,
-          "message": "拿何人僭越后前期输出：每回合 23.0 → 26.2（需求 35.5）"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": 1.73,
-          "message": "拿何人僭越后防御：每回合 9.2 → 10.3（需求 9.7）"
-         },
-         {
-          "code": "deck_fitness:aoe",
-          "delta": 0.26,
-          "message": "拿何人僭越后群伤：每回合 2.2 → 2.4（需求 9.0）"
-         },
-         {
-          "code": "deck_fitness:synergy",
-          "delta": 0,
-          "message": "牌组里的 引导之星、星界脉冲 让何人僭越更有价值（说明，不另加分）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": -0.65,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 2.1005,
-         "survival": 1.7319,
-         "long_term_growth": -0.0211,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
-       },
-       {
-        "id": "skip",
-        "kind": "skip",
-        "entity_id": null,
-        "name": "跳过",
-        "score": 54.3,
-        "deck_score": 52.3,
-        "rank": 2,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "estimate_scope",
-          "delta": 0,
-          "message": "牌组中 3 张牌、3 件遗物未完整计入评分，分数只反映已计入的部分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 3 张牌（环绕轨道、虚空形态）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "unmodeled_relics",
-          "delta": 0,
-          "message": "遗物 招财异鱼、爬行动物饰品、石化蟾蜍 尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": 0,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         },
-         {
-          "code": "deck_fitness:pick_margin",
-          "delta": 2,
-          "message": "第 2 幕：候选要比跳过高出 2 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 0,
-         "survival": 0,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
-       },
-       {
-        "id": "0:SOLAR_STRIKE",
-        "kind": "card",
-        "entity_id": "SOLAR_STRIKE",
-        "name": "太阳打击",
-        "score": 52.3,
-        "deck_score": 52.3,
-        "rank": 3,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "estimate_scope",
-          "delta": 0,
-          "message": "牌组中 3 张牌、3 件遗物未完整计入评分，分数只反映已计入的部分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 3 张牌（环绕轨道、虚空形态）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "unmodeled_relics",
-          "delta": 0,
-          "message": "遗物 招财异鱼、爬行动物饰品、石化蟾蜍 尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": -1.33,
-          "message": "拿太阳打击后防御：每回合 9.2 → 8.6（需求 9.7）"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": 0.9,
-          "message": "拿太阳打击后前期输出：每回合 23.0 → 24.5（需求 35.5）"
-         },
-         {
-          "code": "deck_fitness:cycle",
-          "delta": -0.18,
-          "message": "拿太阳打击后循环：每回合额外抽牌 0.60 → 0.58（需求 1.0）"
-         },
-         {
-          "code": "deck_fitness:aoe",
-          "delta": 0.1,
-          "message": "拿太阳打击后群伤：每回合 2.2 → 2.3（需求 9.0）"
-         },
-         {
-          "code": "deck_fitness:synergy",
-          "delta": 0,
-          "message": "牌组里的 陨星、星界脉冲 让太阳打击更有价值（说明，不另加分）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": 0.49,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 1.0084,
-         "survival": -1.3282,
-         "long_term_growth": -0.1773,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
-       },
-       {
-        "id": "2:CHARGE",
-        "kind": "card",
-        "entity_id": "CHARGE",
-        "name": "冲锋！！",
-        "score": 52,
-        "deck_score": 52,
-        "rank": 4,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "estimate_scope",
-          "delta": 0,
-          "message": "牌组中 3 张牌、3 件遗物未完整计入评分，分数只反映已计入的部分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 3 张牌（环绕轨道、虚空形态）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "unmodeled_relics",
-          "delta": 0,
-          "message": "遗物 招财异鱼、爬行动物饰品、石化蟾蜍 尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": -1.67,
-          "message": "拿冲锋！！后防御：每回合 9.2 → 8.5（需求 9.7）"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": 1.15,
-          "message": "拿冲锋！！后前期输出：每回合 23.0 → 25.0（需求 35.5）"
-         },
-         {
-          "code": "deck_fitness:cycle",
-          "delta": -0.39,
-          "message": "拿冲锋！！后循环：每回合额外抽牌 0.60 → 0.56（需求 1.0）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": 0.67,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 1.1043,
-         "survival": -1.6686,
-         "long_term_growth": -0.3907,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
-       }
-      ],
-      "chosen": "0:SOLAR_STRIKE",
-      "tier": 1,
-      "gap": 3.2,
-      "not_strict_because": []
-     }
-    },
-    {
-     "id": "T2",
      "tool": "compare_options",
      "result": {
       "decision_id": "F22-card",
@@ -1399,7 +1147,7 @@
      }
     },
     {
-     "id": "T3",
+     "id": "T2",
      "tool": "get_deck",
      "result": {
       "decision_id": "F22-card",
@@ -1540,7 +1288,7 @@
      }
     },
     {
-     "id": "T4",
+     "id": "T3",
      "tool": "what_if_choices",
      "result": {
       "remove": [
@@ -1690,7 +1438,7 @@
      }
     },
     {
-     "id": "T5",
+     "id": "T4",
      "tool": "what_if",
      "result": {
       "decision_id": "F22-card",
@@ -1738,14 +1486,152 @@
        }
       ]
      }
+    },
+    {
+     "id": "T5",
+     "tool": "get_card",
+     "result": {
+      "id": "KNOW_THY_PLACE",
+      "name": "何人僭越",
+      "description": "给予1层虚弱。\n给予1层易伤。",
+      "cost": 0,
+      "type": "技能",
+      "rarity": "普通",
+      "color": "regent",
+      "target": "AnyEnemy",
+      "keywords": [
+       "消耗"
+      ]
+     }
+    },
+    {
+     "id": "T6",
+     "tool": "get_card",
+     "result": {
+      "id": "SOLAR_STRIKE",
+      "name": "太阳打击",
+      "description": "造成9点伤害。\n获得。",
+      "cost": 1,
+      "type": "攻击",
+      "rarity": "普通",
+      "color": "regent",
+      "target": "AnyEnemy",
+      "damage": 9,
+      "upgrade_description": "造成10点伤害。\n获得。"
+     }
+    },
+    {
+     "id": "T7",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F22-card",
+      "changes": [
+       {
+        "operation": "add",
+        "card": "PILLAR_OF_CREATION",
+        "name": "创世之柱"
+       }
+      ],
+      "engine_top_before": "1:KNOW_THY_PLACE",
+      "engine_top_after": "1:KNOW_THY_PLACE",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 3.4,
+      "options_after": [
+       {
+        "id": "1:KNOW_THY_PLACE",
+        "name": "何人僭越",
+        "deck_score": 53.7,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 50.4,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "0:SOLAR_STRIKE",
+        "name": "太阳打击",
+        "deck_score": 50.3,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "2:CHARGE",
+        "name": "冲锋！！",
+        "deck_score": 50,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "T8",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F22-card",
+      "changes": [
+       {
+        "operation": "add",
+        "card": "CLOAK_OF_STARS",
+        "name": "群星斗篷"
+       },
+       {
+        "operation": "add",
+        "card": "PILLAR_OF_CREATION",
+        "name": "创世之柱"
+       }
+      ],
+      "engine_top_before": "1:KNOW_THY_PLACE",
+      "engine_top_after": "1:KNOW_THY_PLACE",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "low",
+      "gap_after": 2.3,
+      "options_after": [
+       {
+        "id": "1:KNOW_THY_PLACE",
+        "name": "何人僭越",
+        "deck_score": 54.3,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 51.9,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "0:SOLAR_STRIKE",
+        "name": "太阳打击",
+        "deck_score": 52,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "2:CHARGE",
+        "name": "冲锋！！",
+        "deck_score": 51.8,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
     }
    ],
-   "toolCalls": 5,
+   "toolCalls": 6,
    "repairs": 0,
    "usage": {
-    "prompt_tokens": 24055,
-    "completion_tokens": 637,
-    "cost_usd": 0.002637156,
+    "prompt_tokens": 22034,
+    "completion_tokens": 730,
+    "cost_usd": 0.0017661359999999997,
     "llm_calls": 4
    },
    "finding": {
@@ -1753,23 +1639,23 @@
     "reasons": [
      {
       "factor": "deck_fitness:defense",
-      "evidence": "T2",
-      "text": "防御是最大差距：拿何人僭越每回合 9.2 → 10.3，刚好过需求 9.7；拿太阳打击反而降到 8.6。"
+      "evidence": "T1",
+      "text": "防御是差距最大的一项：拿何人僭越每回合 9.2 → 10.3，刚好过 9.7 的需求；拿太阳打击则降到 8.6。"
      },
      {
       "factor": "deck_fitness:frontload",
-      "evidence": "T2",
-      "text": "前期输出上何人僭越 23.0 → 26.2，太阳打击只到 24.5，两者都离需求 35.5 很远。"
+      "evidence": "T1",
+      "text": "前期输出上，何人僭越 23.0 → 26.2，太阳打击只到 24.5，两者都离 35.5 的需求很远。"
      },
      {
       "factor": "deck_fitness:lookahead",
-      "evidence": "T2",
-      "text": "唯一偏向太阳打击的是后续选牌适配，但差距只有 1.14，抵不过防御的 3.06。"
+      "evidence": "T1",
+      "text": "往后看三次选牌，太阳打击略占优，但这一项抵不过防御上的差距。"
      }
     ],
-    "what_if_evidence": "T5",
-    "what_if_text": "即使之前多拿一张群星斗篷，引擎仍选何人僭越，只是差距从 3.2 缩到 2.2。",
-    "advice": "当前牌组防御每回合 9.2 低于需求 9.7，选牌时优先补防御，纯输出牌很难补上 35.5 的输出缺口。"
+    "what_if_evidence": "T4",
+    "what_if_text": "试过补群星斗篷、创世之柱、两者同补，首选都没变；补群星斗篷后差距从 3.2 缩到 2.2，是最接近的一次。",
+    "advice": "牌组防御只有 9.2、需求 9.7 时，优先考虑能补防御的牌；太阳打击这类纯输出牌可以等防御达标后再拿。"
    }
   },
   {
@@ -1963,220 +1849,6 @@
     },
     {
      "id": "T1",
-     "tool": "get_decision",
-     "result": {
-      "id": "F02-card",
-      "kind": "card_reward",
-      "floor": 2,
-      "act": 1,
-      "hp": 73,
-      "max_hp": 75,
-      "gold": 112,
-      "engine_top": "1:RADIATE",
-      "confidence": "medium",
-      "policy_status": "recommend",
-      "pick_margin": 1,
-      "options": [
-       {
-        "id": "1:RADIATE",
-        "kind": "card",
-        "entity_id": "RADIATE",
-        "name": "辐射",
-        "score": 53.6,
-        "deck_score": 53.6,
-        "rank": 1,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "estimate_scope",
-          "delta": 0,
-          "message": "1 件遗物未完整计入评分，分数只反映已计入的部分。"
-         },
-         {
-          "code": "unmodeled_relics",
-          "delta": 0,
-          "message": "遗物 石化蟾蜍 尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:aoe",
-          "delta": 2.05,
-          "message": "拿辐射后群伤：每回合 0.0 → 0.4（需求 3.0）"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": 0.68,
-          "message": "拿辐射后前期输出：每回合 18.3 → 19.2（需求 19.0）"
-         },
-         {
-          "code": "deck_fitness:synergy",
-          "delta": 0,
-          "message": "牌组里的 崇拜 让辐射更有价值（说明，不另加分）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": -0.51,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 2.724,
-         "survival": -0.0388,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
-       },
-       {
-        "id": "skip",
-        "kind": "skip",
-        "entity_id": null,
-        "name": "跳过",
-        "score": 52.4,
-        "deck_score": 51.4,
-        "rank": 2,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "estimate_scope",
-          "delta": 0,
-          "message": "1 件遗物未完整计入评分，分数只反映已计入的部分。"
-         },
-         {
-          "code": "unmodeled_relics",
-          "delta": 0,
-          "message": "遗物 石化蟾蜍 尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": 0,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         },
-         {
-          "code": "deck_fitness:pick_margin",
-          "delta": 1,
-          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 0,
-         "survival": 0,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
-       },
-       {
-        "id": "0:GLITTERSTREAM",
-        "kind": "card",
-        "entity_id": "GLITTERSTREAM",
-        "name": "流光溢彩",
-        "score": 51.9,
-        "deck_score": 51.9,
-        "rank": 3,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "estimate_scope",
-          "delta": 0,
-          "message": "1 件遗物未完整计入评分，分数只反映已计入的部分。"
-         },
-         {
-          "code": "unmodeled_relics",
-          "delta": 0,
-          "message": "遗物 石化蟾蜍 尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": 1.12,
-          "message": "拿流光溢彩后防御：每回合 7.8 → 10.4（需求 6.7）"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": -0.78,
-          "message": "拿流光溢彩后前期输出：每回合 18.3 → 17.4（需求 19.0）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": 0.17,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": -0.7772,
-         "survival": 1.1228,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
-       },
-       {
-        "id": "2:SUMMON_FORTH",
-        "kind": "card",
-        "entity_id": "SUMMON_FORTH",
-        "name": "征召上前",
-        "score": 48.8,
-        "deck_score": 48.8,
-        "rank": 4,
-        "eligible": true,
-        "fully_scored": false,
-        "gaps": [
-         "card_effect_unsupported:SUMMON_FORTH:effect:move_card"
-        ],
-        "factors": [
-         {
-          "code": "unmodeled_mechanic",
-          "delta": 0,
-          "message": "征召上前的部分效果尚未计入评分；1 件遗物未完整计入评分。"
-         },
-         {
-          "code": "unmodeled_relics",
-          "delta": 0,
-          "message": "遗物 石化蟾蜍 尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": -2.73,
-          "message": "拿征召上前后防御：每回合 7.8 → 5.9（需求 6.7）"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": 0.35,
-          "message": "拿征召上前后前期输出：每回合 18.3 → 18.7（需求 19.0）"
-         },
-         {
-          "code": "deck_fitness:synergy",
-          "delta": 0,
-          "message": "牌组里的 陨星 让征召上前更有价值（说明，不另加分）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": -0.24,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 0.3519,
-         "survival": -2.7278,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
-       }
-      ],
-      "chosen": "0:GLITTERSTREAM",
-      "tier": 1,
-      "gap": 1.7,
-      "not_strict_because": []
-     }
-    },
-    {
-     "id": "T2",
      "tool": "compare_options",
      "result": {
       "decision_id": "F02-card",
@@ -2255,7 +1927,7 @@
      }
     },
     {
-     "id": "T3",
+     "id": "T2",
      "tool": "get_deck",
      "result": {
       "decision_id": "F02-card",
@@ -2313,7 +1985,7 @@
      }
     },
     {
-     "id": "T4",
+     "id": "T3",
      "tool": "what_if_choices",
      "result": {
       "remove": [
@@ -2332,11 +2004,98 @@
      }
     },
     {
+     "id": "T4",
+     "tool": "get_card",
+     "result": {
+      "id": "RADIATE",
+      "name": "辐射",
+      "description": "你在本回合每获得一点，此牌就对所有敌人造成3点伤害一次。",
+      "cost": 0,
+      "type": "攻击",
+      "rarity": "罕见",
+      "color": "regent",
+      "target": "AllEnemies",
+      "damage": 3,
+      "upgrade_description": "你在本回合每获得一点，此牌就对所有敌人造成4点伤害一次。"
+     }
+    },
+    {
      "id": "T5",
+     "tool": "get_card",
+     "result": {
+      "id": "GLITTERSTREAM",
+      "name": "流光溢彩",
+      "description": "获得11点格挡。\n在下一回合获得5点格挡。",
+      "cost": 2,
+      "type": "技能",
+      "rarity": "普通",
+      "color": "regent",
+      "target": "Self",
+      "block": 11,
+      "upgrade_description": "获得13点格挡。\n在下一回合获得7点格挡。"
+     }
+    },
+    {
+     "id": "T6",
      "tool": "what_if",
      "result": {
       "decision_id": "F02-card",
       "changes": [
+       {
+        "operation": "remove",
+        "card": "DEFEND_REGENT",
+        "name": "防御"
+       }
+      ],
+      "engine_top_before": "1:RADIATE",
+      "engine_top_after": "1:RADIATE",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 1.7,
+      "options_after": [
+       {
+        "id": "1:RADIATE",
+        "name": "辐射",
+        "deck_score": 53.9,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 51.7,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "0:GLITTERSTREAM",
+        "name": "流光溢彩",
+        "deck_score": 52.2,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "2:SUMMON_FORTH",
+        "name": "征召上前",
+        "deck_score": 48.3,
+        "rank": 4,
+        "fully_scored": false
+       }
+      ]
+     }
+    },
+    {
+     "id": "T7",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F02-card",
+      "changes": [
+       {
+        "operation": "remove",
+        "card": "STRIKE_REGENT",
+        "name": "打击"
+       },
        {
         "operation": "remove",
         "card": "STRIKE_REGENT",
@@ -2348,12 +2107,62 @@
       "pick_changed": false,
       "agrees_with_player_after": false,
       "confidence_after": "medium",
-      "gap_after": 2.2,
+      "gap_after": 2.7,
       "options_after": [
        {
         "id": "1:RADIATE",
         "name": "辐射",
-        "deck_score": 54.6,
+        "deck_score": 55.5,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 52.5,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "0:GLITTERSTREAM",
+        "name": "流光溢彩",
+        "deck_score": 52.8,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "2:SUMMON_FORTH",
+        "name": "征召上前",
+        "deck_score": 50.3,
+        "rank": 4,
+        "fully_scored": false
+       }
+      ]
+     }
+    },
+    {
+     "id": "T8",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F02-card",
+      "changes": [
+       {
+        "operation": "upgrade",
+        "card": "FALLING_STAR",
+        "name": "陨星"
+       }
+      ],
+      "engine_top_before": "1:RADIATE",
+      "engine_top_after": "1:RADIATE",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 1.3,
+      "options_after": [
+       {
+        "id": "1:RADIATE",
+        "name": "辐射",
+        "deck_score": 53.9,
         "rank": 1,
         "fully_scored": true
        },
@@ -2367,14 +2176,64 @@
        {
         "id": "0:GLITTERSTREAM",
         "name": "流光溢彩",
-        "deck_score": 52.4,
+        "deck_score": 52.6,
         "rank": 3,
         "fully_scored": true
        },
        {
         "id": "2:SUMMON_FORTH",
         "name": "征召上前",
-        "deck_score": 49.7,
+        "deck_score": 49.3,
+        "rank": 4,
+        "fully_scored": false
+       }
+      ]
+     }
+    },
+    {
+     "id": "T9",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F02-card",
+      "changes": [
+       {
+        "operation": "remove",
+        "card": "VENERATE",
+        "name": "崇拜"
+       }
+      ],
+      "engine_top_before": "1:RADIATE",
+      "engine_top_after": "1:RADIATE",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 1,
+      "options_after": [
+       {
+        "id": "1:RADIATE",
+        "name": "辐射",
+        "deck_score": 53.3,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 51.8,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "0:GLITTERSTREAM",
+        "name": "流光溢彩",
+        "deck_score": 52.3,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "2:SUMMON_FORTH",
+        "name": "征召上前",
+        "deck_score": 48.8,
         "rank": 4,
         "fully_scored": false
        }
@@ -2382,48 +2241,48 @@
      }
     }
    ],
-   "toolCalls": 5,
+   "toolCalls": 6,
    "repairs": 0,
    "usage": {
-    "prompt_tokens": 18764,
-    "completion_tokens": 640,
-    "cost_usd": 0.002031888,
-    "llm_calls": 4
+    "prompt_tokens": 24816,
+    "completion_tokens": 736,
+    "cost_usd": 0.0016671359999999998,
+    "llm_calls": 6
    },
    "finding": {
     "decision_id": "F02-card",
     "reasons": [
      {
       "factor": "deck_fitness:aoe",
-      "evidence": "T2",
-      "text": "引擎最看重群伤：拿辐射后群伤每回合 0.0 → 0.4（需求 3.0），流光溢彩在这项没有提升。"
+      "evidence": "T1",
+      "text": "引擎最看重群伤：拿辐射后每回合群伤 0.0 → 0.4（需求 3.0），流光溢彩这一项没有贡献。"
      },
      {
       "factor": "deck_fitness:frontload",
-      "evidence": "T2",
-      "text": "前期输出上，辐射让每回合 18.3 → 19.2，流光溢彩反而降到 17.4，而需求是 19.0。"
+      "evidence": "T1",
+      "text": "前期输出上，辐射把每回合 18.3 提到 19.2（需求 19.0），流光溢彩则降到 17.4。"
      },
      {
       "factor": "deck_fitness:defense",
-      "evidence": "T2",
-      "text": "流光溢彩的长处是防御：每回合 7.8 → 10.4，但需求只有 6.7，超出部分引擎给分有限。"
+      "evidence": "T1",
+      "text": "流光溢彩的长处是防御：每回合 7.8 → 10.4，而需求只有 6.7，超出较多。"
      }
     ],
-    "what_if_evidence": "T5",
-    "what_if_text": "试着少一张打击后，引擎仍选辐射，差距还从 1.7 扩大到 2.2，说明这不是牌组数量的问题。",
-    "advice": "第 1 幕牌组只有 12 张、输出刚好卡在 19.0 附近时，优先补能同时抬群伤和输出的牌，防御已够用就不必再加。"
+    "what_if_evidence": "T8",
+    "what_if_text": "试了四种改动：去掉一张防御、去掉两张打击、升级陨星、去掉崇拜，首选都仍是辐射；升级陨星时差距最小，从 1.7 缩到 1.3。",
+    "advice": "牌组只有 12 张、群伤几乎为零时，优先补能打全场的牌；防御已够用时，流光溢彩的溢出格挡价值有限。"
    }
   }
  ],
  "summary": {
-  "text": "这些决定都因过度看重单项防御而忽略群伤与输出的硬缺口；照做方向：先补群伤和输出到需求，再考虑防御。",
+  "text": "这些决定都因过度看重单项数值而忽略防御缺口；照做方向：先补防御到 9.7，再考虑纯输出牌。",
   "source": "model",
-  "cost_usd": 0.00018059999999999997
+  "cost_usd": 0.0001734
  },
  "meta": {
   "model": "deepseek-flash",
-  "cost_usd": 0.004849644,
-  "seconds": 7.557,
-  "generated_at": "2026-11-01 14:42"
+  "cost_usd": 0.0036066719999999996,
+  "seconds": 9.676,
+  "generated_at": "2026-11-11 00:27"
  }
 }

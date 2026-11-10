@@ -2,7 +2,7 @@
  "run": "1773057317",
  "set": "test",
  "model": "deepseek-flash",
- "prompt_version": "p3",
+ "prompt_version": "p4",
  "pre": {
   "summary": {
    "run_id": "1773057317",
@@ -1268,214 +1268,73 @@
     },
     {
      "id": "T1",
-     "tool": "get_decision",
+     "tool": "compare_options",
      "result": {
-      "id": "F12-card",
-      "kind": "card_reward",
-      "floor": 12,
-      "act": 1,
-      "hp": 43,
-      "max_hp": 82,
-      "gold": 285,
-      "engine_top": "1:GLACIER",
-      "confidence": "medium",
-      "policy_status": "recommend",
-      "pick_margin": 1,
-      "options": [
+      "decision_id": "F12-card",
+      "a": {
+       "id": "1:GLACIER",
+       "name": "冰川",
+       "deck_score": 57.1,
+       "fully_scored": true
+      },
+      "b": {
+       "id": "0:TEMPEST",
+       "name": "暴风雨",
+       "deck_score": 51,
+       "fully_scored": true
+      },
+      "deck_score_difference": 6.1,
+      "factors": [
        {
-        "id": "1:GLACIER",
-        "kind": "card",
-        "entity_id": "GLACIER",
-        "name": "冰川",
-        "score": 57.1,
-        "deck_score": 57.1,
-        "rank": 1,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "estimate_scope",
-          "delta": 0,
-          "message": "牌组中 2 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 2 张牌（冰雹风暴、循环）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "unmodeled_relics",
-          "delta": 0,
-          "message": "遗物 彩虹戒指 尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": 7.79,
-          "message": "拿冰川后防御：每回合 9.2 → 12.7（需求 11.8）"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": -2.12,
-          "message": "拿冰川后前期输出：每回合 25.3 → 21.3（需求 36.0）"
-         },
-         {
-          "code": "deck_fitness:synergy",
-          "delta": 0,
-          "message": "牌组里的 电击、球状闪电 让冰川更有价值（说明，不另加分）"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": -2.1207,
-         "survival": 7.7938,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
+        "factor": "deck_fitness:defense",
+        "a": 7.79,
+        "b": -0.33,
+        "difference": 8.12,
+        "a_message": "拿冰川后防御：每回合 9.2 → 12.7（需求 11.8）",
+        "b_message": "拿暴风雨后防御：每回合 9.2 → 9.1（需求 11.8）"
        },
        {
-        "id": "skip",
-        "kind": "skip",
-        "entity_id": null,
-        "name": "跳过",
-        "score": 52.5,
-        "deck_score": 51.5,
-        "rank": 2,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "estimate_scope",
-          "delta": 0,
-          "message": "牌组中 2 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 2 张牌（冰雹风暴、循环）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "unmodeled_relics",
-          "delta": 0,
-          "message": "遗物 彩虹戒指 尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:pick_margin",
-          "delta": 1,
-          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 0,
-         "survival": 0,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
+        "factor": "deck_fitness:frontload",
+        "a": -2.12,
+        "b": -0.17,
+        "difference": -1.95,
+        "a_message": "拿冰川后前期输出：每回合 25.3 → 21.3（需求 36.0）",
+        "b_message": "拿暴风雨后前期输出：每回合 25.3 → 25.0（需求 36.0）"
        },
        {
-        "id": "2:SUBROUTINE",
-        "kind": "card",
-        "entity_id": "SUBROUTINE",
-        "name": "子程序",
-        "score": 51.7,
-        "deck_score": 51.7,
-        "rank": 3,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "estimate_scope",
-          "delta": 0,
-          "message": "牌组中 2 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 2 张牌（冰雹风暴、循环）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "unmodeled_relics",
-          "delta": 0,
-          "message": "遗物 彩虹戒指 尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": 0.36,
-          "message": "拿子程序后防御：每回合 9.2 → 9.3（需求 11.8）"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": -0.1,
-          "message": "拿子程序后前期输出：每回合 25.3 → 25.1（需求 36.0）"
-         },
-         {
-          "code": "deck_fitness:synergy",
-          "delta": 0,
-          "message": "牌组里的 循环、冰雹风暴 让子程序更有价值（说明，不另加分）"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": -0.0954,
-         "survival": 0.3647,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
+        "factor": "deck_fitness:synergy",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组里的 电击、球状闪电 让冰川更有价值（说明，不另加分）",
+        "b_message": null
        },
        {
-        "id": "0:TEMPEST",
-        "kind": "card",
-        "entity_id": "TEMPEST",
-        "name": "暴风雨",
-        "score": 51,
-        "deck_score": 51,
-        "rank": 4,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "estimate_scope",
-          "delta": 0,
-          "message": "牌组中 2 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 2 张牌（冰雹风暴、循环）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "unmodeled_relics",
-          "delta": 0,
-          "message": "遗物 彩虹戒指 尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": -0.33,
-          "message": "拿暴风雨后防御：每回合 9.2 → 9.1（需求 11.8）"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": -0.17,
-          "message": "拿暴风雨后前期输出：每回合 25.3 → 25.0（需求 36.0）"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": -0.1738,
-         "survival": -0.3307,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
+        "factor": "estimate_scope",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 2 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。",
+        "b_message": "牌组中 2 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "factor": "partially_modeled_deck_cards",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 2 张牌（冰雹风暴、循环）有部分效果尚未计入评分。",
+        "b_message": "牌组中 2 张牌（冰雹风暴、循环）有部分效果尚未计入评分。"
+       },
+       {
+        "factor": "unmodeled_relics",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "遗物 彩虹戒指 尚未计入评分。",
+        "b_message": "遗物 彩虹戒指 尚未计入评分。"
        }
       ],
-      "chosen": "0:TEMPEST",
-      "tier": 1,
-      "gap": 6.1,
-      "not_strict_because": []
+      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
      }
     },
     {
@@ -1581,77 +1440,6 @@
     },
     {
      "id": "T3",
-     "tool": "compare_options",
-     "result": {
-      "decision_id": "F12-card",
-      "a": {
-       "id": "1:GLACIER",
-       "name": "冰川",
-       "deck_score": 57.1,
-       "fully_scored": true
-      },
-      "b": {
-       "id": "0:TEMPEST",
-       "name": "暴风雨",
-       "deck_score": 51,
-       "fully_scored": true
-      },
-      "deck_score_difference": 6.1,
-      "factors": [
-       {
-        "factor": "deck_fitness:defense",
-        "a": 7.79,
-        "b": -0.33,
-        "difference": 8.12,
-        "a_message": "拿冰川后防御：每回合 9.2 → 12.7（需求 11.8）",
-        "b_message": "拿暴风雨后防御：每回合 9.2 → 9.1（需求 11.8）"
-       },
-       {
-        "factor": "deck_fitness:frontload",
-        "a": -2.12,
-        "b": -0.17,
-        "difference": -1.95,
-        "a_message": "拿冰川后前期输出：每回合 25.3 → 21.3（需求 36.0）",
-        "b_message": "拿暴风雨后前期输出：每回合 25.3 → 25.0（需求 36.0）"
-       },
-       {
-        "factor": "deck_fitness:synergy",
-        "a": 0,
-        "b": 0,
-        "difference": 0,
-        "a_message": "牌组里的 电击、球状闪电 让冰川更有价值（说明，不另加分）",
-        "b_message": null
-       },
-       {
-        "factor": "estimate_scope",
-        "a": 0,
-        "b": 0,
-        "difference": 0,
-        "a_message": "牌组中 2 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。",
-        "b_message": "牌组中 2 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
-       },
-       {
-        "factor": "partially_modeled_deck_cards",
-        "a": 0,
-        "b": 0,
-        "difference": 0,
-        "a_message": "牌组中 2 张牌（冰雹风暴、循环）有部分效果尚未计入评分。",
-        "b_message": "牌组中 2 张牌（冰雹风暴、循环）有部分效果尚未计入评分。"
-       },
-       {
-        "factor": "unmodeled_relics",
-        "a": 0,
-        "b": 0,
-        "difference": 0,
-        "a_message": "遗物 彩虹戒指 尚未计入评分。",
-        "b_message": "遗物 彩虹戒指 尚未计入评分。"
-       }
-      ],
-      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
-     }
-    },
-    {
-     "id": "T4",
      "tool": "what_if_choices",
      "result": {
       "remove": [
@@ -1752,7 +1540,7 @@
      }
     },
     {
-     "id": "T5",
+     "id": "T4",
      "tool": "what_if",
      "result": {
       "decision_id": "F12-card",
@@ -1800,33 +1588,193 @@
        }
       ]
      }
+    },
+    {
+     "id": "T5",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F12-card",
+      "changes": [
+       {
+        "operation": "add",
+        "card": "CHARGE_BATTERY",
+        "name": "充电"
+       }
+      ],
+      "engine_top_before": "1:GLACIER",
+      "engine_top_after": "1:GLACIER",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 2.1,
+      "options_after": [
+       {
+        "id": "1:GLACIER",
+        "name": "冰川",
+        "deck_score": 57.3,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 55.6,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "2:SUBROUTINE",
+        "name": "子程序",
+        "deck_score": 55.7,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "0:TEMPEST",
+        "name": "暴风雨",
+        "deck_score": 55.2,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "T6",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F12-card",
+      "changes": [
+       {
+        "operation": "add",
+        "card": "COLD_SNAP",
+        "name": "寒流"
+       },
+       {
+        "operation": "add",
+        "card": "LEAP",
+        "name": "飞跃"
+       }
+      ],
+      "engine_top_before": "1:GLACIER",
+      "engine_top_after": "skip",
+      "pick_changed": true,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 0.3,
+      "options_after": [
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 57.1,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "2:SUBROUTINE",
+        "name": "子程序",
+        "deck_score": 57.4,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "1:GLACIER",
+        "name": "冰川",
+        "deck_score": 56.9,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "0:TEMPEST",
+        "name": "暴风雨",
+        "deck_score": 56.8,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "T7",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F12-card",
+      "changes": [
+       {
+        "operation": "remove",
+        "card": "STRIKE_DEFECT",
+        "name": "打击"
+       },
+       {
+        "operation": "remove",
+        "card": "STRIKE_DEFECT",
+        "name": "打击"
+       }
+      ],
+      "engine_top_before": "1:GLACIER",
+      "engine_top_after": "1:GLACIER",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 2,
+      "options_after": [
+       {
+        "id": "1:GLACIER",
+        "name": "冰川",
+        "deck_score": 57.8,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 56.3,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "2:SUBROUTINE",
+        "name": "子程序",
+        "deck_score": 56.7,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "0:TEMPEST",
+        "name": "暴风雨",
+        "deck_score": 55.8,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
     }
    ],
-   "toolCalls": 5,
+   "toolCalls": 4,
    "repairs": 1,
    "usage": {
-    "prompt_tokens": 25546,
-    "completion_tokens": 904,
-    "cost_usd": 0.0025769520000000004,
-    "llm_calls": 5
+    "prompt_tokens": 18793,
+    "completion_tokens": 945,
+    "cost_usd": 0.002368956,
+    "llm_calls": 4
    },
    "finding": {
     "decision_id": "F12-card",
     "reasons": [
      {
       "factor": "deck_fitness:defense",
-      "evidence": "T3",
-      "text": "防御是最大差距：拿冰川每回合 9.2 → 12.7，已过需求 11.8；拿暴风雨则 9.2 → 9.1，仍差一截。"
+      "evidence": "T1",
+      "text": "拿冰川后防御每回合 9.2 → 12.7，超过需求 11.8；拿暴风雨则停在 9.1，这是两者差距最大的一项。"
      },
      {
       "factor": "deck_fitness:frontload",
-      "evidence": "T3",
-      "text": "输出上冰川反而更吃亏：前期输出 25.3 → 21.3，暴风雨只降到 25.0，但两者都远低于需求 36.0。"
+      "evidence": "T1",
+      "text": "冰川会把前期输出从 25.3 压到 21.3，暴风雨几乎不变（25.0），但离需求 36.0 都还远。"
      }
     ],
-    "what_if_evidence": "T5",
-    "what_if_text": "假设之前拿过飞跃，引擎首选仍是冰川，差距从 6.1 缩到 2.7，暴风雨仍排最后。",
-    "advice": "当前防御每回合只有 9.2、需求 11.8，下次遇到冰川这类冰球防御牌可以优先考虑。"
+    "what_if_evidence": "T6",
+    "what_if_text": "试过补飞跃、充电、去掉两张打击，首选仍是冰川；只有同时补寒流和飞跃时首选才变成跳过，暴风雨仍排最后。",
+    "advice": "若想走暴风雨路线，先补足防御（如寒流、飞跃）让每回合防御接近 11.8，引擎才会不再偏向冰川。"
    }
   },
   {
@@ -2025,221 +1973,81 @@
     },
     {
      "id": "T1",
-     "tool": "get_decision",
+     "tool": "compare_options",
      "result": {
-      "id": "F09-card",
-      "kind": "card_reward",
-      "floor": 9,
-      "act": 1,
-      "hp": 22,
-      "max_hp": 75,
-      "gold": 203,
-      "engine_top": "1:COMPILE_DRIVER",
-      "confidence": "medium",
-      "policy_status": "recommend",
-      "pick_margin": 1,
-      "options": [
+      "decision_id": "F09-card",
+      "a": {
+       "id": "1:COMPILE_DRIVER",
+       "name": "编译冲击",
+       "deck_score": 64.5,
+       "fully_scored": true
+      },
+      "b": {
+       "id": "0:LIGHTNING_ROD",
+       "name": "引雷针",
+       "deck_score": 62.3,
+       "fully_scored": true
+      },
+      "deck_score_difference": 2.2,
+      "factors": [
        {
-        "id": "1:COMPILE_DRIVER",
-        "kind": "card",
-        "entity_id": "COMPILE_DRIVER",
-        "name": "编译冲击",
-        "score": 64.5,
-        "deck_score": 64.5,
-        "rank": 1,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "estimate_scope",
-          "delta": 0,
-          "message": "牌组中 2 张牌未完整计入评分，分数只反映已计入的部分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 2 张牌（冰雹风暴、循环）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:cycle",
-          "delta": 5.99,
-          "message": "拿编译冲击后循环：每回合额外抽牌 0.00 → 0.69（需求 1.0）"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": -1.4,
-          "message": "拿编译冲击后防御：每回合 9.2 → 8.8（需求 10.1）"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": 0.48,
-          "message": "拿编译冲击后前期输出：每回合 21.0 → 21.9（需求 28.9）"
-         },
-         {
-          "code": "deck_fitness:synergy",
-          "delta": 0,
-          "message": "牌组里的 寒流、双重释放 让编译冲击更有价值（说明，不另加分）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": -0.65,
-          "message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 0.4777,
-         "survival": -1.404,
-         "long_term_growth": 5.9895,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
+        "factor": "deck_fitness:cycle",
+        "a": 5.99,
+        "b": 0,
+        "difference": 5.99,
+        "a_message": "拿编译冲击后循环：每回合额外抽牌 0.00 → 0.69（需求 1.0）",
+        "b_message": null
        },
        {
-        "id": "0:LIGHTNING_ROD",
-        "kind": "card",
-        "entity_id": "LIGHTNING_ROD",
-        "name": "引雷针",
-        "score": 62.3,
-        "deck_score": 62.3,
-        "rank": 2,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "estimate_scope",
-          "delta": 0,
-          "message": "牌组中 2 张牌未完整计入评分，分数只反映已计入的部分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 2 张牌（冰雹风暴、循环）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": 2.01,
-          "message": "拿引雷针后前期输出：每回合 21.0 → 24.7（需求 28.9）"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": 0.44,
-          "message": "拿引雷针后战斗长度变化，挡不住的伤害随之增减：预计战斗长度为标准的 1.37 → 1.17 倍"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": -0.28,
-          "message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 2.0132,
-         "survival": 0.4359,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
+        "factor": "deck_fitness:defense",
+        "a": -1.4,
+        "b": 0.44,
+        "difference": -1.84,
+        "a_message": "拿编译冲击后防御：每回合 9.2 → 8.8（需求 10.1）",
+        "b_message": "拿引雷针后战斗长度变化，挡不住的伤害随之增减：预计战斗长度为标准的 1.37 → 1.17 倍"
        },
        {
-        "id": "skip",
-        "kind": "skip",
-        "entity_id": null,
-        "name": "跳过",
-        "score": 61.1,
-        "deck_score": 60.1,
-        "rank": 3,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "estimate_scope",
-          "delta": 0,
-          "message": "牌组中 2 张牌未完整计入评分，分数只反映已计入的部分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 2 张牌（冰雹风暴、循环）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": 0,
-          "message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         },
-         {
-          "code": "deck_fitness:pick_margin",
-          "delta": 1,
-          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 0,
-         "survival": 0,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
+        "factor": "deck_fitness:frontload",
+        "a": 0.48,
+        "b": 2.01,
+        "difference": -1.53,
+        "a_message": "拿编译冲击后前期输出：每回合 21.0 → 21.9（需求 28.9）",
+        "b_message": "拿引雷针后前期输出：每回合 21.0 → 24.7（需求 28.9）"
        },
        {
-        "id": "2:SYNTHESIS",
-        "kind": "card",
-        "entity_id": "SYNTHESIS",
-        "name": "人工合成",
-        "score": 57.1,
-        "deck_score": 57.1,
-        "rank": 4,
-        "eligible": true,
-        "fully_scored": false,
-        "gaps": [
-         "power_duration_unsupported:FREE_POWER:until_triggered"
-        ],
-        "factors": [
-         {
-          "code": "unmodeled_mechanic",
-          "delta": 0,
-          "message": "人工合成的部分效果尚未计入评分；牌组中 2 张牌未完整计入评分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 2 张牌（冰雹风暴、循环）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": -3.67,
-          "message": "拿人工合成后防御：每回合 9.2 → 8.1（需求 10.1）"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": 0.35,
-          "message": "拿人工合成后前期输出：每回合 21.0 → 21.6（需求 28.9）"
-         },
-         {
-          "code": "deck_fitness:synergy",
-          "delta": 0,
-          "message": "牌组里的 双重释放、球状闪电 让人工合成更有价值（说明，不另加分）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": 0.29,
-          "message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 0.3472,
-         "survival": -3.6733,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
+        "factor": "deck_fitness:lookahead",
+        "a": -0.65,
+        "b": -0.28,
+        "difference": -0.37,
+        "a_message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度",
+        "b_message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "factor": "deck_fitness:synergy",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组里的 寒流、双重释放 让编译冲击更有价值（说明，不另加分）",
+        "b_message": null
+       },
+       {
+        "factor": "estimate_scope",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 2 张牌未完整计入评分，分数只反映已计入的部分。",
+        "b_message": "牌组中 2 张牌未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "factor": "partially_modeled_deck_cards",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 2 张牌（冰雹风暴、循环）有部分效果尚未计入评分。",
+        "b_message": "牌组中 2 张牌（冰雹风暴、循环）有部分效果尚未计入评分。"
        }
       ],
-      "chosen": "0:LIGHTNING_ROD",
-      "tier": 1,
-      "gap": 2.2,
-      "not_strict_because": []
+      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
      }
     },
     {
@@ -2339,85 +2147,6 @@
     },
     {
      "id": "T3",
-     "tool": "compare_options",
-     "result": {
-      "decision_id": "F09-card",
-      "a": {
-       "id": "1:COMPILE_DRIVER",
-       "name": "编译冲击",
-       "deck_score": 64.5,
-       "fully_scored": true
-      },
-      "b": {
-       "id": "0:LIGHTNING_ROD",
-       "name": "引雷针",
-       "deck_score": 62.3,
-       "fully_scored": true
-      },
-      "deck_score_difference": 2.2,
-      "factors": [
-       {
-        "factor": "deck_fitness:cycle",
-        "a": 5.99,
-        "b": 0,
-        "difference": 5.99,
-        "a_message": "拿编译冲击后循环：每回合额外抽牌 0.00 → 0.69（需求 1.0）",
-        "b_message": null
-       },
-       {
-        "factor": "deck_fitness:defense",
-        "a": -1.4,
-        "b": 0.44,
-        "difference": -1.84,
-        "a_message": "拿编译冲击后防御：每回合 9.2 → 8.8（需求 10.1）",
-        "b_message": "拿引雷针后战斗长度变化，挡不住的伤害随之增减：预计战斗长度为标准的 1.37 → 1.17 倍"
-       },
-       {
-        "factor": "deck_fitness:frontload",
-        "a": 0.48,
-        "b": 2.01,
-        "difference": -1.53,
-        "a_message": "拿编译冲击后前期输出：每回合 21.0 → 21.9（需求 28.9）",
-        "b_message": "拿引雷针后前期输出：每回合 21.0 → 24.7（需求 28.9）"
-       },
-       {
-        "factor": "deck_fitness:lookahead",
-        "a": -0.65,
-        "b": -0.28,
-        "difference": -0.37,
-        "a_message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度",
-        "b_message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
-       },
-       {
-        "factor": "deck_fitness:synergy",
-        "a": 0,
-        "b": 0,
-        "difference": 0,
-        "a_message": "牌组里的 寒流、双重释放 让编译冲击更有价值（说明，不另加分）",
-        "b_message": null
-       },
-       {
-        "factor": "estimate_scope",
-        "a": 0,
-        "b": 0,
-        "difference": 0,
-        "a_message": "牌组中 2 张牌未完整计入评分，分数只反映已计入的部分。",
-        "b_message": "牌组中 2 张牌未完整计入评分，分数只反映已计入的部分。"
-       },
-       {
-        "factor": "partially_modeled_deck_cards",
-        "a": 0,
-        "b": 0,
-        "difference": 0,
-        "a_message": "牌组中 2 张牌（冰雹风暴、循环）有部分效果尚未计入评分。",
-        "b_message": "牌组中 2 张牌（冰雹风暴、循环）有部分效果尚未计入评分。"
-       }
-      ],
-      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
-     }
-    },
-    {
-     "id": "T4",
      "tool": "what_if_choices",
      "result": {
       "remove": [
@@ -2504,7 +2233,7 @@
      }
     },
     {
-     "id": "T5",
+     "id": "T4",
      "tool": "what_if",
      "result": {
       "decision_id": "F09-card",
@@ -2552,38 +2281,88 @@
        }
       ]
      }
+    },
+    {
+     "id": "T5",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F09-card",
+      "changes": [
+       {
+        "operation": "add",
+        "card": "LEAP",
+        "name": "飞跃"
+       }
+      ],
+      "engine_top_before": "1:COMPILE_DRIVER",
+      "engine_top_after": "1:COMPILE_DRIVER",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 2.7,
+      "options_after": [
+       {
+        "id": "1:COMPILE_DRIVER",
+        "name": "编译冲击",
+        "deck_score": 66.6,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "0:LIGHTNING_ROD",
+        "name": "引雷针",
+        "deck_score": 63.9,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 62.2,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "2:SYNTHESIS",
+        "name": "人工合成",
+        "deck_score": 60,
+        "rank": 4,
+        "fully_scored": false
+       }
+      ]
+     }
     }
    ],
-   "toolCalls": 5,
+   "toolCalls": 2,
    "repairs": 0,
    "usage": {
-    "prompt_tokens": 20158,
-    "completion_tokens": 625,
-    "cost_usd": 0.002206296,
-    "llm_calls": 4
+    "prompt_tokens": 8599,
+    "completion_tokens": 499,
+    "cost_usd": 0.0015979559999999998,
+    "llm_calls": 2
    },
    "finding": {
     "decision_id": "F09-card",
     "reasons": [
      {
       "factor": "deck_fitness:cycle",
-      "evidence": "T3",
-      "text": "引擎最看重抽牌：拿编译冲击后每回合额外抽牌 0.00 → 0.69（需求 1.0），引雷针在这项没有提升。"
+      "evidence": "T1",
+      "text": "引擎最看重抽牌：拿编译冲击后每回合额外抽牌 0.00 → 0.69（需求 1.0），引雷针在这项没有贡献。"
      },
      {
       "factor": "deck_fitness:defense",
-      "evidence": "T3",
-      "text": "防御上引雷针更稳：拿它后战斗长度从标准的 1.37 倍降到 1.17 倍，而编译冲击让每回合防御 9.2 → 8.8（需求 10.1）。"
+      "evidence": "T1",
+      "text": "防御上引雷针更稳：编译冲击让每回合防御 9.2 → 8.8，引雷针则把战斗长度压到标准的 1.17 倍，挡不住的伤害更少。"
      },
      {
       "factor": "deck_fitness:frontload",
-      "evidence": "T3",
-      "text": "前期输出引雷针更高：每回合 21.0 → 24.7，编译冲击只到 21.9（需求 28.9）。"
+      "evidence": "T1",
+      "text": "前期输出引雷针更高：每回合 21.0 → 24.7，编译冲击只到 21.9，两者都离需求 28.9 有距离。"
      }
     ],
-    "what_if_evidence": "T5",
-    "what_if_text": "如果之前拿过超频，引擎的首选就会变成引雷针，和你的选择一致。",
-    "advice": "当前牌组缺抽牌，若之后能补到超频这类抽牌，引雷针这类直接加输出的牌会更划算。"
+    "what_if_evidence": "T4",
+    "what_if_text": "若牌组里已有超频，引擎就会改选引雷针（67.2 对 66.6），与玩家一致；只加飞跃则不变。",
+    "advice": "这套牌抽牌缺口最大，之后遇到超频这类抽牌牌可以优先考虑，引擎的取舍就会更贴近你的选择。"
    }
   },
   {
@@ -3137,14 +2916,9 @@
       "decision_id": "F17-card",
       "changes": [
        {
-        "operation": "remove",
-        "card": "STRIKE_DEFECT",
-        "name": "打击"
-       },
-       {
         "operation": "add",
-        "card": "COMPILE_DRIVER",
-        "name": "编译冲击"
+        "card": "GLACIER",
+        "name": "冰川"
        }
       ],
       "engine_top_before": "skip",
@@ -3157,30 +2931,190 @@
        {
         "id": "skip",
         "name": "跳过",
-        "deck_score": 60.4,
+        "deck_score": 56.5,
         "rank": 1,
         "fully_scored": true
        },
        {
         "id": "1:TRASH_TO_TREASURE",
         "name": "化废为宝",
-        "deck_score": 59.2,
+        "deck_score": 55.6,
+        "rank": 2,
+        "fully_scored": false
+       },
+       {
+        "id": "2:CONSUMING_SHADOW",
+        "name": "吞噬暗影",
+        "deck_score": 55.3,
+        "rank": 3,
+        "fully_scored": false
+       },
+       {
+        "id": "0:BUFFER",
+        "name": "缓冲",
+        "deck_score": 55,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "T5",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F17-card",
+      "changes": [
+       {
+        "operation": "add",
+        "card": "COMPILE_DRIVER",
+        "name": "编译冲击"
+       }
+      ],
+      "engine_top_before": "skip",
+      "engine_top_after": "skip",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 1.3,
+      "options_after": [
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 59.4,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "1:TRASH_TO_TREASURE",
+        "name": "化废为宝",
+        "deck_score": 58.2,
         "rank": 2,
         "fully_scored": false
        },
        {
         "id": "0:BUFFER",
         "name": "缓冲",
-        "deck_score": 58.9,
+        "deck_score": 58.1,
         "rank": 3,
         "fully_scored": true
        },
        {
         "id": "2:CONSUMING_SHADOW",
         "name": "吞噬暗影",
-        "deck_score": 58.8,
+        "deck_score": 57.6,
         "rank": 4,
         "fully_scored": false
+       }
+      ]
+     }
+    },
+    {
+     "id": "T6",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F17-card",
+      "changes": [
+       {
+        "operation": "add",
+        "card": "BALL_LIGHTNING",
+        "name": "球状闪电"
+       },
+       {
+        "operation": "add",
+        "card": "LIGHTNING_ROD",
+        "name": "引雷针"
+       }
+      ],
+      "engine_top_before": "skip",
+      "engine_top_after": "skip",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 1.5,
+      "options_after": [
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 58.3,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "1:TRASH_TO_TREASURE",
+        "name": "化废为宝",
+        "deck_score": 57.1,
+        "rank": 2,
+        "fully_scored": false
+       },
+       {
+        "id": "0:BUFFER",
+        "name": "缓冲",
+        "deck_score": 56.8,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "2:CONSUMING_SHADOW",
+        "name": "吞噬暗影",
+        "deck_score": 56.4,
+        "rank": 4,
+        "fully_scored": false
+       }
+      ]
+     }
+    },
+    {
+     "id": "T7",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F17-card",
+      "changes": [
+       {
+        "operation": "remove",
+        "card": "STRIKE_DEFECT",
+        "name": "打击"
+       },
+       {
+        "operation": "remove",
+        "card": "STRIKE_DEFECT",
+        "name": "打击"
+       }
+      ],
+      "engine_top_before": "skip",
+      "engine_top_after": "skip",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 1.7,
+      "options_after": [
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 59.5,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "1:TRASH_TO_TREASURE",
+        "name": "化废为宝",
+        "deck_score": 58.3,
+        "rank": 2,
+        "fully_scored": false
+       },
+       {
+        "id": "2:CONSUMING_SHADOW",
+        "name": "吞噬暗影",
+        "deck_score": 57.9,
+        "rank": 3,
+        "fully_scored": false
+       },
+       {
+        "id": "0:BUFFER",
+        "name": "缓冲",
+        "deck_score": 57.8,
+        "rank": 4,
+        "fully_scored": true
        }
       ]
      }
@@ -3189,10 +3123,10 @@
    "toolCalls": 4,
    "repairs": 1,
    "usage": {
-    "prompt_tokens": 23567,
-    "completion_tokens": 874,
-    "cost_usd": 0.002323572,
-    "llm_calls": 5
+    "prompt_tokens": 21156,
+    "completion_tokens": 966,
+    "cost_usd": 0.0025762079999999995,
+    "llm_calls": 4
    },
    "finding": {
     "decision_id": "F17-card",
@@ -3200,34 +3134,34 @@
      {
       "factor": "deck_fitness:frontload",
       "evidence": "T1",
-      "text": "拿缓冲后前期输出每回合 26.4 → 24.2，而需求是 34.1，这是差距最大的一项。"
+      "text": "拿缓冲后前期输出每回合 26.4 → 24.2，需求 34.1，这是两边差距最大的一项。"
      },
      {
       "factor": "deck_fitness:cycle",
       "evidence": "T1",
-      "text": "缓冲不帮助循环：每回合额外抽牌 0.61 → 0.57，需求 1.0。"
+      "text": "缓冲还让每回合额外抽牌 0.61 → 0.57，需求 1.0，循环本就偏紧。"
      },
      {
       "factor": "deck_fitness:lookahead",
       "evidence": "T1",
-      "text": "计入后续 3 次选牌后，缓冲的牌组适合度仍小幅下降。"
+      "text": "计入后续 3 次选牌后，拿缓冲的牌组适合度仍略低于跳过。"
      }
     ],
-    "what_if_evidence": "T4",
-    "what_if_text": "即使去掉一张打击并补上编译冲击，引擎仍选跳过，缓冲依旧排第三，差距保持 1.5。",
-    "advice": "当前牌组输出离需求 34.1 还差不少，选牌时优先考虑能提升每回合输出的牌，而不是再加一层防御。"
+    "what_if_evidence": "T5",
+    "what_if_text": "试过补冰川、编译冲击、球状闪电加引雷针、去掉两张打击，首选都仍是跳过；补编译冲击时差距缩到 1.3，但没翻转。",
+    "advice": "这套牌输出离需求 34.1 差得远，下次选牌优先补前期输出，防御已够用。"
    }
   }
  ],
  "summary": {
-  "text": "这些决定都因防御或输出低于需求而偏离，可先按需求补齐每回合防御与输出，再考虑抽牌。",
+  "text": "这些决定都因前期输出离需求 34.1 尚远而偏向防御或抽牌；下次选牌优先补前期输出，防御已够用。",
   "source": "model",
-  "cost_usd": 0.00020879999999999998
+  "cost_usd": 0.000216
  },
  "meta": {
   "model": "deepseek-flash",
-  "cost_usd": 0.00731562,
-  "seconds": 8.512,
-  "generated_at": "2026-11-01 14:44"
+  "cost_usd": 0.0067591199999999995,
+  "seconds": 9.073,
+  "generated_at": "2026-11-11 00:29"
  }
 }

@@ -2,7 +2,7 @@
  "run": "1773037084",
  "set": "test",
  "model": "deepseek-flash",
- "prompt_version": "p3",
+ "prompt_version": "p4",
  "pre": {
   "summary": {
    "run_id": "1773037084",
@@ -1539,224 +1539,81 @@
     },
     {
      "id": "T1",
-     "tool": "get_decision",
+     "tool": "compare_options",
      "result": {
-      "id": "F14-card",
-      "kind": "card_reward",
-      "floor": 14,
-      "act": 1,
-      "hp": 70,
-      "max_hp": 80,
-      "gold": 172,
-      "engine_top": "0:OFFERING",
-      "confidence": "medium",
-      "policy_status": "recommend",
-      "pick_margin": 1,
-      "options": [
+      "decision_id": "F14-card",
+      "a": {
+       "id": "0:OFFERING",
+       "name": "祭品",
+       "deck_score": 48.8,
+       "fully_scored": true
+      },
+      "b": {
+       "id": "skip",
+       "name": "跳过",
+       "deck_score": 43.2,
+       "fully_scored": true
+      },
+      "deck_score_difference": 5.6,
+      "factors": [
        {
-        "id": "0:OFFERING",
-        "kind": "card",
-        "entity_id": "OFFERING",
-        "name": "祭品",
-        "score": 48.8,
-        "deck_score": 48.8,
-        "rank": 1,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "estimate_scope",
-          "delta": 0,
-          "message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 1 张牌（无情猛攻）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:cycle",
-          "delta": 4.77,
-          "message": "拿祭品后循环：每回合额外抽牌 0.17 → 0.66（需求 1.0）"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": 1.56,
-          "message": "拿祭品后前期输出：每回合 27.6 → 30.7（需求 31.6）"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": 0.41,
-          "message": "拿祭品后防御：每回合 5.3 → 4.9（需求 10.3）"
-         },
-         {
-          "code": "deck_fitness:synergy",
-          "delta": 0,
-          "message": "牌组里的 痛击 让祭品更有价值（说明，不另加分）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": -1.12,
-          "message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 1.5611,
-         "survival": 0.4083,
-         "long_term_growth": 4.7687,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
+        "factor": "deck_fitness:cycle",
+        "a": 4.77,
+        "b": 0,
+        "difference": 4.77,
+        "a_message": "拿祭品后循环：每回合额外抽牌 0.17 → 0.66（需求 1.0）",
+        "b_message": null
        },
        {
-        "id": "2:PILLAGE",
-        "kind": "card",
-        "entity_id": "PILLAGE",
-        "name": "劫掠",
-        "score": 46,
-        "deck_score": 46,
-        "rank": 2,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "estimate_scope",
-          "delta": 0,
-          "message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 1 张牌（无情猛攻）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:cycle",
-          "delta": 5.14,
-          "message": "拿劫掠后循环：每回合额外抽牌 0.17 → 0.71（需求 1.0）"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": -0.87,
-          "message": "拿劫掠后防御：每回合 5.3 → 5.0（需求 10.3）"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": -0.12,
-          "message": "拿劫掠后前期输出：每回合 27.6 → 27.4（需求 31.6）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": -1.3,
-          "message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": -0.1221,
-         "survival": -0.8729,
-         "long_term_growth": 5.1388,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
+        "factor": "deck_fitness:frontload",
+        "a": 1.56,
+        "b": 0,
+        "difference": 1.56,
+        "a_message": "拿祭品后前期输出：每回合 27.6 → 30.7（需求 31.6）",
+        "b_message": null
        },
        {
-        "id": "1:FORGOTTEN_RITUAL",
-        "kind": "card",
-        "entity_id": "FORGOTTEN_RITUAL",
-        "name": "被遗忘的仪式",
-        "score": 45.3,
-        "deck_score": 45.3,
-        "rank": 3,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "estimate_scope",
-          "delta": 0,
-          "message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 1 张牌（无情猛攻）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": 1.42,
-          "message": "拿被遗忘的仪式后防御：每回合 5.3 → 5.5（需求 10.3）"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": 0.74,
-          "message": "拿被遗忘的仪式后前期输出：每回合 27.6 → 29.0（需求 31.6）"
-         },
-         {
-          "code": "deck_fitness:cycle",
-          "delta": 0.08,
-          "message": "拿被遗忘的仪式后循环：每回合额外抽牌 0.17 → 0.17（需求 1.0）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": -0.14,
-          "message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 0.7407,
-         "survival": 1.4249,
-         "long_term_growth": 0.0759,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
+        "factor": "deck_fitness:lookahead",
+        "a": -1.12,
+        "b": 0,
+        "difference": -1.12,
+        "a_message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度",
+        "b_message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
        },
        {
-        "id": "skip",
-        "kind": "skip",
-        "entity_id": null,
-        "name": "跳过",
-        "score": 44.2,
-        "deck_score": 43.2,
-        "rank": 4,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "estimate_scope",
-          "delta": 0,
-          "message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 1 张牌（无情猛攻）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": 0,
-          "message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         },
-         {
-          "code": "deck_fitness:pick_margin",
-          "delta": 1,
-          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 0,
-         "survival": 0,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
+        "factor": "deck_fitness:defense",
+        "a": 0.41,
+        "b": 0,
+        "difference": 0.41,
+        "a_message": "拿祭品后防御：每回合 5.3 → 4.9（需求 10.3）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:synergy",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组里的 痛击 让祭品更有价值（说明，不另加分）",
+        "b_message": null
+       },
+       {
+        "factor": "estimate_scope",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。",
+        "b_message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "factor": "partially_modeled_deck_cards",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 1 张牌（无情猛攻）有部分效果尚未计入评分。",
+        "b_message": "牌组中 1 张牌（无情猛攻）有部分效果尚未计入评分。"
        }
       ],
-      "chosen": "skip",
-      "tier": 1,
-      "gap": 5.6,
-      "not_strict_because": []
+      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
      }
     },
     {
@@ -1850,85 +1707,6 @@
     },
     {
      "id": "T3",
-     "tool": "compare_options",
-     "result": {
-      "decision_id": "F14-card",
-      "a": {
-       "id": "0:OFFERING",
-       "name": "祭品",
-       "deck_score": 48.8,
-       "fully_scored": true
-      },
-      "b": {
-       "id": "skip",
-       "name": "跳过",
-       "deck_score": 43.2,
-       "fully_scored": true
-      },
-      "deck_score_difference": 5.6,
-      "factors": [
-       {
-        "factor": "deck_fitness:cycle",
-        "a": 4.77,
-        "b": 0,
-        "difference": 4.77,
-        "a_message": "拿祭品后循环：每回合额外抽牌 0.17 → 0.66（需求 1.0）",
-        "b_message": null
-       },
-       {
-        "factor": "deck_fitness:frontload",
-        "a": 1.56,
-        "b": 0,
-        "difference": 1.56,
-        "a_message": "拿祭品后前期输出：每回合 27.6 → 30.7（需求 31.6）",
-        "b_message": null
-       },
-       {
-        "factor": "deck_fitness:lookahead",
-        "a": -1.12,
-        "b": 0,
-        "difference": -1.12,
-        "a_message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度",
-        "b_message": "计入后续 1 次选牌（按卡池稀有度抽样）后的牌组适合度"
-       },
-       {
-        "factor": "deck_fitness:defense",
-        "a": 0.41,
-        "b": 0,
-        "difference": 0.41,
-        "a_message": "拿祭品后防御：每回合 5.3 → 4.9（需求 10.3）",
-        "b_message": null
-       },
-       {
-        "factor": "deck_fitness:synergy",
-        "a": 0,
-        "b": 0,
-        "difference": 0,
-        "a_message": "牌组里的 痛击 让祭品更有价值（说明，不另加分）",
-        "b_message": null
-       },
-       {
-        "factor": "estimate_scope",
-        "a": 0,
-        "b": 0,
-        "difference": 0,
-        "a_message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。",
-        "b_message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
-       },
-       {
-        "factor": "partially_modeled_deck_cards",
-        "a": 0,
-        "b": 0,
-        "difference": 0,
-        "a_message": "牌组中 1 张牌（无情猛攻）有部分效果尚未计入评分。",
-        "b_message": "牌组中 1 张牌（无情猛攻）有部分效果尚未计入评分。"
-       }
-      ],
-      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
-     }
-    },
-    {
-     "id": "T4",
      "tool": "what_if_choices",
      "result": {
       "remove": [
@@ -2036,11 +1814,162 @@
      }
     },
     {
+     "id": "T4",
+     "tool": "get_card",
+     "result": {
+      "id": "OFFERING",
+      "name": "祭品",
+      "description": "失去6点生命。\n获得。\n抽3张牌。",
+      "cost": 0,
+      "type": "技能",
+      "rarity": "稀有",
+      "color": "ironclad",
+      "target": "Self",
+      "cards_draw": 3,
+      "energy_gain": 2,
+      "keywords": [
+       "消耗"
+      ],
+      "upgrade_description": "失去6点生命。\n获得。\n抽5张牌。"
+     }
+    },
+    {
      "id": "T5",
+     "tool": "get_card",
+     "result": {
+      "id": "PILLAGE",
+      "name": "劫掠",
+      "description": "造成6点伤害。\n抽牌直到你抽到一张非攻击牌。",
+      "cost": 1,
+      "type": "攻击",
+      "rarity": "罕见",
+      "color": "ironclad",
+      "target": "AnyEnemy",
+      "damage": 6,
+      "upgrade_description": "造成9点伤害。\n抽牌直到你抽到一张非攻击牌。"
+     }
+    },
+    {
+     "id": "T6",
      "tool": "what_if",
      "result": {
       "decision_id": "F14-card",
       "changes": [
+       {
+        "operation": "add",
+        "card": "SHRUG_IT_OFF",
+        "name": "耸肩无视"
+       }
+      ],
+      "engine_top_before": "0:OFFERING",
+      "engine_top_after": "0:OFFERING",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 5.5,
+      "options_after": [
+       {
+        "id": "0:OFFERING",
+        "name": "祭品",
+        "deck_score": 51,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "1:FORGOTTEN_RITUAL",
+        "name": "被遗忘的仪式",
+        "deck_score": 47.6,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "2:PILLAGE",
+        "name": "劫掠",
+        "deck_score": 47.5,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 45.5,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "T7",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F14-card",
+      "changes": [
+       {
+        "operation": "add",
+        "card": "FEEL_NO_PAIN",
+        "name": "无惧疼痛"
+       },
+       {
+        "operation": "add",
+        "card": "SHRUG_IT_OFF",
+        "name": "耸肩无视"
+       }
+      ],
+      "engine_top_before": "0:OFFERING",
+      "engine_top_after": "0:OFFERING",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 6.1,
+      "options_after": [
+       {
+        "id": "0:OFFERING",
+        "name": "祭品",
+        "deck_score": 50.4,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "1:FORGOTTEN_RITUAL",
+        "name": "被遗忘的仪式",
+        "deck_score": 46.8,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "2:PILLAGE",
+        "name": "劫掠",
+        "deck_score": 46.1,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 44.3,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "T8",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F14-card",
+      "changes": [
+       {
+        "operation": "remove",
+        "card": "STRIKE_IRONCLAD",
+        "name": "打击"
+       },
+       {
+        "operation": "remove",
+        "card": "STRIKE_IRONCLAD",
+        "name": "打击"
+       },
        {
         "operation": "remove",
         "card": "STRIKE_IRONCLAD",
@@ -2057,28 +1986,88 @@
        {
         "id": "0:OFFERING",
         "name": "祭品",
-        "deck_score": 49.9,
+        "deck_score": 52.4,
         "rank": 1,
         "fully_scored": true
        },
        {
         "id": "2:PILLAGE",
         "name": "劫掠",
-        "deck_score": 47,
+        "deck_score": 49.2,
         "rank": 2,
         "fully_scored": true
        },
        {
         "id": "1:FORGOTTEN_RITUAL",
         "name": "被遗忘的仪式",
-        "deck_score": 46.3,
+        "deck_score": 48.6,
         "rank": 3,
         "fully_scored": true
        },
        {
         "id": "skip",
         "name": "跳过",
-        "deck_score": 44.3,
+        "deck_score": 46.8,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "T9",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F14-card",
+      "changes": [
+       {
+        "operation": "add",
+        "card": "SHRUG_IT_OFF",
+        "name": "耸肩无视"
+       },
+       {
+        "operation": "add",
+        "card": "SHRUG_IT_OFF",
+        "name": "耸肩无视"
+       },
+       {
+        "operation": "add",
+        "card": "FASTEN",
+        "name": "勒紧"
+       }
+      ],
+      "engine_top_before": "0:OFFERING",
+      "engine_top_after": "0:OFFERING",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 5.3,
+      "options_after": [
+       {
+        "id": "0:OFFERING",
+        "name": "祭品",
+        "deck_score": 51.8,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "1:FORGOTTEN_RITUAL",
+        "name": "被遗忘的仪式",
+        "deck_score": 48.8,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "2:PILLAGE",
+        "name": "劫掠",
+        "deck_score": 47.8,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 46.5,
         "rank": 4,
         "fully_scored": true
        }
@@ -2086,42 +2075,44 @@
      }
     }
    ],
-   "toolCalls": 5,
+   "toolCalls": 6,
    "repairs": 1,
    "usage": {
-    "prompt_tokens": 26825,
-    "completion_tokens": 925,
-    "cost_usd": 0.002647164,
-    "llm_calls": 5
+    "prompt_tokens": 34123,
+    "completion_tokens": 1165,
+    "cost_usd": 0.004108499999999999,
+    "llm_calls": 7
    },
    "finding": {
     "decision_id": "F14-card",
     "reasons": [
      {
       "factor": "deck_fitness:cycle",
-      "evidence": "T3",
-      "text": "差距最大的是循环：拿祭品后每回合额外抽牌 0.17 → 0.66（需求 1.0），跳过则停在 0.17。"
+      "evidence": "T1",
+      "text": "拿祭品后每回合额外抽牌 0.17 → 0.66，是两边差距最大的一项（需求 1.0）。"
      },
      {
       "factor": "deck_fitness:frontload",
-      "evidence": "T3",
-      "text": "前期输出也受益：每回合 27.6 → 30.7，更接近 31.6 的需求。"
+      "evidence": "T1",
+      "text": "祭品是 0 费抽 3 张并回 2 点能量，前期输出每回合 27.6 → 30.7，接近需求 31.6。"
      },
      {
       "factor": "deck_fitness:lookahead",
-      "evidence": "T3",
-      "text": "唯一拉低的是后续选牌预估：计入下一次选牌后祭品略减分，但没改变排序。"
+      "evidence": "T1",
+      "text": "计入后续一次选牌后，祭品反而略降，这是引擎唯一不看好它的地方。"
      }
     ],
-    "what_if_evidence": "T5",
-    "what_if_text": "试着少一张打击，引擎仍首选祭品，差距不变，说明这不是牌组里某张牌的问题。",
-    "advice": "这套 13 张牌抽牌偏少，下次遇到能补循环的牌（如祭品）可以优先考虑，防御缺口另找牌补。"
+    "what_if_evidence": "T9",
+    "what_if_text": "试过补防御：加耸肩无视、勒紧后首选仍是祭品，差距只从 5.6 缩到 5.3，没有翻转。",
+    "advice": "牌组只有 13 张、抽牌偏少时，0 费抽 3 的祭品能明显加快循环；若更看重防御，可先补耸肩无视这类格挡牌再考虑跳过。"
    }
   },
   {
    "flag": "F02-card",
    "status": "verified",
-   "errors": [],
+   "errors": [
+    "reasons[2]: the number 10 is not in T1/T0"
+   ],
    "evidence": [
     {
      "id": "T0",
@@ -2284,195 +2275,6 @@
     },
     {
      "id": "T1",
-     "tool": "get_decision",
-     "result": {
-      "id": "F02-card",
-      "kind": "card_reward",
-      "floor": 2,
-      "act": 1,
-      "hp": 65,
-      "max_hp": 80,
-      "gold": 260,
-      "engine_top": "2:SHRUG_IT_OFF",
-      "confidence": "medium",
-      "policy_status": "recommend",
-      "pick_margin": 1,
-      "options": [
-       {
-        "id": "2:SHRUG_IT_OFF",
-        "kind": "card",
-        "entity_id": "SHRUG_IT_OFF",
-        "name": "耸肩无视",
-        "score": 44.8,
-        "deck_score": 44.8,
-        "rank": 1,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "deck_fitness:defense",
-          "delta": 7.53,
-          "message": "拿耸肩无视后防御：每回合 5.4 → 6.9（需求 7.5）"
-         },
-         {
-          "code": "deck_fitness:cycle",
-          "delta": 2.79,
-          "message": "拿耸肩无视后循环：每回合额外抽牌 0.00 → 0.25（需求 1.0）"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": -1.27,
-          "message": "拿耸肩无视后前期输出：每回合 13.2 → 11.9（需求 22.0）"
-         },
-         {
-          "code": "deck_fitness:synergy",
-          "delta": 0,
-          "message": "牌组里的 痛击 让耸肩无视更有价值（说明，不另加分）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": -4.57,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": -1.2712,
-         "survival": 7.5323,
-         "long_term_growth": 2.7896,
-         "resource_efficiency": 0,
-         "data_completeness": 1
-        }
-       },
-       {
-        "id": "skip",
-        "kind": "skip",
-        "entity_id": null,
-        "name": "跳过",
-        "score": 41.4,
-        "deck_score": 40.4,
-        "rank": 2,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": 0,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         },
-         {
-          "code": "deck_fitness:pick_margin",
-          "delta": 1,
-          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 0,
-         "survival": 0,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "data_completeness": 1
-        }
-       },
-       {
-        "id": "0:BLUDGEON",
-        "kind": "card",
-        "entity_id": "BLUDGEON",
-        "name": "重锤",
-        "score": 40.9,
-        "deck_score": 40.9,
-        "rank": 3,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "deck_fitness:frontload",
-          "delta": 4.37,
-          "message": "拿重锤后前期输出：每回合 13.2 → 18.2（需求 22.0）"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": -1.55,
-          "message": "拿重锤后防御：每回合 5.4 → 4.2（需求 7.5）"
-         },
-         {
-          "code": "deck_fitness:synergy",
-          "delta": 0,
-          "message": "牌组里的 痛击 让重锤更有价值（说明，不另加分）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": -2.24,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 4.3681,
-         "survival": -1.5499,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "data_completeness": 1
-        }
-       },
-       {
-        "id": "1:HEADBUTT",
-        "kind": "card",
-        "entity_id": "HEADBUTT",
-        "name": "头槌",
-        "score": 40.2,
-        "deck_score": 40.2,
-        "rank": 4,
-        "eligible": true,
-        "fully_scored": false,
-        "gaps": [
-         "card_effect_unsupported:HEADBUTT:effect:move_card"
-        ],
-        "factors": [
-         {
-          "code": "unmodeled_mechanic",
-          "delta": 0,
-          "message": "头槌的部分效果尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": 1.38,
-          "message": "拿头槌后前期输出：每回合 13.2 → 14.7（需求 22.0）"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": -1.12,
-          "message": "拿头槌后防御：每回合 5.4 → 4.9（需求 7.5）"
-         },
-         {
-          "code": "deck_fitness:synergy",
-          "delta": 0,
-          "message": "牌组里的 痛击 让头槌更有价值（说明，不另加分）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": -0.42,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 1.3829,
-         "survival": -1.1229,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
-       }
-      ],
-      "chosen": "0:BLUDGEON",
-      "tier": 1,
-      "gap": 3.9,
-      "not_strict_because": []
-     }
-    },
-    {
-     "id": "T2",
      "tool": "compare_options",
      "result": {
       "decision_id": "F02-card",
@@ -2535,7 +2337,7 @@
      }
     },
     {
-     "id": "T3",
+     "id": "T2",
      "tool": "get_deck",
      "result": {
       "decision_id": "F02-card",
@@ -2579,7 +2381,7 @@
      }
     },
     {
-     "id": "T4",
+     "id": "T3",
      "tool": "what_if_choices",
      "result": {
       "remove": [
@@ -2593,6 +2395,56 @@
        "STRIKE_IRONCLAD"
       ],
       "add": []
+     }
+    },
+    {
+     "id": "T4",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F02-card",
+      "changes": [
+       {
+        "operation": "upgrade",
+        "card": "BASH",
+        "name": "痛击"
+       }
+      ],
+      "engine_top_before": "2:SHRUG_IT_OFF",
+      "engine_top_after": "2:SHRUG_IT_OFF",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 4.7,
+      "options_after": [
+       {
+        "id": "2:SHRUG_IT_OFF",
+        "name": "耸肩无视",
+        "deck_score": 47.6,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 42.3,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "0:BLUDGEON",
+        "name": "重锤",
+        "deck_score": 42.9,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "1:HEADBUTT",
+        "name": "头槌",
+        "deck_score": 42.5,
+        "rank": 4,
+        "fully_scored": false
+       }
+      ]
      }
     },
     {
@@ -2644,14 +2496,129 @@
        }
       ]
      }
+    },
+    {
+     "id": "T6",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F02-card",
+      "changes": [
+       {
+        "operation": "remove",
+        "card": "DEFEND_IRONCLAD",
+        "name": "防御"
+       },
+       {
+        "operation": "remove",
+        "card": "DEFEND_IRONCLAD",
+        "name": "防御"
+       }
+      ],
+      "engine_top_before": "2:SHRUG_IT_OFF",
+      "engine_top_after": "2:SHRUG_IT_OFF",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 4.7,
+      "options_after": [
+       {
+        "id": "2:SHRUG_IT_OFF",
+        "name": "耸肩无视",
+        "deck_score": 44.6,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 39.2,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "0:BLUDGEON",
+        "name": "重锤",
+        "deck_score": 39.9,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "1:HEADBUTT",
+        "name": "头槌",
+        "deck_score": 38.9,
+        "rank": 4,
+        "fully_scored": false
+       }
+      ]
+     }
+    },
+    {
+     "id": "T7",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F02-card",
+      "changes": [
+       {
+        "operation": "remove",
+        "card": "STRIKE_IRONCLAD",
+        "name": "打击"
+       },
+       {
+        "operation": "remove",
+        "card": "STRIKE_IRONCLAD",
+        "name": "打击"
+       },
+       {
+        "operation": "remove",
+        "card": "STRIKE_IRONCLAD",
+        "name": "打击"
+       }
+      ],
+      "engine_top_before": "2:SHRUG_IT_OFF",
+      "engine_top_after": "2:SHRUG_IT_OFF",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 4.2,
+      "options_after": [
+       {
+        "id": "2:SHRUG_IT_OFF",
+        "name": "耸肩无视",
+        "deck_score": 48.9,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 44.3,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "0:BLUDGEON",
+        "name": "重锤",
+        "deck_score": 44.7,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "1:HEADBUTT",
+        "name": "头槌",
+        "deck_score": 43.7,
+        "rank": 4,
+        "fully_scored": false
+       }
+      ]
+     }
     }
    ],
-   "toolCalls": 5,
-   "repairs": 0,
+   "toolCalls": 4,
+   "repairs": 1,
    "usage": {
-    "prompt_tokens": 17623,
-    "completion_tokens": 625,
-    "cost_usd": 0.0019350119999999998,
+    "prompt_tokens": 16529,
+    "completion_tokens": 1022,
+    "cost_usd": 0.0022713720000000002,
     "llm_calls": 4
    },
    "finding": {
@@ -2659,23 +2626,23 @@
     "reasons": [
      {
       "factor": "deck_fitness:defense",
-      "evidence": "T2",
-      "text": "防御是最大差距：拿耸肩无视后每回合 5.4 → 6.9，拿重锤则降到 4.2，而需求是 7.5。"
+      "evidence": "T1",
+      "text": "防御是最大差距：拿耸肩无视每回合 5.4 → 6.9，拿重锤反而降到 4.2，需求 7.5。"
      },
      {
       "factor": "deck_fitness:frontload",
-      "evidence": "T2",
-      "text": "重锤在前期输出上更好：每回合 13.2 → 18.2，耸肩无视反而降到 11.9，但两者都离需求 22.0 很远。"
+      "evidence": "T1",
+      "text": "重锤的长处是前期输出 13.2 → 18.2，但离需求 22.0 仍远，只补了一半缺口。"
      },
      {
       "factor": "deck_fitness:cycle",
-      "evidence": "T2",
-      "text": "耸肩无视还带来每回合额外抽牌 0.00 → 0.25，重锤没有这一项。"
+      "evidence": "T1",
+      "text": "耸肩无视还让每回合额外抽牌 0.00 → 0.25，循环更顺。"
      }
     ],
-    "what_if_evidence": "T5",
-    "what_if_text": "试着少一张打击后，引擎仍选耸肩无视，差距还从 3.9 扩大到 4.6，说明这不是牌组里打击太多造成的。",
-    "advice": "这套 10 张牌只有 4 张防御，前期先补防御类牌，输出可以稍后再补。"
+    "what_if_evidence": "T7",
+    "what_if_text": "试了升级痛击、去掉打击或防御，首选都没变；去掉三张打击后差距仍有 4.2，耸肩无视依旧第一。",
+    "advice": "第 1 幕防御只有 5.4、需求 7.5，先补防御类牌；重锤这类高费输出可以等防御站住再拿。"
    }
   },
   {
@@ -3193,14 +3160,9 @@
       "decision_id": "F17-card",
       "changes": [
        {
-        "operation": "remove",
-        "card": "STRIKE_IRONCLAD",
-        "name": "打击"
-       },
-       {
-        "operation": "remove",
-        "card": "STRIKE_IRONCLAD",
-        "name": "打击"
+        "operation": "add",
+        "card": "SHRUG_IT_OFF",
+        "name": "耸肩无视"
        }
       ],
       "engine_top_before": "1:DEMON_FORM",
@@ -3208,33 +3170,193 @@
       "pick_changed": false,
       "agrees_with_player_after": false,
       "confidence_after": "medium",
-      "gap_after": 3.8,
+      "gap_after": 3.3,
       "options_after": [
        {
         "id": "1:DEMON_FORM",
         "name": "恶魔形态",
-        "deck_score": 53.1,
+        "deck_score": 53.4,
         "rank": 1,
         "fully_scored": true
        },
        {
         "id": "skip",
         "name": "跳过",
-        "deck_score": 50.3,
+        "deck_score": 51,
         "rank": 2,
         "fully_scored": true
        },
        {
         "id": "0:THRASH",
         "name": "痛殴",
-        "deck_score": 49.3,
+        "deck_score": 50.1,
         "rank": 3,
         "fully_scored": true
        },
        {
         "id": "2:DARK_EMBRACE",
         "name": "黑暗之拥",
-        "deck_score": 47.9,
+        "deck_score": 48.5,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "T5",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F17-card",
+      "changes": [
+       {
+        "operation": "add",
+        "card": "FEEL_NO_PAIN",
+        "name": "无惧疼痛"
+       }
+      ],
+      "engine_top_before": "1:DEMON_FORM",
+      "engine_top_after": "1:DEMON_FORM",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 3.2,
+      "options_after": [
+       {
+        "id": "1:DEMON_FORM",
+        "name": "恶魔形态",
+        "deck_score": 49.4,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 46.7,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "0:THRASH",
+        "name": "痛殴",
+        "deck_score": 46.2,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "2:DARK_EMBRACE",
+        "name": "黑暗之拥",
+        "deck_score": 43.8,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "T6",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F17-card",
+      "changes": [
+       {
+        "operation": "upgrade",
+        "card": "BASH",
+        "name": "痛击"
+       },
+       {
+        "operation": "upgrade",
+        "card": "UNRELENTING",
+        "name": "无情猛攻"
+       }
+      ],
+      "engine_top_before": "1:DEMON_FORM",
+      "engine_top_after": "1:DEMON_FORM",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 4.5,
+      "options_after": [
+       {
+        "id": "1:DEMON_FORM",
+        "name": "恶魔形态",
+        "deck_score": 53.7,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 50,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "0:THRASH",
+        "name": "痛殴",
+        "deck_score": 49.2,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "2:DARK_EMBRACE",
+        "name": "黑暗之拥",
+        "deck_score": 47.6,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "T7",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F17-card",
+      "changes": [
+       {
+        "operation": "remove",
+        "card": "STRIKE_IRONCLAD",
+        "name": "打击"
+       },
+       {
+        "operation": "remove",
+        "card": "DEFEND_IRONCLAD",
+        "name": "防御"
+       }
+      ],
+      "engine_top_before": "1:DEMON_FORM",
+      "engine_top_after": "1:DEMON_FORM",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 4.6,
+      "options_after": [
+       {
+        "id": "1:DEMON_FORM",
+        "name": "恶魔形态",
+        "deck_score": 52.4,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 48.8,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "0:THRASH",
+        "name": "痛殴",
+        "deck_score": 47.8,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "2:DARK_EMBRACE",
+        "name": "黑暗之拥",
+        "deck_score": 46.3,
         "rank": 4,
         "fully_scored": true
        }
@@ -3245,10 +3367,10 @@
    "toolCalls": 4,
    "repairs": 1,
    "usage": {
-    "prompt_tokens": 22865,
-    "completion_tokens": 962,
-    "cost_usd": 0.0023691,
-    "llm_calls": 5
+    "prompt_tokens": 20693,
+    "completion_tokens": 1024,
+    "cost_usd": 0.002619804,
+    "llm_calls": 4
    },
    "finding": {
     "decision_id": "F17-card",
@@ -3256,22 +3378,22 @@
      {
       "factor": "deck_fitness:scaling",
       "evidence": "T1",
-      "text": "恶魔形态把每回合成长从 0.0 提到 3.7（需求 13.6），痛殴在这项没有贡献，是差距最大的一项。"
+      "text": "引擎最看重成长：拿恶魔形态后每回合成长 0.0 → 3.7（需求 13.6），痛殴这一项没有变化。"
      },
      {
       "factor": "deck_fitness:frontload",
       "evidence": "T1",
-      "text": "代价是前期输出：恶魔形态让每回合 30.1 降到 27.6，痛殴则微升到 30.2，需求是 34.5。"
+      "text": "代价是前期输出：恶魔形态让每回合 30.1 → 27.6，痛殴则 30.1 → 30.2，需求 34.5。"
      },
      {
       "factor": "deck_fitness:lookahead",
       "evidence": "T1",
-      "text": "计入后续 3 次选牌后，恶魔形态的牌组适合度仍多出 0.5，痛殴几乎没有变化。"
+      "text": "往后看三次选牌，恶魔形态的牌组适合度提升 0.52，痛殴只有 0.02。"
      }
     ],
     "what_if_evidence": "T4",
-    "what_if_text": "试着去掉两张打击后，引擎仍选恶魔形态，差距 3.8，说明这不是打击占位造成的。",
-    "advice": "牌组已有痛击、重锤这类高费牌时，引擎更看重成长上限；若你更想补前期输出，可以留意痛殴这类低费牌，但要接受成长缺口。"
+    "what_if_text": "试了补耸肩无视、无惧疼痛、升级痛击与无情猛攻、去掉打击和防御，首选都仍是恶魔形态，差距 3.2–4.6。",
+    "advice": "若想选痛殴这类即时输出，可先补足防御（每回合 5.4，需求 8.2），引擎才会更倾向它。"
    }
   },
   {
@@ -3429,178 +3551,41 @@
     },
     {
      "id": "T1",
-     "tool": "get_decision",
+     "tool": "compare_options",
      "result": {
-      "id": "F08-card",
-      "kind": "card_reward",
-      "floor": 8,
-      "act": 1,
-      "hp": 72,
-      "max_hp": 80,
-      "gold": 54,
-      "engine_top": "0:RAGE",
-      "confidence": "medium",
-      "policy_status": "recommend",
-      "pick_margin": 1,
-      "options": [
+      "decision_id": "F08-card",
+      "a": {
+       "id": "0:RAGE",
+       "name": "狂怒",
+       "deck_score": 52.1,
+       "fully_scored": true
+      },
+      "b": {
+       "id": "skip",
+       "name": "跳过",
+       "deck_score": 48.4,
+       "fully_scored": true
+      },
+      "deck_score_difference": 3.7,
+      "factors": [
        {
-        "id": "0:RAGE",
-        "kind": "card",
-        "entity_id": "RAGE",
-        "name": "狂怒",
-        "score": 52.1,
-        "deck_score": 52.1,
-        "rank": 1,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "deck_fitness:defense",
-          "delta": 4.04,
-          "message": "拿狂怒后防御：每回合 5.3 → 6.9（需求 8.5）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": -0.28,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 0,
-         "survival": 4.0399,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "data_completeness": 1
-        }
+        "factor": "deck_fitness:defense",
+        "a": 4.04,
+        "b": 0,
+        "difference": 4.04,
+        "a_message": "拿狂怒后防御：每回合 5.3 → 6.9（需求 8.5）",
+        "b_message": null
        },
        {
-        "id": "1:ANGER",
-        "kind": "card",
-        "entity_id": "ANGER",
-        "name": "愤怒",
-        "score": 50.5,
-        "deck_score": 50.5,
-        "rank": 2,
-        "eligible": true,
-        "fully_scored": false,
-        "gaps": [
-         "generated:ANGER:card_effect_unsupported:ANGER:add_card:generated_chain_truncated"
-        ],
-        "factors": [
-         {
-          "code": "unmodeled_mechanic",
-          "delta": 0,
-          "message": "愤怒的部分效果尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": 1.43,
-          "message": "拿愤怒后战斗长度变化，挡不住的伤害随之增减：预计战斗长度为标准的 1.02 → 0.85 倍"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": 0.92,
-          "message": "拿愤怒后前期输出：每回合 24.5 → 29.4（需求 25.0）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": -0.18,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 0.9179,
-         "survival": 1.4295,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
-       },
-       {
-        "id": "skip",
-        "kind": "skip",
-        "entity_id": null,
-        "name": "跳过",
-        "score": 49.4,
-        "deck_score": 48.4,
-        "rank": 3,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": 0,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         },
-         {
-          "code": "deck_fitness:pick_margin",
-          "delta": 1,
-          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 0,
-         "survival": 0,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "data_completeness": 1
-        }
-       },
-       {
-        "id": "2:HAVOC",
-        "kind": "card",
-        "entity_id": "HAVOC",
-        "name": "破灭",
-        "score": 46.1,
-        "deck_score": 46.1,
-        "rank": 4,
-        "eligible": true,
-        "fully_scored": false,
-        "gaps": [
-         "card_effect_unsupported:HAVOC:effect:auto_play_card"
-        ],
-        "factors": [
-         {
-          "code": "unmodeled_mechanic",
-          "delta": 0,
-          "message": "破灭的部分效果尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": -1.51,
-          "message": "拿破灭后防御：每回合 5.3 → 5.0（需求 8.5）"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": -0.93,
-          "message": "拿破灭后前期输出：每回合 24.5 → 23.0（需求 25.0）"
-         },
-         {
-          "code": "deck_fitness:synergy",
-          "delta": 0,
-          "message": "牌组里的 重锤、凌虐 让破灭更有价值（说明，不另加分）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": 0.17,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": -0.9251,
-         "survival": -1.511,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
+        "factor": "deck_fitness:lookahead",
+        "a": -0.28,
+        "b": 0,
+        "difference": -0.28,
+        "a_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度",
+        "b_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
        }
       ],
-      "chosen": "skip",
-      "tier": 1,
-      "gap": 3.7,
-      "not_strict_because": []
+      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
      }
     },
     {
@@ -3674,60 +3659,6 @@
     },
     {
      "id": "T3",
-     "tool": "compare_options",
-     "result": {
-      "decision_id": "F08-card",
-      "a": {
-       "id": "0:RAGE",
-       "name": "狂怒",
-       "deck_score": 52.1,
-       "fully_scored": true
-      },
-      "b": {
-       "id": "skip",
-       "name": "跳过",
-       "deck_score": 48.4,
-       "fully_scored": true
-      },
-      "deck_score_difference": 3.7,
-      "factors": [
-       {
-        "factor": "deck_fitness:defense",
-        "a": 4.04,
-        "b": 0,
-        "difference": 4.04,
-        "a_message": "拿狂怒后防御：每回合 5.3 → 6.9（需求 8.5）",
-        "b_message": null
-       },
-       {
-        "factor": "deck_fitness:lookahead",
-        "a": -0.28,
-        "b": 0,
-        "difference": -0.28,
-        "a_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度",
-        "b_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-       }
-      ],
-      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
-     }
-    },
-    {
-     "id": "T4",
-     "tool": "get_card",
-     "result": {
-      "id": "RAGE",
-      "name": "狂怒",
-      "description": "打出此牌后，你在这个回合内每打出一张攻击牌，获得3点格挡。",
-      "cost": 0,
-      "type": "技能",
-      "rarity": "罕见",
-      "color": "ironclad",
-      "target": "Self",
-      "upgrade_description": "打出此牌后，你在这个回合内每打出一张攻击牌，获得5点格挡。"
-     }
-    },
-    {
-     "id": "T5",
      "tool": "what_if_choices",
      "result": {
       "remove": [
@@ -3808,7 +3739,7 @@
      }
     },
     {
-     "id": "T6",
+     "id": "T4",
      "tool": "what_if",
      "result": {
       "decision_id": "F08-card",
@@ -3856,45 +3787,195 @@
        }
       ]
      }
+    },
+    {
+     "id": "T5",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F08-card",
+      "changes": [
+       {
+        "operation": "add",
+        "card": "FEEL_NO_PAIN",
+        "name": "无惧疼痛"
+       }
+      ],
+      "engine_top_before": "0:RAGE",
+      "engine_top_after": "0:RAGE",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 3.7,
+      "options_after": [
+       {
+        "id": "0:RAGE",
+        "name": "狂怒",
+        "deck_score": 50.9,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "1:ANGER",
+        "name": "愤怒",
+        "deck_score": 49.6,
+        "rank": 2,
+        "fully_scored": false
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 47.2,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "2:HAVOC",
+        "name": "破灭",
+        "deck_score": 44.9,
+        "rank": 4,
+        "fully_scored": false
+       }
+      ]
+     }
+    },
+    {
+     "id": "T6",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F08-card",
+      "changes": [
+       {
+        "operation": "upgrade",
+        "card": "DEFEND_IRONCLAD",
+        "name": "防御"
+       }
+      ],
+      "engine_top_before": "0:RAGE",
+      "engine_top_after": "0:RAGE",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 3.6,
+      "options_after": [
+       {
+        "id": "0:RAGE",
+        "name": "狂怒",
+        "deck_score": 53.3,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "1:ANGER",
+        "name": "愤怒",
+        "deck_score": 51.6,
+        "rank": 2,
+        "fully_scored": false
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 49.7,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "2:HAVOC",
+        "name": "破灭",
+        "deck_score": 47.4,
+        "rank": 4,
+        "fully_scored": false
+       }
+      ]
+     }
+    },
+    {
+     "id": "T7",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F08-card",
+      "changes": [
+       {
+        "operation": "remove",
+        "card": "STRIKE_IRONCLAD",
+        "name": "打击"
+       }
+      ],
+      "engine_top_before": "0:RAGE",
+      "engine_top_after": "0:RAGE",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 3.7,
+      "options_after": [
+       {
+        "id": "0:RAGE",
+        "name": "狂怒",
+        "deck_score": 53.2,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "1:ANGER",
+        "name": "愤怒",
+        "deck_score": 51.6,
+        "rank": 2,
+        "fully_scored": false
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 49.5,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "2:HAVOC",
+        "name": "破灭",
+        "deck_score": 47.1,
+        "rank": 4,
+        "fully_scored": false
+       }
+      ]
+     }
     }
    ],
-   "toolCalls": 6,
+   "toolCalls": 4,
    "repairs": 1,
    "usage": {
-    "prompt_tokens": 25097,
-    "completion_tokens": 907,
-    "cost_usd": 0.0033866519999999995,
-    "llm_calls": 6
+    "prompt_tokens": 15769,
+    "completion_tokens": 910,
+    "cost_usd": 0.0020594999999999997,
+    "llm_calls": 4
    },
    "finding": {
     "decision_id": "F08-card",
     "reasons": [
      {
       "factor": "deck_fitness:defense",
-      "evidence": "T3",
-      "text": "引擎最看重防御：拿狂怒后每回合格挡 5.3 → 6.9，而需求是 8.5，牌组仍偏薄。"
+      "evidence": "T1",
+      "text": "引擎看中的是防御：拿狂怒后每回合 5.3 → 6.9，需求 8.5，这是两边差距最大的一项。"
      },
      {
       "factor": "deck_fitness:lookahead",
-      "evidence": "T3",
-      "text": "往后看三次选牌，狂怒反而略降适合度，说明它更像补当下的短板。"
+      "evidence": "T1",
+      "text": "往后看三次选牌，狂怒反而略减分（-0.28），所以它只是小幅领先跳过。"
      }
     ],
-    "what_if_evidence": "T6",
-    "what_if_text": "即使先补一张耸肩无视，引擎首选仍是狂怒，差距 3.4，说明这不是被别的牌挤掉的选择。",
-    "advice": "牌组只有 11 张、防御每回合 5.3 低于需求 8.5 时，0 费格挡牌值得优先考虑。"
+    "what_if_evidence": "T4",
+    "what_if_text": "试过补耸肩无视、无惧疼痛、升级防御、删一张打击，首选都还是狂怒，没有翻转。",
+    "advice": "牌组只有 11 张、防御每回合 5.3 偏低，下次遇到能补格挡的牌可以多考虑；跳过在引擎眼里只差 3.7 分，不算大分歧。"
    }
   }
  ],
  "summary": {
-  "text": "这些决定都优先补当前最缺的循环或防御，而非眼前输出；照此在 13 张、10 张、11 张的薄牌组里先拿祭品、耸肩无视、狂怒补短板。",
+  "text": "这些决定都因防御偏低而偏离需求，可先补格挡牌，再考虑高费输出或跳过。",
   "source": "model",
-  "cost_usd": 0.00028260000000000004
+  "cost_usd": 0.000258
  },
  "meta": {
   "model": "deepseek-flash",
-  "cost_usd": 0.010620528,
-  "seconds": 11.113,
-  "generated_at": "2026-11-01 14:44"
+  "cost_usd": 0.011317176,
+  "seconds": 12.937,
+  "generated_at": "2026-11-11 00:29"
  }
 }

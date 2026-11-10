@@ -2,7 +2,7 @@
  "run": "1774199215",
  "set": "test",
  "model": "deepseek-flash",
- "prompt_version": "p3",
+ "prompt_version": "p4",
  "pre": {
   "summary": {
    "run_id": "1774199215",
@@ -1681,234 +1681,89 @@
     },
     {
      "id": "T1",
-     "tool": "get_decision",
+     "tool": "compare_options",
      "result": {
-      "id": "F33-card",
-      "kind": "card_reward",
-      "floor": 33,
-      "act": 2,
-      "hp": 50,
-      "max_hp": 82,
-      "gold": 137,
-      "engine_top": "0:BOOST_AWAY",
-      "confidence": "medium",
-      "policy_status": "recommend",
-      "pick_margin": 2,
-      "options": [
+      "decision_id": "F33-card",
+      "a": {
+       "id": "0:BOOST_AWAY",
+       "name": "高速脱离",
+       "deck_score": 66.2,
+       "fully_scored": true
+      },
+      "b": {
+       "id": "skip",
+       "name": "跳过",
+       "deck_score": 57.9,
+       "fully_scored": true
+      },
+      "deck_score_difference": 8.3,
+      "factors": [
        {
-        "id": "0:BOOST_AWAY",
-        "kind": "card",
-        "entity_id": "BOOST_AWAY",
-        "name": "高速脱离",
-        "score": 66.2,
-        "deck_score": 66.2,
-        "rank": 1,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "estimate_scope",
-          "delta": 0,
-          "message": "牌组中 5 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 5 张牌（滚石、烟囱、超频、遗传算法、重启）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "unmodeled_relics",
-          "delta": 0,
-          "message": "遗物 石化蟾蜍 尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": 8.69,
-          "message": "拿高速脱离后防御：每回合 7.6 → 10.3（需求 9.8）"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": -0.27,
-          "message": "拿高速脱离后前期输出：每回合 25.7 → 25.1（需求 45.9）"
-         },
-         {
-          "code": "deck_fitness:scaling",
-          "delta": -0.06,
-          "message": "拿高速脱离后成长：每回合 1.9 → 1.8（需求 26.2）"
-         },
-         {
-          "code": "deck_fitness:cycle",
-          "delta": -0.05,
-          "message": "拿高速脱离后循环：每回合额外抽牌 1.89 → 1.82（需求 1.0）"
-         },
-         {
-          "code": "deck_fitness:synergy",
-          "delta": 0,
-          "message": "牌组里的 污秽攻击、滚石 让高速脱离更有价值（说明，不另加分）"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": -0.2686,
-         "survival": 8.6852,
-         "long_term_growth": -0.1128,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
+        "factor": "deck_fitness:defense",
+        "a": 8.69,
+        "b": 0,
+        "difference": 8.69,
+        "a_message": "拿高速脱离后防御：每回合 7.6 → 10.3（需求 9.8）",
+        "b_message": null
        },
        {
-        "id": "1:CHILL",
-        "kind": "card",
-        "entity_id": "CHILL",
-        "name": "冰寒",
-        "score": 63.7,
-        "deck_score": 63.7,
-        "rank": 2,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "estimate_scope",
-          "delta": 0,
-          "message": "牌组中 5 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 5 张牌（滚石、烟囱、超频、遗传算法、重启）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "unmodeled_relics",
-          "delta": 0,
-          "message": "遗物 石化蟾蜍 尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": 6.39,
-          "message": "拿冰寒后防御：每回合 7.6 → 9.2（需求 9.8）"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": -0.51,
-          "message": "拿冰寒后前期输出：每回合 25.7 → 24.6（需求 45.9）"
-         },
-         {
-          "code": "deck_fitness:synergy",
-          "delta": 0,
-          "message": "牌组里的 污秽攻击、滚石 让冰寒更有价值（说明，不另加分）"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": -0.513,
-         "survival": 6.3873,
-         "long_term_growth": -0.0691,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
+        "factor": "deck_fitness:frontload",
+        "a": -0.27,
+        "b": 0,
+        "difference": -0.27,
+        "a_message": "拿高速脱离后前期输出：每回合 25.7 → 25.1（需求 45.9）",
+        "b_message": null
        },
        {
-        "id": "skip",
-        "kind": "skip",
-        "entity_id": null,
-        "name": "跳过",
-        "score": 59.9,
-        "deck_score": 57.9,
-        "rank": 3,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "estimate_scope",
-          "delta": 0,
-          "message": "牌组中 5 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 5 张牌（滚石、烟囱、超频、遗传算法、重启）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "unmodeled_relics",
-          "delta": 0,
-          "message": "遗物 石化蟾蜍 尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:pick_margin",
-          "delta": 2,
-          "message": "第 2 幕：候选要比跳过高出 2 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 0,
-         "survival": 0,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
+        "factor": "deck_fitness:scaling",
+        "a": -0.06,
+        "b": 0,
+        "difference": -0.06,
+        "a_message": "拿高速脱离后成长：每回合 1.9 → 1.8（需求 26.2）",
+        "b_message": null
        },
        {
-        "id": "2:SKIM",
-        "kind": "card",
-        "entity_id": "SKIM",
-        "name": "快速检索",
-        "score": 55.7,
-        "deck_score": 55.7,
-        "rank": 4,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "estimate_scope",
-          "delta": 0,
-          "message": "牌组中 5 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 5 张牌（滚石、烟囱、超频、遗传算法、重启）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "unmodeled_relics",
-          "delta": 0,
-          "message": "遗物 石化蟾蜍 尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": -1.92,
-          "message": "拿快速检索后防御：每回合 7.6 → 7.4（需求 9.8）"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": -0.51,
-          "message": "拿快速检索后前期输出：每回合 25.7 → 24.6（需求 45.9）"
-         },
-         {
-          "code": "deck_fitness:cycle",
-          "delta": 0.42,
-          "message": "拿快速检索后循环：每回合额外抽牌 1.89 → 2.54（需求 1.0）"
-         },
-         {
-          "code": "deck_fitness:scaling",
-          "delta": -0.25,
-          "message": "拿快速检索后成长：每回合 1.9 → 1.5（需求 26.2）"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": -0.5072,
-         "survival": -1.9218,
-         "long_term_growth": 0.164,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
+        "factor": "deck_fitness:cycle",
+        "a": -0.05,
+        "b": 0,
+        "difference": -0.05,
+        "a_message": "拿高速脱离后循环：每回合额外抽牌 1.89 → 1.82（需求 1.0）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:synergy",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组里的 污秽攻击、滚石 让高速脱离更有价值（说明，不另加分）",
+        "b_message": null
+       },
+       {
+        "factor": "estimate_scope",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 5 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。",
+        "b_message": "牌组中 5 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "factor": "partially_modeled_deck_cards",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 5 张牌（滚石、烟囱、超频、遗传算法、重启）有部分效果尚未计入评分。",
+        "b_message": "牌组中 5 张牌（滚石、烟囱、超频、遗传算法、重启）有部分效果尚未计入评分。"
+       },
+       {
+        "factor": "unmodeled_relics",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "遗物 石化蟾蜍 尚未计入评分。",
+        "b_message": "遗物 石化蟾蜍 尚未计入评分。"
        }
       ],
-      "chosen": "skip",
-      "tier": 1,
-      "gap": 8.3,
-      "not_strict_because": []
+      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
      }
     },
     {
@@ -2068,109 +1923,6 @@
     },
     {
      "id": "T3",
-     "tool": "compare_options",
-     "result": {
-      "decision_id": "F33-card",
-      "a": {
-       "id": "0:BOOST_AWAY",
-       "name": "高速脱离",
-       "deck_score": 66.2,
-       "fully_scored": true
-      },
-      "b": {
-       "id": "skip",
-       "name": "跳过",
-       "deck_score": 57.9,
-       "fully_scored": true
-      },
-      "deck_score_difference": 8.3,
-      "factors": [
-       {
-        "factor": "deck_fitness:defense",
-        "a": 8.69,
-        "b": 0,
-        "difference": 8.69,
-        "a_message": "拿高速脱离后防御：每回合 7.6 → 10.3（需求 9.8）",
-        "b_message": null
-       },
-       {
-        "factor": "deck_fitness:frontload",
-        "a": -0.27,
-        "b": 0,
-        "difference": -0.27,
-        "a_message": "拿高速脱离后前期输出：每回合 25.7 → 25.1（需求 45.9）",
-        "b_message": null
-       },
-       {
-        "factor": "deck_fitness:scaling",
-        "a": -0.06,
-        "b": 0,
-        "difference": -0.06,
-        "a_message": "拿高速脱离后成长：每回合 1.9 → 1.8（需求 26.2）",
-        "b_message": null
-       },
-       {
-        "factor": "deck_fitness:cycle",
-        "a": -0.05,
-        "b": 0,
-        "difference": -0.05,
-        "a_message": "拿高速脱离后循环：每回合额外抽牌 1.89 → 1.82（需求 1.0）",
-        "b_message": null
-       },
-       {
-        "factor": "deck_fitness:synergy",
-        "a": 0,
-        "b": 0,
-        "difference": 0,
-        "a_message": "牌组里的 污秽攻击、滚石 让高速脱离更有价值（说明，不另加分）",
-        "b_message": null
-       },
-       {
-        "factor": "estimate_scope",
-        "a": 0,
-        "b": 0,
-        "difference": 0,
-        "a_message": "牌组中 5 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。",
-        "b_message": "牌组中 5 张牌、1 件遗物未完整计入评分，分数只反映已计入的部分。"
-       },
-       {
-        "factor": "partially_modeled_deck_cards",
-        "a": 0,
-        "b": 0,
-        "difference": 0,
-        "a_message": "牌组中 5 张牌（滚石、烟囱、超频、遗传算法、重启）有部分效果尚未计入评分。",
-        "b_message": "牌组中 5 张牌（滚石、烟囱、超频、遗传算法、重启）有部分效果尚未计入评分。"
-       },
-       {
-        "factor": "unmodeled_relics",
-        "a": 0,
-        "b": 0,
-        "difference": 0,
-        "a_message": "遗物 石化蟾蜍 尚未计入评分。",
-        "b_message": "遗物 石化蟾蜍 尚未计入评分。"
-       }
-      ],
-      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
-     }
-    },
-    {
-     "id": "T4",
-     "tool": "get_card",
-     "result": {
-      "id": "BOOST_AWAY",
-      "name": "高速脱离",
-      "description": "获得6点格挡。\n将一张晕眩添加到你的弃牌堆中。",
-      "cost": 0,
-      "type": "技能",
-      "rarity": "普通",
-      "color": "defect",
-      "target": "Self",
-      "block": 6,
-      "upgrade_description": "获得9点格挡。\n将一张晕眩添加到你的弃牌堆中。"
-     }
-    },
-    {
-     "id": "T5",
      "tool": "what_if_choices",
      "result": {
       "remove": [
@@ -2350,11 +2102,154 @@
      }
     },
     {
+     "id": "T4",
+     "tool": "get_card",
+     "result": {
+      "id": "BOOST_AWAY",
+      "name": "高速脱离",
+      "description": "获得6点格挡。\n将一张晕眩添加到你的弃牌堆中。",
+      "cost": 0,
+      "type": "技能",
+      "rarity": "普通",
+      "color": "defect",
+      "target": "Self",
+      "block": 6,
+      "upgrade_description": "获得9点格挡。\n将一张晕眩添加到你的弃牌堆中。"
+     }
+    },
+    {
+     "id": "T5",
+     "tool": "get_card",
+     "result": {
+      "id": "CHILL",
+      "name": "冰寒",
+      "description": "当前每有一名敌人，就生成1个冰霜充能球。",
+      "cost": 0,
+      "type": "技能",
+      "rarity": "罕见",
+      "color": "defect",
+      "target": "Self",
+      "keywords": [
+       "消耗"
+      ]
+     }
+    },
+    {
      "id": "T6",
      "tool": "what_if",
      "result": {
       "decision_id": "F33-card",
       "changes": [
+       {
+        "operation": "add",
+        "card": "LIGHTNING_ROD",
+        "name": "引雷针"
+       }
+      ],
+      "engine_top_before": "0:BOOST_AWAY",
+      "engine_top_after": "0:BOOST_AWAY",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 5.5,
+      "options_after": [
+       {
+        "id": "0:BOOST_AWAY",
+        "name": "高速脱离",
+        "deck_score": 67.3,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "1:CHILL",
+        "name": "冰寒",
+        "deck_score": 66,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 61.8,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "2:SKIM",
+        "name": "快速检索",
+        "deck_score": 60,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "T7",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F33-card",
+      "changes": [
+       {
+        "operation": "add",
+        "card": "CAPACITOR",
+        "name": "扩容"
+       },
+       {
+        "operation": "add",
+        "card": "LIGHTNING_ROD",
+        "name": "引雷针"
+       }
+      ],
+      "engine_top_before": "0:BOOST_AWAY",
+      "engine_top_after": "0:BOOST_AWAY",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 6.8,
+      "options_after": [
+       {
+        "id": "0:BOOST_AWAY",
+        "name": "高速脱离",
+        "deck_score": 66.6,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "1:CHILL",
+        "name": "冰寒",
+        "deck_score": 64.5,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 59.8,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "2:SKIM",
+        "name": "快速检索",
+        "deck_score": 58,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "T8",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F33-card",
+      "changes": [
+       {
+        "operation": "remove",
+        "card": "STRIKE_DEFECT",
+        "name": "打击"
+       },
        {
         "operation": "remove",
         "card": "STRIKE_DEFECT",
@@ -2366,33 +2261,33 @@
       "pick_changed": false,
       "agrees_with_player_after": false,
       "confidence_after": "medium",
-      "gap_after": 5.8,
+      "gap_after": 3,
       "options_after": [
        {
         "id": "0:BOOST_AWAY",
         "name": "高速脱离",
-        "deck_score": 66.5,
+        "deck_score": 66.7,
         "rank": 1,
         "fully_scored": true
        },
        {
         "id": "1:CHILL",
         "name": "冰寒",
-        "deck_score": 65.7,
+        "deck_score": 66,
         "rank": 2,
         "fully_scored": true
        },
        {
         "id": "skip",
         "name": "跳过",
-        "deck_score": 60.7,
+        "deck_score": 63.7,
         "rank": 3,
         "fully_scored": true
        },
        {
         "id": "2:SKIM",
         "name": "快速检索",
-        "deck_score": 58.5,
+        "deck_score": 61.6,
         "rank": 4,
         "fully_scored": true
        }
@@ -2403,39 +2298,42 @@
    "toolCalls": 6,
    "repairs": 1,
    "usage": {
-    "prompt_tokens": 34639,
-    "completion_tokens": 1006,
-    "cost_usd": 0.004749876,
-    "llm_calls": 6
+    "prompt_tokens": 37975,
+    "completion_tokens": 1077,
+    "cost_usd": 0.004292964,
+    "llm_calls": 7
    },
    "finding": {
     "decision_id": "F33-card",
     "reasons": [
      {
       "factor": "deck_fitness:defense",
-      "evidence": "T3",
-      "text": "差距几乎全在防御：拿高速脱离后每回合格挡 7.6 → 10.3，超过需求 9.8；跳过则停在 7.6。"
+      "evidence": "T1",
+      "text": "拿高速脱离后防御每回合 7.6 → 10.3，超过需求 9.8；跳过则停在 7.6，这是差距最大的一项。"
      },
      {
       "factor": "deck_fitness:frontload",
-      "evidence": "T3",
-      "text": "代价很小：前期输出 25.7 → 25.1，离需求 45.9 本来就很远，这张牌不改变输出短板。"
+      "evidence": "T1",
+      "text": "代价很小：前期输出 25.7 → 25.1，离需求 45.9 本来就远，几乎不影响。"
      },
      {
       "factor": "deck_fitness:scaling",
-      "evidence": "T3",
-      "text": "成长几乎不变：每回合 1.9 → 1.8，需求 26.2，拿不拿都不影响成长路线。"
+      "evidence": "T1",
+      "text": "成长只从每回合 1.9 降到 1.8，需求 26.2，本来就不靠成长赢。"
      }
     ],
-    "what_if_evidence": "T6",
-    "what_if_text": "假设少一张打击，首选仍是高速脱离，差距从 8.3 降到 5.8，说明结论不依赖某张具体牌。",
-    "advice": "当格挡每回合只有 7.6、需求 9.8 时，0 费 6 点格挡的技能牌值得优先考虑，即使它附带一张晕眩。"
+    "what_if_evidence": "T8",
+    "what_if_text": "试过加引雷针、加扩容、去掉两张打击，首选都还是高速脱离；去掉两张打击后差距缩到 3，仍未翻转。",
+    "advice": "这套牌防御只有每回合 7.6、需求 9.8，0 费 6 点格挡的牌能直接补上缺口，下次可优先考虑这类防御牌。"
    }
   },
   {
    "flag": "F19-card",
    "status": "verified",
-   "errors": [],
+   "errors": [
+    "reasons[1]: the number 10 is not in T1/T0",
+    "advice: the number 5 is not in T0/T1/T2/T3/T4/T5/T6/T7/T8"
+   ],
    "evidence": [
     {
      "id": "T0",
@@ -2634,227 +2532,89 @@
     },
     {
      "id": "T1",
-     "tool": "get_decision",
+     "tool": "compare_options",
      "result": {
-      "id": "F19-card",
-      "kind": "card_reward",
-      "floor": 19,
-      "act": 2,
-      "hp": 45,
-      "max_hp": 75,
-      "gold": 242,
-      "engine_top": "1:REFRACT",
-      "confidence": "medium",
-      "policy_status": "recommend",
-      "pick_margin": 2,
-      "options": [
+      "decision_id": "F19-card",
+      "a": {
+       "id": "1:REFRACT",
+       "name": "折射",
+       "deck_score": 59.1,
+       "fully_scored": true
+      },
+      "b": {
+       "id": "skip",
+       "name": "跳过",
+       "deck_score": 53.8,
+       "fully_scored": true
+      },
+      "deck_score_difference": 5.3,
+      "factors": [
        {
-        "id": "1:REFRACT",
-        "kind": "card",
-        "entity_id": "REFRACT",
-        "name": "折射",
-        "score": 59.1,
-        "deck_score": 59.1,
-        "rank": 1,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "estimate_scope",
-          "delta": 0,
-          "message": "牌组中 4 张牌未完整计入评分，分数只反映已计入的部分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 4 张牌（烟囱、超频、遗传算法、重启）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:aoe",
-          "delta": 5.13,
-          "message": "拿折射后群伤：每回合 0.0 → 3.2（需求 7.8）"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": 3.6,
-          "message": "拿折射后前期输出：每回合 22.7 → 29.7（需求 33.9）"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": -2.87,
-          "message": "拿折射后防御：每回合 7.6 → 6.1（需求 9.5）"
-         },
-         {
-          "code": "deck_fitness:cycle",
-          "delta": -0.07,
-          "message": "拿折射后循环：每回合额外抽牌 1.91 → 1.81（需求 1.0）"
-         },
-         {
-          "code": "deck_fitness:synergy",
-          "delta": 0,
-          "message": "牌组里的 污秽攻击、双重释放 让折射更有价值（说明，不另加分）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": -0.5,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 8.7337,
-         "survival": -2.8696,
-         "long_term_growth": -0.074,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
+        "factor": "deck_fitness:aoe",
+        "a": 5.13,
+        "b": 0,
+        "difference": 5.13,
+        "a_message": "拿折射后群伤：每回合 0.0 → 3.2（需求 7.8）",
+        "b_message": null
        },
        {
-        "id": "skip",
-        "kind": "skip",
-        "entity_id": null,
-        "name": "跳过",
-        "score": 55.8,
-        "deck_score": 53.8,
-        "rank": 2,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "estimate_scope",
-          "delta": 0,
-          "message": "牌组中 4 张牌未完整计入评分，分数只反映已计入的部分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 4 张牌（烟囱、超频、遗传算法、重启）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": 0,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         },
-         {
-          "code": "deck_fitness:pick_margin",
-          "delta": 2,
-          "message": "第 2 幕：候选要比跳过高出 2 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 0,
-         "survival": 0,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
+        "factor": "deck_fitness:frontload",
+        "a": 3.6,
+        "b": 0,
+        "difference": 3.6,
+        "a_message": "拿折射后前期输出：每回合 22.7 → 29.7（需求 33.9）",
+        "b_message": null
        },
        {
-        "id": "0:GO_FOR_THE_EYES",
-        "kind": "card",
-        "entity_id": "GO_FOR_THE_EYES",
-        "name": "眼部攻击",
-        "score": 54.1,
-        "deck_score": 54.1,
-        "rank": 3,
-        "eligible": true,
-        "fully_scored": false,
-        "gaps": [
-         "fact_unknowable:cards:GO_FOR_THE_EYES",
-         "card_effect_unsupported:GO_FOR_THE_EYES:condition:target_intends_attack"
-        ],
-        "factors": [
-         {
-          "code": "unmodeled_mechanic",
-          "delta": 0,
-          "message": "眼部攻击的部分效果尚未计入评分；牌组中 4 张牌未完整计入评分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 4 张牌（烟囱、超频、遗传算法、重启）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": 0.37,
-          "message": "拿眼部攻击后前期输出：每回合 22.7 → 23.3（需求 33.9）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": 0.02,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 0.3665,
-         "survival": 0.0223,
-         "long_term_growth": -0.0442,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
+        "factor": "deck_fitness:defense",
+        "a": -2.87,
+        "b": 0,
+        "difference": -2.87,
+        "a_message": "拿折射后防御：每回合 7.6 → 6.1（需求 9.5）",
+        "b_message": null
        },
        {
-        "id": "2:BALL_LIGHTNING",
-        "kind": "card",
-        "entity_id": "BALL_LIGHTNING",
-        "name": "球状闪电",
-        "score": 54.1,
-        "deck_score": 54.1,
-        "rank": 4,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "estimate_scope",
-          "delta": 0,
-          "message": "牌组中 4 张牌未完整计入评分，分数只反映已计入的部分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 4 张牌（烟囱、超频、遗传算法、重启）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": 1.49,
-          "message": "拿球状闪电后前期输出：每回合 22.7 → 25.4（需求 33.9）"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": -1.36,
-          "message": "拿球状闪电后防御：每回合 7.6 → 7.0（需求 9.5）"
-         },
-         {
-          "code": "deck_fitness:cycle",
-          "delta": -0.06,
-          "message": "拿球状闪电后循环：每回合额外抽牌 1.91 → 1.83（需求 1.0）"
-         },
-         {
-          "code": "deck_fitness:synergy",
-          "delta": 0,
-          "message": "牌组里的 污秽攻击 让球状闪电更有价值（说明，不另加分）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": 0.21,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 1.4923,
-         "survival": -1.3644,
-         "long_term_growth": -0.0563,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
+        "factor": "deck_fitness:lookahead",
+        "a": -0.5,
+        "b": 0,
+        "difference": -0.5,
+        "a_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度",
+        "b_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "factor": "deck_fitness:cycle",
+        "a": -0.07,
+        "b": 0,
+        "difference": -0.07,
+        "a_message": "拿折射后循环：每回合额外抽牌 1.91 → 1.81（需求 1.0）",
+        "b_message": null
+       },
+       {
+        "factor": "deck_fitness:synergy",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组里的 污秽攻击、双重释放 让折射更有价值（说明，不另加分）",
+        "b_message": null
+       },
+       {
+        "factor": "estimate_scope",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 4 张牌未完整计入评分，分数只反映已计入的部分。",
+        "b_message": "牌组中 4 张牌未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "factor": "partially_modeled_deck_cards",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 4 张牌（烟囱、超频、遗传算法、重启）有部分效果尚未计入评分。",
+        "b_message": "牌组中 4 张牌（烟囱、超频、遗传算法、重启）有部分效果尚未计入评分。"
        }
       ],
-      "chosen": "skip",
-      "tier": 1,
-      "gap": 5.3,
-      "not_strict_because": []
+      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
      }
     },
     {
@@ -2982,93 +2742,6 @@
     },
     {
      "id": "T3",
-     "tool": "compare_options",
-     "result": {
-      "decision_id": "F19-card",
-      "a": {
-       "id": "1:REFRACT",
-       "name": "折射",
-       "deck_score": 59.1,
-       "fully_scored": true
-      },
-      "b": {
-       "id": "skip",
-       "name": "跳过",
-       "deck_score": 53.8,
-       "fully_scored": true
-      },
-      "deck_score_difference": 5.3,
-      "factors": [
-       {
-        "factor": "deck_fitness:aoe",
-        "a": 5.13,
-        "b": 0,
-        "difference": 5.13,
-        "a_message": "拿折射后群伤：每回合 0.0 → 3.2（需求 7.8）",
-        "b_message": null
-       },
-       {
-        "factor": "deck_fitness:frontload",
-        "a": 3.6,
-        "b": 0,
-        "difference": 3.6,
-        "a_message": "拿折射后前期输出：每回合 22.7 → 29.7（需求 33.9）",
-        "b_message": null
-       },
-       {
-        "factor": "deck_fitness:defense",
-        "a": -2.87,
-        "b": 0,
-        "difference": -2.87,
-        "a_message": "拿折射后防御：每回合 7.6 → 6.1（需求 9.5）",
-        "b_message": null
-       },
-       {
-        "factor": "deck_fitness:lookahead",
-        "a": -0.5,
-        "b": 0,
-        "difference": -0.5,
-        "a_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度",
-        "b_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-       },
-       {
-        "factor": "deck_fitness:cycle",
-        "a": -0.07,
-        "b": 0,
-        "difference": -0.07,
-        "a_message": "拿折射后循环：每回合额外抽牌 1.91 → 1.81（需求 1.0）",
-        "b_message": null
-       },
-       {
-        "factor": "deck_fitness:synergy",
-        "a": 0,
-        "b": 0,
-        "difference": 0,
-        "a_message": "牌组里的 污秽攻击、双重释放 让折射更有价值（说明，不另加分）",
-        "b_message": null
-       },
-       {
-        "factor": "estimate_scope",
-        "a": 0,
-        "b": 0,
-        "difference": 0,
-        "a_message": "牌组中 4 张牌未完整计入评分，分数只反映已计入的部分。",
-        "b_message": "牌组中 4 张牌未完整计入评分，分数只反映已计入的部分。"
-       },
-       {
-        "factor": "partially_modeled_deck_cards",
-        "a": 0,
-        "b": 0,
-        "difference": 0,
-        "a_message": "牌组中 4 张牌（烟囱、超频、遗传算法、重启）有部分效果尚未计入评分。",
-        "b_message": "牌组中 4 张牌（烟囱、超频、遗传算法、重启）有部分效果尚未计入评分。"
-       }
-      ],
-      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
-     }
-    },
-    {
-     "id": "T4",
      "tool": "what_if_choices",
      "result": {
       "remove": [
@@ -3200,15 +2873,87 @@
      }
     },
     {
+     "id": "T4",
+     "tool": "get_card",
+     "result": {
+      "id": "REFRACT",
+      "name": "折射",
+      "description": "造成10点伤害两次。\n生成2个玻璃充能球。",
+      "cost": 3,
+      "type": "攻击",
+      "rarity": "罕见",
+      "color": "defect",
+      "target": "AnyEnemy",
+      "damage": 10,
+      "hit_count": 2,
+      "upgrade_description": "造成13点伤害两次。\n生成2个玻璃充能球。"
+     }
+    },
+    {
      "id": "T5",
      "tool": "what_if",
      "result": {
       "decision_id": "F19-card",
       "changes": [
        {
-        "operation": "remove",
-        "card": "STRIKE_DEFECT",
-        "name": "打击"
+        "operation": "add",
+        "card": "LIGHTNING_ROD",
+        "name": "引雷针"
+       }
+      ],
+      "engine_top_before": "1:REFRACT",
+      "engine_top_after": "1:REFRACT",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 4.3,
+      "options_after": [
+       {
+        "id": "1:REFRACT",
+        "name": "折射",
+        "deck_score": 60.2,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 55.9,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "0:GO_FOR_THE_EYES",
+        "name": "眼部攻击",
+        "deck_score": 56.2,
+        "rank": 3,
+        "fully_scored": false
+       },
+       {
+        "id": "2:BALL_LIGHTNING",
+        "name": "球状闪电",
+        "deck_score": 56.1,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "T6",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F19-card",
+      "changes": [
+       {
+        "operation": "upgrade",
+        "card": "DEFEND_DEFECT",
+        "name": "防御"
+       },
+       {
+        "operation": "upgrade",
+        "card": "DEFEND_DEFECT",
+        "name": "防御"
        }
       ],
       "engine_top_before": "1:REFRACT",
@@ -3221,28 +2966,133 @@
        {
         "id": "1:REFRACT",
         "name": "折射",
-        "deck_score": 60.9,
+        "deck_score": 61.8,
         "rank": 1,
         "fully_scored": true
        },
        {
         "id": "skip",
         "name": "跳过",
-        "deck_score": 55.1,
+        "deck_score": 56,
         "rank": 2,
         "fully_scored": true
        },
        {
         "id": "2:BALL_LIGHTNING",
         "name": "球状闪电",
-        "deck_score": 55.5,
+        "deck_score": 56.3,
         "rank": 3,
         "fully_scored": true
        },
        {
         "id": "0:GO_FOR_THE_EYES",
         "name": "眼部攻击",
-        "deck_score": 55.4,
+        "deck_score": 56.3,
+        "rank": 4,
+        "fully_scored": false
+       }
+      ]
+     }
+    },
+    {
+     "id": "T7",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F19-card",
+      "changes": [
+       {
+        "operation": "remove",
+        "card": "GENETIC_ALGORITHM",
+        "name": "遗传算法"
+       }
+      ],
+      "engine_top_before": "1:REFRACT",
+      "engine_top_after": "1:REFRACT",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 5.6,
+      "options_after": [
+       {
+        "id": "1:REFRACT",
+        "name": "折射",
+        "deck_score": 60.3,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 54.7,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "0:GO_FOR_THE_EYES",
+        "name": "眼部攻击",
+        "deck_score": 55.2,
+        "rank": 3,
+        "fully_scored": false
+       },
+       {
+        "id": "2:BALL_LIGHTNING",
+        "name": "球状闪电",
+        "deck_score": 55.1,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "T8",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F19-card",
+      "changes": [
+       {
+        "operation": "add",
+        "card": "CAPACITOR",
+        "name": "扩容"
+       },
+       {
+        "operation": "add",
+        "card": "FUSION",
+        "name": "聚变"
+       }
+      ],
+      "engine_top_before": "1:REFRACT",
+      "engine_top_after": "1:REFRACT",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 5.9,
+      "options_after": [
+       {
+        "id": "1:REFRACT",
+        "name": "折射",
+        "deck_score": 60.1,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 54.2,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "2:BALL_LIGHTNING",
+        "name": "球状闪电",
+        "deck_score": 55.1,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "0:GO_FOR_THE_EYES",
+        "name": "眼部攻击",
+        "deck_score": 54.3,
         "rank": 4,
         "fully_scored": false
        }
@@ -3251,43 +3101,41 @@
     }
    ],
    "toolCalls": 5,
-   "repairs": 0,
+   "repairs": 1,
    "usage": {
-    "prompt_tokens": 21288,
-    "completion_tokens": 592,
-    "cost_usd": 0.0023175360000000002,
-    "llm_calls": 4
+    "prompt_tokens": 31599,
+    "completion_tokens": 1032,
+    "cost_usd": 0.002740116,
+    "llm_calls": 6
    },
    "finding": {
     "decision_id": "F19-card",
     "reasons": [
      {
       "factor": "deck_fitness:aoe",
-      "evidence": "T3",
-      "text": "引擎最看重群伤：拿折射后每回合群伤 0.0 → 3.2（需求 7.8），这是差距最大的一项。"
+      "evidence": "T1",
+      "text": "引擎最看重群伤：拿折射后每回合群伤 0.0 → 3.2，需求 7.8，这是差距最大的一项。"
      },
      {
       "factor": "deck_fitness:frontload",
-      "evidence": "T3",
-      "text": "前期输出也会从每回合 22.7 升到 29.7（需求 33.9），离需求更近一步。"
+      "evidence": "T1",
+      "text": "折射把前期输出从每回合 22.7 提到 29.7，需求 33.9。"
      },
      {
       "factor": "deck_fitness:defense",
-      "evidence": "T3",
-      "text": "代价是防御从每回合 7.6 降到 6.1（需求 9.5），当前 45/75 血时这一项是反向的。"
+      "evidence": "T1",
+      "text": "代价是防御每回合 7.6 → 6.1，离需求 9.5 更远，引擎仍认为群伤收益更大。"
      }
     ],
     "what_if_evidence": "T5",
-    "what_if_text": "试过少一张打击，引擎仍首选折射，差距反而从 5.3 变成 5.8，说明不是牌组太厚的问题。",
-    "advice": "若你更在意防御，可以留意补防御牌；引擎这次偏向用群伤和输出换防御。"
+    "what_if_text": "试了四种改动：加引雷针、升级两张防御、去掉遗传算法、加扩容加聚变，首选都仍是折射，没有翻转。",
+    "advice": "若想守住防御，可先补防御类卡再考虑高费群伤；引擎这次始终偏向折射，差距约 5.3 分。"
    }
   },
   {
    "flag": "F04-card",
    "status": "verified",
-   "errors": [
-    "reasons[1]: deck_fitness:frontload is not one of the largest differences here (deck_fitness:defense, deck_fitness:lookahead, deck_fitness:cycle)"
-   ],
+   "errors": [],
    "evidence": [
     {
      "id": "T0",
@@ -3483,228 +3331,6 @@
     },
     {
      "id": "T1",
-     "tool": "get_decision",
-     "result": {
-      "id": "F04-card",
-      "kind": "card_reward",
-      "floor": 4,
-      "act": 1,
-      "hp": 57,
-      "max_hp": 75,
-      "gold": 37,
-      "engine_top": "1:FUSION",
-      "confidence": "medium",
-      "policy_status": "recommend",
-      "pick_margin": 1,
-      "options": [
-       {
-        "id": "1:FUSION",
-        "kind": "card",
-        "entity_id": "FUSION",
-        "name": "聚变",
-        "score": 46.9,
-        "deck_score": 46.9,
-        "rank": 1,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "estimate_scope",
-          "delta": 0,
-          "message": "牌组中 2 张牌未完整计入评分，分数只反映已计入的部分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 2 张牌（烟囱、遗传算法）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": 3.83,
-          "message": "拿聚变后防御：每回合 5.1 → 5.9（需求 6.5）"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": 1.54,
-          "message": "拿聚变后前期输出：每回合 18.7 → 20.9（需求 25.1）"
-         },
-         {
-          "code": "deck_fitness:synergy",
-          "delta": 0,
-          "message": "牌组里的 双重释放 让聚变更有价值（说明，不另加分）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": -2.4,
-          "message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 1.5352,
-         "survival": 3.8316,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
-       },
-       {
-        "id": "skip",
-        "kind": "skip",
-        "entity_id": null,
-        "name": "跳过",
-        "score": 44.9,
-        "deck_score": 43.9,
-        "rank": 2,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "estimate_scope",
-          "delta": 0,
-          "message": "牌组中 2 张牌未完整计入评分，分数只反映已计入的部分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 2 张牌（烟囱、遗传算法）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": 0,
-          "message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         },
-         {
-          "code": "deck_fitness:pick_margin",
-          "delta": 1,
-          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 0,
-         "survival": 0,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
-       },
-       {
-        "id": "0:GUNK_UP",
-        "kind": "card",
-        "entity_id": "GUNK_UP",
-        "name": "污秽攻击",
-        "score": 43.6,
-        "deck_score": 43.6,
-        "rank": 3,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "estimate_scope",
-          "delta": 0,
-          "message": "牌组中 2 张牌未完整计入评分，分数只反映已计入的部分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 2 张牌（烟囱、遗传算法）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": -2.82,
-          "message": "拿污秽攻击后防御：每回合 5.1 → 4.5（需求 6.5）"
-         },
-         {
-          "code": "deck_fitness:cycle",
-          "delta": 1.41,
-          "message": "拿污秽攻击后循环：每回合额外抽牌 0.00 → 0.12（需求 1.0）"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": 0.31,
-          "message": "拿污秽攻击后前期输出：每回合 18.7 → 19.1（需求 25.1）"
-         },
-         {
-          "code": "deck_fitness:synergy",
-          "delta": 0,
-          "message": "牌组里的 双重释放 让污秽攻击更有价值（说明，不另加分）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": 0.84,
-          "message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 0.307,
-         "survival": -2.8167,
-         "long_term_growth": 1.4082,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
-       },
-       {
-        "id": "2:NULL",
-        "kind": "card",
-        "entity_id": "NULL",
-        "name": "空值",
-        "score": 43.4,
-        "deck_score": 43.4,
-        "rank": 4,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "estimate_scope",
-          "delta": 0,
-          "message": "牌组中 2 张牌未完整计入评分，分数只反映已计入的部分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 2 张牌（烟囱、遗传算法）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": -0.79,
-          "message": "拿空值后防御：每回合 5.1 → 4.9（需求 6.5）"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": 0.06,
-          "message": "拿空值后前期输出：每回合 18.7 → 18.8（需求 25.1）"
-         },
-         {
-          "code": "deck_fitness:synergy",
-          "delta": 0,
-          "message": "牌组里的 电击 让空值更有价值（说明，不另加分）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": 0.2,
-          "message": "计入后续 2 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 0.0647,
-         "survival": -0.7852,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
-       }
-      ],
-      "chosen": "0:GUNK_UP",
-      "tier": 1,
-      "gap": 3.3,
-      "not_strict_because": []
-     }
-    },
-    {
-     "id": "T2",
      "tool": "compare_options",
      "result": {
       "decision_id": "F04-card",
@@ -3783,7 +3409,7 @@
      }
     },
     {
-     "id": "T3",
+     "id": "T2",
      "tool": "get_deck",
      "result": {
       "decision_id": "F04-card",
@@ -3851,7 +3477,7 @@
      }
     },
     {
-     "id": "T4",
+     "id": "T3",
      "tool": "what_if_choices",
      "result": {
       "remove": [
@@ -3913,15 +3539,81 @@
      }
     },
     {
+     "id": "T4",
+     "tool": "get_card",
+     "result": {
+      "id": "FUSION",
+      "name": "聚变",
+      "description": "生成1个等离子充能球。",
+      "cost": 1,
+      "type": "技能",
+      "rarity": "罕见",
+      "color": "defect",
+      "target": "Self",
+      "keywords": [
+       "消耗"
+      ]
+     }
+    },
+    {
      "id": "T5",
+     "tool": "get_card",
+     "result": {
+      "id": "GUNK_UP",
+      "name": "污秽攻击",
+      "description": "造成4点伤害3次。\n在你的弃牌堆中加入一张黏液。",
+      "cost": 1,
+      "type": "攻击",
+      "rarity": "普通",
+      "color": "defect",
+      "target": "AnyEnemy",
+      "damage": 4,
+      "hit_count": 3,
+      "upgrade_description": "造成5点伤害3次。\n在你的弃牌堆中加入一张黏液。"
+     }
+    },
+    {
+     "id": "T6",
+     "tool": "get_card",
+     "result": {
+      "id": "LIGHTNING_ROD",
+      "name": "引雷针",
+      "description": "获得4点格挡。\n在下2个回合开始时,生成1个闪电充能球。",
+      "cost": 1,
+      "type": "技能",
+      "rarity": "普通",
+      "color": "defect",
+      "target": "Self",
+      "block": 4,
+      "upgrade_description": "获得7点格挡。\n在下2个回合开始时,生成1个闪电充能球。"
+     }
+    },
+    {
+     "id": "T7",
+     "tool": "get_card",
+     "result": {
+      "id": "GO_FOR_THE_EYES",
+      "name": "眼部攻击",
+      "description": "造成3点伤害。\n如果敌人的意图是攻击，则给予1层虚弱。",
+      "cost": 0,
+      "type": "攻击",
+      "rarity": "普通",
+      "color": "defect",
+      "target": "AnyEnemy",
+      "damage": 3,
+      "upgrade_description": "造成4点伤害。\n如果敌人的意图是攻击，则给予2层虚弱。"
+     }
+    },
+    {
+     "id": "T8",
      "tool": "what_if",
      "result": {
       "decision_id": "F04-card",
       "changes": [
        {
-        "operation": "remove",
-        "card": "STRIKE_DEFECT",
-        "name": "打击"
+        "operation": "add",
+        "card": "LIGHTNING_ROD",
+        "name": "引雷针"
        }
       ],
       "engine_top_before": "1:FUSION",
@@ -3929,33 +3621,88 @@
       "pick_changed": false,
       "agrees_with_player_after": false,
       "confidence_after": "medium",
-      "gap_after": 2.8,
+      "gap_after": 2.1,
       "options_after": [
        {
         "id": "1:FUSION",
         "name": "聚变",
-        "deck_score": 48.1,
+        "deck_score": 49.7,
         "rank": 1,
         "fully_scored": true
        },
        {
         "id": "skip",
         "name": "跳过",
-        "deck_score": 45.4,
+        "deck_score": 47.6,
         "rank": 2,
         "fully_scored": true
        },
        {
         "id": "0:GUNK_UP",
         "name": "污秽攻击",
-        "deck_score": 45.3,
+        "deck_score": 47.6,
         "rank": 3,
         "fully_scored": true
        },
        {
         "id": "2:NULL",
         "name": "空值",
-        "deck_score": 44.7,
+        "deck_score": 46.9,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "T9",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F04-card",
+      "changes": [
+       {
+        "operation": "add",
+        "card": "GO_FOR_THE_EYES",
+        "name": "眼部攻击"
+       },
+       {
+        "operation": "add",
+        "card": "LIGHTNING_ROD",
+        "name": "引雷针"
+       }
+      ],
+      "engine_top_before": "1:FUSION",
+      "engine_top_after": "1:FUSION",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 1.9,
+      "options_after": [
+       {
+        "id": "1:FUSION",
+        "name": "聚变",
+        "deck_score": 49.8,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 47.9,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "0:GUNK_UP",
+        "name": "污秽攻击",
+        "deck_score": 47.9,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "2:NULL",
+        "name": "空值",
+        "deck_score": 47.3,
         "rank": 4,
         "fully_scored": true
        }
@@ -3963,12 +3710,12 @@
      }
     }
    ],
-   "toolCalls": 5,
-   "repairs": 1,
+   "toolCalls": 6,
+   "repairs": 0,
    "usage": {
-    "prompt_tokens": 26663,
-    "completion_tokens": 995,
-    "cost_usd": 0.0027578280000000004,
+    "prompt_tokens": 22298,
+    "completion_tokens": 750,
+    "cost_usd": 0.003186456,
     "llm_calls": 5
    },
    "finding": {
@@ -3976,23 +3723,23 @@
     "reasons": [
      {
       "factor": "deck_fitness:defense",
-      "evidence": "T2",
-      "text": "差距最大的是防御：拿聚变每回合 5.1 → 5.9，拿污秽攻击反而降到 4.5，而需求是 6.5。"
+      "evidence": "T1",
+      "text": "防御是差距最大的一项：拿聚变每回合 5.1 → 5.9，拿污秽攻击反而降到 4.5，需求 6.5。"
      },
      {
       "factor": "deck_fitness:lookahead",
-      "evidence": "T2",
-      "text": "往后看两次选牌，污秽攻击的后续适配反而更好（+0.84 对 -2.4），这是引擎只给中等信心的原因。"
+      "evidence": "T1",
+      "text": "往后看两次选牌，聚变这一侧会掉 2.4 分，污秽攻击则小幅加分，这是玩家选择的主要支撑。"
      },
      {
       "factor": "deck_fitness:cycle",
-      "evidence": "T2",
-      "text": "污秽攻击在循环上略有加分，每回合额外抽牌 0.00 → 0.12，但需求是 1.0，补得有限。"
+      "evidence": "T1",
+      "text": "污秽攻击让每回合额外抽牌 0.00 → 0.12，但需求是 1.0，补得很有限。"
      }
     ],
-    "what_if_evidence": "T5",
-    "what_if_text": "假设当时少一张打击，引擎首选仍是聚变，差距从 3.3 缩到 2.8，没有改变结论。",
-    "advice": "当前牌组只有 4 张防御、每回合防御 5.1 低于需求 6.5，选牌时可优先补防御或产球，而不是再加攻击牌。"
+    "what_if_evidence": "T8",
+    "what_if_text": "先补一张引雷针（4 点格挡）后，聚变仍是首选，差距从 3.3 缩到 2.1；再加眼部攻击也只缩到 1.9，首选没变。",
+    "advice": "这套牌防御每回合只有 5.1，离 6.5 还差一截；下次遇到能稳定加格挡的牌，优先补防御缺口。"
    }
   },
   {
@@ -4147,469 +3894,49 @@
     },
     {
      "id": "T1",
-     "tool": "get_decision",
+     "tool": "compare_options",
      "result": {
-      "id": "F09-shop",
-      "kind": "shop",
-      "floor": 9,
-      "act": 1,
-      "hp": 57,
-      "max_hp": 75,
-      "gold": 77,
-      "engine_top": "leave",
-      "confidence": "medium",
-      "policy_status": "recommend",
-      "pick_margin": 1,
-      "options": [
+      "decision_id": "F09-shop",
+      "a": {
+       "id": "leave",
+       "name": "离开商店",
+       "deck_score": 50,
+       "fully_scored": true
+      },
+      "b": {
+       "id": "removal",
+       "name": "删牌",
+       "deck_score": 48.2,
+       "fully_scored": true
+      },
+      "deck_score_difference": 1.8,
+      "factors": [
        {
-        "id": "leave",
-        "kind": "leave",
-        "entity_id": null,
-        "name": "离开商店",
-        "score": 50,
-        "deck_score": 50,
-        "rank": 1,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "merchant_leave",
-          "delta": 0,
-          "message": "离开商店，保留金币。"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 0,
-         "survival": 0,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "deck_burden": 0,
-         "synergy": 0,
-         "route_fit": 0,
-         "data_completeness": 1
-        }
+        "factor": "merchant:price",
+        "a": 0,
+        "b": -2.84,
+        "difference": 2.84,
+        "a_message": null,
+        "b_message": "花 75 金币（现有 77）：这些金币在之后的商店能买到的价值；金币越多每枚越不值钱"
        },
        {
-        "id": "card:3:BOOST_AWAY",
-        "kind": "card",
-        "entity_id": "BOOST_AWAY",
-        "name": "高速脱离",
-        "score": 48.7856,
-        "deck_score": 48.79,
-        "rank": 2,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "merchant:deck",
-          "delta": 0.5897,
-          "message": "加入 高速脱离 后的牌组适合度（计入本幕后续选牌）"
-         },
-         {
-          "code": "merchant:price",
-          "delta": -1.8041,
-          "message": "花 50 金币（现有 77）：这些金币在之后的商店能买到的价值；金币越多每枚越不值钱"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 0,
-         "survival": 0,
-         "long_term_growth": 0.5897,
-         "resource_efficiency": -1.8041,
-         "deck_burden": 0,
-         "synergy": 0,
-         "route_fit": 0,
-         "data_completeness": 1
-        }
+        "factor": "merchant:deck",
+        "a": 0,
+        "b": 1.04,
+        "difference": -1.04,
+        "a_message": null,
+        "b_message": "移除 打击（可移除的牌中估值最好的一张）"
        },
        {
-        "id": "removal",
-        "kind": "card_removal",
-        "entity_id": null,
-        "name": "删牌",
-        "score": 48.1992,
-        "deck_score": 48.2,
-        "rank": 3,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "merchant:deck",
-          "delta": 1.0433,
-          "message": "移除 打击（可移除的牌中估值最好的一张）"
-         },
-         {
-          "code": "merchant:price",
-          "delta": -2.8441,
-          "message": "花 75 金币（现有 77）：这些金币在之后的商店能买到的价值；金币越多每枚越不值钱"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 0,
-         "survival": 0,
-         "long_term_growth": 1.0433,
-         "resource_efficiency": -2.8441,
-         "deck_burden": 0,
-         "synergy": 0,
-         "route_fit": 0,
-         "data_completeness": 1
-        }
-       },
-       {
-        "id": "card:1:FTL",
-        "kind": "card",
-        "entity_id": "FTL",
-        "name": "超越光速",
-        "score": 47.5901,
-        "deck_score": 47.59,
-        "rank": 4,
-        "eligible": true,
-        "fully_scored": false,
-        "gaps": [
-         "card_effect_unsupported:FTL:effect_key:condition_upgrade"
-        ],
-        "factors": [
-         {
-          "code": "merchant:deck",
-          "delta": 0.4342,
-          "message": "加入 超越光速 后的牌组适合度（计入本幕后续选牌）"
-         },
-         {
-          "code": "merchant:price",
-          "delta": -2.8441,
-          "message": "花 75 金币（现有 77）：这些金币在之后的商店能买到的价值；金币越多每枚越不值钱"
-         },
-         {
-          "code": "unmodeled_mechanic",
-          "delta": 0,
-          "message": "部分效果尚未计入评分（见数据缺口），分数只反映已计入的部分。"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 0,
-         "survival": 0,
-         "long_term_growth": 0.4342,
-         "resource_efficiency": -2.8441,
-         "deck_burden": 0,
-         "synergy": 0,
-         "route_fit": 0,
-         "data_completeness": 1
-        }
-       },
-       {
-        "id": "card:5:PROWESS",
-        "kind": "card",
-        "entity_id": "PROWESS",
-        "name": "非凡技艺",
-        "score": 47.0921,
-        "deck_score": 47.09,
-        "rank": 5,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "merchant:deck",
-          "delta": -0.0638,
-          "message": "加入 非凡技艺 后的牌组适合度（计入本幕后续选牌）"
-         },
-         {
-          "code": "merchant:price",
-          "delta": -2.8441,
-          "message": "花 75 金币（现有 77）：这些金币在之后的商店能买到的价值；金币越多每枚越不值钱"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 0,
-         "survival": 0,
-         "long_term_growth": -0.0638,
-         "resource_efficiency": -2.8441,
-         "deck_burden": 0,
-         "synergy": 0,
-         "route_fit": 0,
-         "data_completeness": 1
-        }
-       },
-       {
-        "id": "card:0:NULL",
-        "kind": "card",
-        "entity_id": "NULL",
-        "name": "空值",
-        "score": 46.0539,
-        "deck_score": 46.05,
-        "rank": 6,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "merchant:deck",
-          "delta": -1.102,
-          "message": "加入 空值 后的牌组适合度（计入本幕后续选牌）"
-         },
-         {
-          "code": "merchant:price",
-          "delta": -2.8441,
-          "message": "花 75 金币（现有 77）：这些金币在之后的商店能买到的价值；金币越多每枚越不值钱"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 0,
-         "survival": 0,
-         "long_term_growth": -1.102,
-         "resource_efficiency": -2.8441,
-         "deck_burden": 0,
-         "synergy": 0,
-         "route_fit": 0,
-         "data_completeness": 1
-        }
-       },
-       {
-        "id": "card:4:CAPACITOR",
-        "kind": "card",
-        "entity_id": "CAPACITOR",
-        "name": "扩容",
-        "score": 45.6743,
-        "deck_score": 45.67,
-        "rank": 7,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "merchant:deck",
-          "delta": -1.4816,
-          "message": "加入 扩容 后的牌组适合度（计入本幕后续选牌）"
-         },
-         {
-          "code": "merchant:price",
-          "delta": -2.8441,
-          "message": "花 75 金币（现有 77）：这些金币在之后的商店能买到的价值；金币越多每枚越不值钱"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 0,
-         "survival": 0,
-         "long_term_growth": -1.4816,
-         "resource_efficiency": -2.8441,
-         "deck_burden": 0,
-         "synergy": 0,
-         "route_fit": 0,
-         "data_completeness": 1
-        }
-       },
-       {
-        "id": "card:2:VOLTAIC",
-        "kind": "card",
-        "entity_id": "VOLTAIC",
-        "name": "电流相生",
-        "score": null,
-        "deck_score": null,
-        "rank": null,
-        "eligible": false,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [],
-        "dimensions": {
-         "immediate_power": 0,
-         "survival": 0,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "deck_burden": 0,
-         "synergy": 0,
-         "route_fit": 0,
-         "data_completeness": 1
-        }
-       },
-       {
-        "id": "card:6:BOLAS",
-        "kind": "card",
-        "entity_id": "BOLAS",
-        "name": "流星锤",
-        "score": null,
-        "deck_score": null,
-        "rank": null,
-        "eligible": false,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [],
-        "dimensions": {
-         "immediate_power": 0,
-         "survival": 0,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "deck_burden": 0,
-         "synergy": 0,
-         "route_fit": 0,
-         "data_completeness": 1
-        }
-       },
-       {
-        "id": "relic:0:BLOOD_VIAL",
-        "kind": "relic",
-        "entity_id": "BLOOD_VIAL",
-        "name": "小血瓶",
-        "score": null,
-        "deck_score": null,
-        "rank": null,
-        "eligible": false,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [],
-        "dimensions": {
-         "immediate_power": 0,
-         "survival": 0,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "deck_burden": 0,
-         "synergy": 0,
-         "route_fit": 0,
-         "data_completeness": 1
-        }
-       },
-       {
-        "id": "relic:1:VENERABLE_TEA_SET",
-        "kind": "relic",
-        "entity_id": "VENERABLE_TEA_SET",
-        "name": "古茶具套装",
-        "score": null,
-        "deck_score": null,
-        "rank": null,
-        "eligible": false,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [],
-        "dimensions": {
-         "immediate_power": 0,
-         "survival": 0,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "deck_burden": 0,
-         "synergy": 0,
-         "route_fit": 0,
-         "data_completeness": 1
-        }
-       },
-       {
-        "id": "relic:2:BURNING_STICKS",
-        "kind": "relic",
-        "entity_id": "BURNING_STICKS",
-        "name": "燃烧木棍",
-        "score": null,
-        "deck_score": null,
-        "rank": null,
-        "eligible": false,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [],
-        "dimensions": {
-         "immediate_power": 0,
-         "survival": 0,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "deck_burden": 0,
-         "synergy": 0,
-         "route_fit": 0,
-         "data_completeness": 1
-        }
-       },
-       {
-        "id": "potion:0:WEAK_POTION",
-        "kind": "potion",
-        "entity_id": "WEAK_POTION",
-        "name": "虚弱药水",
-        "score": null,
-        "deck_score": null,
-        "rank": null,
-        "eligible": true,
-        "fully_scored": false,
-        "gaps": [
-         "merchant:potion_unmodeled:WEAK_POTION"
-        ],
-        "factors": [
-         {
-          "code": "insufficient_data",
-          "delta": 0,
-          "message": "药水还没有经程序集核对的效果事实，暂不评分。"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 0,
-         "survival": 0,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "deck_burden": 0,
-         "synergy": 0,
-         "route_fit": 0,
-         "data_completeness": 0
-        }
-       },
-       {
-        "id": "potion:1:STRENGTH_POTION",
-        "kind": "potion",
-        "entity_id": "STRENGTH_POTION",
-        "name": "力量药水",
-        "score": null,
-        "deck_score": null,
-        "rank": null,
-        "eligible": true,
-        "fully_scored": false,
-        "gaps": [
-         "merchant:potion_unmodeled:STRENGTH_POTION"
-        ],
-        "factors": [
-         {
-          "code": "insufficient_data",
-          "delta": 0,
-          "message": "药水还没有经程序集核对的效果事实，暂不评分。"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 0,
-         "survival": 0,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "deck_burden": 0,
-         "synergy": 0,
-         "route_fit": 0,
-         "data_completeness": 0
-        }
-       },
-       {
-        "id": "potion:2:BEETLE_JUICE",
-        "kind": "potion",
-        "entity_id": "BEETLE_JUICE",
-        "name": "甲虫汁",
-        "score": null,
-        "deck_score": null,
-        "rank": null,
-        "eligible": false,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [],
-        "dimensions": {
-         "immediate_power": 0,
-         "survival": 0,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "deck_burden": 0,
-         "synergy": 0,
-         "route_fit": 0,
-         "data_completeness": 1
-        }
+        "factor": "merchant_leave",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "离开商店，保留金币。",
+        "b_message": null
        }
       ],
-      "bought": [
-       "removal"
-      ],
-      "bought_unscored": 0,
-      "chosen": "removal",
-      "tier": 1,
-      "gap": 1.8,
-      "not_strict_because": []
+      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
      }
     },
     {
@@ -4698,152 +4025,64 @@
     },
     {
      "id": "T3",
-     "tool": "compare_options",
-     "result": {
-      "decision_id": "F09-shop",
-      "a": {
-       "id": "removal",
-       "name": "删牌",
-       "deck_score": 48.2,
-       "fully_scored": true
-      },
-      "b": {
-       "id": "leave",
-       "name": "离开商店",
-       "deck_score": 50,
-       "fully_scored": true
-      },
-      "deck_score_difference": -1.8,
-      "factors": [
-       {
-        "factor": "merchant:price",
-        "a": -2.84,
-        "b": 0,
-        "difference": -2.84,
-        "a_message": "花 75 金币（现有 77）：这些金币在之后的商店能买到的价值；金币越多每枚越不值钱",
-        "b_message": null
-       },
-       {
-        "factor": "merchant:deck",
-        "a": 1.04,
-        "b": 0,
-        "difference": 1.04,
-        "a_message": "移除 打击（可移除的牌中估值最好的一张）",
-        "b_message": null
-       },
-       {
-        "factor": "merchant_leave",
-        "a": 0,
-        "b": 0,
-        "difference": 0,
-        "a_message": null,
-        "b_message": "离开商店，保留金币。"
-       }
-      ],
-      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
-     }
+     "tool": "what_if_choices",
+     "result": {}
     },
     {
      "id": "T4",
-     "tool": "what_if_choices",
+     "tool": "get_card",
      "result": {
-      "remove": [
-       "BALL_LIGHTNING",
-       "DEFEND_DEFECT",
-       "DUALCAST",
-       "GENETIC_ALGORITHM",
-       "GUNK_UP",
-       "OVERCLOCK",
-       "SMOKESTACK",
-       "STRIKE_DEFECT",
-       "ZAP"
+      "id": "BOOST_AWAY",
+      "name": "高速脱离",
+      "description": "获得6点格挡。\n将一张晕眩添加到你的弃牌堆中。",
+      "cost": 0,
+      "type": "技能",
+      "rarity": "普通",
+      "color": "defect",
+      "target": "Self",
+      "block": 6,
+      "upgrade_description": "获得9点格挡。\n将一张晕眩添加到你的弃牌堆中。"
+     }
+    },
+    {
+     "id": "T5",
+     "tool": "get_card",
+     "result": {
+      "id": "GENETIC_ALGORITHM",
+      "name": "遗传算法",
+      "description": "获得1点格挡。\n每打出一次，这张牌在本局游戏中的格挡值永久增加3点。",
+      "cost": 1,
+      "type": "技能",
+      "rarity": "稀有",
+      "color": "defect",
+      "target": "Self",
+      "block": 1,
+      "keywords": [
+       "消耗"
       ],
-      "upgrade": [
-       "BALL_LIGHTNING",
-       "DEFEND_DEFECT",
-       "DUALCAST",
-       "GENETIC_ALGORITHM",
-       "GUNK_UP",
-       "OVERCLOCK",
-       "SMOKESTACK",
-       "STRIKE_DEFECT"
-      ],
-      "add": [
-       {
-        "card": "ADAPTIVE_STRIKE",
-        "name": "适应打击"
-       },
-       {
-        "card": "BALL_LIGHTNING",
-        "name": "球状闪电"
-       },
-       {
-        "card": "DOUBLE_ENERGY",
-        "name": "双倍能量"
-       },
-       {
-        "card": "FINESSE",
-        "name": "妙计"
-       },
-       {
-        "card": "FOCUSED_STRIKE",
-        "name": "集中打击"
-       },
-       {
-        "card": "FUSION",
-        "name": "聚变"
-       },
-       {
-        "card": "GOLD_AXE",
-        "name": "金斧"
-       },
-       {
-        "card": "GO_FOR_THE_EYES",
-        "name": "眼部攻击"
-       },
-       {
-        "card": "GUNK_UP",
-        "name": "污秽攻击"
-       },
-       {
-        "card": "LIGHTNING_ROD",
-        "name": "引雷针"
-       },
-       {
-        "card": "MOMENTUM_STRIKE",
-        "name": "趁势打击"
-       },
-       {
-        "card": "NULL",
-        "name": "空值"
-       },
-       {
-        "card": "SUNDER",
-        "name": "分离"
-       }
-      ]
+      "upgrade_description": "获得1点格挡。\n每打出一次，这张牌在本局游戏中的格挡值永久增加4点。"
      }
     }
    ],
-   "toolCalls": 5,
+   "toolCalls": 2,
    "repairs": 1,
    "usage": {
-    "prompt_tokens": 27048,
-    "completion_tokens": 808,
-    "cost_usd": 0.002611296,
-    "llm_calls": 5
+    "prompt_tokens": 8660,
+    "completion_tokens": 580,
+    "cost_usd": 0.001374768,
+    "llm_calls": 3
    }
   }
  ],
  "summary": {
-  "text": "这些决定都卡在防御不足：7.6、6.1、5.1 均低于需求 9.8、9.5、6.5，优先补防御或产球。",
+  "text": "这些决定都低估了防御缺口，应优先拿能稳定加格挡的牌补到需求线。",
   "source": "model",
-  "cost_usd": 0.00024
+  "cost_usd": 0.00021
  },
  "meta": {
   "model": "deepseek-flash",
-  "cost_usd": 0.012676536000000002,
-  "seconds": 9.248,
-  "generated_at": "2026-11-01 14:44"
+  "cost_usd": 0.011804304,
+  "seconds": 10.851,
+  "generated_at": "2026-11-11 00:29"
  }
 }

@@ -35,7 +35,7 @@ export interface Recorded {
   meta: ReportMeta;
 }
 
-export const PROMPT_VERSION = "p3";
+export const PROMPT_VERSION = "p4";
 
 export function resultsDir(set: EvalSet, model: string): string {
   return path.join(EVAL_DIR, "results", set, model);
@@ -128,6 +128,9 @@ export interface Metrics {
   summary_from_model: number;
   tool_calls_per_flag: number | null;
   what_if_used: number;
+  what_if_calls_per_flag: number | null;
+  flip_found: number;
+  llm_calls_per_flag: number | null;
   cost_usd: number;
   cost_per_run: number | null;
   seconds_per_run: number | null;
@@ -173,6 +176,10 @@ export function metrics(set: EvalSet, model: string, rows: Recorded[]): Metrics 
     summary_from_model: rows.filter((r) => r.summary.source === "model").length,
     tool_calls_per_flag: ratio(flags.reduce((a, f) => a + f.e.toolCalls, 0), shown),
     what_if_used: verified.filter((f) => f.e.finding?.what_if_text).length,
+    what_if_calls_per_flag: ratio(flags.reduce((a, f) => a + f.e.evidence.filter((x) => x.tool === "what_if").length, 0), shown),
+    // Flags where some what-if made the engine agree with the player.
+    flip_found: flags.filter((f) => f.e.evidence.some((x) => x.tool === "what_if" && (x.result as { agrees_with_player_after?: boolean }).agrees_with_player_after)).length,
+    llm_calls_per_flag: ratio(flags.reduce((a, f) => a + f.e.usage.llm_calls, 0), shown),
     cost_usd: Math.round(cost * 10000) / 10000,
     cost_per_run: ratio(cost, rows.length),
     seconds_per_run: ratio(rows.reduce((a, r) => a + r.meta.seconds, 0), rows.length),

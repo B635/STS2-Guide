@@ -2,7 +2,7 @@
  "run": "1773034032",
  "set": "dev",
  "model": "deepseek-flash",
- "prompt_version": "p3",
+ "prompt_version": "p4",
  "pre": {
   "summary": {
    "run_id": "1773034032",
@@ -1001,161 +1001,49 @@
     },
     {
      "id": "T1",
-     "tool": "get_decision",
+     "tool": "compare_options",
      "result": {
-      "id": "F14-card",
-      "kind": "card_reward",
-      "floor": 14,
-      "act": 1,
-      "hp": 55,
-      "max_hp": 80,
-      "gold": 150,
-      "engine_top": "1:BLOODLETTING",
-      "confidence": "medium",
-      "policy_status": "recommend",
-      "pick_margin": 1,
-      "options": [
+      "decision_id": "F14-card",
+      "a": {
+       "id": "1:BLOODLETTING",
+       "name": "放血",
+       "deck_score": 59.2,
+       "fully_scored": true
+      },
+      "b": {
+       "id": "skip",
+       "name": "跳过",
+       "deck_score": 51.6,
+       "fully_scored": true
+      },
+      "deck_score_difference": 7.6,
+      "factors": [
        {
-        "id": "1:BLOODLETTING",
-        "kind": "card",
-        "entity_id": "BLOODLETTING",
-        "name": "放血",
-        "score": 59.2,
-        "deck_score": 59.2,
-        "rank": 1,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "deck_fitness:defense",
-          "delta": 4.14,
-          "message": "拿放血后防御：每回合 6.8 → 7.4（需求 11.8）"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": 2.63,
-          "message": "拿放血后前期输出：每回合 28.9 → 34.8（需求 36.0）"
-         },
-         {
-          "code": "deck_fitness:cycle",
-          "delta": 0.84,
-          "message": "拿放血后循环：每回合额外抽牌 0.47 → 0.57（需求 1.0）"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 2.6334,
-         "survival": 4.1438,
-         "long_term_growth": 0.8431,
-         "resource_efficiency": 0,
-         "data_completeness": 1
-        }
+        "factor": "deck_fitness:defense",
+        "a": 4.14,
+        "b": 0,
+        "difference": 4.14,
+        "a_message": "拿放血后防御：每回合 6.8 → 7.4（需求 11.8）",
+        "b_message": null
        },
        {
-        "id": "0:ANGER",
-        "kind": "card",
-        "entity_id": "ANGER",
-        "name": "愤怒",
-        "score": 55.2,
-        "deck_score": 55.2,
-        "rank": 2,
-        "eligible": true,
-        "fully_scored": false,
-        "gaps": [
-         "generated:ANGER:card_effect_unsupported:ANGER:add_card:generated_chain_truncated"
-        ],
-        "factors": [
-         {
-          "code": "unmodeled_mechanic",
-          "delta": 0,
-          "message": "愤怒的部分效果尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": 2.01,
-          "message": "拿愤怒后前期输出：每回合 28.9 → 33.3（需求 36.0）"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": 1.65,
-          "message": "拿愤怒后防御：每回合 6.8 → 6.6（需求 11.8）"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 2.0142,
-         "survival": 1.6486,
-         "long_term_growth": -0.042,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
+        "factor": "deck_fitness:frontload",
+        "a": 2.63,
+        "b": 0,
+        "difference": 2.63,
+        "a_message": "拿放血后前期输出：每回合 28.9 → 34.8（需求 36.0）",
+        "b_message": null
        },
        {
-        "id": "2:BLOOD_WALL",
-        "kind": "card",
-        "entity_id": "BLOOD_WALL",
-        "name": "血墙",
-        "score": 54.2,
-        "deck_score": 54.2,
-        "rank": 3,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "deck_fitness:defense",
-          "delta": 4.44,
-          "message": "拿血墙后防御：每回合 6.8 → 8.6（需求 11.8）"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": -1.29,
-          "message": "拿血墙后前期输出：每回合 28.9 → 26.3（需求 36.0）"
-         },
-         {
-          "code": "deck_fitness:cycle",
-          "delta": -0.54,
-          "message": "拿血墙后循环：每回合额外抽牌 0.47 → 0.41（需求 1.0）"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": -1.2855,
-         "survival": 4.4398,
-         "long_term_growth": -0.5357,
-         "resource_efficiency": 0,
-         "data_completeness": 1
-        }
-       },
-       {
-        "id": "skip",
-        "kind": "skip",
-        "entity_id": null,
-        "name": "跳过",
-        "score": 52.6,
-        "deck_score": 51.6,
-        "rank": 4,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "deck_fitness:pick_margin",
-          "delta": 1,
-          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 0,
-         "survival": 0,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "data_completeness": 1
-        }
+        "factor": "deck_fitness:cycle",
+        "a": 0.84,
+        "b": 0,
+        "difference": 0.84,
+        "a_message": "拿放血后循环：每回合额外抽牌 0.47 → 0.57（需求 1.0）",
+        "b_message": null
        }
       ],
-      "chosen": "skip",
-      "tier": 1,
-      "gap": 7.6,
-      "not_strict_because": []
+      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
      }
     },
     {
@@ -1245,53 +1133,6 @@
     },
     {
      "id": "T3",
-     "tool": "compare_options",
-     "result": {
-      "decision_id": "F14-card",
-      "a": {
-       "id": "1:BLOODLETTING",
-       "name": "放血",
-       "deck_score": 59.2,
-       "fully_scored": true
-      },
-      "b": {
-       "id": "skip",
-       "name": "跳过",
-       "deck_score": 51.6,
-       "fully_scored": true
-      },
-      "deck_score_difference": 7.6,
-      "factors": [
-       {
-        "factor": "deck_fitness:defense",
-        "a": 4.14,
-        "b": 0,
-        "difference": 4.14,
-        "a_message": "拿放血后防御：每回合 6.8 → 7.4（需求 11.8）",
-        "b_message": null
-       },
-       {
-        "factor": "deck_fitness:frontload",
-        "a": 2.63,
-        "b": 0,
-        "difference": 2.63,
-        "a_message": "拿放血后前期输出：每回合 28.9 → 34.8（需求 36.0）",
-        "b_message": null
-       },
-       {
-        "factor": "deck_fitness:cycle",
-        "a": 0.84,
-        "b": 0,
-        "difference": 0.84,
-        "a_message": "拿放血后循环：每回合额外抽牌 0.47 → 0.57（需求 1.0）",
-        "b_message": null
-       }
-      ],
-      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
-     }
-    },
-    {
-     "id": "T4",
      "tool": "what_if_choices",
      "result": {
       "remove": [
@@ -1393,15 +1234,15 @@
      }
     },
     {
-     "id": "T5",
+     "id": "T4",
      "tool": "what_if",
      "result": {
       "decision_id": "F14-card",
       "changes": [
        {
         "operation": "add",
-        "card": "OFFERING",
-        "name": "祭品"
+        "card": "BLOOD_WALL",
+        "name": "血墙"
        }
       ],
       "engine_top_before": "1:BLOODLETTING",
@@ -1409,33 +1250,183 @@
       "pick_changed": false,
       "agrees_with_player_after": false,
       "confidence_after": "medium",
-      "gap_after": 6.1,
+      "gap_after": 7,
       "options_after": [
        {
         "id": "1:BLOODLETTING",
         "name": "放血",
-        "deck_score": 63,
+        "deck_score": 61.2,
         "rank": 1,
         "fully_scored": true
        },
        {
         "id": "0:ANGER",
         "name": "愤怒",
-        "deck_score": 60.4,
+        "deck_score": 57,
         "rank": 2,
         "fully_scored": false
        },
        {
         "id": "2:BLOOD_WALL",
         "name": "血墙",
-        "deck_score": 59.8,
+        "deck_score": 56.4,
         "rank": 3,
         "fully_scored": true
        },
        {
         "id": "skip",
         "name": "跳过",
-        "deck_score": 56.9,
+        "deck_score": 54.2,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "T5",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F14-card",
+      "changes": [
+       {
+        "operation": "add",
+        "card": "TRUE_GRIT",
+        "name": "坚毅"
+       }
+      ],
+      "engine_top_before": "1:BLOODLETTING",
+      "engine_top_after": "1:BLOODLETTING",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 7.1,
+      "options_after": [
+       {
+        "id": "1:BLOODLETTING",
+        "name": "放血",
+        "deck_score": 59.9,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "0:ANGER",
+        "name": "愤怒",
+        "deck_score": 55.9,
+        "rank": 2,
+        "fully_scored": false
+       },
+       {
+        "id": "2:BLOOD_WALL",
+        "name": "血墙",
+        "deck_score": 55.2,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 52.8,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "T6",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F14-card",
+      "changes": [
+       {
+        "operation": "remove",
+        "card": "DEFEND_IRONCLAD",
+        "name": "防御"
+       }
+      ],
+      "engine_top_before": "1:BLOODLETTING",
+      "engine_top_after": "1:BLOODLETTING",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 7.7,
+      "options_after": [
+       {
+        "id": "1:BLOODLETTING",
+        "name": "放血",
+        "deck_score": 59,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "0:ANGER",
+        "name": "愤怒",
+        "deck_score": 55.4,
+        "rank": 2,
+        "fully_scored": false
+       },
+       {
+        "id": "2:BLOOD_WALL",
+        "name": "血墙",
+        "deck_score": 54,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 51.3,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "T7",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F14-card",
+      "changes": [
+       {
+        "operation": "remove",
+        "card": "STRIKE_IRONCLAD",
+        "name": "打击"
+       }
+      ],
+      "engine_top_before": "1:BLOODLETTING",
+      "engine_top_after": "1:BLOODLETTING",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 8.3,
+      "options_after": [
+       {
+        "id": "1:BLOODLETTING",
+        "name": "放血",
+        "deck_score": 60.8,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "0:ANGER",
+        "name": "愤怒",
+        "deck_score": 56.4,
+        "rank": 2,
+        "fully_scored": false
+       },
+       {
+        "id": "2:BLOOD_WALL",
+        "name": "血墙",
+        "deck_score": 55.4,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 52.5,
         "rank": 4,
         "fully_scored": true
        }
@@ -1443,36 +1434,36 @@
      }
     }
    ],
-   "toolCalls": 5,
+   "toolCalls": 4,
    "repairs": 0,
    "usage": {
-    "prompt_tokens": 16192,
-    "completion_tokens": 627,
-    "cost_usd": 0.0018468,
-    "llm_calls": 4
+    "prompt_tokens": 11473,
+    "completion_tokens": 610,
+    "cost_usd": 0.0011633400000000001,
+    "llm_calls": 3
    },
    "finding": {
     "decision_id": "F14-card",
     "reasons": [
      {
       "factor": "deck_fitness:defense",
-      "evidence": "T3",
-      "text": "拿放血后防御每回合 6.8 → 7.4，需求 11.8；引擎认为这张牌能顺带补一点防御，是差距最大的一项。"
+      "evidence": "T1",
+      "text": "拿放血后防御每回合 6.8 → 7.4，需求 11.8，这是两者差距最大的一项。"
      },
      {
       "factor": "deck_fitness:frontload",
-      "evidence": "T3",
-      "text": "拿放血后前期输出每回合 28.9 → 34.8，需求 36.0，比跳过更接近输出门槛。"
+      "evidence": "T1",
+      "text": "拿放血后前期输出每回合 28.9 → 34.8，需求 36.0，比跳过更接近门槛。"
      },
      {
       "factor": "deck_fitness:cycle",
-      "evidence": "T3",
-      "text": "拿放血后每回合额外抽牌 0.47 → 0.57，需求 1.0，循环也更顺一点。"
+      "evidence": "T1",
+      "text": "拿放血后每回合额外抽牌 0.47 → 0.57，需求 1.0，循环也略有改善。"
      }
     ],
-    "what_if_evidence": "T5",
-    "what_if_text": "即使之前拿过祭品，引擎仍首选放血，差距从 7.6 缩到 6.1，说明这不是某一张牌的问题。",
-    "advice": "牌组只有 14 张、防御每回合 6.8 远低于需求 11.8，引擎更看重能同时补防御和输出的低费牌；下次遇到这类牌可以先算一下它带来的每回合数值变化。"
+    "what_if_evidence": "T4",
+    "what_if_text": "试过先补血墙、坚毅、去掉防御或打击，首选都仍是放血，没有翻转成跳过。",
+    "advice": "牌组只有 14 张、防御每回合 6.8 远低于需求 11.8，下次遇到能补防御或抽牌的牌，可以优先考虑而不是跳过。"
    }
   },
   {
@@ -1651,199 +1642,65 @@
     },
     {
      "id": "T1",
-     "tool": "get_decision",
+     "tool": "compare_options",
      "result": {
-      "id": "F08-card",
-      "kind": "card_reward",
-      "floor": 8,
-      "act": 1,
-      "hp": 64,
-      "max_hp": 80,
-      "gold": 33,
-      "engine_top": "1:OFFERING",
-      "confidence": "medium",
-      "policy_status": "recommend",
-      "pick_margin": 1,
-      "options": [
+      "decision_id": "F08-card",
+      "a": {
+       "id": "1:OFFERING",
+       "name": "祭品",
+       "deck_score": 47.5,
+       "fully_scored": true
+      },
+      "b": {
+       "id": "0:PERFECTED_STRIKE",
+       "name": "完美打击",
+       "deck_score": 40.9,
+       "fully_scored": true
+      },
+      "deck_score_difference": 6.6,
+      "factors": [
        {
-        "id": "1:OFFERING",
-        "kind": "card",
-        "entity_id": "OFFERING",
-        "name": "祭品",
-        "score": 47.5,
-        "deck_score": 47.5,
-        "rank": 1,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "deck_fitness:cycle",
-          "delta": 4.13,
-          "message": "拿祭品后循环：每回合额外抽牌 0.46 → 1.06（需求 1.0）"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": 1.46,
-          "message": "拿祭品后前期输出：每回合 15.7 → 17.6（需求 25.9）"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": -0.06,
-          "message": "拿祭品后防御：每回合 6.4 → 6.1（需求 8.9）"
-         },
-         {
-          "code": "deck_fitness:synergy",
-          "delta": 0,
-          "message": "牌组里的 完美打击 让祭品更有价值（说明，不另加分）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": 0.39,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 1.4597,
-         "survival": -0.0603,
-         "long_term_growth": 4.1335,
-         "resource_efficiency": 0,
-         "data_completeness": 1
-        }
+        "factor": "deck_fitness:cycle",
+        "a": 4.13,
+        "b": -0.57,
+        "difference": 4.7,
+        "a_message": "拿祭品后循环：每回合额外抽牌 0.46 → 1.06（需求 1.0）",
+        "b_message": "拿完美打击后循环：每回合额外抽牌 0.46 → 0.40（需求 1.0）"
        },
        {
-        "id": "skip",
-        "kind": "skip",
-        "entity_id": null,
-        "name": "跳过",
-        "score": 42.6,
-        "deck_score": 41.6,
-        "rank": 2,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": 0,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         },
-         {
-          "code": "deck_fitness:pick_margin",
-          "delta": 1,
-          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 0,
-         "survival": 0,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "data_completeness": 1
-        }
+        "factor": "deck_fitness:defense",
+        "a": -0.06,
+        "b": -1.64,
+        "difference": 1.58,
+        "a_message": "拿祭品后防御：每回合 6.4 → 6.1（需求 8.9）",
+        "b_message": "拿完美打击后防御：每回合 6.4 → 5.5（需求 8.9）"
        },
        {
-        "id": "2:BREAKTHROUGH",
-        "kind": "card",
-        "entity_id": "BREAKTHROUGH",
-        "name": "突破",
-        "score": 42.1,
-        "deck_score": 42.1,
-        "rank": 3,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "deck_fitness:aoe",
-          "delta": 2.97,
-          "message": "拿突破后群伤：每回合 0.0 → 0.6（需求 2.7）"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": -2.58,
-          "message": "拿突破后防御：每回合 6.4 → 5.7（需求 8.9）"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": 0.64,
-          "message": "拿突破后前期输出：每回合 15.7 → 16.5（需求 25.9）"
-         },
-         {
-          "code": "deck_fitness:cycle",
-          "delta": -0.3,
-          "message": "拿突破后循环：每回合额外抽牌 0.46 → 0.43（需求 1.0）"
-         },
-         {
-          "code": "deck_fitness:synergy",
-          "delta": 0,
-          "message": "牌组里的 完美打击 让突破更有价值（说明，不另加分）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": -0.22,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 3.6029,
-         "survival": -2.5809,
-         "long_term_growth": -0.3041,
-         "resource_efficiency": 0,
-         "data_completeness": 1
-        }
+        "factor": "deck_fitness:lookahead",
+        "a": 0.39,
+        "b": -0.7,
+        "difference": 1.09,
+        "a_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度",
+        "b_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
        },
        {
-        "id": "0:PERFECTED_STRIKE",
-        "kind": "card",
-        "entity_id": "PERFECTED_STRIKE",
-        "name": "完美打击",
-        "score": 40.9,
-        "deck_score": 40.9,
-        "rank": 4,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "deck_fitness:frontload",
-          "delta": 2.23,
-          "message": "拿完美打击后前期输出：每回合 15.7 → 18.6（需求 25.9）"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": -1.64,
-          "message": "拿完美打击后防御：每回合 6.4 → 5.5（需求 8.9）"
-         },
-         {
-          "code": "deck_fitness:cycle",
-          "delta": -0.57,
-          "message": "拿完美打击后循环：每回合额外抽牌 0.46 → 0.40（需求 1.0）"
-         },
-         {
-          "code": "deck_fitness:synergy",
-          "delta": 0,
-          "message": "牌组里的 完美打击、剑柄打击 让完美打击更有价值（说明，不另加分）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": -0.7,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 2.2273,
-         "survival": -1.6394,
-         "long_term_growth": -0.5728,
-         "resource_efficiency": 0,
-         "data_completeness": 1
-        }
+        "factor": "deck_fitness:frontload",
+        "a": 1.46,
+        "b": 2.23,
+        "difference": -0.77,
+        "a_message": "拿祭品后前期输出：每回合 15.7 → 17.6（需求 25.9）",
+        "b_message": "拿完美打击后前期输出：每回合 15.7 → 18.6（需求 25.9）"
+       },
+       {
+        "factor": "deck_fitness:synergy",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组里的 完美打击 让祭品更有价值（说明，不另加分）",
+        "b_message": "牌组里的 完美打击、剑柄打击 让完美打击更有价值（说明，不另加分）"
        }
       ],
-      "chosen": "0:PERFECTED_STRIKE",
-      "tier": 1,
-      "gap": 6.6,
-      "not_strict_because": []
+      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
      }
     },
     {
@@ -1917,69 +1774,6 @@
     },
     {
      "id": "T3",
-     "tool": "compare_options",
-     "result": {
-      "decision_id": "F08-card",
-      "a": {
-       "id": "1:OFFERING",
-       "name": "祭品",
-       "deck_score": 47.5,
-       "fully_scored": true
-      },
-      "b": {
-       "id": "0:PERFECTED_STRIKE",
-       "name": "完美打击",
-       "deck_score": 40.9,
-       "fully_scored": true
-      },
-      "deck_score_difference": 6.6,
-      "factors": [
-       {
-        "factor": "deck_fitness:cycle",
-        "a": 4.13,
-        "b": -0.57,
-        "difference": 4.7,
-        "a_message": "拿祭品后循环：每回合额外抽牌 0.46 → 1.06（需求 1.0）",
-        "b_message": "拿完美打击后循环：每回合额外抽牌 0.46 → 0.40（需求 1.0）"
-       },
-       {
-        "factor": "deck_fitness:defense",
-        "a": -0.06,
-        "b": -1.64,
-        "difference": 1.58,
-        "a_message": "拿祭品后防御：每回合 6.4 → 6.1（需求 8.9）",
-        "b_message": "拿完美打击后防御：每回合 6.4 → 5.5（需求 8.9）"
-       },
-       {
-        "factor": "deck_fitness:lookahead",
-        "a": 0.39,
-        "b": -0.7,
-        "difference": 1.09,
-        "a_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度",
-        "b_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-       },
-       {
-        "factor": "deck_fitness:frontload",
-        "a": 1.46,
-        "b": 2.23,
-        "difference": -0.77,
-        "a_message": "拿祭品后前期输出：每回合 15.7 → 17.6（需求 25.9）",
-        "b_message": "拿完美打击后前期输出：每回合 15.7 → 18.6（需求 25.9）"
-       },
-       {
-        "factor": "deck_fitness:synergy",
-        "a": 0,
-        "b": 0,
-        "difference": 0,
-        "a_message": "牌组里的 完美打击 让祭品更有价值（说明，不另加分）",
-        "b_message": "牌组里的 完美打击、剑柄打击 让完美打击更有价值（说明，不另加分）"
-       }
-      ],
-      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
-     }
-    },
-    {
-     "id": "T4",
      "tool": "what_if_choices",
      "result": {
       "remove": [
@@ -2056,20 +1850,51 @@
      }
     },
     {
+     "id": "T4",
+     "tool": "get_card",
+     "result": {
+      "id": "OFFERING",
+      "name": "祭品",
+      "description": "失去6点生命。\n获得。\n抽3张牌。",
+      "cost": 0,
+      "type": "技能",
+      "rarity": "稀有",
+      "color": "ironclad",
+      "target": "Self",
+      "cards_draw": 3,
+      "energy_gain": 2,
+      "keywords": [
+       "消耗"
+      ],
+      "upgrade_description": "失去6点生命。\n获得。\n抽5张牌。"
+     }
+    },
+    {
      "id": "T5",
+     "tool": "get_card",
+     "result": {
+      "id": "PERFECTED_STRIKE",
+      "name": "完美打击",
+      "description": "造成6点伤害。\n你每有一张名字中含有“打击”的牌，伤害+2。",
+      "cost": 2,
+      "type": "攻击",
+      "rarity": "普通",
+      "color": "ironclad",
+      "target": "AnyEnemy",
+      "damage": 6,
+      "upgrade_description": "造成6点伤害。\n你每有一张名字中含有“打击”的牌，伤害+3。"
+     }
+    },
+    {
+     "id": "T6",
      "tool": "what_if",
      "result": {
       "decision_id": "F08-card",
       "changes": [
        {
-        "operation": "remove",
-        "card": "STRIKE_IRONCLAD",
-        "name": "打击"
-       },
-       {
-        "operation": "remove",
-        "card": "STRIKE_IRONCLAD",
-        "name": "打击"
+        "operation": "add",
+        "card": "BLOOD_WALL",
+        "name": "血墙"
        }
       ],
       "engine_top_before": "1:OFFERING",
@@ -2077,12 +1902,12 @@
       "pick_changed": false,
       "agrees_with_player_after": false,
       "confidence_after": "medium",
-      "gap_after": 7.4,
+      "gap_after": 6.7,
       "options_after": [
        {
         "id": "1:OFFERING",
         "name": "祭品",
-        "deck_score": 49.9,
+        "deck_score": 50.8,
         "rank": 1,
         "fully_scored": true
        },
@@ -2096,14 +1921,189 @@
        {
         "id": "2:BREAKTHROUGH",
         "name": "突破",
-        "deck_score": 45.3,
+        "deck_score": 45.5,
         "rank": 3,
         "fully_scored": true
        },
        {
         "id": "0:PERFECTED_STRIKE",
         "name": "完美打击",
+        "deck_score": 44.1,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "T7",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F08-card",
+      "changes": [
+       {
+        "operation": "add",
+        "card": "POMMEL_STRIKE",
+        "name": "剑柄打击"
+       },
+       {
+        "operation": "add",
+        "card": "TWIN_STRIKE",
+        "name": "双重打击"
+       }
+      ],
+      "engine_top_before": "1:OFFERING",
+      "engine_top_after": "1:OFFERING",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 4.6,
+      "options_after": [
+       {
+        "id": "1:OFFERING",
+        "name": "祭品",
+        "deck_score": 47.5,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
         "deck_score": 42.5,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "2:BREAKTHROUGH",
+        "name": "突破",
+        "deck_score": 43.2,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "0:PERFECTED_STRIKE",
+        "name": "完美打击",
+        "deck_score": 42.9,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "T8",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F08-card",
+      "changes": [
+       {
+        "operation": "add",
+        "card": "POMMEL_STRIKE",
+        "name": "剑柄打击"
+       },
+       {
+        "operation": "add",
+        "card": "TWIN_STRIKE",
+        "name": "双重打击"
+       },
+       {
+        "operation": "add",
+        "card": "SWORD_BOOMERANG",
+        "name": "飞剑回旋镖"
+       }
+      ],
+      "engine_top_before": "1:OFFERING",
+      "engine_top_after": "1:OFFERING",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 4.7,
+      "options_after": [
+       {
+        "id": "1:OFFERING",
+        "name": "祭品",
+        "deck_score": 46.7,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 41.5,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "2:BREAKTHROUGH",
+        "name": "突破",
+        "deck_score": 42.2,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "0:PERFECTED_STRIKE",
+        "name": "完美打击",
+        "deck_score": 42,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "T9",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F08-card",
+      "changes": [
+       {
+        "operation": "remove",
+        "card": "STRIKE_IRONCLAD",
+        "name": "打击"
+       },
+       {
+        "operation": "remove",
+        "card": "STRIKE_IRONCLAD",
+        "name": "打击"
+       },
+       {
+        "operation": "add",
+        "card": "BLOOD_WALL",
+        "name": "血墙"
+       }
+      ],
+      "engine_top_before": "1:OFFERING",
+      "engine_top_after": "1:OFFERING",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 6.5,
+      "options_after": [
+       {
+        "id": "1:OFFERING",
+        "name": "祭品",
+        "deck_score": 51.8,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "2:BREAKTHROUGH",
+        "name": "突破",
+        "deck_score": 47.9,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 46.3,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "0:PERFECTED_STRIKE",
+        "name": "完美打击",
+        "deck_score": 45.3,
         "rank": 4,
         "fully_scored": true
        }
@@ -2111,36 +2111,36 @@
      }
     }
    ],
-   "toolCalls": 5,
+   "toolCalls": 6,
    "repairs": 1,
    "usage": {
-    "prompt_tokens": 24962,
-    "completion_tokens": 1001,
-    "cost_usd": 0.0026310479999999995,
-    "llm_calls": 5
+    "prompt_tokens": 31965,
+    "completion_tokens": 1214,
+    "cost_usd": 0.0033317399999999997,
+    "llm_calls": 7
    },
    "finding": {
     "decision_id": "F08-card",
     "reasons": [
      {
       "factor": "deck_fitness:cycle",
-      "evidence": "T3",
-      "text": "差距最大的是循环：拿祭品每回合额外抽牌 0.46 → 1.06（需求 1.0），拿完美打击反而降到 0.40。"
+      "evidence": "T1",
+      "text": "祭品让每回合额外抽牌 0.46 → 1.06，刚好够到 1.0 的需求；完美打击反而降到 0.40，这是两者差距最大的一项。"
      },
      {
       "factor": "deck_fitness:defense",
-      "evidence": "T3",
-      "text": "防御上祭品几乎不掉（6.4 → 6.1），完美打击掉到 5.5，离需求 8.9 更远。"
+      "evidence": "T1",
+      "text": "防御每回合 6.4 本就低于 8.9 的需求，完美打击会再压到 5.5，祭品只降到 6.1。"
      },
      {
       "factor": "deck_fitness:lookahead",
-      "evidence": "T3",
-      "text": "计入后续 3 次选牌后，祭品仍小幅加分，完美打击则减分，长期看祭品更稳。"
+      "evidence": "T1",
+      "text": "计入后续 3 次选牌后，祭品仍为正，完美打击为负，说明后续卡池更配合祭品。"
      }
     ],
-    "what_if_evidence": "T5",
-    "what_if_text": "试着去掉两张打击后，引擎仍选祭品，差距还从 6.6 扩大到 7.4，说明这不是打击数量的问题。",
-    "advice": "这套 12 张牌抽牌偏少，下次遇到能补循环的牌（如祭品）可以优先考虑，输出牌可以稍后再补。"
+    "what_if_evidence": "T7",
+    "what_if_text": "补上剑柄打击和双重打击后差距从 6.6 缩到 4.6，但首选仍是祭品；加血墙、飞剑回旋镖或删两张打击也都没翻转。",
+    "advice": "牌组只有 12 张、抽牌偏少时，优先考虑能补抽牌和能量的牌；完美打击这类输出牌可以等“打击”牌更多时再拿。"
    }
   },
   {
@@ -2511,9 +2511,9 @@
       "decision_id": "F06-card",
       "changes": [
        {
-        "operation": "remove",
-        "card": "STRIKE_IRONCLAD",
-        "name": "打击"
+        "operation": "add",
+        "card": "IRON_WAVE",
+        "name": "铁斩波"
        }
       ],
       "engine_top_before": "1:BLOOD_WALL",
@@ -2526,28 +2526,178 @@
        {
         "id": "1:BLOOD_WALL",
         "name": "血墙",
-        "deck_score": 44,
+        "deck_score": 44.2,
         "rank": 1,
         "fully_scored": true
        },
        {
         "id": "0:POMMEL_STRIKE",
         "name": "剑柄打击",
-        "deck_score": 43.4,
+        "deck_score": 43.6,
         "rank": 2,
         "fully_scored": true
        },
        {
         "id": "skip",
         "name": "跳过",
-        "deck_score": 42.3,
+        "deck_score": 42.5,
         "rank": 3,
         "fully_scored": true
        },
        {
         "id": "2:RUPTURE",
         "name": "撕裂",
-        "deck_score": 40.8,
+        "deck_score": 41,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "T5",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F06-card",
+      "changes": [
+       {
+        "operation": "add",
+        "card": "THUNDERCLAP",
+        "name": "闪电霹雳"
+       }
+      ],
+      "engine_top_before": "1:BLOOD_WALL",
+      "engine_top_after": "1:BLOOD_WALL",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 1.8,
+      "options_after": [
+       {
+        "id": "1:BLOOD_WALL",
+        "name": "血墙",
+        "deck_score": 44.4,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "0:POMMEL_STRIKE",
+        "name": "剑柄打击",
+        "deck_score": 42.6,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 41.3,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "2:RUPTURE",
+        "name": "撕裂",
+        "deck_score": 39.5,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "T6",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F06-card",
+      "changes": [
+       {
+        "operation": "add",
+        "card": "BODY_SLAM",
+        "name": "全身撞击"
+       }
+      ],
+      "engine_top_before": "1:BLOOD_WALL",
+      "engine_top_after": "1:BLOOD_WALL",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 3.1,
+      "options_after": [
+       {
+        "id": "1:BLOOD_WALL",
+        "name": "血墙",
+        "deck_score": 42.3,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "0:POMMEL_STRIKE",
+        "name": "剑柄打击",
+        "deck_score": 39.2,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 38,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "2:RUPTURE",
+        "name": "撕裂",
+        "deck_score": 36.2,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "T7",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F06-card",
+      "changes": [
+       {
+        "operation": "add",
+        "card": "TWIN_STRIKE",
+        "name": "双重打击"
+       }
+      ],
+      "engine_top_before": "1:BLOOD_WALL",
+      "engine_top_after": "1:BLOOD_WALL",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 2,
+      "options_after": [
+       {
+        "id": "1:BLOOD_WALL",
+        "name": "血墙",
+        "deck_score": 43.6,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "0:POMMEL_STRIKE",
+        "name": "剑柄打击",
+        "deck_score": 41.6,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 40.4,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "2:RUPTURE",
+        "name": "撕裂",
+        "deck_score": 38.7,
         "rank": 4,
         "fully_scored": true
        }
@@ -2558,10 +2708,10 @@
    "toolCalls": 4,
    "repairs": 0,
    "usage": {
-    "prompt_tokens": 15018,
-    "completion_tokens": 603,
-    "cost_usd": 0.0016163279999999998,
-    "llm_calls": 4
+    "prompt_tokens": 12502,
+    "completion_tokens": 645,
+    "cost_usd": 0.0011015579999999999,
+    "llm_calls": 3
    },
    "finding": {
     "decision_id": "F06-card",
@@ -2569,34 +2719,34 @@
      {
       "factor": "deck_fitness:defense",
       "evidence": "T1",
-      "text": "防御是最大差距：拿血墙每回合 6.9 → 8.9，刚好过需求 8.5；拿剑柄打击则降到 6.4。"
+      "text": "防御是差距最大的一项：拿血墙每回合 6.9 → 8.9，已过 8.5 的需求；拿剑柄打击反而降到 6.4。"
      },
      {
       "factor": "deck_fitness:frontload",
       "evidence": "T1",
-      "text": "输出上剑柄打击更好：每回合 12.5 → 14.1，血墙反而降到 10.7，但两者都远低于需求 25.0。"
+      "text": "输出上剑柄打击更好，每回合 12.5 → 14.1，血墙则降到 10.7，但两者都远低于 25.0 的需求。"
      },
      {
       "factor": "deck_fitness:cycle",
       "evidence": "T1",
-      "text": "循环上剑柄打击更优：每回合额外抽牌 0.25 → 0.46，血墙只有 0.21，需求是 1.0。"
+      "text": "循环上剑柄打击每回合额外抽牌 0.25 → 0.46，血墙降到 0.21，离 1.0 的需求都还远。"
      }
     ],
     "what_if_evidence": "T4",
-    "what_if_text": "若牌组里少一张打击，血墙仍排第一，但差距从 1.7 缩到 0.6，说明差距主要来自防御缺口。",
-    "advice": "第 1 幕防御只有 6.9、离需求 8.5 差一截时，优先补防御牌；输出和抽牌可以稍后再补。"
+    "what_if_text": "试过先拿铁斩波、闪电霹雳、全身撞击、双重打击，首选都仍是血墙；铁斩波把差距缩到 0.6，但没翻转。",
+    "advice": "这套 11 张牌防御只有 6.9，离 8.5 差一截；下次遇到能补防御的牌，可以优先考虑。"
    }
   }
  ],
  "summary": {
-  "text": "这些决定都因防御每回合低于需求而优先补防御，可先算每回合数值变化再选牌。",
+  "text": "这些决定都因防御每回合低于需求而偏向补防御或抽牌；下次遇到能补防御或抽牌的牌，可以优先考虑而不是跳过。",
   "source": "model",
-  "cost_usd": 0.000228
+  "cost_usd": 0.0002349
  },
  "meta": {
   "model": "deepseek-flash",
-  "cost_usd": 0.006322176,
-  "seconds": 8.635,
-  "generated_at": "2026-11-01 14:42"
+  "cost_usd": 0.005831538,
+  "seconds": 10.798,
+  "generated_at": "2026-11-11 00:27"
  }
 }

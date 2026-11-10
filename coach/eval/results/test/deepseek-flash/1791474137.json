@@ -2,7 +2,7 @@
  "run": "1791474137",
  "set": "test",
  "model": "deepseek-flash",
- "prompt_version": "p3",
+ "prompt_version": "p4",
  "pre": {
   "summary": {
    "run_id": "1791474137",
@@ -955,184 +955,57 @@
     },
     {
      "id": "T1",
-     "tool": "get_decision",
+     "tool": "compare_options",
      "result": {
-      "id": "F15-card",
-      "kind": "card_reward",
-      "floor": 15,
-      "act": 1,
-      "hp": 46,
-      "max_hp": 77,
-      "gold": 179,
-      "engine_top": "0:DELAY",
-      "confidence": "medium",
-      "policy_status": "recommend",
-      "pick_margin": 1,
-      "options": [
+      "decision_id": "F15-card",
+      "a": {
+       "id": "0:DELAY",
+       "name": "拖延",
+       "deck_score": 46.6,
+       "fully_scored": true
+      },
+      "b": {
+       "id": "skip",
+       "name": "跳过",
+       "deck_score": 40.3,
+       "fully_scored": true
+      },
+      "deck_score_difference": 6.3,
+      "factors": [
        {
-        "id": "0:DELAY",
-        "kind": "card",
-        "entity_id": "DELAY",
-        "name": "拖延",
-        "score": 46.6,
-        "deck_score": 46.6,
-        "rank": 1,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "deck_fitness:defense",
-          "delta": 7.86,
-          "message": "拿拖延后防御：每回合 6.8 → 8.6（需求 11.8）"
-         },
-         {
-          "code": "deck_fitness:cycle",
-          "delta": -0.9,
-          "message": "拿拖延后循环：每回合额外抽牌 0.75 → 0.63（需求 1.0）"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": -0.71,
-          "message": "拿拖延后前期输出：每回合 19.3 → 18.0（需求 36.0）"
-         },
-         {
-          "code": "deck_fitness:synergy",
-          "delta": 0,
-          "message": "牌组里的 预借时间、出击 让拖延更有价值（说明，不另加分）"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": -0.7126,
-         "survival": 7.8564,
-         "long_term_growth": -0.8954,
-         "resource_efficiency": 0,
-         "data_completeness": 1
-        }
+        "factor": "deck_fitness:defense",
+        "a": 7.86,
+        "b": 0,
+        "difference": 7.86,
+        "a_message": "拿拖延后防御：每回合 6.8 → 8.6（需求 11.8）",
+        "b_message": null
        },
        {
-        "id": "skip",
-        "kind": "skip",
-        "entity_id": null,
-        "name": "跳过",
-        "score": 41.3,
-        "deck_score": 40.3,
-        "rank": 2,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "deck_fitness:pick_margin",
-          "delta": 1,
-          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 0,
-         "survival": 0,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "data_completeness": 1
-        }
+        "factor": "deck_fitness:cycle",
+        "a": -0.9,
+        "b": 0,
+        "difference": -0.9,
+        "a_message": "拿拖延后循环：每回合额外抽牌 0.75 → 0.63（需求 1.0）",
+        "b_message": null
        },
        {
-        "id": "1:NO_ESCAPE",
-        "kind": "card",
-        "entity_id": "NO_ESCAPE",
-        "name": "无处可逃",
-        "score": 39.2,
-        "deck_score": 39.2,
-        "rank": 3,
-        "eligible": true,
-        "fully_scored": false,
-        "gaps": [
-         "fact_unknowable:powers:DOOM"
-        ],
-        "factors": [
-         {
-          "code": "unmodeled_mechanic",
-          "delta": 0,
-          "message": "无处可逃的部分效果尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": -0.96,
-          "message": "拿无处可逃后防御：每回合 6.8 → 6.6（需求 11.8）"
-         },
-         {
-          "code": "deck_fitness:cycle",
-          "delta": -0.34,
-          "message": "拿无处可逃后循环：每回合额外抽牌 0.75 → 0.70（需求 1.0）"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": 0.21,
-          "message": "拿无处可逃后前期输出：每回合 19.3 → 19.6（需求 36.0）"
-         },
-         {
-          "code": "deck_fitness:synergy",
-          "delta": 0,
-          "message": "牌组里的 收割 让无处可逃更有价值（说明，不另加分）"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 0.2059,
-         "survival": -0.9591,
-         "long_term_growth": -0.3449,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
+        "factor": "deck_fitness:frontload",
+        "a": -0.71,
+        "b": 0,
+        "difference": -0.71,
+        "a_message": "拿拖延后前期输出：每回合 19.3 → 18.0（需求 36.0）",
+        "b_message": null
        },
        {
-        "id": "2:BLIGHT_STRIKE",
-        "kind": "card",
-        "entity_id": "BLIGHT_STRIKE",
-        "name": "荒疫打击",
-        "score": 38.6,
-        "deck_score": 38.6,
-        "rank": 4,
-        "eligible": true,
-        "fully_scored": false,
-        "gaps": [
-         "fact_unknowable:powers:DOOM",
-         "card_effect_unsupported:BLIGHT_STRIKE:effect_key:amount_from"
-        ],
-        "factors": [
-         {
-          "code": "unmodeled_mechanic",
-          "delta": 0,
-          "message": "荒疫打击的部分效果尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": -1.38,
-          "message": "拿荒疫打击后防御：每回合 6.8 → 6.6（需求 11.8）"
-         },
-         {
-          "code": "deck_fitness:cycle",
-          "delta": -0.34,
-          "message": "拿荒疫打击后循环：每回合额外抽牌 0.75 → 0.70（需求 1.0）"
-         },
-         {
-          "code": "deck_fitness:synergy",
-          "delta": 0,
-          "message": "牌组里的 收割 让荒疫打击更有价值（说明，不另加分）"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 0.0489,
-         "survival": -1.3767,
-         "long_term_growth": -0.3449,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
+        "factor": "deck_fitness:synergy",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组里的 预借时间、出击 让拖延更有价值（说明，不另加分）",
+        "b_message": null
        }
       ],
-      "chosen": "skip",
-      "tier": 1,
-      "gap": 6.3,
-      "not_strict_because": []
+      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
      }
     },
     {
@@ -1248,78 +1121,6 @@
     },
     {
      "id": "T3",
-     "tool": "compare_options",
-     "result": {
-      "decision_id": "F15-card",
-      "a": {
-       "id": "0:DELAY",
-       "name": "拖延",
-       "deck_score": 46.6,
-       "fully_scored": true
-      },
-      "b": {
-       "id": "skip",
-       "name": "跳过",
-       "deck_score": 40.3,
-       "fully_scored": true
-      },
-      "deck_score_difference": 6.3,
-      "factors": [
-       {
-        "factor": "deck_fitness:defense",
-        "a": 7.86,
-        "b": 0,
-        "difference": 7.86,
-        "a_message": "拿拖延后防御：每回合 6.8 → 8.6（需求 11.8）",
-        "b_message": null
-       },
-       {
-        "factor": "deck_fitness:cycle",
-        "a": -0.9,
-        "b": 0,
-        "difference": -0.9,
-        "a_message": "拿拖延后循环：每回合额外抽牌 0.75 → 0.63（需求 1.0）",
-        "b_message": null
-       },
-       {
-        "factor": "deck_fitness:frontload",
-        "a": -0.71,
-        "b": 0,
-        "difference": -0.71,
-        "a_message": "拿拖延后前期输出：每回合 19.3 → 18.0（需求 36.0）",
-        "b_message": null
-       },
-       {
-        "factor": "deck_fitness:synergy",
-        "a": 0,
-        "b": 0,
-        "difference": 0,
-        "a_message": "牌组里的 预借时间、出击 让拖延更有价值（说明，不另加分）",
-        "b_message": null
-       }
-      ],
-      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
-     }
-    },
-    {
-     "id": "T4",
-     "tool": "get_card",
-     "result": {
-      "id": "DELAY",
-      "name": "拖延",
-      "description": "获得11点格挡。\n在下个回合，\n获得。",
-      "cost": 2,
-      "type": "技能",
-      "rarity": "罕见",
-      "color": "necrobinder",
-      "target": "Self",
-      "block": 11,
-      "energy_gain": 1,
-      "upgrade_description": "获得13点格挡。\n在下个回合，\n获得。"
-     }
-    },
-    {
-     "id": "T5",
      "tool": "what_if_choices",
      "result": {
       "remove": [
@@ -1431,11 +1232,198 @@
      }
     },
     {
+     "id": "T4",
+     "tool": "get_card",
+     "result": {
+      "id": "DELAY",
+      "name": "拖延",
+      "description": "获得11点格挡。\n在下个回合，\n获得。",
+      "cost": 2,
+      "type": "技能",
+      "rarity": "罕见",
+      "color": "necrobinder",
+      "target": "Self",
+      "block": 11,
+      "energy_gain": 1,
+      "upgrade_description": "获得13点格挡。\n在下个回合，\n获得。"
+     }
+    },
+    {
+     "id": "T5",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F15-card",
+      "changes": [
+       {
+        "operation": "add",
+        "card": "DEBILITATE",
+        "name": "摧残"
+       }
+      ],
+      "engine_top_before": "0:DELAY",
+      "engine_top_after": "0:DELAY",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 6.1,
+      "options_after": [
+       {
+        "id": "0:DELAY",
+        "name": "拖延",
+        "deck_score": 45.3,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 39.2,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "1:NO_ESCAPE",
+        "name": "无处可逃",
+        "deck_score": 38.2,
+        "rank": 3,
+        "fully_scored": false
+       },
+       {
+        "id": "2:BLIGHT_STRIKE",
+        "name": "荒疫打击",
+        "deck_score": 37.7,
+        "rank": 4,
+        "fully_scored": false
+       }
+      ]
+     }
+    },
+    {
      "id": "T6",
      "tool": "what_if",
      "result": {
       "decision_id": "F15-card",
       "changes": [
+       {
+        "operation": "add",
+        "card": "SOW",
+        "name": "播种"
+       },
+       {
+        "operation": "add",
+        "card": "NEGATIVE_PULSE",
+        "name": "负能量脉冲"
+       }
+      ],
+      "engine_top_before": "0:DELAY",
+      "engine_top_after": "0:DELAY",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 5.6,
+      "options_after": [
+       {
+        "id": "0:DELAY",
+        "name": "拖延",
+        "deck_score": 44.3,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 38.7,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "1:NO_ESCAPE",
+        "name": "无处可逃",
+        "deck_score": 37.9,
+        "rank": 3,
+        "fully_scored": false
+       },
+       {
+        "id": "2:BLIGHT_STRIKE",
+        "name": "荒疫打击",
+        "deck_score": 37.4,
+        "rank": 4,
+        "fully_scored": false
+       }
+      ]
+     }
+    },
+    {
+     "id": "T7",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F15-card",
+      "changes": [
+       {
+        "operation": "add",
+        "card": "SHROUD",
+        "name": "厄运之衣"
+       },
+       {
+        "operation": "add",
+        "card": "ENFEEBLING_TOUCH",
+        "name": "弱化之触"
+       },
+       {
+        "operation": "add",
+        "card": "FEAR",
+        "name": "恐惧"
+       }
+      ],
+      "engine_top_before": "0:DELAY",
+      "engine_top_after": "0:DELAY",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 5.9,
+      "options_after": [
+       {
+        "id": "0:DELAY",
+        "name": "拖延",
+        "deck_score": 46.1,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 40.2,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "1:NO_ESCAPE",
+        "name": "无处可逃",
+        "deck_score": 39,
+        "rank": 3,
+        "fully_scored": false
+       },
+       {
+        "id": "2:BLIGHT_STRIKE",
+        "name": "荒疫打击",
+        "deck_score": 38.6,
+        "rank": 4,
+        "fully_scored": false
+       }
+      ]
+     }
+    },
+    {
+     "id": "T8",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F15-card",
+      "changes": [
+       {
+        "operation": "remove",
+        "card": "STRIKE_NECROBINDER",
+        "name": "打击"
+       },
        {
         "operation": "remove",
         "card": "STRIKE_NECROBINDER",
@@ -1452,33 +1440,33 @@
       "pick_changed": false,
       "agrees_with_player_after": false,
       "confidence_after": "medium",
-      "gap_after": 5.9,
+      "gap_after": 5.8,
       "options_after": [
        {
         "id": "0:DELAY",
         "name": "拖延",
-        "deck_score": 51.1,
+        "deck_score": 53.5,
         "rank": 1,
         "fully_scored": true
        },
        {
         "id": "skip",
         "name": "跳过",
-        "deck_score": 45.2,
+        "deck_score": 47.7,
         "rank": 2,
         "fully_scored": true
        },
        {
         "id": "1:NO_ESCAPE",
         "name": "无处可逃",
-        "deck_score": 43.8,
+        "deck_score": 46.2,
         "rank": 3,
         "fully_scored": false
        },
        {
         "id": "2:BLIGHT_STRIKE",
         "name": "荒疫打击",
-        "deck_score": 43.3,
+        "deck_score": 45.7,
         "rank": 4,
         "fully_scored": false
        }
@@ -1486,12 +1474,12 @@
      }
     }
    ],
-   "toolCalls": 6,
+   "toolCalls": 5,
    "repairs": 0,
    "usage": {
-    "prompt_tokens": 22098,
-    "completion_tokens": 646,
-    "cost_usd": 0.0032274479999999995,
+    "prompt_tokens": 21481,
+    "completion_tokens": 759,
+    "cost_usd": 0.00208662,
     "llm_calls": 5
    },
    "finding": {
@@ -1499,23 +1487,23 @@
     "reasons": [
      {
       "factor": "deck_fitness:defense",
-      "evidence": "T3",
+      "evidence": "T1",
       "text": "拿拖延后防御每回合 6.8 → 8.6，需求 11.8，这是两边差距最大的一项。"
      },
      {
       "factor": "deck_fitness:cycle",
-      "evidence": "T3",
+      "evidence": "T1",
       "text": "代价是循环变慢：每回合额外抽牌 0.75 → 0.63，需求 1.0。"
      },
      {
       "factor": "deck_fitness:frontload",
-      "evidence": "T3",
-      "text": "前期输出也会降：每回合 19.3 → 18.0，需求 36.0，本来就偏低。"
+      "evidence": "T1",
+      "text": "前期输出也从每回合 19.3 降到 18.0，需求 36.0，本来就偏低。"
      }
     ],
-    "what_if_evidence": "T6",
-    "what_if_text": "假设少两张打击，引擎仍首选拖延，差距 5.9，说明结论不依赖打击数量。",
-    "advice": "当前 46/77 血、防御离需求还差不少时，2 费 11 格挡的拖延值得考虑；若更在意抽牌节奏，跳过也说得通。"
+    "what_if_evidence": "T8",
+    "what_if_text": "试了加摧残、加播种与负能量脉冲、加厄运之衣等三张、以及去掉三张打击，首选都仍是拖延，差距 5.6–6.1。",
+    "advice": "牌组防御每回合只有 6.8、离需求 11.8 差得远，下次遇到能补格挡的牌（如拖延这类 11 点格挡）可以优先考虑，而不是直接跳过。"
    }
   },
   {
@@ -1696,203 +1684,65 @@
     },
     {
      "id": "T1",
-     "tool": "get_decision",
+     "tool": "compare_options",
      "result": {
-      "id": "F09-card",
-      "kind": "card_reward",
-      "floor": 9,
-      "act": 1,
-      "hp": 56,
-      "max_hp": 77,
-      "gold": 73,
-      "engine_top": "skip",
-      "confidence": "medium",
-      "policy_status": "skip",
-      "pick_margin": 1,
-      "options": [
+      "decision_id": "F09-card",
+      "a": {
+       "id": "skip",
+       "name": "跳过",
+       "deck_score": 39.8,
+       "fully_scored": true
+      },
+      "b": {
+       "id": "0:BORROWED_TIME",
+       "name": "预借时间",
+       "deck_score": 34.4,
+       "fully_scored": true
+      },
+      "deck_score_difference": 5.4,
+      "factors": [
        {
-        "id": "skip",
-        "kind": "skip",
-        "entity_id": null,
-        "name": "跳过",
-        "score": 40.8,
-        "deck_score": 39.8,
-        "rank": 1,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": 0,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         },
-         {
-          "code": "deck_fitness:pick_margin",
-          "delta": 1,
-          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 0,
-         "survival": 0,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "data_completeness": 1
-        }
+        "factor": "deck_fitness:cycle",
+        "a": 0,
+        "b": -2.48,
+        "difference": 2.48,
+        "a_message": null,
+        "b_message": "拿预借时间后循环：每回合额外抽牌 1.12 → 0.66（需求 1.0）"
        },
        {
-        "id": "1:DEBILITATE",
-        "kind": "card",
-        "entity_id": "DEBILITATE",
-        "name": "摧残",
-        "score": 38.6,
-        "deck_score": 38.6,
-        "rank": 2,
-        "eligible": true,
-        "fully_scored": false,
-        "gaps": [
-         "card_effect_unsupported:DEBILITATE:power:Debilitate:enemy"
-        ],
-        "factors": [
-         {
-          "code": "unmodeled_mechanic",
-          "delta": 0,
-          "message": "摧残的部分效果尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": -0.97,
-          "message": "拿摧残后防御：每回合 5.5 → 5.1（需求 8.4）"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": 0.68,
-          "message": "拿摧残后前期输出：每回合 14.1 → 14.9（需求 26.0）"
-         },
-         {
-          "code": "deck_fitness:cycle",
-          "delta": -0.16,
-          "message": "拿摧残后循环：每回合额外抽牌 1.12 → 1.00（需求 1.0）"
-         },
-         {
-          "code": "deck_fitness:synergy",
-          "delta": 0,
-          "message": "牌组里的 切断、重压 让摧残更有价值（说明，不另加分）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": -0.69,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 0.6838,
-         "survival": -0.9741,
-         "long_term_growth": -0.1638,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
+        "factor": "deck_fitness:defense",
+        "a": 0,
+        "b": -2.17,
+        "difference": 2.17,
+        "a_message": null,
+        "b_message": "拿预借时间后防御：每回合 5.5 → 5.4（需求 8.4）"
        },
        {
-        "id": "2:DREDGE",
-        "kind": "card",
-        "entity_id": "DREDGE",
-        "name": "清淤",
-        "score": 36.9,
-        "deck_score": 36.9,
-        "rank": 3,
-        "eligible": true,
-        "fully_scored": false,
-        "gaps": [
-         "card_effect_unsupported:DREDGE:effect:move_card"
-        ],
-        "factors": [
-         {
-          "code": "unmodeled_mechanic",
-          "delta": 0,
-          "message": "清淤的部分效果尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": -2.24,
-          "message": "拿清淤后防御：每回合 5.5 → 5.3（需求 8.4）"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": -0.56,
-          "message": "拿清淤后前期输出：每回合 14.1 → 13.4（需求 26.0）"
-         },
-         {
-          "code": "deck_fitness:cycle",
-          "delta": -0.12,
-          "message": "拿清淤后循环：每回合额外抽牌 1.12 → 1.03（需求 1.0）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": 0.03,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": -0.5616,
-         "survival": -2.2361,
-         "long_term_growth": -0.1176,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
+        "factor": "deck_fitness:frontload",
+        "a": 0,
+        "b": -1.04,
+        "difference": 1.04,
+        "a_message": null,
+        "b_message": "拿预借时间后前期输出：每回合 14.1 → 12.8（需求 26.0）"
        },
        {
-        "id": "0:BORROWED_TIME",
-        "kind": "card",
-        "entity_id": "BORROWED_TIME",
-        "name": "预借时间",
-        "score": 34.4,
-        "deck_score": 34.4,
-        "rank": 4,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "deck_fitness:cycle",
-          "delta": -2.48,
-          "message": "拿预借时间后循环：每回合额外抽牌 1.12 → 0.66（需求 1.0）"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": -2.17,
-          "message": "拿预借时间后防御：每回合 5.5 → 5.4（需求 8.4）"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": -1.04,
-          "message": "拿预借时间后前期输出：每回合 14.1 → 12.8（需求 26.0）"
-         },
-         {
-          "code": "deck_fitness:synergy",
-          "delta": 0,
-          "message": "牌组里的 护卫 让预借时间更有价值（说明，不另加分）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": 0.25,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": -1.0388,
-         "survival": -2.1673,
-         "long_term_growth": -2.482,
-         "resource_efficiency": 0,
-         "data_completeness": 1
-        }
+        "factor": "deck_fitness:lookahead",
+        "a": 0,
+        "b": 0.25,
+        "difference": -0.25,
+        "a_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度",
+        "b_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
+       },
+       {
+        "factor": "deck_fitness:synergy",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": null,
+        "b_message": "牌组里的 护卫 让预借时间更有价值（说明，不另加分）"
        }
       ],
-      "chosen": "0:BORROWED_TIME",
-      "tier": 1,
-      "gap": 5.4,
-      "not_strict_because": []
+      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
      }
     },
     {
@@ -1984,85 +1834,6 @@
     },
     {
      "id": "T3",
-     "tool": "compare_options",
-     "result": {
-      "decision_id": "F09-card",
-      "a": {
-       "id": "skip",
-       "name": "跳过",
-       "deck_score": 39.8,
-       "fully_scored": true
-      },
-      "b": {
-       "id": "0:BORROWED_TIME",
-       "name": "预借时间",
-       "deck_score": 34.4,
-       "fully_scored": true
-      },
-      "deck_score_difference": 5.4,
-      "factors": [
-       {
-        "factor": "deck_fitness:cycle",
-        "a": 0,
-        "b": -2.48,
-        "difference": 2.48,
-        "a_message": null,
-        "b_message": "拿预借时间后循环：每回合额外抽牌 1.12 → 0.66（需求 1.0）"
-       },
-       {
-        "factor": "deck_fitness:defense",
-        "a": 0,
-        "b": -2.17,
-        "difference": 2.17,
-        "a_message": null,
-        "b_message": "拿预借时间后防御：每回合 5.5 → 5.4（需求 8.4）"
-       },
-       {
-        "factor": "deck_fitness:frontload",
-        "a": 0,
-        "b": -1.04,
-        "difference": 1.04,
-        "a_message": null,
-        "b_message": "拿预借时间后前期输出：每回合 14.1 → 12.8（需求 26.0）"
-       },
-       {
-        "factor": "deck_fitness:lookahead",
-        "a": 0,
-        "b": 0.25,
-        "difference": -0.25,
-        "a_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度",
-        "b_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-       },
-       {
-        "factor": "deck_fitness:synergy",
-        "a": 0,
-        "b": 0,
-        "difference": 0,
-        "a_message": null,
-        "b_message": "牌组里的 护卫 让预借时间更有价值（说明，不另加分）"
-       }
-      ],
-      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
-     }
-    },
-    {
-     "id": "T4",
-     "tool": "get_card",
-     "result": {
-      "id": "BORROWED_TIME",
-      "name": "预借时间",
-      "description": "获得。\n所有卡牌在本回合耗能增加。",
-      "cost": 1,
-      "type": "技能",
-      "rarity": "罕见",
-      "color": "necrobinder",
-      "target": "Self",
-      "energy_gain": 4,
-      "upgrade_description": "获得。\n所有卡牌在本回合耗能增加。"
-     }
-    },
-    {
-     "id": "T5",
      "tool": "what_if_choices",
      "result": {
       "remove": [
@@ -2128,7 +1899,173 @@
      }
     },
     {
+     "id": "T4",
+     "tool": "get_card",
+     "result": {
+      "id": "BORROWED_TIME",
+      "name": "预借时间",
+      "description": "获得。\n所有卡牌在本回合耗能增加。",
+      "cost": 1,
+      "type": "技能",
+      "rarity": "罕见",
+      "color": "necrobinder",
+      "target": "Self",
+      "energy_gain": 4,
+      "upgrade_description": "获得。\n所有卡牌在本回合耗能增加。"
+     }
+    },
+    {
+     "id": "T5",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F09-card",
+      "changes": [
+       {
+        "operation": "add",
+        "card": "REAP",
+        "name": "收割"
+       }
+      ],
+      "engine_top_before": "skip",
+      "engine_top_after": "skip",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 3.4,
+      "options_after": [
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 35.4,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "1:DEBILITATE",
+        "name": "摧残",
+        "deck_score": 34.8,
+        "rank": 2,
+        "fully_scored": false
+       },
+       {
+        "id": "2:DREDGE",
+        "name": "清淤",
+        "deck_score": 33.3,
+        "rank": 3,
+        "fully_scored": false
+       },
+       {
+        "id": "0:BORROWED_TIME",
+        "name": "预借时间",
+        "deck_score": 32,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    },
+    {
      "id": "T6",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F09-card",
+      "changes": [
+       {
+        "operation": "add",
+        "card": "SOW",
+        "name": "播种"
+       }
+      ],
+      "engine_top_before": "skip",
+      "engine_top_after": "skip",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 5.8,
+      "options_after": [
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 40.9,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "1:DEBILITATE",
+        "name": "摧残",
+        "deck_score": 39.8,
+        "rank": 2,
+        "fully_scored": false
+       },
+       {
+        "id": "2:DREDGE",
+        "name": "清淤",
+        "deck_score": 37.8,
+        "rank": 3,
+        "fully_scored": false
+       },
+       {
+        "id": "0:BORROWED_TIME",
+        "name": "预借时间",
+        "deck_score": 35.1,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "T7",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F09-card",
+      "changes": [
+       {
+        "operation": "add",
+        "card": "ENFEEBLING_TOUCH",
+        "name": "弱化之触"
+       }
+      ],
+      "engine_top_before": "skip",
+      "engine_top_after": "skip",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 4.7,
+      "options_after": [
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 42.3,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "1:DEBILITATE",
+        "name": "摧残",
+        "deck_score": 40.8,
+        "rank": 2,
+        "fully_scored": false
+       },
+       {
+        "id": "2:DREDGE",
+        "name": "清淤",
+        "deck_score": 39.6,
+        "rank": 3,
+        "fully_scored": false
+       },
+       {
+        "id": "0:BORROWED_TIME",
+        "name": "预借时间",
+        "deck_score": 37.6,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "T8",
      "tool": "what_if",
      "result": {
       "decision_id": "F09-card",
@@ -2178,36 +2115,36 @@
      }
     }
    ],
-   "toolCalls": 6,
+   "toolCalls": 5,
    "repairs": 0,
    "usage": {
-    "prompt_tokens": 23209,
-    "completion_tokens": 636,
-    "cost_usd": 0.003285324,
-    "llm_calls": 5
+    "prompt_tokens": 16866,
+    "completion_tokens": 639,
+    "cost_usd": 0.0018752399999999998,
+    "llm_calls": 4
    },
    "finding": {
     "decision_id": "F09-card",
     "reasons": [
      {
       "factor": "deck_fitness:cycle",
-      "evidence": "T3",
-      "text": "拿预借时间后每回合额外抽牌 1.12 → 0.66，低于需求 1.0，是差距最大的一项。"
+      "evidence": "T1",
+      "text": "拿预借时间后每回合额外抽牌 1.12 → 0.66，低于需求 1.0，这是差距最大的一项。"
      },
      {
       "factor": "deck_fitness:defense",
-      "evidence": "T3",
-      "text": "防御每回合 5.5 → 5.4，而需求是 8.4，本来就吃紧的防御更薄。"
+      "evidence": "T1",
+      "text": "防御每回合 5.5 → 5.4，需求 8.4，本来就吃紧的防御更薄。"
      },
      {
       "factor": "deck_fitness:frontload",
-      "evidence": "T3",
-      "text": "前期输出每回合 14.1 → 12.8，离需求 26.0 更远。"
+      "evidence": "T1",
+      "text": "前期输出每回合 14.1 → 12.8，需求 26.0，离需求还很远。"
      }
     ],
-    "what_if_evidence": "T6",
-    "what_if_text": "即使少一张打击，引擎仍选跳过，差距 5.6，说明不是某张牌拖累，而是牌组整体方向不合。",
-    "advice": "这套 13 张牌缺防御和抽牌，第 1 幕选牌时优先补防御或抽牌，纯能量牌可以再等等。"
+    "what_if_evidence": "T5",
+    "what_if_text": "试了加收割、播种、弱化之触、去掉一张打击，首选都仍是跳过，没有翻转。",
+    "advice": "预借时间要花 1 费换 4 点能量、还让本回合卡牌变贵，抽牌和防御都紧时先跳过更稳。"
    }
   },
   {
@@ -2364,233 +2301,6 @@
     },
     {
      "id": "T1",
-     "tool": "get_decision",
-     "result": {
-      "id": "F02-card",
-      "kind": "card_reward",
-      "floor": 2,
-      "act": 1,
-      "hp": 77,
-      "max_hp": 77,
-      "gold": 109,
-      "engine_top": "skip",
-      "confidence": "medium",
-      "policy_status": "skip",
-      "pick_margin": 1,
-      "options": [
-       {
-        "id": "skip",
-        "kind": "skip",
-        "entity_id": null,
-        "name": "跳过",
-        "score": 45.1,
-        "deck_score": 44.1,
-        "rank": 1,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": 0,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         },
-         {
-          "code": "deck_fitness:pick_margin",
-          "delta": 1,
-          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 0,
-         "survival": 0,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "data_completeness": 1
-        }
-       },
-       {
-        "id": "1:FEAR",
-        "kind": "card",
-        "entity_id": "FEAR",
-        "name": "恐惧",
-        "score": 44.4,
-        "deck_score": 44.4,
-        "rank": 2,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "deck_fitness:frontload",
-          "delta": 2.52,
-          "message": "拿恐惧后前期输出：每回合 8.8 → 11.1（需求 22.9）"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": -0.33,
-          "message": "拿恐惧后防御：每回合 8.4 → 7.7（需求 7.5）"
-         },
-         {
-          "code": "deck_fitness:synergy",
-          "delta": 0,
-          "message": "牌组里的 护卫 让恐惧更有价值（说明，不另加分）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": -1.84,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 2.5171,
-         "survival": -0.3267,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "data_completeness": 1
-        }
-       },
-       {
-        "id": "2:REAP",
-        "kind": "card",
-        "entity_id": "REAP",
-        "name": "收割",
-        "score": 41.4,
-        "deck_score": 41.4,
-        "rank": 3,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "deck_fitness:defense",
-          "delta": -8.71,
-          "message": "拿收割后防御：每回合 8.4 → 5.1（需求 7.5）"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": 7.78,
-          "message": "拿收割后前期输出：每回合 8.8 → 16.6（需求 22.9）"
-         },
-         {
-          "code": "deck_fitness:synergy",
-          "delta": 0,
-          "message": "牌组里的 护卫 让收割更有价值（说明，不另加分）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": -1.73,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 7.7838,
-         "survival": -8.7069,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "data_completeness": 1
-        }
-       },
-       {
-        "id": "0:FLATTEN",
-        "kind": "card",
-        "entity_id": "FLATTEN",
-        "name": "重压",
-        "score": 41.2,
-        "deck_score": 41.2,
-        "rank": 4,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "deck_fitness:defense",
-          "delta": -1.14,
-          "message": "拿重压后防御：每回合 8.4 → 7.3（需求 7.5）"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": 0.22,
-          "message": "拿重压后前期输出：每回合 8.8 → 9.0（需求 22.9）"
-         },
-         {
-          "code": "deck_fitness:synergy",
-          "delta": 0,
-          "message": "牌组里的 护卫 让重压更有价值（说明，不另加分）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": -1.97,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 0.2174,
-         "survival": -1.136,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "data_completeness": 1
-        }
-       }
-      ],
-      "chosen": "0:FLATTEN",
-      "tier": 1,
-      "gap": 2.9,
-      "not_strict_because": []
-     }
-    },
-    {
-     "id": "T2",
-     "tool": "get_deck",
-     "result": {
-      "decision_id": "F02-card",
-      "floor": 2,
-      "act": 1,
-      "hp": 77,
-      "max_hp": 77,
-      "gold": 109,
-      "deck_size": 10,
-      "deck": [
-       {
-        "card": "BODYGUARD",
-        "name": "护卫",
-        "upgrades": 0,
-        "count": 1
-       },
-       {
-        "card": "DEFEND_NECROBINDER",
-        "name": "防御",
-        "upgrades": 0,
-        "count": 4
-       },
-       {
-        "card": "STRIKE_NECROBINDER",
-        "name": "打击",
-        "upgrades": 0,
-        "count": 4
-       },
-       {
-        "card": "UNLEASH",
-        "name": "出击",
-        "upgrades": 0,
-        "count": 1
-       }
-      ],
-      "relics": [
-       {
-        "relic": "BOUND_PHYLACTERY",
-        "name": "缚魂命匣"
-       },
-       {
-        "relic": "NUTRITIOUS_OYSTER",
-        "name": "营养牡蛎"
-       }
-      ],
-      "potions": []
-     }
-    },
-    {
-     "id": "T3",
      "tool": "compare_options",
      "result": {
       "decision_id": "F02-card",
@@ -2645,7 +2355,57 @@
      }
     },
     {
-     "id": "T4",
+     "id": "T2",
+     "tool": "get_deck",
+     "result": {
+      "decision_id": "F02-card",
+      "floor": 2,
+      "act": 1,
+      "hp": 77,
+      "max_hp": 77,
+      "gold": 109,
+      "deck_size": 10,
+      "deck": [
+       {
+        "card": "BODYGUARD",
+        "name": "护卫",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "DEFEND_NECROBINDER",
+        "name": "防御",
+        "upgrades": 0,
+        "count": 4
+       },
+       {
+        "card": "STRIKE_NECROBINDER",
+        "name": "打击",
+        "upgrades": 0,
+        "count": 4
+       },
+       {
+        "card": "UNLEASH",
+        "name": "出击",
+        "upgrades": 0,
+        "count": 1
+       }
+      ],
+      "relics": [
+       {
+        "relic": "BOUND_PHYLACTERY",
+        "name": "缚魂命匣"
+       },
+       {
+        "relic": "NUTRITIOUS_OYSTER",
+        "name": "营养牡蛎"
+       }
+      ],
+      "potions": []
+     }
+    },
+    {
+     "id": "T3",
      "tool": "what_if_choices",
      "result": {
       "remove": [
@@ -2664,7 +2424,7 @@
      }
     },
     {
-     "id": "T5",
+     "id": "T4",
      "tool": "what_if",
      "result": {
       "decision_id": "F02-card",
@@ -2712,50 +2472,205 @@
        }
       ]
      }
+    },
+    {
+     "id": "T5",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F02-card",
+      "changes": [
+       {
+        "operation": "upgrade",
+        "card": "DEFEND_NECROBINDER",
+        "name": "防御"
+       }
+      ],
+      "engine_top_before": "skip",
+      "engine_top_after": "skip",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "low",
+      "gap_after": 2.1,
+      "options_after": [
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 44.9,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "1:FEAR",
+        "name": "恐惧",
+        "deck_score": 45.9,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "2:REAP",
+        "name": "收割",
+        "deck_score": 43.1,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "0:FLATTEN",
+        "name": "重压",
+        "deck_score": 42.8,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "T6",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F02-card",
+      "changes": [
+       {
+        "operation": "remove",
+        "card": "DEFEND_NECROBINDER",
+        "name": "防御"
+       },
+       {
+        "operation": "remove",
+        "card": "DEFEND_NECROBINDER",
+        "name": "防御"
+       }
+      ],
+      "engine_top_before": "skip",
+      "engine_top_after": "skip",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 4.7,
+      "options_after": [
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 44,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "1:FEAR",
+        "name": "恐惧",
+        "deck_score": 44.2,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "2:REAP",
+        "name": "收割",
+        "deck_score": 40,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "0:FLATTEN",
+        "name": "重压",
+        "deck_score": 39.3,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "T7",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F02-card",
+      "changes": [
+       {
+        "operation": "upgrade",
+        "card": "UNLEASH",
+        "name": "出击"
+       }
+      ],
+      "engine_top_before": "skip",
+      "engine_top_after": "skip",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 2.9,
+      "options_after": [
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 44.5,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "1:FEAR",
+        "name": "恐惧",
+        "deck_score": 44.9,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "2:REAP",
+        "name": "收割",
+        "deck_score": 41.7,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "0:FLATTEN",
+        "name": "重压",
+        "deck_score": 41.6,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
     }
    ],
-   "toolCalls": 5,
+   "toolCalls": 4,
    "repairs": 0,
    "usage": {
-    "prompt_tokens": 16071,
-    "completion_tokens": 599,
-    "cost_usd": 0.001739268,
-    "llm_calls": 4
+    "prompt_tokens": 10700,
+    "completion_tokens": 626,
+    "cost_usd": 0.0015903839999999998,
+    "llm_calls": 3
    },
    "finding": {
     "decision_id": "F02-card",
     "reasons": [
      {
       "factor": "deck_fitness:lookahead",
-      "evidence": "T3",
-      "text": "引擎更看重后续 3 次选牌的空间：拿重压会让未来牌组适合度下降，跳过则不受影响，这是差距最大的一项。"
+      "evidence": "T1",
+      "text": "引擎认为拿重压会拖累后续 3 次选牌的牌组走向，这是两边差距最大的一项。"
      },
      {
       "factor": "deck_fitness:defense",
-      "evidence": "T3",
-      "text": "防御每回合 8.4 → 7.3，低于需求 7.5；跳过则保持 8.4。"
+      "evidence": "T1",
+      "text": "拿重压后防御每回合 8.4 → 7.3，低于需求 7.5，本来就偏紧的防御更吃紧。"
      },
      {
       "factor": "deck_fitness:frontload",
-      "evidence": "T3",
-      "text": "重压对前期输出几乎没帮助：每回合 8.8 → 9.0，而需求是 22.9。"
+      "evidence": "T1",
+      "text": "重压对前期输出几乎没帮助：每回合 8.8 → 9.0，离需求 22.9 还很远。"
      }
     ],
-    "what_if_evidence": "T5",
-    "what_if_text": "假设当时少一张打击，引擎首选仍是跳过，重压仍排最后，说明这不是单张牌的问题。",
-    "advice": "第 1 幕早期牌组只有 10 张时，先看这张牌能否补上防御（需求 7.5）和输出（需求 22.9），补不上就考虑跳过。"
+    "what_if_evidence": "T4",
+    "what_if_text": "试了去掉一张打击、升级防御、去掉两张防御、升级出击，首选都仍是跳过，没有翻转。",
+    "advice": "第 1 幕前期先补输出和防御的缺口，重压这类收益偏慢的牌可以等牌组更成型再考虑。"
    }
   }
  ],
  "summary": {
-  "text": "这些决定都因防御或抽牌低于需求而拖累后续选牌空间；照做方向：第 1 幕优先补防御或抽牌，补不上就跳过。",
+  "text": "这些决定都让防御或前期输出离需求更远；下次优先拿能补格挡或前期输出的牌，别跳过。",
   "source": "model",
-  "cost_usd": 0.00022409999999999997
+  "cost_usd": 0.0002091
  },
  "meta": {
   "model": "deepseek-flash",
-  "cost_usd": 0.00847614,
-  "seconds": 6.779,
-  "generated_at": "2026-11-01 14:45"
+  "cost_usd": 0.005761344,
+  "seconds": 7.549,
+  "generated_at": "2026-11-11 00:30"
  }
 }

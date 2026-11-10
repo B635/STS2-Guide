@@ -2,7 +2,7 @@
  "run": "1772819860",
  "set": "test",
  "model": "deepseek-flash",
- "prompt_version": "p3",
+ "prompt_version": "p4",
  "pre": {
   "summary": {
    "run_id": "1772819860",
@@ -697,7 +697,9 @@
   {
    "flag": "F02-card",
    "status": "verified",
-   "errors": [],
+   "errors": [
+    "reasons[2]: deck_fitness:frontload is not one of the largest differences here (deck_fitness:cycle, deck_fitness:defense, deck_fitness:lookahead)"
+   ],
    "evidence": [
     {
      "id": "T0",
@@ -893,290 +895,6 @@
     },
     {
      "id": "T1",
-     "tool": "get_decision",
-     "result": {
-      "id": "F02-card",
-      "kind": "card_reward",
-      "floor": 2,
-      "act": 1,
-      "hp": 61,
-      "max_hp": 65,
-      "gold": 119,
-      "engine_top": "2:GUIDING_STAR",
-      "confidence": "medium",
-      "policy_status": "recommend",
-      "pick_margin": 1,
-      "options": [
-       {
-        "id": "2:GUIDING_STAR",
-        "kind": "card",
-        "entity_id": "GUIDING_STAR",
-        "name": "引导之星",
-        "score": 54.5,
-        "deck_score": 54.5,
-        "rank": 1,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "estimate_scope",
-          "delta": 0,
-          "message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 1 张牌（追踪之刃）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:cycle",
-          "delta": 5.59,
-          "message": "拿引导之星后循环：每回合额外抽牌 0.00 → 0.52（需求 1.0）"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": 1.41,
-          "message": "拿引导之星后前期输出：每回合 17.7 → 20.7（需求 19.0）"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": -0.75,
-          "message": "拿引导之星后防御：每回合 5.8 → 5.3（需求 6.7）"
-         },
-         {
-          "code": "deck_fitness:synergy",
-          "delta": 0,
-          "message": "牌组里的 崇拜 让引导之星更有价值（说明，不另加分）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": -2.04,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 1.4098,
-         "survival": -0.7474,
-         "long_term_growth": 5.5852,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
-       },
-       {
-        "id": "1:GATHER_LIGHT",
-        "kind": "card",
-        "entity_id": "GATHER_LIGHT",
-        "name": "收集光辉",
-        "score": 51.6,
-        "deck_score": 51.6,
-        "rank": 2,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "estimate_scope",
-          "delta": 0,
-          "message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 1 张牌（追踪之刃）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": 3.01,
-          "message": "拿收集光辉后防御：每回合 5.8 → 7.3（需求 6.7）"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": -1.58,
-          "message": "拿收集光辉后前期输出：每回合 17.7 → 16.0（需求 19.0）"
-         },
-         {
-          "code": "deck_fitness:synergy",
-          "delta": 0,
-          "message": "牌组里的 追踪之刃、太阳打击 让收集光辉更有价值（说明，不另加分）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": -0.17,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": -1.5847,
-         "survival": 3.0078,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
-       },
-       {
-        "id": "skip",
-        "kind": "skip",
-        "entity_id": null,
-        "name": "跳过",
-        "score": 51.3,
-        "deck_score": 50.3,
-        "rank": 3,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "estimate_scope",
-          "delta": 0,
-          "message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 1 张牌（追踪之刃）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": 0,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         },
-         {
-          "code": "deck_fitness:pick_margin",
-          "delta": 1,
-          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 0,
-         "survival": 0,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
-       },
-       {
-        "id": "0:WROUGHT_IN_WAR",
-        "kind": "card",
-        "entity_id": "WROUGHT_IN_WAR",
-        "name": "战火铸就",
-        "score": 48.5,
-        "deck_score": 48.5,
-        "rank": 4,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "estimate_scope",
-          "delta": 0,
-          "message": "牌组中 1 张牌未完整计入评分，分数只反映已计入的部分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 1 张牌（追踪之刃）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": -3.03,
-          "message": "拿战火铸就后防御：每回合 5.8 → 4.5（需求 6.7）"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": 1.38,
-          "message": "拿战火铸就后前期输出：每回合 17.7 → 20.6（需求 19.0）"
-         },
-         {
-          "code": "deck_fitness:synergy",
-          "delta": 0,
-          "message": "牌组里的 崇拜、追踪之刃 让战火铸就更有价值（说明，不另加分）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": -0.14,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 1.3848,
-         "survival": -3.0278,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
-       }
-      ],
-      "chosen": "0:WROUGHT_IN_WAR",
-      "tier": 1,
-      "gap": 6,
-      "not_strict_because": []
-     }
-    },
-    {
-     "id": "T2",
-     "tool": "get_deck",
-     "result": {
-      "decision_id": "F02-card",
-      "floor": 2,
-      "act": 1,
-      "hp": 61,
-      "max_hp": 65,
-      "gold": 119,
-      "deck_size": 10,
-      "deck": [
-       {
-        "card": "DEFEND_REGENT",
-        "name": "防御",
-        "upgrades": 0,
-        "count": 3
-       },
-       {
-        "card": "FALLING_STAR",
-        "name": "陨星",
-        "upgrades": 0,
-        "count": 1
-       },
-       {
-        "card": "SEEKING_EDGE",
-        "name": "追踪之刃",
-        "upgrades": 0,
-        "count": 1
-       },
-       {
-        "card": "SOLAR_STRIKE",
-        "name": "太阳打击",
-        "upgrades": 0,
-        "count": 1
-       },
-       {
-        "card": "STRIKE_REGENT",
-        "name": "打击",
-        "upgrades": 0,
-        "count": 3
-       },
-       {
-        "card": "VENERATE",
-        "name": "崇拜",
-        "upgrades": 0,
-        "count": 1
-       }
-      ],
-      "relics": [
-       {
-        "relic": "DIVINE_RIGHT",
-        "name": "天赋君权"
-       },
-       {
-        "relic": "LEAFY_POULTICE",
-        "name": "树叶药膏"
-       }
-      ],
-      "potions": []
-     }
-    },
-    {
-     "id": "T3",
      "tool": "compare_options",
      "result": {
       "decision_id": "F02-card",
@@ -1255,7 +973,69 @@
      }
     },
     {
-     "id": "T4",
+     "id": "T2",
+     "tool": "get_deck",
+     "result": {
+      "decision_id": "F02-card",
+      "floor": 2,
+      "act": 1,
+      "hp": 61,
+      "max_hp": 65,
+      "gold": 119,
+      "deck_size": 10,
+      "deck": [
+       {
+        "card": "DEFEND_REGENT",
+        "name": "防御",
+        "upgrades": 0,
+        "count": 3
+       },
+       {
+        "card": "FALLING_STAR",
+        "name": "陨星",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "SEEKING_EDGE",
+        "name": "追踪之刃",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "SOLAR_STRIKE",
+        "name": "太阳打击",
+        "upgrades": 0,
+        "count": 1
+       },
+       {
+        "card": "STRIKE_REGENT",
+        "name": "打击",
+        "upgrades": 0,
+        "count": 3
+       },
+       {
+        "card": "VENERATE",
+        "name": "崇拜",
+        "upgrades": 0,
+        "count": 1
+       }
+      ],
+      "relics": [
+       {
+        "relic": "DIVINE_RIGHT",
+        "name": "天赋君权"
+       },
+       {
+        "relic": "LEAFY_POULTICE",
+        "name": "树叶药膏"
+       }
+      ],
+      "potions": []
+     }
+    },
+    {
+     "id": "T3",
      "tool": "what_if_choices",
      "result": {
       "remove": [
@@ -1278,7 +1058,43 @@
      }
     },
     {
+     "id": "T4",
+     "tool": "get_card",
+     "result": {
+      "id": "GUIDING_STAR",
+      "name": "引导之星",
+      "description": "造成12点伤害。\n在下个回合抽2张牌。",
+      "cost": 1,
+      "type": "攻击",
+      "rarity": "普通",
+      "color": "regent",
+      "target": "AnyEnemy",
+      "damage": 12,
+      "cards_draw": 2,
+      "upgrade_description": "造成13点伤害。\n在下个回合抽3张牌。"
+     }
+    },
+    {
      "id": "T5",
+     "tool": "get_card",
+     "result": {
+      "id": "WROUGHT_IN_WAR",
+      "name": "战火铸就",
+      "description": "造成7点伤害。\n铸造7。",
+      "cost": 1,
+      "type": "攻击",
+      "rarity": "普通",
+      "color": "regent",
+      "target": "AnyEnemy",
+      "damage": 7,
+      "keywords": [
+       "消耗"
+      ],
+      "upgrade_description": "造成9点伤害。\n铸造9。"
+     }
+    },
+    {
+     "id": "T6",
      "tool": "what_if",
      "result": {
       "decision_id": "F02-card",
@@ -1326,46 +1142,209 @@
        }
       ]
      }
+    },
+    {
+     "id": "T7",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F02-card",
+      "changes": [
+       {
+        "operation": "remove",
+        "card": "DEFEND_REGENT",
+        "name": "防御"
+       },
+       {
+        "operation": "remove",
+        "card": "DEFEND_REGENT",
+        "name": "防御"
+       }
+      ],
+      "engine_top_before": "2:GUIDING_STAR",
+      "engine_top_after": "2:GUIDING_STAR",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 6.9,
+      "options_after": [
+       {
+        "id": "2:GUIDING_STAR",
+        "name": "引导之星",
+        "deck_score": 53.7,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "1:GATHER_LIGHT",
+        "name": "收集光辉",
+        "deck_score": 52.1,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 50.1,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "0:WROUGHT_IN_WAR",
+        "name": "战火铸就",
+        "deck_score": 46.8,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "T8",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F02-card",
+      "changes": [
+       {
+        "operation": "upgrade",
+        "card": "SEEKING_EDGE",
+        "name": "追踪之刃"
+       },
+       {
+        "operation": "upgrade",
+        "card": "VENERATE",
+        "name": "崇拜"
+       }
+      ],
+      "engine_top_before": "2:GUIDING_STAR",
+      "engine_top_after": "2:GUIDING_STAR",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 6.2,
+      "options_after": [
+       {
+        "id": "2:GUIDING_STAR",
+        "name": "引导之星",
+        "deck_score": 55.2,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "1:GATHER_LIGHT",
+        "name": "收集光辉",
+        "deck_score": 51.9,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 50.8,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "0:WROUGHT_IN_WAR",
+        "name": "战火铸就",
+        "deck_score": 49,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "T9",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F02-card",
+      "changes": [
+       {
+        "operation": "remove",
+        "card": "VENERATE",
+        "name": "崇拜"
+       },
+       {
+        "operation": "remove",
+        "card": "SEEKING_EDGE",
+        "name": "追踪之刃"
+       }
+      ],
+      "engine_top_before": "2:GUIDING_STAR",
+      "engine_top_after": "2:GUIDING_STAR",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 6.3,
+      "options_after": [
+       {
+        "id": "2:GUIDING_STAR",
+        "name": "引导之星",
+        "deck_score": 56.5,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "1:GATHER_LIGHT",
+        "name": "收集光辉",
+        "deck_score": 54.8,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 52.6,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "0:WROUGHT_IN_WAR",
+        "name": "战火铸就",
+        "deck_score": 50.2,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
     }
    ],
-   "toolCalls": 5,
-   "repairs": 0,
+   "toolCalls": 6,
+   "repairs": 1,
    "usage": {
-    "prompt_tokens": 19512,
-    "completion_tokens": 650,
-    "cost_usd": 0.002193024,
-    "llm_calls": 4
+    "prompt_tokens": 31807,
+    "completion_tokens": 1121,
+    "cost_usd": 0.0038501159999999998,
+    "llm_calls": 7
    },
    "finding": {
     "decision_id": "F02-card",
     "reasons": [
      {
       "factor": "deck_fitness:cycle",
-      "evidence": "T3",
-      "text": "引导之星把每回合额外抽牌从 0.00 提到 0.52（需求 1.0），战火铸就在这一项没有贡献，这是两者差距最大的一项。"
+      "evidence": "T1",
+      "text": "引导之星下回合抽2张，每回合额外抽牌 0.00 → 0.52（需求 1.0），这是两者差距最大的一项。"
      },
      {
       "factor": "deck_fitness:defense",
-      "evidence": "T3",
-      "text": "防御需求是每回合 6.7：拿引导之星后 5.8 → 5.3，拿战火铸就后 5.8 → 4.5，后者离需求更远。"
+      "evidence": "T1",
+      "text": "防御每回合 5.8 → 5.3（需求 6.7）；战火铸就则降到 4.5，缺口更大。"
      },
      {
       "factor": "deck_fitness:lookahead",
-      "evidence": "T3",
-      "text": "计入后续 3 次选牌后，引导之星是 -2.04，战火铸只是 -0.14，说明引擎认为战火铸就与后续牌池更搭。"
+      "evidence": "T1",
+      "text": "计入后续 3 次选牌后，引导之星为 -2.04，战火铸就为 -0.14，这一项玩家选的牌反而更好。"
      }
     ],
-    "what_if_evidence": "T5",
-    "what_if_text": "试着少一张打击，引擎首选仍是引导之星，差距仍是 6，说明这不是牌组张数的问题。",
-    "advice": "前期防御只有 5.8、需求 6.7 时，优先考虑能补抽牌或防御的牌；战火铸就偏输出，可留到防御够用后再拿。"
+    "what_if_evidence": "T9",
+    "what_if_text": "试了去掉打击、去掉两张防御、升级追踪之刃与崇拜、去掉崇拜与追踪之刃，首选始终是引导之星，没有翻转。",
+    "advice": "第 1 幕牌组只有 10 张、防御每回合 5.8 低于 6.7 时，优先补防御或抽牌，而不是再加一张纯输出牌。"
    }
   },
   {
    "flag": "F17-card",
    "status": "verified",
-   "errors": [
-    "what_if cites T6, which is not a what_if result"
-   ],
+   "errors": [],
    "evidence": [
     {
      "id": "T0",
@@ -1558,221 +1537,73 @@
     },
     {
      "id": "T1",
-     "tool": "get_decision",
+     "tool": "compare_options",
      "result": {
-      "id": "F17-card",
-      "kind": "card_reward",
-      "floor": 17,
-      "act": 1,
-      "hp": 14,
-      "max_hp": 65,
-      "gold": 316,
-      "engine_top": "1:COMET",
-      "confidence": "medium",
-      "policy_status": "recommend",
-      "pick_margin": 1,
-      "options": [
+      "decision_id": "F17-card",
+      "a": {
+       "id": "1:COMET",
+       "name": "彗星",
+       "deck_score": 59,
+       "fully_scored": true
+      },
+      "b": {
+       "id": "0:SWORD_SAGE",
+       "name": "剑圣",
+       "deck_score": 53.6,
+       "fully_scored": true
+      },
+      "deck_score_difference": 5.4,
+      "factors": [
        {
-        "id": "1:COMET",
-        "kind": "card",
-        "entity_id": "COMET",
-        "name": "彗星",
-        "score": 59,
-        "deck_score": 59,
-        "rank": 1,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "estimate_scope",
-          "delta": 0,
-          "message": "牌组中 3 张牌未完整计入评分，分数只反映已计入的部分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 3 张牌（倒映、粒子墙、追踪之刃）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": 6.71,
-          "message": "拿彗星后前期输出：每回合 19.3 → 34.1（需求 35.1）"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": 0.61,
-          "message": "拿彗星后防御：每回合 12.8 → 14.2（需求 8.5）"
-         },
-         {
-          "code": "deck_fitness:synergy",
-          "delta": 0,
-          "message": "牌组里的 创世纪、崇拜 让彗星更有价值（说明，不另加分）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": -1.66,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 6.7057,
-         "survival": 0.6145,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
+        "factor": "deck_fitness:frontload",
+        "a": 6.71,
+        "b": 0.57,
+        "difference": 6.14,
+        "a_message": "拿彗星后前期输出：每回合 19.3 → 34.1（需求 35.1）",
+        "b_message": "拿剑圣后前期输出：每回合 19.3 → 20.4（需求 35.1）"
        },
        {
-        "id": "skip",
-        "kind": "skip",
-        "entity_id": null,
-        "name": "跳过",
-        "score": 54.3,
-        "deck_score": 53.3,
-        "rank": 2,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "estimate_scope",
-          "delta": 0,
-          "message": "牌组中 3 张牌未完整计入评分，分数只反映已计入的部分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 3 张牌（倒映、粒子墙、追踪之刃）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": 0,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         },
-         {
-          "code": "deck_fitness:pick_margin",
-          "delta": 1,
-          "message": "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 0,
-         "survival": 0,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
+        "factor": "deck_fitness:lookahead",
+        "a": -1.66,
+        "b": -0.05,
+        "difference": -1.61,
+        "a_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度",
+        "b_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
        },
        {
-        "id": "2:DECISIONS_DECISIONS",
-        "kind": "card",
-        "entity_id": "DECISIONS_DECISIONS",
-        "name": "抉择，抉择",
-        "score": 54,
-        "deck_score": 54,
-        "rank": 3,
-        "eligible": true,
-        "fully_scored": false,
-        "gaps": [
-         "card_effect_unsupported:DECISIONS_DECISIONS:effect:auto_play_card"
-        ],
-        "factors": [
-         {
-          "code": "unmodeled_mechanic",
-          "delta": 0,
-          "message": "抉择，抉择的部分效果尚未计入评分；牌组中 3 张牌未完整计入评分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 3 张牌（倒映、粒子墙、追踪之刃）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:cycle",
-          "delta": 2.54,
-          "message": "拿抉择，抉择后循环：每回合额外抽牌 0.00 → 0.26（需求 1.0）"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": -0.34,
-          "message": "拿抉择，抉择后前期输出：每回合 19.3 → 18.7（需求 35.1）"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": -0.29,
-          "message": "拿抉择，抉择后防御：每回合 12.8 → 12.1（需求 8.5）"
-         },
-         {
-          "code": "deck_fitness:synergy",
-          "delta": 0,
-          "message": "牌组里的 崇拜、太阳打击 让抉择，抉择更有价值（说明，不另加分）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": -1.28,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": -0.3405,
-         "survival": -0.2855,
-         "long_term_growth": 2.5379,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
+        "factor": "deck_fitness:defense",
+        "a": 0.61,
+        "b": -0.27,
+        "difference": 0.88,
+        "a_message": "拿彗星后防御：每回合 12.8 → 14.2（需求 8.5）",
+        "b_message": "拿剑圣后防御：每回合 12.8 → 12.2（需求 8.5）"
        },
        {
-        "id": "0:SWORD_SAGE",
-        "kind": "card",
-        "entity_id": "SWORD_SAGE",
-        "name": "剑圣",
-        "score": 53.6,
-        "deck_score": 53.6,
-        "rank": 4,
-        "eligible": true,
-        "fully_scored": true,
-        "gaps": [],
-        "factors": [
-         {
-          "code": "estimate_scope",
-          "delta": 0,
-          "message": "牌组中 3 张牌未完整计入评分，分数只反映已计入的部分。"
-         },
-         {
-          "code": "partially_modeled_deck_cards",
-          "delta": 0,
-          "message": "牌组中 3 张牌（倒映、粒子墙、追踪之刃）有部分效果尚未计入评分。"
-         },
-         {
-          "code": "deck_fitness:frontload",
-          "delta": 0.57,
-          "message": "拿剑圣后前期输出：每回合 19.3 → 20.4（需求 35.1）"
-         },
-         {
-          "code": "deck_fitness:defense",
-          "delta": -0.27,
-          "message": "拿剑圣后防御：每回合 12.8 → 12.2（需求 8.5）"
-         },
-         {
-          "code": "deck_fitness:lookahead",
-          "delta": -0.05,
-          "message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-         }
-        ],
-        "dimensions": {
-         "immediate_power": 0.5675,
-         "survival": -0.2737,
-         "long_term_growth": 0,
-         "resource_efficiency": 0,
-         "data_completeness": 0
-        }
+        "factor": "deck_fitness:synergy",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组里的 创世纪、崇拜 让彗星更有价值（说明，不另加分）",
+        "b_message": null
+       },
+       {
+        "factor": "estimate_scope",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 3 张牌未完整计入评分，分数只反映已计入的部分。",
+        "b_message": "牌组中 3 张牌未完整计入评分，分数只反映已计入的部分。"
+       },
+       {
+        "factor": "partially_modeled_deck_cards",
+        "a": 0,
+        "b": 0,
+        "difference": 0,
+        "a_message": "牌组中 3 张牌（倒映、粒子墙、追踪之刃）有部分效果尚未计入评分。",
+        "b_message": "牌组中 3 张牌（倒映、粒子墙、追踪之刃）有部分效果尚未计入评分。"
        }
       ],
-      "chosen": "0:SWORD_SAGE",
-      "tier": 1,
-      "gap": 5.4,
-      "not_strict_because": []
+      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
      }
     },
     {
@@ -1883,107 +1714,6 @@
     },
     {
      "id": "T3",
-     "tool": "compare_options",
-     "result": {
-      "decision_id": "F17-card",
-      "a": {
-       "id": "1:COMET",
-       "name": "彗星",
-       "deck_score": 59,
-       "fully_scored": true
-      },
-      "b": {
-       "id": "0:SWORD_SAGE",
-       "name": "剑圣",
-       "deck_score": 53.6,
-       "fully_scored": true
-      },
-      "deck_score_difference": 5.4,
-      "factors": [
-       {
-        "factor": "deck_fitness:frontload",
-        "a": 6.71,
-        "b": 0.57,
-        "difference": 6.14,
-        "a_message": "拿彗星后前期输出：每回合 19.3 → 34.1（需求 35.1）",
-        "b_message": "拿剑圣后前期输出：每回合 19.3 → 20.4（需求 35.1）"
-       },
-       {
-        "factor": "deck_fitness:lookahead",
-        "a": -1.66,
-        "b": -0.05,
-        "difference": -1.61,
-        "a_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度",
-        "b_message": "计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度"
-       },
-       {
-        "factor": "deck_fitness:defense",
-        "a": 0.61,
-        "b": -0.27,
-        "difference": 0.88,
-        "a_message": "拿彗星后防御：每回合 12.8 → 14.2（需求 8.5）",
-        "b_message": "拿剑圣后防御：每回合 12.8 → 12.2（需求 8.5）"
-       },
-       {
-        "factor": "deck_fitness:synergy",
-        "a": 0,
-        "b": 0,
-        "difference": 0,
-        "a_message": "牌组里的 创世纪、崇拜 让彗星更有价值（说明，不另加分）",
-        "b_message": null
-       },
-       {
-        "factor": "estimate_scope",
-        "a": 0,
-        "b": 0,
-        "difference": 0,
-        "a_message": "牌组中 3 张牌未完整计入评分，分数只反映已计入的部分。",
-        "b_message": "牌组中 3 张牌未完整计入评分，分数只反映已计入的部分。"
-       },
-       {
-        "factor": "partially_modeled_deck_cards",
-        "a": 0,
-        "b": 0,
-        "difference": 0,
-        "a_message": "牌组中 3 张牌（倒映、粒子墙、追踪之刃）有部分效果尚未计入评分。",
-        "b_message": "牌组中 3 张牌（倒映、粒子墙、追踪之刃）有部分效果尚未计入评分。"
-       }
-      ],
-      "note": "factor deltas are each option's change to the deck against taking nothing; policy leanings (pick margin, campfire rule) are not in deck_score"
-     }
-    },
-    {
-     "id": "T4",
-     "tool": "get_card",
-     "result": {
-      "id": "COMET",
-      "name": "彗星",
-      "description": "造成33点伤害。\n给予3层虚弱。\n给予3层易伤。",
-      "cost": 0,
-      "type": "攻击",
-      "rarity": "稀有",
-      "color": "regent",
-      "target": "AnyEnemy",
-      "damage": 33,
-      "upgrade_description": "造成44点伤害。\n给予3层虚弱。\n给予3层易伤。"
-     }
-    },
-    {
-     "id": "T5",
-     "tool": "get_card",
-     "result": {
-      "id": "SWORD_SAGE",
-      "name": "剑圣",
-      "description": "君王之剑获得重放1。",
-      "cost": 2,
-      "type": "能力",
-      "rarity": "稀有",
-      "color": "regent",
-      "target": "Self"
-     }
-    },
-    {
-     "id": "T6",
      "tool": "what_if_choices",
      "result": {
       "remove": [
@@ -2097,48 +1827,295 @@
        }
       ]
      }
+    },
+    {
+     "id": "T4",
+     "tool": "get_card",
+     "result": {
+      "id": "COMET",
+      "name": "彗星",
+      "description": "造成33点伤害。\n给予3层虚弱。\n给予3层易伤。",
+      "cost": 0,
+      "type": "攻击",
+      "rarity": "稀有",
+      "color": "regent",
+      "target": "AnyEnemy",
+      "damage": 33,
+      "upgrade_description": "造成44点伤害。\n给予3层虚弱。\n给予3层易伤。"
+     }
+    },
+    {
+     "id": "T5",
+     "tool": "get_card",
+     "result": {
+      "id": "SWORD_SAGE",
+      "name": "剑圣",
+      "description": "君王之剑获得重放1。",
+      "cost": 2,
+      "type": "能力",
+      "rarity": "稀有",
+      "color": "regent",
+      "target": "Self"
+     }
+    },
+    {
+     "id": "T6",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F17-card",
+      "changes": [
+       {
+        "operation": "add",
+        "card": "BLACK_HOLE",
+        "name": "黑洞"
+       }
+      ],
+      "engine_top_before": "1:COMET",
+      "engine_top_after": "1:COMET",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 5.6,
+      "options_after": [
+       {
+        "id": "1:COMET",
+        "name": "彗星",
+        "deck_score": 58.5,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 52.7,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "2:DECISIONS_DECISIONS",
+        "name": "抉择，抉择",
+        "deck_score": 53.4,
+        "rank": 3,
+        "fully_scored": false
+       },
+       {
+        "id": "0:SWORD_SAGE",
+        "name": "剑圣",
+        "deck_score": 52.9,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "T7",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F17-card",
+      "changes": [
+       {
+        "operation": "add",
+        "card": "CELESTIAL_MIGHT",
+        "name": "天穹之力"
+       }
+      ],
+      "engine_top_before": "1:COMET",
+      "engine_top_after": "1:COMET",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 5.3,
+      "options_after": [
+       {
+        "id": "1:COMET",
+        "name": "彗星",
+        "deck_score": 58.6,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 53.1,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "2:DECISIONS_DECISIONS",
+        "name": "抉择，抉择",
+        "deck_score": 53.7,
+        "rank": 3,
+        "fully_scored": false
+       },
+       {
+        "id": "0:SWORD_SAGE",
+        "name": "剑圣",
+        "deck_score": 53.3,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "T8",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F17-card",
+      "changes": [
+       {
+        "operation": "add",
+        "card": "KNOCKOUT_BLOW",
+        "name": "决胜一击"
+       },
+       {
+        "operation": "add",
+        "card": "CRESCENT_SPEAR",
+        "name": "新月长矛"
+       }
+      ],
+      "engine_top_before": "1:COMET",
+      "engine_top_after": "1:COMET",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 4.7,
+      "options_after": [
+       {
+        "id": "1:COMET",
+        "name": "彗星",
+        "deck_score": 58.2,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 53.5,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "2:DECISIONS_DECISIONS",
+        "name": "抉择，抉择",
+        "deck_score": 53.8,
+        "rank": 3,
+        "fully_scored": false
+       },
+       {
+        "id": "0:SWORD_SAGE",
+        "name": "剑圣",
+        "deck_score": 53.5,
+        "rank": 4,
+        "fully_scored": true
+       }
+      ]
+     }
+    },
+    {
+     "id": "T9",
+     "tool": "what_if",
+     "result": {
+      "decision_id": "F17-card",
+      "changes": [
+       {
+        "operation": "add",
+        "card": "KNOCKOUT_BLOW",
+        "name": "决胜一击"
+       },
+       {
+        "operation": "add",
+        "card": "CRESCENT_SPEAR",
+        "name": "新月长矛"
+       },
+       {
+        "operation": "add",
+        "card": "ASTRAL_PULSE",
+        "name": "星界脉冲"
+       }
+      ],
+      "engine_top_before": "1:COMET",
+      "engine_top_after": "1:COMET",
+      "pick_changed": false,
+      "agrees_with_player_after": false,
+      "confidence_after": "medium",
+      "gap_after": 2.7,
+      "options_after": [
+       {
+        "id": "1:COMET",
+        "name": "彗星",
+        "deck_score": 58.5,
+        "rank": 1,
+        "fully_scored": true
+       },
+       {
+        "id": "skip",
+        "name": "跳过",
+        "deck_score": 55.9,
+        "rank": 2,
+        "fully_scored": true
+       },
+       {
+        "id": "0:SWORD_SAGE",
+        "name": "剑圣",
+        "deck_score": 55.8,
+        "rank": 3,
+        "fully_scored": true
+       },
+       {
+        "id": "2:DECISIONS_DECISIONS",
+        "name": "抉择，抉择",
+        "deck_score": 54.6,
+        "rank": 4,
+        "fully_scored": false
+       }
+      ]
+     }
     }
    ],
    "toolCalls": 6,
-   "repairs": 1,
+   "repairs": 0,
    "usage": {
-    "prompt_tokens": 25324,
-    "completion_tokens": 900,
-    "cost_usd": 0.0039355679999999995,
-    "llm_calls": 5
+    "prompt_tokens": 28886,
+    "completion_tokens": 790,
+    "cost_usd": 0.00359268,
+    "llm_calls": 6
    },
    "finding": {
     "decision_id": "F17-card",
     "reasons": [
      {
       "factor": "deck_fitness:frontload",
-      "evidence": "T3",
-      "text": "差距主要在前期的输出：拿彗星后每回合 19.3 → 34.1，接近需求 35.1；拿剑圣只到 20.4。"
-     },
-     {
-      "factor": "deck_fitness:defense",
-      "evidence": "T3",
-      "text": "防御上彗星也略好：每回合 12.8 → 14.2，剑圣则降到 12.2，两者需求都是 8.5。"
+      "evidence": "T1",
+      "text": "拿彗星前期输出每回合 19.3 → 34.1，接近需求 35.1；拿剑圣只到 20.4，这是差距最大的一项。"
      },
      {
       "factor": "deck_fitness:lookahead",
-      "evidence": "T3",
-      "text": "往后看三次选牌，彗星略吃亏（-1.66 对 -0.05），但不足以抵消前面的输出差距。"
+      "evidence": "T1",
+      "text": "往后看 3 次选牌，彗星略吃亏（-1.66 对 -0.05），但不足以抵消输出差距。"
+     },
+     {
+      "factor": "deck_fitness:defense",
+      "evidence": "T1",
+      "text": "防御每回合 12.8 → 14.2（需求 8.5），拿剑圣则降到 12.2，彗星还顺带补了防御。"
      }
     ],
-    "advice": "当前牌组每回合输出只有 19.3、离需求 35.1 很远，下次遇到能大幅提高单回合伤害的牌可以优先考虑。"
+    "what_if_evidence": "T9",
+    "what_if_text": "试了补黑洞、天穹之力、决胜一击加新月长矛，首选都没变；再加星界脉冲后差距从 5.4 缩到 2.7，仍未翻转。",
+    "advice": "牌组前期输出只有每回合 19.3、离需求 35.1 很远时，优先考虑能立刻打出高伤害的牌，而不是依赖君王之剑的能力牌。"
    }
   }
  ],
  "summary": {
-  "text": "这些决定都低估了前期每回合抽牌与防御的缺口；下次选牌先补足循环和防御，再考虑偏输出的牌。",
+  "text": "这些决定都低估了前期抽牌与防御的缺口，应优先补防御或抽牌，再考虑纯输出。",
   "source": "model",
-  "cost_usd": 0.00018389999999999997
+  "cost_usd": 0.0001731
  },
  "meta": {
   "model": "deepseek-flash",
-  "cost_usd": 0.006312491999999999,
-  "seconds": 9.15,
-  "generated_at": "2026-11-01 14:43"
+  "cost_usd": 0.007615896,
+  "seconds": 11.499,
+  "generated_at": "2026-11-11 00:28"
  }
 }

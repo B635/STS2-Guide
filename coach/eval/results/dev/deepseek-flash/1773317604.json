@@ -2,7 +2,7 @@
  "run": "1773317604",
  "set": "dev",
  "model": "deepseek-flash",
- "prompt_version": "p3",
+ "prompt_version": "p4",
  "pre": {
   "summary": {
    "run_id": "1773317604",
@@ -157,7 +157,7 @@
  "meta": {
   "model": "deepseek-flash",
   "cost_usd": 0,
-  "seconds": 0.934,
-  "generated_at": "2026-11-01 14:42"
+  "seconds": 0.899,
+  "generated_at": "2026-11-11 00:27"
  }
 }

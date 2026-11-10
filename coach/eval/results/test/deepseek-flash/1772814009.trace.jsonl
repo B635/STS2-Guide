@@ -1,2 +1,2 @@
-{"name":"prepass","start":"2026-11-01T06:43:27.880Z","duration_ms":2012,"attributes":{"run_id":"1772814009","tier1":[],"tier2":7}}
-{"name":"review.done","start":"2026-11-01T06:43:29.904Z","duration_ms":0,"attributes":{"run_id":"1772814009","model":"deepseek-flash","cost_usd":0,"seconds":2.013,"verified":[],"dropped":[],"summary_source":"program"}}
+{"name":"prepass","start":"2026-11-10T16:28:24.482Z","duration_ms":2006,"attributes":{"run_id":"1772814009","tier1":[],"tier2":7}}
+{"name":"review.done","start":"2026-11-10T16:28:26.502Z","duration_ms":0,"attributes":{"run_id":"1772814009","model":"deepseek-flash","cost_usd":0,"seconds":2.007,"verified":[],"dropped":[],"summary_source":"program"}}

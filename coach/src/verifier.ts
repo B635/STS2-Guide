@@ -7,7 +7,7 @@
 // - every reason names a factor that is among the largest differences
 //   between the engine's pick and the player's choice, and cites a result
 //   that contains that factor;
-// - a what-if claim cites a what_if result;
+// - a what-if claim cites a what_if result (its text may sum up all what_if results);
 // - every number and every card / relic / potion name in the text appears in
 //   the cited results (the advice may use any result of this review);
 // - no banned wording.
@@ -108,7 +108,9 @@ export function verifyFinding(
     const id = finding.what_if_evidence ?? "";
     const cited = byId.get(id);
     if (!cited || cited.tool !== "what_if") errors.push(`what_if cites ${id || "nothing"}, which is not a what_if result`);
-    texts.push({ where: "what_if", text: finding.what_if_text ?? "", cites: [id, "T0"] });
+    // The what-if sentence may sum up every change that was tried, so it is checked against all what_if results.
+    const tried = evidence.filter((e) => e.tool === "what_if").map((e) => e.id);
+    texts.push({ where: "what_if", text: finding.what_if_text ?? "", cites: [...new Set([id, ...tried, "T0"])] });
   }
   const everything = evidence.map((e) => e.id);
   texts.push({ where: "advice", text: finding.advice, cites: everything });
