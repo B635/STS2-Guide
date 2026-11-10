@@ -150,9 +150,9 @@ export const LEAD_PROMPT = `你是《杀戮尖塔 2》的赛后复盘助手，�
 4. 查完就直接写回答，不再调用工具。回答会先由程序核对数字和名称，再由审查员核对每个说法。
 
 回答规则：
-- 简体中文，简短（一般不超过 200 字），先给结论再给理由。
+- 简体中文，简短（一般不超过 200 字），先给结论再给理由。纯文字，不用 Markdown 的粗体或标题；要列点就用“- ”开头。
 - 只说工具结果里有的事。数字、卡牌和遗物名称照抄工具结果；不要自己相加、相减或数个数（E0 的 stats 里已有的计数可以用）。
-- 引擎的看法只是一种意见：它和这位玩家的选择大约一半一致。语气平和，不要说“失误”“错误”。
+- 引擎的看法只是一种意见：在这位玩家以往的对局里，它和玩家的选择大约一半一致（这一局的一致数见 E0 的 run.engine_agrees）。语气平和，不要说“失误”“错误”。
 - 不要写决定编号（例如 F15-card）、因子代码、E1 这类编号；说“第 15 层的选牌”。
 - 玩家笔记来自以往对局，只在相关时提一句。
 - 查不到依据的，就说引擎的结果里看不出来。`;
@@ -258,6 +258,7 @@ export function overview(summary: RunSummary, decisions: DecisionList, notes: Pl
       result: summary.win ? "胜利" : `败于 ${summary.killed_by ?? "?"}`, acts_reached: summary.acts_reached,
       final_deck_size: summary.final_deck_size,
       engine_agrees: `${summary.agreement.agree}/${summary.agreement.judged}`,
+      engine_agrees_in_earlier_runs: "约一半",
     },
     stats: stats(decisions.decisions),
     decisions: decisions.decisions.map((d) => ({
@@ -265,7 +266,8 @@ export function overview(summary: RunSummary, decisions: DecisionList, notes: Pl
       player: d.chosen_name ?? d.chosen, engine: d.engine_top_name ?? d.engine_top, gap: d.gap, verdict: verdictLabel(d),
     })),
     not_scored: decisions.skipped.map((s) => ({ id: s.id, floor: s.floor, kind: KIND_LABELS[s.kind] ?? s.kind, reason: skippedLabel(s.reason) })),
-    player_notes: notes.map(noteLine),
+    // Only other runs: this run's own flags are in `decisions` already, and mixing them confused the critic.
+    player_notes_from_earlier_runs: notes.filter((n) => n.run_id !== summary.run_id).map(noteLine),
   };
 }
 
@@ -507,6 +509,17 @@ export async function ask(ctx: AskContext, session: Session, question: string, o
     }
   };
 
+  const setProgramPlan = (ids: string[], why: string) => {
+    answer.plan_source = "program";
+    const where = [...new Set(ids)].map((d) => {
+      const r = rows.get(d);
+      return r ? `第 ${r.floor} 层的${KIND_LABELS[r.kind] ?? r.kind}` : null;
+    }).filter((x): x is string => x !== null);
+    answer.plan = where.length ? `先看${where.join("、")}。` : "先看这局的概况。";
+    trace.event("plan.program", label, { why, plan: answer.plan });
+    onEvent({ type: "plan", text: answer.plan });
+  };
+
   // --- 1. plan, 2. evidence, 3. draft --------------------------------------
   let draft = "";
   for (let turn = 0; turn < MAX_LEAD_TURNS; turn++) {
@@ -531,6 +544,18 @@ export async function ask(ctx: AskContext, session: Session, question: string, o
     }
     if (streamedSome) onEvent({ type: "draft_discarded" }); // text before tool calls was not the answer
     const reply = (id: string, content: unknown) => messages.push({ role: "tool", tool_call_id: id, content: JSON.stringify(content) });
+    if (planTurn && !calls.some((c) => c.function.name === "plan")) {
+      // The forced plan call is not always honoured; the program then states what the first tools will open.
+      const touched = calls.flatMap((c) => {
+        try {
+          const a = JSON.parse(c.function.arguments || "{}") as Record<string, unknown>;
+          return [a.decision_id, ...(Array.isArray(a.decision_ids) ? a.decision_ids : [])].filter((x): x is string => typeof x === "string");
+        } catch {
+          return [];
+        }
+      });
+      setProgramPlan(touched, "model did not call plan");
+    }
     // Investigations of one turn run together, after the other tools of that turn.
     for (const call of calls) {
       let args: Record<string, unknown>;
@@ -548,13 +573,11 @@ export async function ask(ctx: AskContext, session: Session, question: string, o
         trace.event("plan", label, { text, decisions: known, ok: errors.length === 0 && text.length > 0, errors });
         if (text && errors.length === 0) {
           answer.plan = text;
+          onEvent({ type: "plan", text: answer.plan });
         } else {
           // The plan the player sees must hold up too; otherwise the program says which decisions it will open.
-          answer.plan_source = "program";
-          const where = known.map((d) => { const r = rows.get(d); return r ? `第 ${r.floor} 层的${KIND_LABELS[r.kind] ?? r.kind}` : d; });
-          answer.plan = where.length ? `先看${where.join("、")}。` : "先看这局的概况。";
+          setProgramPlan(known, "plan failed the check");
         }
-        onEvent({ type: "plan", text: answer.plan });
         reply(call.id, { ok: true });
         continue;
       }
@@ -565,6 +588,10 @@ export async function ask(ctx: AskContext, session: Session, question: string, o
       answer.tool_calls++;
       if (name === "investigate") {
         const ids = [...new Set((Array.isArray(args.decision_ids) ? args.decision_ids : []).map(String))];
+        if (ids.length === 0) {
+          reply(call.id, { error: "give decision_ids, e.g. [\"F14-card\"]" });
+          continue;
+        }
         const reports = await runInvestigations(ids, String(args.focus ?? question));
         // Every report is evidence (the lead reads all of them); finished ones are also kept for follow-ups.
         const kept = reports.map((r, i) => {

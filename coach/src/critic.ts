@@ -19,8 +19,8 @@ export const CRITIC_PROMPT = `你是审查员。下面有玩家的问题、复�
 - 和证据矛盾的说法（例如把引擎的首选、玩家的选择或分差说反）；
 - 关于战斗过程、输赢原因、地图路线、事件的断言（引擎不模拟这些，证据里没有就不能这样说）；
 - 把引擎的看法说成定论，或把证据里没有的建议说成引擎的意见。
-不算问题的：根据证据给出的方向性建议、对问题的复述、“引擎回答不了”或“没能确认”这类说明、语气词。
-只输出 json：{"unsupported":[{"sentence":"草稿里的原句，逐字复制","reason":"简短的原因"}]}。都有依据就输出 {"unsupported":[]}。`;
+不算问题的：根据证据给出的方向性建议、对问题的复述、“引擎回答不了”或“没能确认”这类说明、语气词。也不要因为措辞不完整、没有列全、或“可能被误解”而列出：只看说的事有没有依据。
+只输出 json：{"doubts":[{"sentence":"草稿里的原句，逐字复制","reason":"先写你在证据里找到或没找到什么","verdict":"supported 或 unsupported"}]}。只列你有疑问的句子；查过之后有依据的写 supported。都没疑问就输出 {"doubts":[]}。`;
 
 export interface CriticIssue {
   sentence: string;
@@ -31,6 +31,8 @@ export interface CriticVerdict {
   issues: CriticIssue[];
   /** false when the reply was not the asked-for JSON (counted, and treated as no issues). */
   parsed: boolean;
+  /** Doubts the critic itself then found support for (not issues). */
+  cleared: number;
   cost_usd: number;
   prompt_tokens: number;
   completion_tokens: number;
@@ -63,23 +65,25 @@ export async function critique(
   );
   const usage = response.usage;
   const verdict: CriticVerdict = {
-    issues: [], parsed: false,
+    issues: [], parsed: false, cleared: 0,
     cost_usd: usage ? costUsd(model, usage as never) : 0,
     prompt_tokens: usage?.prompt_tokens ?? 0,
     completion_tokens: usage?.completion_tokens ?? 0,
   };
   try {
-    const data = JSON.parse(response.choices[0]?.message.content ?? "") as { unsupported?: unknown };
-    if (Array.isArray(data.unsupported)) {
+    // The critic writes its reason before its verdict; only "unsupported" counts (it often lists a doubt and then finds the support).
+    const data = JSON.parse(response.choices[0]?.message.content ?? "") as { doubts?: unknown };
+    if (Array.isArray(data.doubts)) {
       verdict.parsed = true;
-      verdict.issues = data.unsupported
-        .filter((x): x is { sentence: unknown; reason?: unknown } => typeof x === "object" && x !== null && "sentence" in x)
-        .map((x) => ({ sentence: String(x.sentence).trim(), reason: String(x.reason ?? "") }))
-        .filter((x) => x.sentence.length > 0);
+      const doubts = data.doubts
+        .filter((x): x is { sentence: unknown; reason?: unknown; verdict?: unknown } => typeof x === "object" && x !== null && "sentence" in x)
+        .map((x) => ({ sentence: String(x.sentence).trim(), reason: String(x.reason ?? ""), verdict: String(x.verdict ?? "unsupported") }));
+      verdict.cleared = doubts.filter((x) => x.verdict === "supported").length;
+      verdict.issues = doubts.filter((x) => x.verdict !== "supported" && x.sentence.length > 0).map(({ sentence, reason }) => ({ sentence, reason }));
     }
   } catch {
     // Unparsable verdict: recorded below; the program check still stands.
   }
-  trace.event("critic.verdict", label, { parsed: verdict.parsed, issues: verdict.issues });
+  trace.event("critic.verdict", label, { parsed: verdict.parsed, issues: verdict.issues, cleared: verdict.cleared });
   return verdict;
 }

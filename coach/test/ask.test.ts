@@ -38,7 +38,9 @@ function setup(script: Script) {
     if (req.response_format) {
       const user = String(req.messages[1]?.content ?? "");
       const draft = user.split("回答草稿：\n")[1]?.split("\n\n证据：")[0] ?? "";
-      return { content: JSON.stringify({ unsupported: script.critic?.(draft, criticCall++) ?? [] }) };
+      const issues = (script.critic?.(draft, criticCall++) ?? []).map((i) => ({ ...i, verdict: "unsupported" }));
+      // A doubt the critic clears itself never counts.
+      return { content: JSON.stringify({ doubts: [...issues, { sentence: "第 6 层引擎更看好血墙", reason: "E1 有", verdict: "supported" }] }) };
     }
     if (req.tools?.some((t) => t.function.name === "submit_finding")) {
       const decision = /要解释的决定：(F\d+-\w+)/.exec(String(req.messages[1]?.content))![1]!;
@@ -136,6 +138,17 @@ describe("lead agent", () => {
     const answer = await ask(t.ctx, t.session, "？", t.onEvent);
     expect(answer.plan_source).toBe("program");
     expect(answer.plan).toBe("先看第 6 层的选牌。");
+  });
+
+  it("states a plan itself when the model skips the forced plan call", async () => {
+    const t = setup({
+      lead: (_req, turn) => (turn === 0 ? { calls: [{ name: "get_deck", args: { decision_id: "F08-card" } }] } : { content: "引擎的结果里看不出来。" }),
+    });
+    const answer = await ask(t.ctx, t.session, "第 8 层的牌组？", t.onEvent);
+    expect(answer.plan_source).toBe("program");
+    expect(answer.plan).toBe("先看第 8 层的选牌。");
+    expect(t.events[0]).toEqual({ type: "plan", text: "先看第 8 层的选牌。" });
+    expect(answer.tool_calls).toBe(1);
   });
 
   it("keeps to the tool and investigator budgets", async () => {
