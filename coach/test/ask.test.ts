@@ -199,4 +199,11 @@ describe("program check of an answer", () => {
       { sentence: "完美打击更好。", errors: ['answer: "完美打击" is not in the evidence of this conversation'] },
     ]);
   });
+
+  it("rejects internal IDs in what the player reads", () => {
+    const evidence = [{ id: "E1", tool: "x", result: { a: "DEFEND_NECROBINDER F15-card 15" } }];
+    expect(checkAnswer("只算了 DEFEND_NECROBINDER。", evidence, NAMES)[0]!.errors).toEqual(["answer: write names, not the internal ID DEFEND_NECROBINDER"]);
+    expect(checkAnswer("见F15-card。", evidence, NAMES)).toHaveLength(1);
+    expect(checkAnswer("第 15 层的选牌。", evidence, NAMES)).toEqual([]);
+  });
 });

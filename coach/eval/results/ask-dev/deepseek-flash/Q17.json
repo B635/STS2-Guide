@@ -1,0 +1,504 @@
+{
+ "id": "Q17",
+ "run": "1773939462",
+ "kind": "out_of_scope",
+ "question": "打女王那场战斗，我应该先打哪个敌人？",
+ "expect": "说引擎不模拟战斗、回答不了出牌或目标选择；可以说它能看的是选牌、商店和休息点。",
+ "model": "deepseek-flash",
+ "prompt_version": "b1",
+ "context": {
+  "id": "E0",
+  "tool": "overview",
+  "result": {
+   "dimensions": [
+    "前期输出",
+    "群伤",
+    "防御",
+    "成长",
+    "循环",
+    "能量",
+    "每回合",
+    "需求"
+   ],
+   "run": {
+    "character": "故障机器人",
+    "ascension": 2,
+    "version": "v0.99.1",
+    "result": "败于 女王",
+    "acts_reached": 3,
+    "final_deck_size": 14,
+    "engine_agrees": "24/35",
+    "engine_agrees_in_earlier_runs": "约一半"
+   },
+   "stats": {
+    "all": {
+     "decisions": 35,
+     "agree": 24,
+     "worth_a_look": 3,
+     "differ_less_sure": 8
+    },
+    "card_rewards": {
+     "decisions": 21,
+     "agree": 12,
+     "worth_a_look": 3,
+     "differ_less_sure": 6,
+     "player_skipped": 12,
+     "engine_would_skip": 13
+    },
+    "shops": {
+     "decisions": 3,
+     "agree": 3,
+     "worth_a_look": 0,
+     "differ_less_sure": 0
+    },
+    "rest_sites": {
+     "decisions": 11,
+     "agree": 9,
+     "worth_a_look": 0,
+     "differ_less_sure": 2
+    },
+    "by_act": {
+     "act_1": {
+      "decisions": 13,
+      "agree": 7,
+      "worth_a_look": 1,
+      "differ_less_sure": 5
+     },
+     "act_2": {
+      "decisions": 13,
+      "agree": 9,
+      "worth_a_look": 2,
+      "differ_less_sure": 2
+     },
+     "act_3": {
+      "decisions": 9,
+      "agree": 8,
+      "worth_a_look": 0,
+      "differ_less_sure": 1
+     }
+    }
+   },
+   "decisions": [
+    {
+     "id": "F02-card",
+     "act": 1,
+     "floor": 2,
+     "kind": "选牌",
+     "player": "快速检索",
+     "engine": "快速检索",
+     "gap": 0,
+     "verdict": "一致"
+    },
+    {
+     "id": "F03-card",
+     "act": 1,
+     "floor": 3,
+     "kind": "选牌",
+     "player": "高速脱离",
+     "engine": "内核加速",
+     "gap": 3.8,
+     "verdict": "不同，引擎把握不大（有选项只算了部分效果）"
+    },
+    {
+     "id": "F04-card",
+     "act": 1,
+     "floor": 4,
+     "kind": "选牌",
+     "player": "引雷针",
+     "engine": "引雷针",
+     "gap": 0,
+     "verdict": "一致"
+    },
+    {
+     "id": "F05-shop",
+     "act": 1,
+     "floor": 5,
+     "kind": "商店",
+     "player": "扫荡射线",
+     "engine": "扫荡射线",
+     "gap": 0,
+     "verdict": "一致"
+    },
+    {
+     "id": "F06-card",
+     "act": 1,
+     "floor": 6,
+     "kind": "选牌",
+     "player": "双倍能量",
+     "engine": "跳过",
+     "gap": 0.1,
+     "verdict": "不同，引擎把握不大（引擎把握不大、差距不大）"
+    },
+    {
+     "id": "F07-rest",
+     "act": 1,
+     "floor": 7,
+     "kind": "休息点",
+     "player": "锻造",
+     "engine": "锻造",
+     "gap": 0,
+     "verdict": "一致"
+    },
+    {
+     "id": "F08-card",
+     "act": 1,
+     "floor": 8,
+     "kind": "选牌",
+     "player": "烟囱",
+     "engine": "跳过",
+     "gap": 1.1,
+     "verdict": "不同，引擎把握不大（有选项只算了部分效果、引擎把握不大）"
+    },
+    {
+     "id": "F09-rest",
+     "act": 1,
+     "floor": 9,
+     "kind": "休息点",
+     "player": "休息",
+     "engine": "休息",
+     "gap": 0,
+     "verdict": "一致"
+    },
+    {
+     "id": "F11-card",
+     "act": 1,
+     "floor": 11,
+     "kind": "选牌",
+     "player": "烟囱",
+     "engine": "跳过",
+     "gap": 1.1,
+     "verdict": "不同，引擎把握不大（有选项只算了部分效果）"
+    },
+    {
+     "id": "F12-rest",
+     "act": 1,
+     "floor": 12,
+     "kind": "休息点",
+     "player": "锻造",
+     "engine": "锻造",
+     "gap": 0,
+     "verdict": "一致"
+    },
+    {
+     "id": "F13-card",
+     "act": 1,
+     "floor": 13,
+     "kind": "选牌",
+     "player": "污秽攻击",
+     "engine": "跳过",
+     "gap": 0.2,
+     "verdict": "不同，引擎把握不大（差距不大）"
+    },
+    {
+     "id": "F16-rest",
+     "act": 1,
+     "floor": 16,
+     "kind": "休息点",
+     "player": "锻造",
+     "engine": "锻造",
+     "gap": 0,
+     "verdict": "一致"
+    },
+    {
+     "id": "F17-card",
+     "act": 1,
+     "floor": 17,
+     "kind": "选牌",
+     "player": "碎片整理",
+     "engine": "陨石打击",
+     "gap": 4.7,
+     "verdict": "不同，引擎有把握且差距明显（复盘报告里的“值得想一想”）"
+    },
+    {
+     "id": "F19-card",
+     "act": 2,
+     "floor": 19,
+     "kind": "选牌",
+     "player": "跳过",
+     "engine": "跳过",
+     "gap": 0,
+     "verdict": "一致"
+    },
+    {
+     "id": "F20-shop",
+     "act": 2,
+     "floor": 20,
+     "kind": "商店",
+     "player": "引雷针",
+     "engine": "引雷针",
+     "gap": 0,
+     "verdict": "一致"
+    },
+    {
+     "id": "F21-card",
+     "act": 2,
+     "floor": 21,
+     "kind": "选牌",
+     "player": "跳过",
+     "engine": "折射",
+     "gap": 4.6,
+     "verdict": "不同，引擎有把握且差距明显（复盘报告里的“值得想一想”）"
+    },
+    {
+     "id": "F22-card",
+     "act": 2,
+     "floor": 22,
+     "kind": "选牌",
+     "player": "跳过",
+     "engine": "寒流",
+     "gap": 2.6,
+     "verdict": "不同，引擎有把握且差距明显（复盘报告里的“值得想一想”）"
+    },
+    {
+     "id": "F23-rest",
+     "act": 2,
+     "floor": 23,
+     "kind": "休息点",
+     "player": "锻造",
+     "engine": "锻造",
+     "gap": 0,
+     "verdict": "一致"
+    },
+    {
+     "id": "F24-card",
+     "act": 2,
+     "floor": 24,
+     "kind": "选牌",
+     "player": "压缩",
+     "engine": "压缩",
+     "gap": 0,
+     "verdict": "一致"
+    },
+    {
+     "id": "F25-rest",
+     "act": 2,
+     "floor": 25,
+     "kind": "休息点",
+     "player": "休息",
+     "engine": "休息",
+     "gap": 0,
+     "verdict": "一致"
+    },
+    {
+     "id": "F27-rest",
+     "act": 2,
+     "floor": 27,
+     "kind": "休息点",
+     "player": "休息",
+     "engine": "锻造",
+     "gap": -9.93,
+     "verdict": "不同，引擎把握不大（有选项只算了部分效果、引擎把握不大、差距不大）"
+    },
+    {
+     "id": "F29-card",
+     "act": 2,
+     "floor": 29,
+     "kind": "选牌",
+     "player": "跳过",
+     "engine": "跳过",
+     "gap": 0,
+     "verdict": "一致"
+    },
+    {
+     "id": "F30-card",
+     "act": 2,
+     "floor": 30,
+     "kind": "选牌",
+     "player": "跳过",
+     "engine": "刮削",
+     "gap": 2.5,
+     "verdict": "不同，引擎把握不大（有选项只算了部分效果）"
+    },
+    {
+     "id": "F31-card",
+     "act": 2,
+     "floor": 31,
+     "kind": "选牌",
+     "player": "跳过",
+     "engine": "跳过",
+     "gap": 0,
+     "verdict": "一致"
+    },
+    {
+     "id": "F32-rest",
+     "act": 2,
+     "floor": 32,
+     "kind": "休息点",
+     "player": "锻造",
+     "engine": "锻造",
+     "gap": 0,
+     "verdict": "一致"
+    },
+    {
+     "id": "F33-card",
+     "act": 2,
+     "floor": 33,
+     "kind": "选牌",
+     "player": "跳过",
+     "engine": "跳过",
+     "gap": 0,
+     "verdict": "一致"
+    },
+    {
+     "id": "F35-card",
+     "act": 3,
+     "floor": 35,
+     "kind": "选牌",
+     "player": "跳过",
+     "engine": "跳过",
+     "gap": 0,
+     "verdict": "一致"
+    },
+    {
+     "id": "F37-card",
+     "act": 3,
+     "floor": 37,
+     "kind": "选牌",
+     "player": "跳过",
+     "engine": "跳过",
+     "gap": 0,
+     "verdict": "一致"
+    },
+    {
+     "id": "F38-card",
+     "act": 3,
+     "floor": 38,
+     "kind": "选牌",
+     "player": "跳过",
+     "engine": "跳过",
+     "gap": 0,
+     "verdict": "一致"
+    },
+    {
+     "id": "F39-card",
+     "act": 3,
+     "floor": 39,
+     "kind": "选牌",
+     "player": "跳过",
+     "engine": "跳过",
+     "gap": 0,
+     "verdict": "一致"
+    },
+    {
+     "id": "F40-rest",
+     "act": 3,
+     "floor": 40,
+     "kind": "休息点",
+     "player": "休息",
+     "engine": "休息",
+     "gap": 0,
+     "verdict": "一致"
+    },
+    {
+     "id": "F42-shop",
+     "act": 3,
+     "floor": 42,
+     "kind": "商店",
+     "player": "删牌",
+     "engine": "删牌",
+     "gap": 0,
+     "verdict": "一致"
+    },
+    {
+     "id": "F43-rest",
+     "act": 3,
+     "floor": 43,
+     "kind": "休息点",
+     "player": "锻造",
+     "engine": "锻造",
+     "gap": 0,
+     "verdict": "一致"
+    },
+    {
+     "id": "F46-card",
+     "act": 3,
+     "floor": 46,
+     "kind": "选牌",
+     "player": "跳过",
+     "engine": "跳过",
+     "gap": 0,
+     "verdict": "一致"
+    },
+    {
+     "id": "F47-rest",
+     "act": 3,
+     "floor": 47,
+     "kind": "休息点",
+     "player": "休息",
+     "engine": "锻造",
+     "gap": -19.75,
+     "verdict": "不同，引擎把握不大（有选项只算了部分效果、引擎把握不大、差距不大）"
+    }
+   ],
+   "not_scored": [],
+   "player_notes_from_earlier_runs": [
+    "2026-03-06 REGENT 对局 1772790145 第 2 幕第 29 层：你选「跳过」，引擎更看好「收集光辉」，主要因为防御",
+    "2026-03-06 REGENT 对局 1772790145 第 1 幕第 3 层：你选「共鸣」，引擎更看好「下砸」，主要因为前期输出",
+    "2026-03-06 REGENT 对局 1772790145 第 1 幕第 5 层：你选「冲锋！！」，引擎更看好「辉光」，主要因为循环（过牌）",
+    "2026-03-06 IRONCLAD 对局 1772816067 第 1 幕第 7 层：你选「跳过」，引擎更看好「放血」，主要因为防御",
+    "2026-03-08 NECROBINDER 对局 1772975275 第 1 幕第 4 层：你选「跳过」，引擎更看好「播种」，主要因为群伤",
+    "2026-03-08 NECROBINDER 对局 1772975275 第 1 幕第 12 层：你选「纠缠」，引擎更看好「戳击」，主要因为前期输出",
+    "2026-03-09 IRONCLAD 对局 1773034032 第 1 幕第 14 层：你选「跳过」，引擎更看好「放血」，主要因为防御",
+    "2026-03-09 IRONCLAD 对局 1773034032 第 1 幕第 8 层：你选「完美打击」，引擎更看好「祭品」，主要因为循环（过牌）",
+    "2026-03-09 IRONCLAD 对局 1773034032 第 1 幕第 6 层：你选「剑柄打击」，引擎更看好「血墙」，主要因为防御",
+    "2026-03-16 REGENT 对局 1773664471 第 2 幕第 22 层：你选「太阳打击」，引擎更看好「何人僭越」，主要因为防御",
+    "2026-03-16 REGENT 对局 1773664471 第 1 幕第 2 层：你选「流光溢彩」，引擎更看好「辐射」，主要因为群伤",
+    "2026-03-20 DEFECT 对局 1773984305 第 1 幕第 7 层：你选「火箭飞拳」，引擎更看好「冰之长枪」，主要因为防御",
+    "2026-03-20 DEFECT 对局 1773984305 第 1 幕第 6 层：你选「双倍能量」，引擎更看好「高速脱离」，主要因为防御",
+    "2026-03-20 DEFECT 对局 1773984305 第 1 幕第 14 层：你选「压缩」，引擎更看好「散射炮」，主要因为前期输出",
+    "2026-03-20 DEFECT 对局 1773984305 第 1 幕第 3 层：你选「跳过」，引擎更看好「引雷针」，主要因为前期输出",
+    "2026-03-20 SILENT 对局 1774030566 第 2 幕第 20 层：你选「跳过」，引擎更看好「蛇咬」，主要因为前期输出",
+    "2026-03-20 SILENT 对局 1774030566 第 1 幕第 17 层：你选「跳过」，引擎更看好「回响斩击」，主要因为群伤"
+   ]
+  }
+ },
+ "answer": {
+  "index": 2,
+  "question": "打女王那场战斗，我应该先打哪个敌人？",
+  "plan": "玩家问的是女王战的出牌顺序，这属于战斗过程，引擎不评分；我先确认一下有没有可查的依据。",
+  "plan_source": "model",
+  "draft": "这个问题引擎回答不了：战斗过程（出牌顺序、先打哪个敌人、为什么输掉某场战斗）不在它的评分范围内，它也没有女王战的具体记录。\n\n引擎能看的是这局 35 个选牌、商店（只比较买或离开）和休息点决定：每个决定的首选、你的选择、分差和原因，以及每次选牌时牌组的每回合输出、防御等数值和那一幕的需求。如果你想看第三幕的选牌或休息点，或者想了解进女王战前的牌组构成，我可以帮你查。",
+  "rewrite": "这个问题引擎回答不了：战斗过程（出牌顺序、先打哪个敌人、为什么输掉某场战斗）不在它的评分范围内，它也没有女王战的具体记录。\n\n引擎能看的是这局 35 个决定，包括选牌、商店（只比较买或离开）和休息点：每个决定的首选、你的选择、分差和原因。至于牌组每回合的输出、防御和那一幕的需求，引擎只在被调查的几次选牌上给出过数值，并不是每次选牌都有；这一点我没能确认。",
+  "final": "这个问题引擎回答不了：战斗过程（出牌顺序、先打哪个敌人、为什么输掉某场战斗）不在它的评分范围内，它也没有女王战的具体记录。\n\n引擎能看的是这局 35 个决定，包括选牌、商店（只比较买或离开）和休息点：每个决定的首选、你的选择、分差和原因。至于牌组每回合的输出、防御和那一幕的需求，引擎只在被调查的几次选牌上给出过数值，并不是每次选牌都有；这一点我没能确认。",
+  "notice": "",
+  "status": "rewritten",
+  "checks": {
+   "draft_program": [],
+   "draft_critic": [
+    {
+     "sentence": "引擎能看的是这局 35 个选牌、商店（只比较买或离开）和休息点决定",
+     "reason": "E0 显示总决定数为 35，但其中选牌 21 次、商店 3 次、休息点 11 次，合计 35；草稿把 35 说成“选牌”的数量，与证据不符。"
+    },
+    {
+     "sentence": "每次选牌时牌组的每回合输出、防御等数值和那一幕的需求",
+     "reason": "证据里只有被调查的几次选牌（F21、F22、F30）给出了每回合输出、防御和需求数值，E0 并未显示每次选牌都有这些数值；草稿把个别调查结果说成每次选牌都有。"
+    }
+   ],
+   "rewrite_program": [],
+   "rewrite_critic": [],
+   "critic_unparsed": 0,
+   "cut": []
+  },
+  "evidence": [],
+  "window": [
+   "E0",
+   "E1",
+   "E2",
+   "E3"
+  ],
+  "tool_calls": 0,
+  "investigators": [],
+  "usage": {
+   "cost_usd": 0.00415848,
+   "llm_calls": 5,
+   "prompt_tokens": 21140,
+   "completion_tokens": 846,
+   "by_role": {
+    "lead": 0.0010132079999999998,
+    "investigator": 0,
+    "critic": 0.003145272
+   }
+  },
+  "seconds": 7.792
+ }
+}

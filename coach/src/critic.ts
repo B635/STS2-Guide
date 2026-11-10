@@ -13,7 +13,9 @@ import type { Evidence } from "./verifier.js";
 
 export const CRITIC_PROMPT = `你是审查员。下面有玩家的问题、复盘助手的回答草稿，以及助手能依据的全部证据（一个确定性评分引擎的工具结果，按编号列出）。
 证据说明：E0 是这局的概况（程序给出）。tool 为 investigate 的是调查员的报告：headline 和 comparison 是引擎的原始数据；finding 里的 reasons、what_if、advice 是程序已经核对过的结论，也算证据；what_if 是引擎把当时的牌组改一改再重新计分的结果。其余是引擎工具的原始结果。
-判断方法：对草稿的每一句，先在证据里找它的关键词和数字；找得到相同或等价的意思就算有依据（概括、换个说法都可以）。只有找不到或和证据矛盾时才列出。
+判断方法：对草稿的每一句，先在证据里找它的关键词；找得到相同或等价的意思就算有依据（概括、换个说法都可以）。只有找不到或和证据矛盾时才列出。
+数字和卡牌名称已经由程序逐个核对过，都出现在证据里；你不用再查它们在不在，只看它们有没有被安到错的东西上（例如把这一层的数字说成另一层的）。
+草稿里描述引擎能看什么、不能看什么的句子，只要和“引擎的范围”一致就算有依据。
 要列出的说法：
 - 证据里没有的事实或数字；
 - 和证据矛盾的说法（例如把引擎的首选、玩家的选择或分差说反）；
@@ -51,6 +53,7 @@ export async function critique(
   evidence: Evidence[],
   trace: Trace,
   label: string,
+  scope = "",
 ): Promise<CriticVerdict> {
   const response = await trace.span(
     "llm.critic", label,
@@ -58,7 +61,7 @@ export async function critique(
       model, temperature: 0, thinking: { type: "disabled" }, response_format: { type: "json_object" },
       messages: [
         { role: "system", content: CRITIC_PROMPT },
-        { role: "user", content: `玩家的问题：${question}\n\n回答草稿：\n${draft}\n\n证据：\n${evidenceText(evidence)}` },
+        { role: "user", content: `${scope ? `引擎的范围：\n${scope}\n\n` : ""}玩家的问题：${question}\n\n回答草稿：\n${draft}\n\n证据：\n${evidenceText(evidence)}` },
       ],
     } as OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming),
     (r) => ({ model, usage: r.usage }),

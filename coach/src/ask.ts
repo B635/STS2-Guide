@@ -138,22 +138,26 @@ const LEAD_TOOLS: Tool[] = [
   },
 ];
 
+/** What the engine can and cannot answer; the lead and the critic both get it. */
+export const SCOPE = `引擎能回答的：这局每个选牌、商店（只比较买或离开）、休息点（升级价值只算得到下限，把握很低）决定上，引擎的首选、玩家的选择、分差和原因；每次选牌时牌组每回合的输出、防御等数值和这一幕的需求（deck_trend）；卡牌和遗物的说明。
+引擎不能回答的：战斗过程（打出多少伤害、为什么输掉某场战斗、出牌顺序）、地图路线、事件、药水的使用、引擎没法评分的决定（E0 的 not_scored），以及别的对局的细节。`;
+
 export const LEAD_PROMPT = `你是《杀戮尖塔 2》的赛后复盘助手，正在和玩家聊他打完的一局。你根据一个确定性评分引擎的结果回答他的问题。
 
-引擎能回答的：这局每个选牌、商店（只比较买或离开）、休息点（升级价值只算得到下限，把握很低）决定上，引擎的首选、玩家的选择、分差和原因；每次选牌时牌组每回合的输出、防御等数值和这一幕的需求（deck_trend）；卡牌和遗物的说明。
-引擎不能回答的：战斗过程（打出多少伤害、为什么输掉某场战斗、出牌顺序）、地图路线、事件、药水的使用、引擎没法评分的决定（E0 的 not_scored），以及别的对局的细节。遇到这类问题，直接说引擎回答不了，再说它能看什么。
+${SCOPE}
+遇到引擎不能回答的问题，直接说引擎回答不了，再说它能看什么。
 
 工作方式：
 1. 先调用 plan，用一两句话说明你打算看哪些决定、为什么。
 2. 需要事实就用查询工具（get_decision、get_deck、deck_trend、get_card、get_relic），不要猜。
-3. 问到某个决定“为什么”“该不该”，用 investigate 交给调查员：每个调查员深入查一个决定，交回引擎的逐项比较（comparison）和核对过的结论（finding；其中 what_if 是引擎把当时的牌组改一改再重新计分的结果）。几个决定放在同一次 investigate 里一起交出去（每个问题最多 ${MAX_INVESTIGATORS} 个）。
+3. 问到某个决定“为什么”“该不该”，用 investigate 交给调查员（只是确认引擎和玩家一致、不需要解释原因的决定，不用调查）：每个调查员深入查一个决定，交回引擎的逐项比较（comparison）和核对过的结论（finding；其中 what_if 是引擎把当时的牌组改一改再重新计分的结果）。几个决定放在同一次 investigate 里一起交出去（每个问题最多 ${MAX_INVESTIGATORS} 个）。
 4. 查完就直接写回答，不再调用工具。回答会先由程序核对数字和名称，再由审查员核对每个说法。
 
 回答规则：
 - 简体中文，简短（一般不超过 200 字），先给结论再给理由。纯文字，不用 Markdown 的粗体或标题；要列点就用“- ”开头。
 - 只说工具结果里有的事。数字、卡牌和遗物名称照抄工具结果；不要自己相加、相减或数个数（E0 的 stats 里已有的计数可以用）。
 - 引擎的看法只是一种意见：在这位玩家以往的对局里，它和玩家的选择大约一半一致（这一局的一致数见 E0 的 run.engine_agrees）。语气平和，不要说“失误”“错误”。
-- 不要写决定编号（例如 F15-card）、因子代码、E1 这类编号；说“第 15 层的选牌”。
+- 不要写决定编号（例如 F15-card）、卡牌或遗物的英文 ID、因子代码、E1 这类编号；说“第 15 层的选牌”，卡牌用中文名。
 - 玩家笔记来自以往对局，只在相关时提一句。
 - 查不到依据的，就说引擎的结果里看不出来。`;
 
@@ -296,11 +300,19 @@ export function sentences(text: string): string[] {
   return out.filter((s) => s.trim().length > 0);
 }
 
-/** The program check: every sentence's numbers and names must appear in the evidence. */
+// Engine IDs (DEFEND_NECROBINDER, F15-card, E3) are for tools, not for the player.
+const INTERNAL_ID = /\b(?:[A-Z][A-Z0-9]*_[A-Z0-9_]+|F\d{2}-(?:card|rest|shop)\d*|[ET]\d+)\b/;
+
+/** The program check: every sentence's numbers and names must appear in the evidence, and no internal IDs. */
 export function checkAnswer(text: string, evidence: Evidence[], names: ReadonlySet<string>): Array<{ sentence: string; errors: string[] }> {
   const results = evidence.map((e) => e.result);
   return sentences(text)
-    .map((sentence) => ({ sentence, errors: checkText("answer", sentence.trim(), results, names, "the evidence of this conversation") }))
+    .map((sentence) => {
+      const errors = checkText("answer", sentence.trim(), results, names, "the evidence of this conversation");
+      const id = INTERNAL_ID.exec(sentence);
+      if (id) errors.push(`answer: write names, not the internal ID ${id[0]}`);
+      return { sentence, errors };
+    })
     .filter((x) => x.errors.length > 0);
 }
 
@@ -629,7 +641,7 @@ export async function ask(ctx: AskContext, session: Session, question: string, o
     const failed = checkAnswer(text, window(), ctx.names);
     trace.event("check.program", label, { stage, ok: failed.length === 0, failed });
     onEvent({ type: "check", stage, failed: failed.map((f) => f.sentence.trim()) });
-    const verdict = await critique(ctx.llm, ctx.model, question, text, window(), trace, label);
+    const verdict = await critique(ctx.llm, ctx.model, question, text, window(), trace, label, SCOPE);
     tally.cost += verdict.cost_usd;
     tally.byRole.critic += verdict.cost_usd;
     tally.calls++;
@@ -671,7 +683,7 @@ export async function ask(ctx: AskContext, session: Session, question: string, o
   kept = kept.filter((s) => !cut.has(s));
   let unmatched = 0;
   if (kept.join("").trim()) {
-    const verdict = await critique(ctx.llm, ctx.model, question, kept.join(""), window(), trace, label);
+    const verdict = await critique(ctx.llm, ctx.model, question, kept.join(""), window(), trace, label, SCOPE);
     tally.cost += verdict.cost_usd;
     tally.byRole.critic += verdict.cost_usd;
     tally.calls++;
