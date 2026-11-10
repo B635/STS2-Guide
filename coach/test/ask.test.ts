@@ -1,7 +1,7 @@
 // The lead loop with a scripted model: plan, parallel investigators, budgets,
 // the program check and the critic, the rewrite and the cuts.
 import { describe, expect, it } from "vitest";
-import { MAX_HISTORY, MAX_INVESTIGATORS, MAX_LEAD_TOOL_CALLS, UNCONFIRMED, ask, checkAnswer, newSession, sentences } from "../src/ask.js";
+import { MAX_HISTORY, MAX_INVESTIGATORS, MAX_LEAD_TOOL_CALLS, UNCONFIRMED, ask, checkAnswer, newSession, sentences, withoutCut } from "../src/ask.js";
 import type { AskEvent } from "../src/ask.js";
 import { Trace } from "../src/trace.js";
 import { fakeEngine, fakeLlm, TOOL_SPECS } from "./fakes.js";
@@ -198,6 +198,11 @@ describe("program check of an answer", () => {
     expect(checkAnswer("血墙需求 8.5。完美打击更好。", evidence, NAMES)).toEqual([
       { sentence: "完美打击更好。", errors: ['answer: "完美打击" is not in the evidence of this conversation'] },
     ]);
+  });
+
+  it("cuts a list item whole, and single sentences elsewhere", () => {
+    const list = sentences("开头一句。\n- 第 21 层：甲。乙。\n- 第 22 层：丙。\n结尾一句。另一句。");
+    expect(withoutCut(list, new Set(["- 第 21 层：甲。", "另一句。"])).join("")).toBe("开头一句。\n- 第 22 层：丙。\n结尾一句。");
   });
 
   it("rejects internal IDs in what the player reads", () => {

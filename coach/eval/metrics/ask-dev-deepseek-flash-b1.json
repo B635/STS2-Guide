@@ -1,0 +1,42 @@
+{
+ "model": "deepseek-flash",
+ "prompt_version": "b1",
+ "questions": 20,
+ "by_kind": {
+  "decision": 7,
+  "follow_up": 1,
+  "pattern": 5,
+  "card": 2,
+  "out_of_scope": 4,
+  "notes": 1
+ },
+ "status": {
+  "passed": 14,
+  "rewritten": 3,
+  "cut": 3,
+  "unconfirmed": 0
+ },
+ "final_program_pass": 1,
+ "final_program_failures": [],
+ "draft_program_pass": 1,
+ "draft_critic_flagged": 0.3,
+ "sent_back": 0.3,
+ "still_unsupported_after_rewrite": 0.5,
+ "critic_unparsed": 0,
+ "out_of_scope_declined": "4/4",
+ "tool_calls_per_question": 1.4,
+ "investigators_per_question": 1.2,
+ "investigations_reused": 2,
+ "llm_calls_per_question": 10.9,
+ "cost_usd": 0.1361,
+ "cost_per_question": 0.0068,
+ "cost_by_role": {
+  "lead": 0.0336,
+  "investigator": 0.0596,
+  "critic": 0.0427
+ },
+ "seconds_per_question": 11.831,
+ "ratings": {
+  "rated": 0
+ }
+}

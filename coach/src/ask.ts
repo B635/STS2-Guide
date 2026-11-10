@@ -159,7 +159,8 @@ ${SCOPE}
 - 引擎的看法只是一种意见：在这位玩家以往的对局里，它和玩家的选择大约一半一致（这一局的一致数见 E0 的 run.engine_agrees）。语气平和，不要说“失误”“错误”。
 - 不要写决定编号（例如 F15-card）、卡牌或遗物的英文 ID、因子代码、E1 这类编号；说“第 15 层的选牌”，卡牌用中文名。
 - 玩家笔记来自以往对局，只在相关时提一句。
-- 查不到依据的，就说引擎的结果里看不出来。`;
+- 查不到依据的，就说引擎的结果里看不出来。
+- 不要提调查员、核对、审查这些内部步骤，直接说引擎的看法。`;
 
 export interface Session {
   summary: RunSummary;
@@ -316,6 +317,25 @@ export function checkAnswer(text: string, evidence: Evidence[], names: ReadonlyS
     .filter((x) => x.errors.length > 0);
 }
 
+const BULLET = /^\s*(?:[-•·*]|\d+[.、）)])\s*/;
+
+/**
+ * The sentences left after a cut. A list item goes whole when one of its
+ * sentences is cut: its other sentences rarely read right without the first.
+ */
+export function withoutCut(list: string[], cut: ReadonlySet<string>): string[] {
+  const lines: string[][] = [[]];
+  for (const s of list) {
+    lines[lines.length - 1]!.push(s);
+    if (s.endsWith("\n")) lines.push([]);
+  }
+  return lines.flatMap((line) => {
+    const bullet = line.length > 0 && BULLET.test(line[0]!);
+    if (bullet && line.some((x) => cut.has(x))) return [];
+    return line.filter((x) => !cut.has(x));
+  });
+}
+
 /** Does the critic's quote point at this sentence? (It may quote part of one, or a sentence without its punctuation.) */
 function quotes(issue: CriticIssue, sentence: string): boolean {
   const strip = (s: string) => s.replace(/[\s。！？!?；，,：:“”"「」]/g, "");
@@ -376,7 +396,7 @@ function report(detail: DecisionDetail, subject: Subject, result: FlagResult, ro
             advice: f.advice,
           },
         }
-      : { status: "not_confirmed", note: "调查员的说明没有通过核对，只给出引擎的逐项比较" }),
+      : { status: "not_confirmed", note: "这个决定只有引擎的逐项比较，没有更多说明" }),
   };
 }
 
@@ -667,7 +687,7 @@ export async function ask(ctx: AskContext, session: Session, question: string, o
   ].join("\n");
   messages.push({
     role: "user",
-    content: `（核对结果，不是玩家的话）你的回答里有这些说法没有依据：\n${problems}\n请重写整段回答：改正或删掉这些说法；确实查不到的，就直接说没能确认。不要再调用工具，只输出新的回答。`,
+    content: `（核对结果，不是玩家的话）你的回答里有这些说法没有依据：\n${problems}\n请重写整段回答：改正或删掉这些说法。不要声称引擎没有某项数据（可能只是这次没查），也不要提核对、审查这些步骤。不要再调用工具，只输出新的回答。`,
   });
   const rewritten = await leadCall("rewrite", { messages, tools: LEAD_TOOLS, tool_choice: "none" }, (delta) => onEvent({ type: "rewrite", delta }));
   const rewrite = (rewritten.message.content ?? "").trim();
@@ -680,7 +700,7 @@ export async function ask(ctx: AskContext, session: Session, question: string, o
   trace.event("check.program", label, { stage: "rewrite", ok: second.length === 0, failed: second });
   onEvent({ type: "check", stage: "rewrite", failed: second.map((f) => f.sentence.trim()) });
   const cut = new Set(second.map((f) => f.sentence));
-  kept = kept.filter((s) => !cut.has(s));
+  kept = withoutCut(kept, cut);
   let unmatched = 0;
   if (kept.join("").trim()) {
     const verdict = await critique(ctx.llm, ctx.model, question, kept.join(""), window(), trace, label, SCOPE);
@@ -697,7 +717,7 @@ export async function ask(ctx: AskContext, session: Session, question: string, o
       if (hit.length === 0) unmatched++;
       for (const s of hit) cut.add(s);
     }
-    kept = kept.filter((s) => !cut.has(s));
+    kept = withoutCut(kept, cut);
   }
   answer.checks.cut = [...cut].map((s) => s.trim());
   answer.final = kept.join("").trim();

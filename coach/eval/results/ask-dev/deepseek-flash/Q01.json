@@ -5,7 +5,7 @@
  "question": "第 14 层我跳过了，引擎为什么觉得该拿放血？",
  "expect": "说引擎首选放血、比跳过高 7.6 分；理由是防御、前期输出、过牌的每回合数值更接近需求；不说成定论。",
  "model": "deepseek-flash",
- "prompt_version": "b1",
+ "prompt_version": "b2",
  "context": {
   "id": "E0",
   "tool": "overview",
@@ -299,11 +299,11 @@
  "answer": {
   "index": 1,
   "question": "第 14 层我跳过了，引擎为什么觉得该拿放血？",
-  "plan": "看第 14 层选牌：玩家跳过、引擎推荐放血，差距 7.6，交给调查员查原因和当时的牌组需求。",
+  "plan": "先看第 14 层选牌时牌组的数值和这一幕的需求，再让调查员比较跳过与放血，弄清引擎的理由。",
   "plan_source": "model",
-  "draft": "引擎推荐放血，主要是因为它能同时补上两项缺口：\n\n- 防御：当时每回合 6.8，需求 11.8，缺口最大；拿放血后升到 7.4。\n- 前期输出：每回合 28.9，需求 36.0；放血把它推到 34.8，而血墙反而降到 26.3。\n- 循环：每回合额外抽牌 0.47，需求 1.0；放血靠 0 费换能量把它提到 0.57。\n\n引擎还试过补血墙、坚毅、铁斩波，甚至三张一起加，首选仍是放血，差距只从 7.6 缩到 6.1，没有翻转。它的看法是：这套牌防御和输出都低于需求，跳过会把缺口留到第 2 幕。这只是引擎的意见，它和你以往的选择大约一半一致。",
+  "draft": "引擎更看好放血，主要因为它能同时补上这套牌的几个短板：\n\n- 防御：拿放血后每回合 6.8 → 7.4（需求 11.8），跳过则停在 6.8。\n- 前期输出：28.9 → 34.8（需求 36.0），比跳过更接近门槛。\n- 循环：每回合额外抽牌 0.47 → 0.57（需求 1.0），牌转得更快。\n\n引擎还试过改拿血墙、祭品、坚毅加铁斩波，或升级耸肩无视、剑柄打击，首选仍是放血，没有翻转。它给出的建议是：这套 14 张牌里防御只有 4 张防御加 1 张耸肩无视，防御远低于需求，下次遇到能补格挡的牌可以优先考虑。这只是引擎的看法，它和你以往的选择大约一半一致。",
   "rewrite": null,
-  "final": "引擎推荐放血，主要是因为它能同时补上两项缺口：\n\n- 防御：当时每回合 6.8，需求 11.8，缺口最大；拿放血后升到 7.4。\n- 前期输出：每回合 28.9，需求 36.0；放血把它推到 34.8，而血墙反而降到 26.3。\n- 循环：每回合额外抽牌 0.47，需求 1.0；放血靠 0 费换能量把它提到 0.57。\n\n引擎还试过补血墙、坚毅、铁斩波，甚至三张一起加，首选仍是放血，差距只从 7.6 缩到 6.1，没有翻转。它的看法是：这套牌防御和输出都低于需求，跳过会把缺口留到第 2 幕。这只是引擎的意见，它和你以往的选择大约一半一致。",
+  "final": "引擎更看好放血，主要因为它能同时补上这套牌的几个短板：\n\n- 防御：拿放血后每回合 6.8 → 7.4（需求 11.8），跳过则停在 6.8。\n- 前期输出：28.9 → 34.8（需求 36.0），比跳过更接近门槛。\n- 循环：每回合额外抽牌 0.47 → 0.57（需求 1.0），牌转得更快。\n\n引擎还试过改拿血墙、祭品、坚毅加铁斩波，或升级耸肩无视、剑柄打击，首选仍是放血，没有翻转。它给出的建议是：这套 14 张牌里防御只有 4 张防御加 1 张耸肩无视，防御远低于需求，下次遇到能补格挡的牌可以优先考虑。这只是引擎的看法，它和你以往的选择大约一半一致。",
   "notice": "",
   "status": "passed",
   "checks": {
@@ -317,6 +317,325 @@
   "evidence": [
    {
     "id": "E1",
+    "tool": "get_decision",
+    "result": {
+     "id": "F14-card",
+     "kind": "选牌",
+     "act": 1,
+     "floor": 14,
+     "hp": 55,
+     "max_hp": 80,
+     "gold": 150,
+     "player": "skip",
+     "engine": "1:BLOODLETTING",
+     "confidence": "medium",
+     "gap": 7.6,
+     "verdict": "不同，引擎有把握且差距明显（复盘报告里的“值得想一想”）",
+     "options": [
+      {
+       "id": "1:BLOODLETTING",
+       "name": "放血",
+       "deck_score": 59.2,
+       "rank": 1,
+       "fully_scored": true,
+       "factors": [
+        "拿放血后防御：每回合 6.8 → 7.4（需求 11.8）",
+        "拿放血后前期输出：每回合 28.9 → 34.8（需求 36.0）",
+        "拿放血后循环：每回合额外抽牌 0.47 → 0.57（需求 1.0）"
+       ]
+      },
+      {
+       "id": "0:ANGER",
+       "name": "愤怒",
+       "deck_score": 55.2,
+       "rank": 2,
+       "fully_scored": false,
+       "factors": [
+        "愤怒的部分效果尚未计入评分。",
+        "拿愤怒后前期输出：每回合 28.9 → 33.3（需求 36.0）",
+        "拿愤怒后防御：每回合 6.8 → 6.6（需求 11.8）"
+       ]
+      },
+      {
+       "id": "2:BLOOD_WALL",
+       "name": "血墙",
+       "deck_score": 54.2,
+       "rank": 3,
+       "fully_scored": true,
+       "factors": [
+        "拿血墙后防御：每回合 6.8 → 8.6（需求 11.8）",
+        "拿血墙后前期输出：每回合 28.9 → 26.3（需求 36.0）",
+        "拿血墙后循环：每回合额外抽牌 0.47 → 0.41（需求 1.0）"
+       ]
+      },
+      {
+       "id": "skip",
+       "name": "跳过",
+       "deck_score": 51.6,
+       "rank": 4,
+       "fully_scored": true,
+       "factors": [
+        "第 1 幕：候选要比跳过高出 1 分以上才值得拿（门槛按玩家历史对局中的取舍设定）"
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "id": "E2",
+    "tool": "get_deck",
+    "result": {
+     "decision_id": "F14-card",
+     "floor": 14,
+     "act": 1,
+     "hp": 55,
+     "max_hp": 80,
+     "gold": 150,
+     "deck_size": 14,
+     "deck": [
+      {
+       "card": "DEFEND_IRONCLAD",
+       "name": "防御",
+       "upgrades": 0,
+       "count": 4
+      },
+      {
+       "card": "PERFECTED_STRIKE",
+       "name": "完美打击",
+       "upgrades": 1,
+       "count": 1
+      },
+      {
+       "card": "PERFECTED_STRIKE",
+       "name": "完美打击",
+       "upgrades": 1,
+       "count": 1
+      },
+      {
+       "card": "POMMEL_STRIKE",
+       "name": "剑柄打击",
+       "upgrades": 0,
+       "count": 1
+      },
+      {
+       "card": "SHRUG_IT_OFF",
+       "name": "耸肩无视",
+       "upgrades": 0,
+       "count": 1
+      },
+      {
+       "card": "SPOILS_MAP",
+       "name": "藏宝图",
+       "upgrades": 0,
+       "count": 1
+      },
+      {
+       "card": "STRIKE_IRONCLAD",
+       "name": "打击",
+       "upgrades": 0,
+       "count": 5
+      }
+     ],
+     "relics": [
+      {
+       "relic": "BURNING_BLOOD",
+       "name": "燃烧之血"
+      },
+      {
+       "relic": "SMALL_CAPSULE",
+       "name": "小型扭蛋"
+      },
+      {
+       "relic": "PAPER_PHROG",
+       "name": "纸蛙"
+      },
+      {
+       "relic": "BELLOWS",
+       "name": "风箱"
+      },
+      {
+       "relic": "STONE_CALENDAR",
+       "name": "历石"
+      }
+     ],
+     "potions": [
+      {
+       "potion": "WEAK_POTION",
+       "name": "虚弱药水"
+      }
+     ]
+    }
+   },
+   {
+    "id": "E3",
+    "tool": "deck_trend",
+    "result": {
+     "labels": {
+      "energy": "能量"
+     },
+     "decisions": [
+      {
+       "decision_id": "F02-card",
+       "floor": 2,
+       "act": 1,
+       "deck_size": 10,
+       "values": {
+        "energy": {
+         "have": 0.6,
+         "need": 1,
+         "below_need": true
+        }
+       }
+      },
+      {
+       "decision_id": "F03-card",
+       "floor": 3,
+       "act": 1,
+       "deck_size": 11,
+       "values": {
+        "energy": {
+         "have": 0.5,
+         "need": 1,
+         "below_need": true
+        }
+       }
+      },
+      {
+       "decision_id": "F06-card",
+       "floor": 6,
+       "act": 1,
+       "deck_size": 11,
+       "values": {
+        "energy": {
+         "have": 0.5,
+         "need": 1,
+         "below_need": true
+        }
+       }
+      },
+      {
+       "decision_id": "F08-card",
+       "floor": 8,
+       "act": 1,
+       "deck_size": 12,
+       "values": {
+        "energy": {
+         "have": 0.5,
+         "need": 1,
+         "below_need": true
+        }
+       }
+      },
+      {
+       "decision_id": "F11-card",
+       "floor": 11,
+       "act": 1,
+       "deck_size": 14,
+       "values": {
+        "energy": {
+         "have": 0.5,
+         "need": 1,
+         "below_need": true
+        }
+       }
+      },
+      {
+       "decision_id": "F12-card",
+       "floor": 12,
+       "act": 1,
+       "deck_size": 14,
+       "values": {
+        "energy": {
+         "have": 0.5,
+         "need": 1,
+         "below_need": true
+        }
+       }
+      },
+      {
+       "decision_id": "F14-card",
+       "floor": 14,
+       "act": 1,
+       "deck_size": 14,
+       "values": {
+        "energy": {
+         "have": 0.5,
+         "need": 1,
+         "below_need": true
+        }
+       }
+      },
+      {
+       "decision_id": "F17-card",
+       "floor": 17,
+       "act": 1,
+       "deck_size": 13,
+       "values": {
+        "energy": {
+         "have": 0.5,
+         "need": 1,
+         "below_need": true
+        }
+       }
+      },
+      {
+       "decision_id": "F19-card",
+       "floor": 19,
+       "act": 2,
+       "deck_size": 14,
+       "values": {
+        "energy": {
+         "have": 0.8,
+         "need": 1,
+         "below_need": true
+        }
+       }
+      },
+      {
+       "decision_id": "F20-card",
+       "floor": 20,
+       "act": 2,
+       "deck_size": 14,
+       "values": {
+        "energy": {
+         "have": 0.8,
+         "need": 1,
+         "below_need": true
+        }
+       }
+      },
+      {
+       "decision_id": "F29-card",
+       "floor": 29,
+       "act": 2,
+       "deck_size": 12,
+       "values": {
+        "energy": {
+         "have": 0.8,
+         "need": 1,
+         "below_need": true
+        }
+       }
+      },
+      {
+       "decision_id": "F30-card",
+       "floor": 30,
+       "act": 2,
+       "deck_size": 12,
+       "values": {
+        "energy": {
+         "have": 0.8,
+         "need": 1,
+         "below_need": true
+        }
+       }
+      }
+     ],
+     "note": "have: what the deck does per turn before that pick (cycle: extra cards drawn per turn); need: what the coming fights of that act need per turn"
+    }
+   },
+   {
+    "id": "E4",
     "tool": "investigate",
     "result": {
      "decision_id": "F14-card",
@@ -345,28 +664,31 @@
       "reasons": [
        {
         "aspect": "防御",
-        "text": "防御每回合 6.8，需求 11.8，缺口最大；拿放血后升到 7.4，是三个选项里唯一同时补防御又不掉输出的。"
+        "text": "差距最大的一项是防御：拿放血后每回合 6.8 → 7.4，需求 11.8；跳过则停在 6.8。"
        },
        {
         "aspect": "前期输出",
-        "text": "前期输出每回合 28.9，需求 36.0；放血把它推到 34.8，血墙反而降到 26.3。"
+        "text": "其次是前期输出：拿放血后每回合 28.9 → 34.8，需求 36.0，比跳过更接近门槛。"
        },
        {
         "aspect": "循环（过牌）",
-        "text": "循环每回合额外抽牌 0.47，需求 1.0；放血靠 0 费换能量把循环提到 0.57。"
+        "text": "再次是循环：每回合额外抽牌 0.47 → 0.57，需求 1.0，放血让牌转得更快。"
        }
       ],
-      "what_if": "试过补血墙、坚毅、铁斩波，甚至三张一起加，首选仍是放血，差距只从 7.6 缩到 6.1，没有翻转。",
-      "advice": "这套 14 张牌防御和输出都低于需求，跳过会让缺口留到第 2 幕；下次遇到 0 费换能量的牌，可以先看它能否同时补两项。"
+      "what_if": "试了补血墙、祭品、坚毅加铁斩波、升级耸肩无视和剑柄打击，首选都仍是放血，没有翻转。",
+      "advice": "这套 14 张牌里防御只有 4 张防御加 1 张耸肩无视，防御每回合 6.8 远低于需求 11.8；下次遇到能补格挡的牌，可以优先考虑，而不是跳过。"
      }
     }
    }
   ],
   "window": [
    "E0",
-   "E1"
+   "E1",
+   "E2",
+   "E3",
+   "E4"
   ],
-  "tool_calls": 1,
+  "tool_calls": 4,
   "investigators": [
    {
     "decision": "F14-card",
@@ -376,16 +698,16 @@
    }
   ],
   "usage": {
-   "cost_usd": 0.004659684,
-   "llm_calls": 10,
-   "prompt_tokens": 36963,
-   "completion_tokens": 1322,
+   "cost_usd": 0.006109068,
+   "llm_calls": 11,
+   "prompt_tokens": 45133,
+   "completion_tokens": 1679,
    "by_role": {
-    "lead": 0.0016719,
-    "investigator": 0.0019812479999999997,
-    "critic": 0.001006536
+    "lead": 0.002278152,
+    "investigator": 0.001946916,
+    "critic": 0.001884
    }
   },
-  "seconds": 12.655
+  "seconds": 14.453
  }
 }

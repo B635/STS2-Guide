@@ -5,7 +5,7 @@
  "question": "第 21 层商店我买了铜钹，值不值？",
  "expect": "说这次购买引擎没法评分（玩家的选择没法评分），不编造结论。",
  "model": "deepseek-flash",
- "prompt_version": "b1",
+ "prompt_version": "b2",
  "context": {
   "id": "E0",
   "tool": "overview",
@@ -401,11 +401,11 @@
  "answer": {
   "index": 2,
   "question": "第 21 层商店我买了铜钹，值不值？",
-  "plan": "看第 21 层商店买铜钹这个决定，以及当时牌组的需求。",
+  "plan": "看第 21 层商店买铜钹这个决定，引擎对它的评分和理由。",
   "plan_source": "model",
-  "draft": "引擎没法给铜钹打分，所以“值不值”它答不了。它只比较了买牌和离开：离开商店 50 分排第一，先制打击 49.54、删牌 49.12、心灵震慑 48.5、精密瞄准 48.37，差距都很小，引擎自己也标了把握不大。\n\n能确认的事实：铜钹是每回合弃一张牌就对随机敌人造成 3 点伤害；你当时牌组里有杂技、计算下注、生存者、速行者这些弃牌手段，金币从 199 花到 7。\n\n所以引擎的看法只是“这些金币留着以后用略好”，并不等于铜钹没用。",
+  "draft": "引擎没法给这个选择打分：它只比较了“离开商店”和几张卡牌、删牌，铜钹不在它的评分选项里，所以“值不值”它答不了。\n\n能看到的：\n\n- 引擎的首选是离开商店（牌组适合度 50），其次是先制打击 49.54、删牌 49.12，差距都很小，它自己也标了把握不大。\n- 铜钹的效果是每回合丢弃一张牌就对随机敌人造成 3 点伤害；这局你有杂技、计算下注、谋划专家这类弃牌牌，配合方向是成立的，但引擎的评分里没有体现这一点。\n- 当时金币 199、生命 64/70，买它之后剩下的金币引擎没有计入。\n\n所以这属于引擎评分范围之外的决定，它给不出“值不值”的结论。",
   "rewrite": null,
-  "final": "引擎没法给铜钹打分，所以“值不值”它答不了。它只比较了买牌和离开：离开商店 50 分排第一，先制打击 49.54、删牌 49.12、心灵震慑 48.5、精密瞄准 48.37，差距都很小，引擎自己也标了把握不大。\n\n能确认的事实：铜钹是每回合弃一张牌就对随机敌人造成 3 点伤害；你当时牌组里有杂技、计算下注、生存者、速行者这些弃牌手段，金币从 199 花到 7。\n\n所以引擎的看法只是“这些金币留着以后用略好”，并不等于铜钹没用。",
+  "final": "引擎没法给这个选择打分：它只比较了“离开商店”和几张卡牌、删牌，铜钹不在它的评分选项里，所以“值不值”它答不了。\n\n能看到的：\n\n- 引擎的首选是离开商店（牌组适合度 50），其次是先制打击 49.54、删牌 49.12，差距都很小，它自己也标了把握不大。\n- 铜钹的效果是每回合丢弃一张牌就对随机敌人造成 3 点伤害；这局你有杂技、计算下注、谋划专家这类弃牌牌，配合方向是成立的，但引擎的评分里没有体现这一点。\n- 当时金币 199、生命 64/70，买它之后剩下的金币引擎没有计入。\n\n所以这属于引擎评分范围之外的决定，它给不出“值不值”的结论。",
   "notice": "",
   "status": "passed",
   "checks": {
@@ -503,139 +503,6 @@
    },
    {
     "id": "E6",
-    "tool": "get_deck",
-    "result": {
-     "decision_id": "F21-shop",
-     "floor": 21,
-     "act": 2,
-     "hp": 64,
-     "max_hp": 70,
-     "gold": 7,
-     "deck_size": 20,
-     "deck": [
-      {
-       "card": "ACROBATICS",
-       "name": "杂技",
-       "upgrades": 1,
-       "count": 1
-      },
-      {
-       "card": "ADRENALINE",
-       "name": "肾上腺素",
-       "upgrades": 0,
-       "count": 1
-      },
-      {
-       "card": "CALCULATED_GAMBLE",
-       "name": "计算下注",
-       "upgrades": 0,
-       "count": 1
-      },
-      {
-       "card": "DAGGER_THROW",
-       "name": "投掷匕首",
-       "upgrades": 0,
-       "count": 1
-      },
-      {
-       "card": "DEFEND_SILENT",
-       "name": "防御",
-       "upgrades": 0,
-       "count": 4
-      },
-      {
-       "card": "FLICK_FLACK",
-       "name": "翻越撑击",
-       "upgrades": 0,
-       "count": 1
-      },
-      {
-       "card": "GRAND_FINALE",
-       "name": "华丽收场",
-       "upgrades": 0,
-       "count": 1
-      },
-      {
-       "card": "GREED",
-       "name": "贪婪",
-       "upgrades": 0,
-       "count": 1
-      },
-      {
-       "card": "NEUTRALIZE",
-       "name": "中和",
-       "upgrades": 0,
-       "count": 1
-      },
-      {
-       "card": "PIERCING_WAIL",
-       "name": "尖啸",
-       "upgrades": 0,
-       "count": 1
-      },
-      {
-       "card": "PROWESS",
-       "name": "非凡技艺",
-       "upgrades": 1,
-       "count": 1
-      },
-      {
-       "card": "SPEEDSTER",
-       "name": "速行者",
-       "upgrades": 0,
-       "count": 1
-      },
-      {
-       "card": "STRIKE_SILENT",
-       "name": "打击",
-       "upgrades": 0,
-       "count": 3
-      },
-      {
-       "card": "SURVIVOR",
-       "name": "生存者",
-       "upgrades": 0,
-       "count": 1
-      },
-      {
-       "card": "UNTOUCHABLE",
-       "name": "触不可及",
-       "upgrades": 0,
-       "count": 1
-      }
-     ],
-     "relics": [
-      {
-       "relic": "RING_OF_THE_SNAKE",
-       "name": "蛇之戒指"
-      },
-      {
-       "relic": "CURSED_PEARL",
-       "name": "诅咒珍珠"
-      },
-      {
-       "relic": "TUNGSTEN_ROD",
-       "name": "钨合金棍"
-      },
-      {
-       "relic": "RAZOR_TOOTH",
-       "name": "剃刀牙"
-      },
-      {
-       "relic": "PAELS_WING",
-       "name": "佩尔之翼"
-      }
-     ],
-     "potions": [
-      {
-       "potion": "LUCKY_TONIC",
-       "name": "幸运补剂"
-      }
-     ]
-    }
-   },
-   {
-    "id": "E7",
     "tool": "get_relic",
     "result": {
      "id": "TINGSHA",
@@ -653,10 +520,9 @@
    "E3",
    "E4",
    "E5",
-   "E6",
-   "E7"
+   "E6"
   ],
-  "tool_calls": 4,
+  "tool_calls": 3,
   "investigators": [
    {
     "decision": "F21-shop",
@@ -666,16 +532,16 @@
    }
   ],
   "usage": {
-   "cost_usd": 0.003943487999999999,
+   "cost_usd": 0.003478152,
    "llm_calls": 6,
-   "prompt_tokens": 30648,
-   "completion_tokens": 830,
+   "prompt_tokens": 29442,
+   "completion_tokens": 681,
    "by_role": {
-    "lead": 0.0013034519999999999,
+    "lead": 0.001182648,
     "investigator": 0,
-    "critic": 0.0026400359999999997
+    "critic": 0.002295504
    }
   },
-  "seconds": 7.338
+  "seconds": 7.343
  }
 }
