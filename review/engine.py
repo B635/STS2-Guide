@@ -72,7 +72,9 @@ class Engine:
         self.database = ensure_database(database or DEFAULT_DATABASE)
         self.repository = RelationalRepository(str(self.database))
         self.params = self.repository.mechanic_constant(PARAMETERS_KEY)
-        self.card_rewards = PolicyRegistry([CARD_REWARD_VERSIONS["v2"](self.repository)])
+        # Kept by itself too: deck_trend asks it for the deck's capabilities and needs.
+        self.deck_fitness = CARD_REWARD_VERSIONS["v2"](self.repository)
+        self.card_rewards = PolicyRegistry([self.deck_fitness])
         self.campfire = CampfirePolicy(self.repository)
         self.merchant = MerchantPolicy(self.repository)
         knowledge = json.loads(KNOWLEDGE_PATH.read_text(encoding="utf-8"))

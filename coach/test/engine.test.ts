@@ -17,7 +17,7 @@ describe("engine over MCP", () => {
 
   it("hides the orchestrator tools from the agent", async () => {
     const names = (await engine.agentTools()).map((t) => t.name).sort();
-    expect(names).toEqual(["compare_options", "get_card", "get_decision", "get_deck", "get_relic", "what_if", "what_if_choices"]);
+    expect(names).toEqual(["compare_options", "deck_trend", "get_card", "get_decision", "get_deck", "get_relic", "what_if", "what_if_choices"]);
   });
 
   it("scores a run and lists its strict flags with details", async () => {

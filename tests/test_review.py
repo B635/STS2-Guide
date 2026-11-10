@@ -11,6 +11,7 @@ from review.run_review import STRICT_GAP, ReviewError, RunReview, _tier, review_
 
 ROOT = Path(__file__).resolve().parents[1]
 RUN = ROOT / "coach" / "eval" / "runs" / "test" / "1791474137.run"
+DEV_RUN = ROOT / "coach" / "eval" / "runs" / "dev" / "1773034032.run"
 
 
 def option(option_id, deck_score, fully_scored=True):
@@ -121,6 +122,39 @@ class RunReviewTests(unittest.TestCase):
         multiplayer = dict(run, players=run["players"] * 2)
         with self.assertRaisesRegex(ReviewError, "single-player"):
             RunReview(self.engine, multiplayer, "x")
+
+
+class DeckTrendTests(unittest.TestCase):
+    """deck_trend on a development-set run (IRONCLAD, v0.98.2)."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.temp = tempfile.TemporaryDirectory()
+        cls.engine = Engine(Path(cls.temp.name) / "release.db")
+        cls.review = review_file(cls.engine, DEV_RUN)
+
+    @classmethod
+    def tearDownClass(cls):
+        del cls.review, cls.engine
+        cls.temp.cleanup()
+
+    def test_one_row_per_card_reward_with_the_numbers_the_factor_messages_show(self):
+        trend = tools.deck_trend(self.review, "defense")
+        cards = [d.id for d in self.review.decisions.values() if d.kind == "card_reward"]
+        self.assertEqual([r["decision_id"] for r in trend["decisions"]], cards)
+        row = next(r for r in trend["decisions"] if r["decision_id"] == "F14-card")
+        defense = row["values"]["defense"]
+        messages = [f["message"] for o in self.review.decision("F14-card").record["options"] for f in o["factors"]]
+        self.assertTrue(any(f"每回合 {defense['have']} →" in m and f"需求 {defense['need']}" in m for m in messages))
+        self.assertEqual(defense["below_need"], defense["have"] < defense["need"])
+        self.assertEqual(trend["labels"], {"defense": "防御"})
+
+    def test_all_dimensions_by_default_and_unknown_ones_rejected(self):
+        trend = tools.deck_trend(self.review)
+        self.assertEqual(set(trend["decisions"][0]["values"]),
+                         {"frontload", "aoe", "defense", "scaling", "cycle", "energy"})
+        with self.assertRaisesRegex(ReviewError, "dimension must be one of"):
+            tools.deck_trend(self.review, "luck")
 
 
 if __name__ == "__main__":

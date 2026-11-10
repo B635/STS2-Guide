@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import Dict, List, Literal
+from typing import Dict, List, Literal, Optional
 
 from pydantic import BaseModel, Field
 
@@ -119,6 +119,14 @@ def what_if_choices(run_id: str, decision_id: str) -> dict:
     """Which deck changes what_if accepts at this card reward: cards to remove or upgrade (in the deck then),
     and cards to add (offered earlier in this run)."""
     return _call(tools.what_if_choices, _review(run_id), decision_id)
+
+
+@mcp.tool()
+def deck_trend(run_id: str, dimension: Optional[str] = None) -> dict:
+    """At every card reward of the run: the deck's per-turn value (have) against what the coming fights need,
+    per dimension (frontload, aoe, defense, scaling, cycle, energy), with below_need marked. For questions
+    about a pattern over the run, e.g. from which floor the defense fell short."""
+    return _call(tools.deck_trend, _review(run_id), dimension)
 
 
 class DeckChange(BaseModel):

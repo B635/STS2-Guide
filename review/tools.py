@@ -9,8 +9,9 @@ offered earlier in the run, upgrades of cards in the deck.
 from __future__ import annotations
 
 import copy
-from typing import List, Mapping
+from typing import List, Mapping, Optional
 
+from advisor.deck_fitness import DIMENSION_LABELS, DIMENSIONS
 from advisor.golden_set import card_reward_request
 from review.run_review import POLICY_LEANINGS, ReviewError, RunReview, _candidate_kinds, _option_rows, _tier
 
@@ -167,4 +168,37 @@ def what_if_choices(review: RunReview, decision_id: str) -> dict:
         "remove": sorted({e["card"] for e in deck}),
         "upgrade": sorted({e["card"] for e in deck if e["upgrades"] == 0 and review.engine.upgradable.get(e["card"])}),
         "add": [{"card": c, "name": catalog.name("card", c)} for c in _allowed_additions(review, decision.floor)],
+    }
+
+
+def deck_trend(review: RunReview, dimension: Optional[str] = None) -> dict:
+    """The deck's per-turn capability against what the coming fights need, at every card reward.
+
+    The same numbers the factor messages show as "每回合 6.8 → ...（需求 11.8）" (the value before
+    the pick), so a pattern over the run can be read without opening each decision."""
+
+    dimensions = DIMENSIONS if dimension is None else (dimension,)
+    if any(d not in DIMENSIONS for d in dimensions):
+        raise ReviewError(f"dimension must be one of {', '.join(DIMENSIONS)}")
+    policy = review.engine.deck_fitness
+    rows = []
+    for decision in review.decisions.values():
+        if decision.kind != "card_reward":
+            continue
+        context, _ = policy.deck_context(card_reward_request(decision.view))
+        if context is None:
+            continue
+        fit, _ = context.score(context.deck)
+        values = {}
+        for d in dimensions:
+            have, need = fit.capabilities[d], context.needs.values[d]
+            values[d] = {"have": round(have, 2 if d == "cycle" else 1), "need": round(need, 1),
+                         "below_need": have < need}
+        rows.append({"decision_id": decision.id, "floor": decision.floor, "act": decision.act,
+                     "deck_size": len(context.deck), "values": values})
+    return {
+        "labels": {d: DIMENSION_LABELS[d] for d in dimensions},
+        "decisions": rows,
+        "note": "have: what the deck does per turn before that pick (cycle: extra cards drawn per turn); "
+                "need: what the coming fights of that act need per turn",
     }
