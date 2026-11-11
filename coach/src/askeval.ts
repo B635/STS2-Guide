@@ -16,7 +16,7 @@ import { createClient } from "./llm.js";
 import { entityNames } from "./names.js";
 import { mergeNotes, notesFromReview } from "./notes.js";
 import type { PlayerNote } from "./notes.js";
-import { STYLE, ratingScript } from "./report.js";
+import { STYLE, glossary, ratingScript } from "./report.js";
 import { DecisionList, RunSummary } from "./schemas.js";
 import { Trace } from "./trace.js";
 import type { Evidence } from "./verifier.js";
@@ -239,6 +239,7 @@ export function renderAskSheet(rows: AskRecorded[]): string {
   <h3>${i + 1}. ${esc(r.question)}</h3>
   <p class="note">计划：${esc(r.answer.plan)}</p>
   <p class="advice" style="white-space:pre-wrap">${esc(shownAnswer(r.answer))}</p>
+  ${glossary([], r.question + " " + shownAnswer(r.answer))}
   <p class="caveat">${esc(STATUS_LABELS[r.answer.status])}；查询 ${r.answer.tool_calls} 次，调查员 ${r.answer.investigators.length} 个。好的回答应该：${esc(r.expect)}</p>
   <div class="rate" role="group" aria-label="这个回答">
     <button data-v="useful">有用</button><button data-v="not_useful">没用</button><button data-v="wrong">说错了或答非所问</button>

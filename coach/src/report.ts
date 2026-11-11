@@ -4,7 +4,8 @@
 
 import type { FlagResult } from "./agent.js";
 import { KIND_LABELS, factorLabel, notStrictLabel, skippedLabel } from "./labels.js";
-import { characterName } from "./names.js";
+import { characterName, describe, entityNames } from "./names.js";
+import { mentionedNames } from "./verifier.js";
 import type { Prepass } from "./prepass.js";
 import type { DecisionDetail } from "./schemas.js";
 import type { Summary } from "./summary.js";
@@ -15,6 +16,8 @@ export const STYLE = `:root{--bg:#fbfaf7;--fg:#1d1b18;--muted:#6b665e;--card:#ff
 main{max-width:760px;margin:0 auto;padding:24px 16px 64px}h1{font-size:22px;margin:0 0 4px}h2{font-size:17px;margin:32px 0 12px}
 h3{font-size:16px;margin:4px 0 8px}.meta,.where,.note,.caveat,footer{color:var(--muted);font-size:13px}
 .summary{font-size:16px;padding:12px 14px;border-left:3px solid var(--accent);background:var(--card)}
+.glossary{list-style:none;margin:6px 0 10px;padding:8px 10px;border:1px dashed var(--line);border-radius:6px;font-size:13px;color:var(--muted)}
+.glossary b{color:var(--fg);margin-right:6px}.gmeta{margin-right:8px;font-size:12px}
 .flag{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin:12px 0}
 .reasons{padding-left:18px;margin:6px 0}.tag{display:inline-block;background:var(--tag);border-radius:4px;padding:0 6px;margin-right:6px;font-size:12px}
 .rate{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.rate button{border:1px solid var(--line);background:transparent;color:var(--fg);border-radius:6px;padding:3px 10px;cursor:pointer}
@@ -62,6 +65,16 @@ function optionName(detail: DecisionDetail, id: string | null): string {
   return detail.options.find((o) => o.id === id)?.name ?? id ?? "-";
 }
 
+/** The cards, relics and potions a text names, each with what it does, so the reader need not know them by heart. */
+export function glossary(names: string[], text: string): string {
+  const all = [...new Set([...names, ...mentionedNames(text, entityNames())])];
+  const rows = all
+    .map((n) => describe(n))
+    .filter((d) => d !== undefined)
+    .map((d) => `<li><b>${esc(d.name)}</b><span class="gmeta">${esc(d.meta)}</span>${esc(d.description)}</li>`);
+  return rows.length ? `<ul class="glossary">${rows.join("")}</ul>` : "";
+}
+
 export function headline(detail: DecisionDetail): string {
   return `引擎认为「${optionName(detail, detail.engine_top)}」比你选的「${optionName(detail, detail.chosen)}」高 ${detail.gap} 分`;
 }
@@ -75,9 +88,14 @@ export function flagCard(detail: DecisionDetail, result: FlagResult | undefined,
   const caveat = partly.length
     ? `<p class="caveat">引擎没能完整计算：${esc(partly.join("、"))}（部分效果未计入，分数是下限）。</p>`
     : "";
+  const text = [...f.reasons.map((r) => r.text), f.what_if_text ?? "", f.advice].join(" ");
+  // The engine's pick and the player's choice first, then the other options, then anything else the text names.
+  const first = [detail.engine_top, detail.chosen].map((id) => optionName(detail, id));
+  const cards = glossary([...first, ...detail.options.map((o) => o.name)], text);
   return `<section class="flag" data-flag="${esc(key)}">
   <div class="where">第 ${detail.act} 幕 · 第 ${detail.floor} 层 · ${esc(KIND_LABELS[detail.kind] ?? detail.kind)} · 生命 ${detail.hp}/${detail.max_hp} · 金币 ${detail.gold}</div>
   <h3>${index + 1}. ${esc(headline(detail))}${esc(main)}</h3>
+  ${cards}
   <ul class="reasons">${reasons}</ul>
   ${f.what_if_text ? `<p class="whatif"><b>如果当时…</b>${esc(f.what_if_text)}</p>` : ""}
   <p class="advice"><b>下次可以注意：</b>${esc(f.advice)}</p>
