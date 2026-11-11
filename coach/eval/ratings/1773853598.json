@@ -1,0 +1,11 @@
+{
+ "run_id": "1773853598",
+ "model": "deepseek-flash",
+ "prompt_version": "p4",
+ "ratings": {
+  "F15-card": {
+   "rating": "not_useful",
+   "note": "四费不一定可以打得出来啊"
+  }
+ }
+}

@@ -1,0 +1,47 @@
+{
+ "run_id": "ask-dev",
+ "model": "deepseek-flash",
+ "prompt_version": "b5",
+ "ratings": {
+  "Q02": {
+   "rating": "useful",
+   "note": ""
+  },
+  "Q07": {
+   "rating": "not_useful",
+   "note": ""
+  },
+  "Q08": {
+   "rating": "useful",
+   "note": ""
+  },
+  "Q11": {
+   "rating": "not_useful",
+   "note": ""
+  },
+  "Q13": {
+   "rating": "useful",
+   "note": ""
+  },
+  "Q14": {
+   "rating": "useful",
+   "note": ""
+  },
+  "Q15": {
+   "rating": "useful",
+   "note": ""
+  },
+  "Q17": {
+   "rating": "not_useful",
+   "note": ""
+  },
+  "Q19": {
+   "rating": "not_useful",
+   "note": ""
+  },
+  "Q20": {
+   "rating": "not_useful",
+   "note": ""
+  }
+ }
+}

@@ -1,0 +1,15 @@
+{
+ "run_id": "1772819860",
+ "model": "deepseek-flash",
+ "prompt_version": "p4",
+ "ratings": {
+  "F02-card": {
+   "rating": "useful",
+   "note": ""
+  },
+  "F17-card": {
+   "rating": "engine_wrong",
+   "note": "选择剑圣说明是玩大剑流派，所以是可以选择的"
+  }
+ }
+}

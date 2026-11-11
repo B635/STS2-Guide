@@ -1,0 +1,15 @@
+{
+ "run_id": "1782142555",
+ "model": "deepseek-flash",
+ "prompt_version": "p4",
+ "ratings": {
+  "F07-card": {
+   "rating": "useful",
+   "note": ""
+  },
+  "F12-card": {
+   "rating": "useful",
+   "note": ""
+  }
+ }
+}

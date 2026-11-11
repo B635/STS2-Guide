@@ -1,0 +1,19 @@
+{
+ "run_id": "1773057317",
+ "model": "deepseek-flash",
+ "prompt_version": "p4",
+ "ratings": {
+  "F12-card": {
+   "rating": "useful",
+   "note": ""
+  },
+  "F09-card": {
+   "rating": "engine_wrong",
+   "note": "但是引雷针有防御，当时可能是想补充防御"
+  },
+  "F17-card": {
+   "rating": "engine_wrong",
+   "note": "缓冲是一张后期牌"
+  }
+ }
+}

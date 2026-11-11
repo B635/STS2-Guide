@@ -1,0 +1,19 @@
+{
+ "run_id": "1791474137",
+ "model": "deepseek-flash",
+ "prompt_version": "p4",
+ "ratings": {
+  "F15-card": {
+   "rating": "engine_wrong",
+   "note": "两费11甲不一定后期用得上"
+  },
+  "F09-card": {
+   "rating": "useful",
+   "note": "这个效果更新了，之前的御姐时间很强"
+  },
+  "F02-card": {
+   "rating": "not_useful",
+   "note": ""
+  }
+ }
+}

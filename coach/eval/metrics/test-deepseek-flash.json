@@ -22,9 +22,9 @@
  "cost_per_run": 0.006,
  "seconds_per_run": 8.425,
  "ratings": {
-  "useful": 0,
-  "not_useful": 0,
-  "engine_wrong": 0,
-  "rated": 0
+  "useful": 9,
+  "not_useful": 6,
+  "engine_wrong": 14,
+  "rated": 29
  }
 }

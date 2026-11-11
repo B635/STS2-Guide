@@ -1,0 +1,19 @@
+{
+ "run_id": "1773983149",
+ "model": "deepseek-flash",
+ "prompt_version": "p4",
+ "ratings": {
+  "F24-card": {
+   "rating": "engine_wrong",
+   "note": "费用太高"
+  },
+  "F28-card": {
+   "rating": "engine_wrong",
+   "note": "这个不好说，都可以的"
+  },
+  "F04-card": {
+   "rating": "engine_wrong",
+   "note": "这个是为了打出循环卡组"
+  }
+ }
+}

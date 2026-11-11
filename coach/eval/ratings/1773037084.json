@@ -1,0 +1,23 @@
+{
+ "run_id": "1773037084",
+ "model": "deepseek-flash",
+ "prompt_version": "p4",
+ "ratings": {
+  "F14-card": {
+   "rating": "useful",
+   "note": "但是也要注意血量，要根据之后的血量，但是祭品确实是一张强力卡牌"
+  },
+  "F02-card": {
+   "rating": "useful",
+   "note": ""
+  },
+  "F17-card": {
+   "rating": "engine_wrong",
+   "note": "痛殴如果循环很厉害啊"
+  },
+  "F08-card": {
+   "rating": "not_useful",
+   "note": "狂怒不一定好用"
+  }
+ }
+}

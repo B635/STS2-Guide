@@ -1,0 +1,11 @@
+{
+ "run_id": "1774202131",
+ "model": "deepseek-flash",
+ "prompt_version": "p4",
+ "ratings": {
+  "F17-card": {
+   "rating": "engine_wrong",
+   "note": "恶魔形态太长了，如果可以早结束那为什么不早结束呢"
+  }
+ }
+}

@@ -1,0 +1,15 @@
+{
+ "run_id": "1791820890",
+ "model": "deepseek-flash",
+ "prompt_version": "p4",
+ "ratings": {
+  "F02-card": {
+   "rating": "not_useful",
+   "note": "蛇咬没用"
+  },
+  "F07-card": {
+   "rating": "not_useful",
+   "note": "没用过这张"
+  }
+ }
+}

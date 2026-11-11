@@ -1,0 +1,19 @@
+{
+ "run_id": "1774199215",
+ "model": "deepseek-flash",
+ "prompt_version": "p4",
+ "ratings": {
+  "F33-card": {
+   "rating": "engine_wrong",
+   "note": "眩晕可能影响"
+  },
+  "F19-card": {
+   "rating": "engine_wrong",
+   "note": "和上面一样"
+  },
+  "F04-card": {
+   "rating": "engine_wrong",
+   "note": "和上面一样"
+  }
+ }
+}

@@ -92,6 +92,7 @@ python scripts/import_run_history.py --all-runs --collected <放 zip 的目录> 
 | 15 局费用 / 每局用时 | $0.084 / 8.4 秒 |
 | 换成贵 4 倍的 `deepseek-v4-pro` | 28/31，没有更好 |
 | 对话：开发集 20 题，最终回答通过程序核对 | 100%；草稿被审查退回 35% |
+| 作者人工评分（测试集 29 条结论） | 有用 31%、没用 21%、引擎错了 48% |
 
 对局先切成开发集和测试集再调 prompt，所有输出存在 `coach/eval/`，指标不用密钥也能重算。
 设计取舍、限制和运行方法见 [`docs/review-coach.md`](docs/review-coach.md)。

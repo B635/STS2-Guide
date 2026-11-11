@@ -37,6 +37,8 @@
  },
  "seconds_per_question": 10.891,
  "ratings": {
-  "rated": 0
+  "rated": 10,
+  "useful": 5,
+  "not_useful": 5
  }
 }

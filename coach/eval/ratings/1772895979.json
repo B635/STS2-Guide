@@ -1,0 +1,19 @@
+{
+ "run_id": "1772895979",
+ "model": "deepseek-flash",
+ "prompt_version": "p4",
+ "ratings": {
+  "F11-card": {
+   "rating": "useful",
+   "note": ""
+  },
+  "F30-card": {
+   "rating": "engine_wrong",
+   "note": "感觉不一定，这个效果不是很强，反而会增加卡组厚度"
+  },
+  "F04-card": {
+   "rating": "useful",
+   "note": ""
+  }
+ }
+}
