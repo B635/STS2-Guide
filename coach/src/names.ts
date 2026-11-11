@@ -64,7 +64,7 @@ export function describe(name: string): { name: string; meta: string; descriptio
       kind === "cards"
         ? [row.cost === null || row.cost === undefined ? null : `${row.cost} 费`, row.star_cost ? `消耗 ${row.star_cost} 颗星` : null, row.type, row.rarity].filter(Boolean).join(" · ")
         : [KIND_WORDS[kind], row.rarity].filter(Boolean).join(" · ");
-    return { name, meta, description: (row.description ?? "").replace(/\s*\n\s*/g, " ") };
+    return { name, meta, description: restoreIcons(row) };
   }
   return undefined;
 }
