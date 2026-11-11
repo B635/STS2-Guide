@@ -1,5 +1,12 @@
 # STS2 Guide：本地实时决策 Agent
 
+> **English summary.** A read-only decision copilot for *Slay the Spire 2*: a C# mod reports the current
+> decision, a deterministic Python engine scores the options in real time (no LLM, 300 ms budget), and a
+> TypeScript **post-run review coach** explains finished runs with an LLM agent over the same engine
+> (MCP tools, per-claim verification against tool results, a lead / investigator / critic follow-up chat,
+> dev/test-split evaluation). See [`docs/review-coach.md`](docs/review-coach.md). Unofficial fan project,
+> not affiliated with Mega Crit; game text belongs to Mega Crit.
+
 STS2 Guide 是《Slay the Spire 2》的本地、只读、状态驱动策略副驾驶。用户正常操作游戏，
 只读 Mod 感知当前决策，本地后台离线计算建议，游戏内 `Context Drawer` 主动显示结果。
 
@@ -56,7 +63,8 @@ STS2 Guide 是《Slay the Spire 2》的本地、只读、状态驱动策略副�
 ### 分享对局记录
 
 游戏每打完一局会自己写一份对局记录（`.run`）。托盘“导出对局记录”把这台电脑上的全部记录打包成
-`%APPDATA%\SlayTheSpire2\STS2Guideun-records\STS2-对局记录-<收集者>-<时间>.zip` 并打开该目录，
+`%APPDATA%\SlayTheSpire2\STS2Guide
+un-records\STS2-对局记录-<收集者>-<时间>.zip` 并打开该目录，
 发给作者即可（QQ／微信都行）。记录只含对局本身（角色、牌组、地图、选择），不含账号；压缩包里也不含
 Steam ID 所在的目录名。收集者是第一次导出时随机生成的编号，只用来区分不同玩家的记录。
 
@@ -65,6 +73,29 @@ Steam ID 所在的目录名。收集者是第一次导出时随机生成的编�
 ```bash
 python scripts/import_run_history.py --all-runs --collected <放 zip 的目录> --output build/history-all
 ```
+
+## 赛后复盘教练（LLM Agent）
+
+实时建议不用大模型；赛后的解释和追问才交给 LLM。`coach/`（TypeScript）通过 MCP 调用同一个评分引擎：
+
+```
+.run 对局记录 → Python 引擎重算整局（10 个 MCP 工具，stdio）
+  → 程序挑出引擎有把握的分歧（每局最多 5 条）
+  → 每条一个调查 Agent：检验“如果当时…”，交出结构化结论
+  → 程序验证器：因子、数字、卡名必须对得上工具结果，否则退回一次，再不行丢弃
+  → HTML 报告；`coach ask` 可继续追问（主 Agent ＋ 并行调查 Agent ＋ 审查 Agent，带跨局笔记）
+```
+
+| 评估（`deepseek-flash`） | 结果 |
+|---|---|
+| 测试集 15 局、31 条结论通过验证 | 29（进入报告的 100% 已核对） |
+| 15 局费用 / 每局用时 | $0.084 / 8.4 秒 |
+| 换成贵 4 倍的 `deepseek-v4-pro` | 28/31，没有更好 |
+| 对话：开发集 20 题，最终回答通过程序核对 | 100%；草稿被审查退回 35% |
+
+对局先切成开发集和测试集再调 prompt，所有输出存在 `coach/eval/`，指标不用密钥也能重算。
+设计取舍、限制和运行方法见 [`docs/review-coach.md`](docs/review-coach.md)。
+设计与评估由作者完成，代码实现有 AI 协助。
 
 ## 实现概览
 

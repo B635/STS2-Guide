@@ -1,0 +1,48 @@
+name: review coach
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  python:
+    # The product is a Windows app; its suite runs where it ships.
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+      - run: pip install -r requirements-p0.txt
+      - run: python -m unittest discover -s tests
+
+  coach:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r review/requirements.txt
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: coach/package-lock.json
+      - run: npm ci
+        working-directory: coach
+      - run: npm run typecheck
+        working-directory: coach
+      # No model calls: the agent tests use a scripted model, the engine tests the real Python engine over MCP.
+      - run: npm test
+        working-directory: coach
+        env:
+          COACH_PYTHON: python
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -f coach/Dockerfile -t sts2-coach .
+      # Smoke test: the deterministic pre-pass on one committed run, without a model.
+      - run: docker run --rm sts2-coach review /app/coach/eval/runs/dev/1773034032.run --no-llm --out /tmp/out
