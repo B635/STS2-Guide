@@ -19,8 +19,7 @@ interface Named {
 // The catalog's descriptions lost the game's inline icons, so "获得[2 stars]。" reads "获得。".
 // The amount is still in the card's vars: put it back as text.
 function restoreIcons(row: Named): string {
-  const text = (row.description ?? "").replace(/\s*
-\s*/g, " ");
+  const text = (row.description ?? "").replace(/\s*\n\s*/g, " ");
   const stars = row.vars?.["Stars"];
   const energy = row.vars?.["Energy"];
   const gain = stars !== undefined ? `${stars} 颗星` : energy !== undefined ? `${energy} 点能量` : null;
