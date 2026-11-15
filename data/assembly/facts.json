@@ -1561,7 +1561,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review D2",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read .ctor (1, Attack 1, Common 2, AnyEnemy 2, 1), get_CanonicalVars DamageVar(5), CalculationBaseVar(0), CalculationExtraVar(1), CalculatedHitCountVar('CalculatedHits').WithMultiplier(b__5_0), <get_CanonicalVars>b__5_0 = Owner.PlayerCombatState.OrbQueue.Orbs.Count, OnUpgrade Damage +2, get_ExtraHoverTips Static(2) only, <OnPlay>d__6::MoveNext: DamageCmd.Attack(Damage.BaseValue).WithHitCount((int)CalculatedHits.Calculate(target)).FromCard(cardPlay).Targeting(cardPlay.Target).Execute. Extract diff: only CalculatedVar -> CalculatedHitCountVar. Unchanged-behaviour claim holds; fields (5 +2, hits base 0 per orb_count, single) correct. Fingerprint matches.",
     "verdict": "agree"
    },
    "card_type": "Attack",
@@ -1590,7 +1591,9 @@
     "CanonicalVars DamageVar(5), CalculationBaseVar(0), CalculationExtraVar(1), CalculatedVar('CalculatedHits').WithMultiplier(lambda: Owner.PlayerCombatState.OrbQueue.Orbs.Count); OnUpgrade Damage +2",
     "OnPlay <OnPlay>d__6: DamageCmd.Attack(Damage).WithHitCount((int)CalculatedHits.Calculate(target)) targeting cardPlay.Target",
     "Catalog 'deal 5 (7) damage per orb' agrees",
-    "hook tokens {\"OnPlay\": \"06003B83\", \"OnUpgrade\": \"06003B84\"}"
+    "hook tokens {\"OnPlay\": \"06003B83\", \"OnUpgrade\": \"06003B84\"}",
+    "v0.113.1 re-review: unchanged behaviour (CalculatedHits is now a CalculatedHitCountVar instead of CalculatedVar; same base 0, extra 1 x OrbQueue.Orbs.Count; DamageVar 5, OnUpgrade Damage +2)",
+    "Read get_CanonicalVars, <get_CanonicalVars>b__5_0 (Owner.PlayerCombatState.OrbQueue.Orbs.Count), <OnPlay>d__6::MoveNext: DamageCmd.Attack(Damage).WithHitCount((int)CalculatedHits.Calculate(target)).FromCard.Targeting(cardPlay.Target).Execute"
    ],
    "fingerprint": "0ad727cb49b24aa87c0307e8c01c0254c12c436e2ee470327d3e17d1dc45c200",
    "hook_tokens": {
@@ -1605,9 +1608,9 @@
    "open_questions": [
     "Barrage: hits_scale source 'orb_count' (number of channeled orbs) is not in the spec source list."
    ],
-   "reviewed_by": "TASK-025 ticket 07 batch defect-2",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "069b05d2b61b479bb67b13c24ece7f21402a7bb49c599d954871db37d570c216",
-   "status": "stale",
+   "status": "converted",
    "tags": [],
    "unknowable": []
   },
@@ -2517,7 +2520,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review G",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read .ctor (0, Skill 2, Uncommon 3, Self 1, 1), get_CanonicalVars HpLossVar(3), EnergyVar(2), OnUpgrade Energy +1, <OnPlay>d__5::MoveNext: TriggerAnim Cast; vfx; CreatureCmd.Damage(choiceContext, owner creature, HpLoss.BaseValue, ValueProp 14, cardPlay); PlayerCmd.GainEnergy(Energy.BaseValue, Owner). Extract diff: no change. Entry correct. Fingerprint matches.",
     "verdict": "agree"
    },
    "card_type": "Skill",
@@ -2543,7 +2547,9 @@
     "ctor CardModel(cost=0, Skill, Uncommon, Self)",
     "CanonicalVars HpLossVar(3), EnergyVar(2); OnUpgrade 06003BE3: Energy +1",
     "OnPlay 06003BE2: <OnPlay>d__5 CreatureCmd.Damage(owner creature, HpLoss, ValueProp 14 = Unblockable|Unpowered|Move); then PlayerCmd.GainEnergy(Energy, owner)",
-    "Catalog text lacks the energy amount (icon placeholder); code 2 (upgraded 3)"
+    "Catalog text lacks the energy amount (icon placeholder); code 2 (upgraded 3)",
+    "v0.113.1 re-review: unchanged behaviour (no var, cost or call change in the extract; IL same shape)",
+    "Read .ctor (0, Skill, Uncommon, Self), get_CanonicalVars HpLossVar(3), EnergyVar(2), OnUpgrade Energy +1, <OnPlay>d__5::MoveNext: CreatureCmd.Damage(choiceContext, owner creature, HpLoss.BaseValue, ValueProp 14 = Unblockable|Unpowered|Move, this, cardPlay); PlayerCmd.GainEnergy(Energy.BaseValue, Owner)"
    ],
    "fingerprint": "6a73f777a637c7a5ff5ff2bd284a9a717867c67a70226183474935f89faf3e29",
    "hook_tokens": {
@@ -2556,9 +2562,9 @@
    ],
    "keywords": [],
    "open_questions": [],
-   "reviewed_by": "TASK-025 ticket 05 batch G",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "34f387bdcb73e035862036af36d2a9fde8e23dabe7c5532f5902fd3a7f98e377",
-   "status": "stale",
+   "status": "converted",
    "tags": [],
    "unknowable": []
   },
@@ -2962,7 +2968,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review N3",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read .ctor (1, Attack 1, Uncommon 3, AllEnemies 3, 1), get_CanonicalTags {OstyAttack 4}, get_CanonicalVars OstyDamageVar(9), BlockVar(9), OnUpgrade OstyDamage +3 / Block +3, get_GainsBlock true, <OnPlay>d__9::MoveNext: if Osty.CheckMissingWithAnim(Owner) return; DamageCmd.Attack(OstyDamage.BaseValue).FromOsty(Owner.Osty, cardPlay).TargetingAllOpponents(CombatState).Execute; CreatureCmd.GainBlock(owner creature, Block, cardPlay); if Owner.IsOstyAlive CreatureCmd.Kill(Owner.Osty). Extract diff: no change. Entry correct (block and kill also behind the early Osty-missing return, matching condition osty_alive). Fingerprint matches.",
     "verdict": "agree"
    },
    "card_type": "Attack",
@@ -3006,7 +3013,9 @@
     "CanonicalVars OstyDamageVar(9), BlockVar(9)",
     "OnUpgrade: OstyDamage +3, Block +3",
     "Catalog 9/12 to all enemies, 9/12 Block, then Osty dies; agrees",
-    "OnUpgrade token 06003C10"
+    "OnUpgrade token 06003C10",
+    "v0.113.1 re-review: unchanged behaviour (no var, cost or call change in the extract)",
+    "Read .ctor (1, Attack, Uncommon, AllEnemies), get_CanonicalVars OstyDamageVar(9), BlockVar(9), OnUpgrade OstyDamage +3 / Block +3, get_CanonicalTags {4 OstyAttack}, <OnPlay>d__9::MoveNext: if Osty.CheckMissingWithAnim(Owner) return; DamageCmd.Attack(OstyDamage).FromOsty(Owner.Osty, cardPlay).TargetingAllOpponents(CombatState).Execute; CreatureCmd.GainBlock(owner creature, Block, cardPlay); if Owner.IsOstyAlive CreatureCmd.Kill(Owner.Osty)"
    ],
    "fingerprint": "d5162d4bd2fbaafc3c8b5267e6a4324dbf47e1ece0605d9c4fb476bb2e127239",
    "hook_tokens": {
@@ -3022,9 +3031,9 @@
     "Osty attacks (AttackCommand.FromOsty) are written as damage with source 'osty' and condition osty_alive (OnPlay returns early when Osty.CheckMissingWithAnim is true); spec has no Osty-attack form.",
     "BoneShards: new effect kind 'kill_osty' (Osty dies after the attack) is not in the spec."
    ],
-   "reviewed_by": "TASK-025 ticket 08 batch necrobinder-3",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "85d036d3d7b47f650cc5e49391a5946a8391863554499ee15d61ca62ae83b248",
-   "status": "stale",
+   "status": "converted",
    "tags": [
     "OstyAttack"
    ],
@@ -3369,7 +3378,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review H",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read .ctor (1, Attack 1, Common 2, AllEnemies 3, 1), get_CanonicalVars DamageVar(9), HpLossVar(1), OnUpgrade Damage +4, <OnPlay>d__3::MoveNext: vfx; CreatureCmd.Damage(owner creature, HpLoss.BaseValue, ValueProp 14, cardPlay); DamageCmd.Attack(Damage.BaseValue).FromCard(cardPlay).TargetingAllOpponents(CombatState).Execute. Extract diff: no change. Entry correct, order hp_loss then damage. Fingerprint matches.",
     "verdict": "agree"
    },
    "card_type": "Attack",
@@ -3397,7 +3407,9 @@
     "ctor CardModel(cost=1, Attack, Common(2), AllEnemies(3))",
     "CanonicalVars DamageVar(9), HpLossVar(1); OnUpgrade Damage +4",
     "OnPlay 06003C33 (<OnPlay>d__3::MoveNext): CreatureCmd.Damage(owner creature, HpLoss, ValueProp 14 = Unblockable|Unpowered|Move); DamageCmd.Attack(Damage).TargetingAllOpponents",
-    "card_type from CardModel ctor; tags from get_CanonicalTags; keywords from get_CanonicalKeywords"
+    "card_type from CardModel ctor; tags from get_CanonicalTags; keywords from get_CanonicalKeywords",
+    "v0.113.1 re-review: unchanged behaviour (no var, cost or call change in the extract)",
+    "Read .ctor (1, Attack, Common, AllEnemies), get_CanonicalVars DamageVar(9), HpLossVar(1), OnUpgrade Damage +4, <OnPlay>d__3::MoveNext: CreatureCmd.Damage(choiceContext, owner creature, HpLoss.BaseValue, ValueProp 14 = Unblockable|Unpowered|Move, ..., cardPlay); DamageCmd.Attack(Damage).FromCard(cardPlay).TargetingAllOpponents(CombatState).Execute"
    ],
    "fingerprint": "b809949b2cb39dde2de62339d13ef00b289e389faf384a1214eaa264e705f4fa",
    "hook_tokens": {
@@ -3410,9 +3422,9 @@
    ],
    "keywords": [],
    "open_questions": [],
-   "reviewed_by": "TASK-025 ticket 05 batch H",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "225303624a73d6e48a5601d70d02002eec7b096c2c067000bb1d224a50118420",
-   "status": "stale",
+   "status": "converted",
    "tags": [],
    "unknowable": []
   },
@@ -4021,7 +4033,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review M2",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read .ctor (-1, Quest 6, rarity 10, None 0, 1), get_CanonicalKeywords [Unplayable 4], get_MaxUpgradeLevel 0, TryModifyRestSiteOptions: if player != Owner return false; if options.Any(b__5_0: o is HatchRestSiteOption) return false; options.Add(new HatchRestSiteOption(player)); return true. Extract diff: only the new HatchRestSiteOption type reference (the isinst check), consistent with the claimed change (at most one Hatch option). No combat effect. Entry correct. Fingerprint matches.",
     "verdict": "agree"
    },
    "card_type": "Quest",
@@ -4035,7 +4048,9 @@
     "get_MaxUpgradeLevel 0 (cannot be upgraded); no OnUpgrade",
     "TryModifyRestSiteOptions 06003C74: if player == Owner: options.Add(new HatchRestSiteOption(player)); return true",
     "Catalog: hatch at a rest site; agrees",
-    "Quest card: Unplayable, no combat effect; its hooks act only on the map / rest sites / rooms (out of combat)"
+    "Quest card: Unplayable, no combat effect; its hooks act only on the map / rest sites / rooms (out of combat)",
+    "v0.113.1 re-review: changed, out of combat only: TryModifyRestSiteOptions now adds HatchRestSiteOption only when the options list has no HatchRestSiteOption yet (old: added it every time, so several eggs gave several Hatch options) -> new: at most one Hatch option per rest site; combat behaviour (Unplayable, no effects) unchanged",
+    "Read .ctor (-1, Quest, 10, None), get_CanonicalKeywords [Unplayable(4)], get_MaxUpgradeLevel 0, TryModifyRestSiteOptions: if player != Owner return false; if options.Any(o => o is HatchRestSiteOption) return false; options.Add(new HatchRestSiteOption(player)); return true"
    ],
    "fingerprint": "e6a0a64525d0f10dcb6b335c04c2e8d16754f4dc650f1d88231d60f15e42a777",
    "hook_tokens": {
@@ -4063,9 +4078,9 @@
    "open_questions": [
     "ByrdonisEgg: what the Hatch rest-site option does lives in HatchRestSiteOption (not reviewed here); 'rest_site' / 'rest_site_option' are new out-of-combat vocabulary."
    ],
-   "reviewed_by": "TASK-025 ticket 10 batch misc-2",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "e793b15cb1e8bfc1d8ee2190948a52cca1c6553cf528d62e1ee7226add211e54",
-   "status": "stale",
+   "status": "converted",
    "tags": [],
    "unknowable": []
   },
@@ -4550,7 +4565,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review C2",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read .ctor (2, Skill 2, Uncommon 3, Self 1, 1), get_CanonicalVars CardsVar(2), OnUpgrade Cards +1, <OnPlay>b__3_0 = !Keywords.Contains(Unplayable 4), <OnPlay>d__3::MoveNext: for i < Cards.IntValue: c = Draw(1) pile Where(b__3_0).ToList().StableShuffle(Rng.CombatCardSelection).FirstOrDefault(); if null c = Draw pile ToList().StableShuffle(Rng.CombatCardSelection).FirstOrDefault(); if c != null CardCmd.AutoPlay(choiceContext, c, null, ...). Extract diff: only RunRngSet.Shuffle -> CombatCardSelection. Unchanged-behaviour claim holds; entry correct. Fingerprint matches.",
     "verdict": "agree"
    },
    "card_type": "Skill",
@@ -4568,7 +4584,7 @@
       "not_keyword": "Unplayable"
      },
      "kind": "auto_play_from_draw",
-     "text": "repeat Cards (2, +1 upgraded) times: card = first of StableShuffle(Rng.Shuffle) of draw-pile cards without Unplayable; if none, first of StableShuffle of all draw-pile cards; if found CardCmd.AutoPlay(ctx, card, target null)"
+     "text": "repeat Cards (2, +1 upgraded) times: card = first of StableShuffle(Rng.CombatCardSelection) of draw-pile cards without Unplayable; if none, first of StableShuffle of all draw-pile cards; if found CardCmd.AutoPlay(ctx, card, target null)"
     }
    ],
    "entity_key": "cards:CATASTROPHE",
@@ -4578,7 +4594,9 @@
     "OnPlay <OnPlay>d__3: for i < Cards.IntValue: c = Draw(1).Cards.Where(!Unplayable(4)).ToList().StableShuffle(Rng.Shuffle).FirstOrDefault() ?? Draw(1).Cards.ToList().StableShuffle(Rng.Shuffle).FirstOrDefault(); if c != null CardCmd.AutoPlay(ctx, c, null, ...)",
     "No CanonicalKeywords override",
     "Catalog: play 2 (3) random cards from draw pile; agrees",
-    "hook tokens {\"OnPlay\": \"06003CA2\", \"OnUpgrade\": \"06003CA3\"}"
+    "hook tokens {\"OnPlay\": \"06003CA2\", \"OnUpgrade\": \"06003CA3\"}",
+    "v0.113.1 re-review: unchanged behaviour (the random pick now uses RunRngSet.CombatCardSelection instead of RunRngSet.Shuffle; RNG stream only)",
+    "Read get_CanonicalVars CardsVar(2), OnUpgrade Cards +1, <OnPlay>b__3_0 (!Keywords.Contains(Unplayable 4)), <OnPlay>d__3::MoveNext: for i < Cards.IntValue: Draw(1) pile .Where(b__3_0).ToList().StableShuffle(Rng.CombatCardSelection).FirstOrDefault() ?? Draw pile .ToList().StableShuffle(Rng.CombatCardSelection).FirstOrDefault(); if found CardCmd.AutoPlay(choiceContext, card, null, ...)"
    ],
    "fingerprint": "c14451a3ddcba6dab2aebdf773baaa0ea3183a8e0de31d14bf78a83c6122cce3",
    "hook_tokens": {
@@ -4591,9 +4609,9 @@
    ],
    "keywords": [],
    "open_questions": [],
-   "reviewed_by": "TASK-025 ticket 10 batch colorless-2",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "245c16ae242037742ecae629f6456b0b0b0ec7d96e302d66909dba354c5ad6ea",
-   "status": "stale",
+   "status": "converted",
    "tags": [],
    "unknowable": []
   },
@@ -5704,7 +5722,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review G",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read .ctor (1, Attack 1, Rare 4, AllEnemies 3, 1), get_CanonicalVars DamageVar(2), HitCountVar(4), OnUpgrade HitCount +1, <OnPlay>d__5::MoveNext: ground-fire VFX on each HittableEnemy; DamageCmd.Attack(Damage.BaseValue).WithHitCount(HitCount.IntValue).FromCard(cardPlay).TargetingAllOpponents(CombatState).Execute. Extract diff: only RepeatVar -> HitCountVar rename (same 4, +1). Entry (2 x 4 hits, hits_upgrade 1, all) correct. Fingerprint matches.",
     "verdict": "agree"
    },
    "card_type": "Attack",
@@ -5727,7 +5746,9 @@
    "evidence": [
     "ctor CardModel(cost=1, Attack, Rare, AllEnemies)",
     "CanonicalVars DamageVar(2), RepeatVar(4); OnUpgrade 06003D13: Repeat +1",
-    "OnPlay 06003D12: <OnPlay>d__5 DamageCmd.Attack(Damage).WithHitCount(Repeat.IntValue).TargetingAllOpponents(CombatState)"
+    "OnPlay 06003D12: <OnPlay>d__5 DamageCmd.Attack(Damage).WithHitCount(Repeat.IntValue).TargetingAllOpponents(CombatState)",
+    "v0.113.1 re-review: unchanged behaviour (RepeatVar(4) renamed to HitCountVar(4); OnUpgrade Repeat +1 -> HitCount +1; same values)",
+    "Read get_CanonicalVars DamageVar(2), HitCountVar(4), OnUpgrade HitCount +1, <OnPlay>d__5::MoveNext: ground-fire VFX on HittableEnemies; DamageCmd.Attack(Damage).WithHitCount(HitCount.IntValue).FromCard(cardPlay).TargetingAllOpponents(CombatState).Execute"
    ],
    "fingerprint": "ab0d97a816ba1fc69c9c8297b044f489d117d14e28615db19b9e66c1ed8c3766",
    "hook_tokens": {
@@ -5740,11 +5761,11 @@
    ],
    "keywords": [],
    "open_questions": [
-    "Conflagration: the upgrade adds a hit (Repeat +1), not damage; encoded as hits_upgrade (not in spec)."
+    "Conflagration: the upgrade adds a hit (HitCount +1), not damage; encoded as hits_upgrade."
    ],
-   "reviewed_by": "TASK-025 ticket 05 batch G",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "ac9b90ece74cf295c84f1ce16056f004bdbf145c4e790f30781ecc081b8889a1",
-   "status": "stale",
+   "status": "converted",
    "tags": [],
    "unknowable": []
   },
@@ -7287,7 +7308,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review M2",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read .ctor (-1, Curse 5, rarity 9, None 0, 1), get_CanonicalKeywords [Unplayable 4], get_CanonicalVars GoldVar(10), get_HasTurnEndInHandEffect true, get_IsAllowedInBlitz false (new override per extract diff), get_MaxUpgradeLevel 0, <OnTurnEndInHand>d__11::MoveNext: PlayerCmd.LoseGold(Mathf.Min(Gold.IntValue, Owner.Gold), Owner, GoldLossType 2). Entry and the Blitz note are correct; combat behaviour unchanged. Fingerprint matches.",
     "verdict": "agree"
    },
    "card_type": "Curse",
@@ -7301,7 +7323,9 @@
     "get_MaxUpgradeLevel 0 (cannot be upgraded); no OnUpgrade",
     "CanonicalVars GoldVar(10); get_HasTurnEndInHandEffect true",
     "OnTurnEndInHand 06003DBB: <OnTurnEndInHand>d__9 PlayerCmd.LoseGold(Mathf.Min(Gold.IntValue, owner.Gold), owner, GoldLossType.Lost(2))",
-    "Catalog: lose 10 gold at end of turn if in hand; agrees"
+    "Catalog: lose 10 gold at end of turn if in hand; agrees",
+    "v0.113.1 re-review: combat behaviour unchanged; new override get_IsAllowedInBlitz returns false (old: inherited default) -> Debt is excluded in the Blitz mode; that is a card-availability rule outside combat and outside the fact vocabulary",
+    "Read .ctor (-1, Curse, 9, None), get_CanonicalKeywords [Unplayable(4)], get_CanonicalVars GoldVar(10), get_HasTurnEndInHandEffect true, get_MaxUpgradeLevel 0, <OnTurnEndInHand>d__11::MoveNext: PlayerCmd.LoseGold(Mathf.Min(Gold.IntValue, Owner.Gold), Owner, GoldLossType 2 Lost)"
    ],
    "fingerprint": "d5d1438ce0c03aa8db2a5448fe83976fedf381af7eb2b414a8d6e52796cb5f8e",
    "hook_tokens": {
@@ -7332,9 +7356,9 @@
    "open_questions": [
     "Debt: gold loss recorded as gain_gold with negative amount (no 'lose_gold' kind); purely run-economy effect."
    ],
-   "reviewed_by": "TASK-025 ticket 10 batch misc-2",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "2a19cf21177a334933276a087e46a9c2b1e32d39711a77ad6113f5a1a88e78a3",
-   "status": "stale",
+   "status": "converted",
    "tags": [],
    "unknowable": []
   },
@@ -8368,8 +8392,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review G",
-    "notes": "restructured by developer (semantics unchanged): 2 hits when the target has Vulnerable",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read .ctor (1, Attack 1, Uncommon 3, AnyEnemy 2, 1), get_CanonicalVars DamageVar(8), HitCountVar(2), OnUpgrade Damage +2 (HitCount not upgraded), ExtraHoverTips Vulnerable, ShouldGlowGold if any hittable enemy has Vulnerable, <OnPlay>d__7::MoveNext: hits = Target.HasPower<VulnerablePower>() ? HitCount.IntValue : 1; DamageCmd.Attack(Damage.BaseValue).WithHitCount(hits).FromCard(cardPlay).Targeting(Target).Execute. Extract diff: only the new HitCountVar(2) replacing the literal. Unchanged-behaviour claim holds; entry correct. Fingerprint matches.",
     "verdict": "agree"
    },
    "card_type": "Attack",
@@ -8399,7 +8423,9 @@
    "evidence": [
     "ctor CardModel(cost=1, Attack, Uncommon, AnyEnemy)",
     "CanonicalVars DamageVar(8); OnUpgrade 06003E38: Damage +2",
-    "OnPlay 06003E37: <OnPlay>d__7 hitCount = cardPlay.Target.HasPower<VulnerablePower>() ? 2 : 1; DamageCmd.Attack(Damage).WithHitCount(hitCount).Targeting(cardPlay.Target)"
+    "OnPlay 06003E37: <OnPlay>d__7 hitCount = cardPlay.Target.HasPower<VulnerablePower>() ? 2 : 1; DamageCmd.Attack(Damage).WithHitCount(hitCount).Targeting(cardPlay.Target)",
+    "v0.113.1 re-review: unchanged behaviour (the 2-hit count now comes from a new HitCountVar(2) instead of a literal 2; hitCount = Target.HasPower<VulnerablePower>() ? HitCount.IntValue : 1)",
+    "Read get_CanonicalVars DamageVar(8), HitCountVar(2), OnUpgrade Damage +2, <OnPlay>d__7::MoveNext: DamageCmd.Attack(Damage).WithHitCount(hitCount).FromCard(cardPlay).Targeting(cardPlay.Target).Execute"
    ],
    "fingerprint": "ead01d25e11ea6cc561c2bb72ca104ec2c7507cc4092585b249bf995089a5cf7",
    "hook_tokens": {
@@ -8414,9 +8440,9 @@
    "open_questions": [
     "Dismantle: 2 hits only if the target has Vulnerable; encoded as conditional_hits with condition target_has_power (not in the spec condition list)."
    ],
-   "reviewed_by": "TASK-025 ticket 05 batch G",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "47bb099f82dd5d4e5ba96b58dd789bbc3466c438d7cbf3f2a182772613b7acbc",
-   "status": "stale",
+   "status": "converted",
    "tags": [],
    "unknowable": []
   },
@@ -9070,7 +9096,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review R2",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read .ctor (1, Attack 1, Rare 4, AllEnemies 3, 1), get_CanonicalStarCost 3, get_CanonicalKeywords [Ethereal 2], get_CanonicalVars DamageVar(9), DynamicVar('StrengthLoss', 9), OnUpgrade Damage +2 / StrengthLoss +2, <OnPlay>d__10::MoveNext: TriggerAnim Attack; enemies = CombatState.HittableEnemies (taken before the attack); DamageCmd.Attack(Damage.BaseValue).FromCard(cardPlay).TargetingAllOpponents(CombatState).Execute; foreach enemy PowerCmd.Apply<DyingStarPower>(choiceContext, enemy, StrengthLoss.BaseValue, owner creature, this). Extract diff: no change. Entry correct. Fingerprint matches.",
     "verdict": "agree"
    },
    "card_type": "Attack",
@@ -9105,7 +9132,9 @@
     "OnPlay <OnPlay>d__10: enemies = HittableEnemies; DamageCmd.Attack(Damage).TargetingAllOpponents; foreach enemy in enemies: PowerCmd.Apply<DyingStarPower>(enemy, StrengthLoss.BaseValue, owner creature)",
     "Catalog: 9/11 damage to all, all enemies lose 9/11 Strength this turn; temporary loss is DyingStarPower behaviour (reviewed separately); catalog omits star cost 3 and Ethereal",
     "hook tokens {\"OnPlay\": \"06003E81\", \"OnUpgrade\": \"06003E82\"}",
-    "2026-10-13 review: this effect's *_text is a plain remark (the structured number is complete); renamed note_text so that amount_text/hits_text/count_text always mean a value the structure does not carry."
+    "2026-10-13 review: this effect's *_text is a plain remark (the structured number is complete); renamed note_text so that amount_text/hits_text/count_text always mean a value the structure does not carry.",
+    "v0.113.1 re-review: unchanged behaviour (no var, cost or call change in the extract)",
+    "Read .ctor (1, Attack, 4 Rare, AllEnemies), get_CanonicalStarCost 3, get_CanonicalKeywords [Ethereal(2)], get_CanonicalVars DamageVar(9), DynamicVar('StrengthLoss', 9), OnUpgrade Damage +2 / StrengthLoss +2, <OnPlay>d__10::MoveNext: enemies = CombatState.HittableEnemies (taken before the attack); DamageCmd.Attack(Damage).FromCard(cardPlay).TargetingAllOpponents(CombatState).Execute; foreach enemy: PowerCmd.Apply<DyingStarPower>(choiceContext, enemy, StrengthLoss.BaseValue, owner creature, ...)"
    ],
    "fingerprint": "26afe68a45365fae664f8b5b43f730aefd1574ff760ed3252ec1743cc077c85b",
    "hook_tokens": {
@@ -9120,13 +9149,13 @@
     "Ethereal"
    ],
    "open_questions": [],
-   "reviewed_by": "TASK-025 ticket 09 batch regent-2",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "47b95f72e2051ab3014354533e1eb367e28f5801218c42cb24577e54a941c13b",
    "star_cost": {
     "base": 3,
     "upgraded": 3
    },
-   "status": "stale",
+   "status": "converted",
    "tags": [],
    "unknowable": []
   },
@@ -9464,7 +9493,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review M1",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read .ctor (0, Skill 2, Event 6, Self 1, 1) and OnPlay (sync): foreach card in Hand(2) pile: IsUpgraded ? EnergyCost.SetThisCombat(1, true) : EnergyCost.SetThisTurnOrUntilPlayed(1, true); returns CompletedTask. No get_CanonicalKeywords and no OnUpgrade in the class; extract diff confirms get_CanonicalKeywords override was removed (so no Exhaust now). Open question resolved by reading CardEnergyCost / LocalCostModifier: the bool is IsReduceOnly; Absolute modifier with IsReduceOnly gives Math.Min(current, 1), so 0-cost cards stay 0 ('reduced to 1' only lowers). SetThisTurnOrUntilPlayed = expiration EndOfTurn|WhenPlayed (6); SetThisCombat = EndOfCombat (0). X-cost cards are unaffected (GetWithModifiers returns the base early when CostsX). Entry fields (set_to 1, duration this_turn_or_until_played, duration_upgraded combat, scope hand, keywords []) are correct. Fingerprint matches.",
     "verdict": "agree"
    },
    "card_type": "Skill",
@@ -9486,9 +9516,12 @@
    "entity_key": "cards:ENLIGHTENMENT",
    "evidence": [
     "ctor CardModel(cost=0, Skill(2), Event(6), Self(1))",
-    "get_CanonicalKeywords [Exhaust(1)]; no CanonicalVars; no OnUpgrade override (behaviour switches on IsUpgraded inside OnPlay)",
-    "OnPlay 06003EA6 (synchronous, returns CompletedTask): foreach card in Hand(2).GetPile(owner).Cards: IsUpgraded ? card.EnergyCost.SetThisCombat(1, true) : card.EnergyCost.SetThisTurnOrUntilPlayed(1, true)",
-    "Catalog: costs of cards in hand reduced to 1 this turn (this combat upgraded); agrees"
+    "No CanonicalVars; no OnUpgrade override (behaviour switches on IsUpgraded inside OnPlay)",
+    "OnPlay (synchronous, returns CompletedTask): foreach card in Hand(2).GetPile(owner).Cards: IsUpgraded ? card.EnergyCost.SetThisCombat(1, true) : card.EnergyCost.SetThisTurnOrUntilPlayed(1, true)",
+    "Catalog v0.113.1: costs of cards in hand reduced to 1 this turn (this combat upgraded), no keywords; agrees",
+    "v0.113.1 re-review: changed: get_CanonicalKeywords override removed, so the card no longer Exhausts (old keywords [Exhaust] -> new []); the cost effect is unchanged",
+    "Read .ctor, OnPlay (whole body above); no get_CanonicalKeywords in the class (extract overrides: OnPlay only)",
+    "Developer note 2026-11-15 (from the independent review's reading of CardEnergyCost via --dump-any): the bool argument is IsReduceOnly (cost = min(current, 1), 0-cost cards stay 0); X-cost cards are not affected (GetWithModifiers returns the base for X); not upgraded lasts this turn or until played, upgraded the whole combat."
    ],
    "fingerprint": "0e13144127eee03a1ff00efdf565f8b72876c8d9d2824dce6a05fd217e51159c",
    "hook_tokens": {
@@ -9497,15 +9530,11 @@
    "hooks": [
     "OnPlay"
    ],
-   "keywords": [
-    "Exhaust"
-   ],
-   "open_questions": [
-    "Enlightenment: written as cost_reduction with set_to 1; meaning of the second bool argument of SetThisTurnOrUntilPlayed/SetThisCombat (presumably 'only if lower', i.e. 0-cost cards stay 0) not verified because CardEnergyCost cannot be dumped; X-cost handling not checked."
-   ],
-   "reviewed_by": "TASK-025 ticket 10 batch misc-1",
+   "keywords": [],
+   "open_questions": [],
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "1022d081a0e95fc67836c98419eb1b4d8cb6d298bfd80bc9262b64366cb003a9",
-   "status": "stale",
+   "status": "converted",
    "tags": [],
    "unknowable": []
   },
@@ -10007,8 +10036,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review H",
-    "notes": "restructured by developer (semantics unchanged): block scale per Strength",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read .ctor (3, Skill 2, Uncommon 3, Self 1), get_CanonicalVars BlockVar(15, ValueProp 8), EnergyVar(1), OnUpgrade Block +5 only, get_GainsBlock true, <OnPlay>b__5_0 (Type == Attack 1), <OnPlay>d__5::MoveNext: TriggerAnim Cast; CreatureCmd.GainBlock(owner creature, Block, cardPlay); Hand(2) cards Where Attack ToList; foreach: if !EnergyCost.CostsX -> EnergyCost.AddUntilPlayed(-Energy.IntValue, false). No keywords override, no ExtraHoverTips. Extract diff old->new confirms the change: CalculationBase 15 (+1), CalculationExtra 5 (+3), CalculatedBlockVar, GetPowerAmount<StrengthPower> removed (the old max(0, Strength) clamp itself was not re-read; old IL not dumped). Also read CardEnergyCost (--dump-any) and LocalCostModifier: AddUntilPlayed(-1, false) adds LocalCostModifier(-1, Relative 2, expiration WhenPlayed 4, IsReduceOnly false); it is removed only by AfterCardPlayedCleanup (WhenPlayed) or end of combat, NOT at end of turn, so the reduction persists across turns/discard until the card is played -> duration 'until_played' is right. A 0-cost Attack CANNOT go below 0: GetWithModifiers ends with Math.Max(0, cost) and GetResolved / GetAmountToSpend also take Math.Max(0, ...); X-cost and negative-base (unplayable) cards return early unmodified (and are filtered anyway). Side note: the -1 modifier is still stored on a 0-cost card and modifiers are summed before the final clamp, so it can cancel a later relative +1 increase on that card. Open question about going below 0 can be closed: no. Fingerprint matches extract.",
     "verdict": "agree"
    },
    "card_type": "Skill",
@@ -10020,23 +10049,31 @@
    "effects": [
     {
      "amount": 15,
-     "amount_text": "plus CalculationExtra (5, +3 on upgrade) x max(0, owner's Strength); total = 15 + 5*Strength (upgraded 16 + 8*Strength)",
      "kind": "block",
-     "scale": {
-      "factor": 5,
-      "factor_upgrade": 3,
-      "min": 0,
-      "per": "strength"
+     "upgrade": 5
+    },
+    {
+     "amount": 1,
+     "amount_text": "every Attack card in hand that is not X-cost: EnergyCost.AddUntilPlayed(-Energy (1), false), i.e. costs 1 less until it is played; upgrade does not change it",
+     "duration": "until_played",
+     "filter": {
+      "card_type": "Attack",
+      "x_cost": false
      },
-     "upgrade": 1
+     "kind": "cost_reduction",
+     "scope": "hand",
+     "upgrade": 0
     }
    ],
    "entity_key": "cards:EXPECT_A_FIGHT",
    "evidence": [
-    "ctor CardModel(cost=3, Skill, Uncommon(3), Self(1))",
-    "CanonicalVars CalculationBaseVar(15), CalculationExtraVar(5), CalculatedBlockVar(props 8).WithMultiplier((card, _) => Math.Max(0, owner.GetPowerAmount<StrengthPower>())); OnUpgrade CalculationBase +1, CalculationExtra +3",
-    "OnPlay 06003EDF (<OnPlay>d__7::MoveNext): TriggerAnim Cast; CreatureCmd.GainBlock(owner creature, CalculatedBlock.Calculate(cardPlay.Target), CalculatedBlock.Props)",
-    "card_type from CardModel ctor; tags from get_CanonicalTags; keywords from get_CanonicalKeywords"
+    "ctor CardModel(cost=3, Skill(2), Uncommon(3), Self(1))",
+    "CanonicalVars BlockVar(15), EnergyVar(1); OnUpgrade Block +5",
+    "OnPlay <OnPlay>d__5::MoveNext: CreatureCmd.GainBlock(owner creature, Block, cardPlay); foreach card in Hand(2).GetPile(Owner).Cards.Where(b__5_0: Type == Attack(1)).ToList(): if !card.EnergyCost.CostsX card.EnergyCost.AddUntilPlayed(-Energy.IntValue, false)",
+    "Catalog v0.113.1: 15 (20) Block, Attacks in hand cost 1 less until played; agrees",
+    "v0.113.1 re-review: changed: old = Block 15 + 5 x max(0, Strength) (upgraded 16 + 8 x Strength) via CalculatedBlockVar -> new = flat Block 15 (+5 upgraded) and every non-X Attack in hand costs 1 less until played; StrengthPower no longer read, ExtraHoverTips override removed",
+    "Read .ctor, get_CanonicalVars, OnUpgrade, <OnPlay>b__5_0, <OnPlay>d__5::MoveNext",
+    "Developer note 2026-11-15 (from the independent review's reading of CardEnergyCost via --dump-any): costs are clamped at 0 (GetWithModifiers / GetResolved / GetAmountToSpend use Math.Max(0, cost)), so a 0-cost Attack does not go below 0; the -1 modifier is cleared when the card is played or the combat ends, not at end of turn."
    ],
    "fingerprint": "1470dab6a39ca31ea445198004c4b684e0c9c56e3e7391033325f89d890d9f8d",
    "hook_tokens": {
@@ -10049,11 +10086,11 @@
    ],
    "keywords": [],
    "open_questions": [
-    "ExpectAFight: block scales with current Strength (amount_from / scaling not a spec field); assumes CalculatedVar = CalculationBase + CalculationExtra x multiplier (matches catalog)"
+    "ExpectAFight: cost_reduction is recorded but not scored, and duration 'until_played' is not in the spec list."
    ],
-   "reviewed_by": "TASK-025 ticket 05 batch H",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "d915f40dcd5671af52a392bce6d8851574da3afb1faba65de2b23580b1a2e038",
-   "status": "stale",
+   "status": "converted",
    "tags": [],
    "unknowable": []
   },
@@ -10119,7 +10156,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review S2",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read .ctor (0, Skill 2, Uncommon 3, AnyEnemy 2, 1), get_CanonicalKeywords [Exhaust 1], get_CanonicalVars DynamicVar('Power', 2), OnUpgrade Power +1, <OnPlay>d__8::MoveNext: TriggerAnim Cast; amount = Power.IntValue; CreatureCmd.LoseBlock(target, target.Block, owner creature); if target.HasPower<ArtifactPower> PowerCmd.Remove<ArtifactPower>(target); PowerCmd.Apply<VulnerablePower>(choiceContext, target, amount, owner creature, this). Extract diff: no change. Entry correct (order block, Artifact, Vulnerable). Fingerprint matches.",
     "verdict": "agree"
    },
    "card_type": "Skill",
@@ -10152,7 +10190,9 @@
     "CanonicalKeywords [Exhaust(1)]",
     "CanonicalVars DynamicVar('Power', 2); OnUpgrade Power +1",
     "OnPlay <OnPlay>d__8: amount=Power.IntValue; CreatureCmd.LoseBlock(target, target.Block); if target.HasPower<ArtifactPower> PowerCmd.Remove<ArtifactPower>(target); PowerCmd.Apply<VulnerablePower>(target, amount)",
-    "Catalog agrees; catalog omits Exhaust"
+    "Catalog agrees; catalog omits Exhaust",
+    "v0.113.1 re-review: unchanged behaviour (no var, cost or call change in the extract)",
+    "Read .ctor (0, Skill, Uncommon, AnyEnemy), get_CanonicalKeywords [Exhaust(1)], get_CanonicalVars DynamicVar('Power', 2), OnUpgrade Power +1, <OnPlay>d__8::MoveNext: amount = Power.IntValue; CreatureCmd.LoseBlock(target, target.Block, owner creature); if target.HasPower<ArtifactPower> PowerCmd.Remove<ArtifactPower>(target); PowerCmd.Apply<VulnerablePower>(choiceContext, target, amount, owner creature, ...)"
    ],
    "fingerprint": "6e229d87f12fd61832b6669d41585242222c98b4a41c315d323c1eab1afec974",
    "hook_tokens": {
@@ -10169,9 +10209,9 @@
    "open_questions": [
     "Expose: 'remove_block' and 'remove_power' are not in the recorded effect vocabulary."
    ],
-   "reviewed_by": "TASK-025 ticket 06 batch silent-2",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "c1b24042fc1d1ac772b4dc9ec0c605f22cb33fc83c18fab13f305a48645f0d92",
-   "status": "stale",
+   "status": "converted",
    "tags": [],
    "unknowable": []
   },
@@ -10732,8 +10772,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review F",
-    "notes": "restructured by developer (semantics unchanged): hits scale per hand size",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read .ctor (2, Attack 1, Rare 4, AnyEnemy 2, 1), get_CanonicalKeywords [Exhaust 1], get_CanonicalVars DamageVar(7), CalculationBaseVar(0), CalculationExtraVar(1), CalculatedHitCountVar('CalculatedHits') x <get_CanonicalVars>b__3_0 (count of Hand(2) cards != this card), OnUpgrade Damage +3, <OnPlay>d__8::MoveNext: cards = Hand(2).Cards.ToList(); cardCount = cards.Count; foreach CardCmd.Exhaust(choiceContext, card); DamageCmd.Attack(Damage.BaseValue).WithHitCount(cardCount).FromCard(cardPlay).Targeting(Target).BeforeDamage(vfx).Execute. CalculatedHits is never read in OnPlay (preview only). Extract diff: only the added preview vars. Unchanged-behaviour claim holds; entry correct. Fingerprint matches.",
     "verdict": "agree"
    },
    "card_type": "Attack",
@@ -10769,7 +10809,9 @@
     "CanonicalKeywords [Exhaust(1)]",
     "CanonicalVars DamageVar(7); OnUpgrade Damage +3",
     "OnPlay <OnPlay>d__7: cards = PileType.Hand(2).Cards.ToList(); cardCount = cards.Count; foreach CardCmd.Exhaust(card); DamageCmd.Attack(Damage).WithHitCount(cardCount) targeting cardPlay.Target",
-    "Catalog: 'exhaust your hand; deal 7 damage per card exhausted', upgraded 10; code +3 = 10, agrees"
+    "Catalog: 'exhaust your hand; deal 7 damage per card exhausted', upgraded 10; code +3 = 10, agrees",
+    "v0.113.1 re-review: unchanged behaviour (new CanonicalVars CalculationBaseVar(0), CalculationExtraVar(1), CalculatedHitCountVar('CalculatedHits') x count of other cards in hand are for the card text preview only; OnPlay still uses the hand-count snapshot and does not read CalculatedHits)",
+    "Read get_CanonicalVars, <get_CanonicalVars>b__3_0 / b__1 (Hand cards != this card), <OnPlay>d__8::MoveNext: cards = Hand(2).Cards.ToList(); cardCount = cards.Count; foreach CardCmd.Exhaust(choiceContext, card); DamageCmd.Attack(Damage).WithHitCount(cardCount).FromCard(cardPlay).Targeting(cardPlay.Target).BeforeDamage(vfx).Execute"
    ],
    "fingerprint": "50447478829e0dcfffe2b63d5274d8466088058b9fc0f10e23ed7755b7f2e09d",
    "hook_tokens": {
@@ -10786,9 +10828,9 @@
    "open_questions": [
     "FiendFire: hit count equals hand size at play time (snapshot before exhausting, not the count actually exhausted); 'hits' is null with 'hits_from'."
    ],
-   "reviewed_by": "TASK-025 ticket 05 batch F",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "986c71cb53aaeaa1b36d296a12afe24b2045214e273e0b45358fcdc8636b26e1",
-   "status": "stale",
+   "status": "converted",
    "tags": [],
    "unknowable": []
   },
@@ -10948,7 +10990,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review S2",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read .ctor (1, Attack 1, Uncommon 3, AnyEnemy 2, 1), get_CanonicalVars DamageVar(6), CalculationBaseVar(0), CalculationExtraVar(1), CalculatedHitCountVar('CalculatedHits') x <get_CanonicalVars>b__1 count of CombatHistory.CardPlaysFinished with HappenedThisTurn && CardPlay.Card.Type == Attack(1) && CardPlay.Player == Owner, OnUpgrade Damage +2, <OnPlay>d__4::MoveNext: DamageCmd.Attack(Damage.BaseValue).WithHitCount((int)CalculatedHits.Calculate(Target)).FromCard(cardPlay).Targeting(Target).Execute. Extract diff: only CalculatedVar -> CalculatedHitCountVar. Entry correct. Fingerprint matches.",
     "verdict": "agree"
    },
    "card_type": "Attack",
@@ -10977,7 +11020,9 @@
     "CanonicalVars DamageVar(6), CalculationBaseVar(0), CalculationExtraVar(1), CalculatedVar('CalculatedHits').WithMultiplier(count of Attack plays finished this turn by owner)",
     "OnUpgrade Damage +2",
     "OnPlay <OnPlay>d__4: DamageCmd.Attack(Damage).WithHitCount((int)CalculatedHits.Calculate(target)) targeting target",
-    "Catalog agrees 6/8 per Attack played this turn"
+    "Catalog agrees 6/8 per Attack played this turn",
+    "v0.113.1 re-review: unchanged behaviour (CalculatedHits is now a CalculatedHitCountVar instead of CalculatedVar; same base 0, extra 1 x Attack plays finished this turn by the owner)",
+    "Read get_CanonicalVars DamageVar(6), CalculationBase 0, CalculationExtra 1, <get_CanonicalVars>b__1 (CardPlaysFinished entry HappenedThisTurn, card Type == Attack(1), Player == Owner), OnUpgrade Damage +2, <OnPlay>d__4::MoveNext: DamageCmd.Attack(Damage).WithHitCount((int)CalculatedHits.Calculate(target)).FromCard(cardPlay).Targeting(cardPlay.Target).Execute"
    ],
    "fingerprint": "8cdbd92adad18fd432b4bc59516ce84d30781dcdbfbdb78fd214d885835a9ec9",
    "hook_tokens": {
@@ -10992,9 +11037,9 @@
    "open_questions": [
     "Finisher: hits_scale source 'attacks_played_this_turn' is not in the documented source list; own play presumably excluded (CardPlaysFinished)."
    ],
-   "reviewed_by": "TASK-025 ticket 06 batch silent-2",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "c8399033a5e7956fb9270598cb6a2b05a28321223fab0940c8b95aa93731aaba",
-   "status": "stale",
+   "status": "converted",
    "tags": [],
    "unknowable": []
   },
@@ -11324,7 +11369,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review S3",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read .ctor (1, Attack 1, Uncommon 3, AnyEnemy 2, 1), get_CanonicalVars DamageVar(5), CalculationBaseVar(0), CalculationExtraVar(1), CalculatedHitCountVar('CalculatedHits') x b__3_0 = Hand(2) cards Count(b__3_1: Type == Skill 2), OnUpgrade Damage +2, <OnPlay>d__4::MoveNext: DamageCmd.Attack(Damage.BaseValue).WithHitCount((int)CalculatedHits.Calculate(Target)).FromCard(cardPlay).Targeting(Target).Execute. Extract diff: only CalculatedVar -> CalculatedHitCountVar. Entry correct. Fingerprint matches.",
     "verdict": "agree"
    },
    "card_type": "Attack",
@@ -11354,7 +11400,9 @@
     "OnUpgrade 06003F6D: Damage +2",
     "OnPlay 06003F6C: <OnPlay>d__4 DamageCmd.Attack(Damage).WithHitCount((int)CalculatedHits.Calculate(cardPlay.Target)).FromCard.Targeting(cardPlay.Target).Execute",
     "Catalog: 5/7 damage per Skill in hand; agrees",
-    "2026-10-22: the value stated in this effect's reviewed text (checked against the IL) is now also written as a structured scale with the source named in docs/dev/mechanic-facts.md."
+    "2026-10-22: the value stated in this effect's reviewed text (checked against the IL) is now also written as a structured scale with the source named in docs/dev/mechanic-facts.md.",
+    "v0.113.1 re-review: unchanged behaviour (CalculatedHits is now a CalculatedHitCountVar instead of CalculatedVar; same base 0, extra 1 x Skill(2) cards in hand)",
+    "Read get_CanonicalVars DamageVar(5), <get_CanonicalVars>b__3_0 / b__3_1 (Hand(2) cards with Type == Skill(2)), OnUpgrade Damage +2, <OnPlay>d__4::MoveNext: DamageCmd.Attack(Damage).WithHitCount((int)CalculatedHits.Calculate(target)).FromCard(cardPlay).Targeting(cardPlay.Target).Execute"
    ],
    "fingerprint": "81d4257977e4cf6d7de45b3f9fb7c882d8d3b5d841fa5b96f18f1149cf0dd970",
    "hook_tokens": {
@@ -11369,9 +11417,9 @@
    "open_questions": [
     "Flechettes: hit count = Skill cards in hand; no structured source exists (non_attack_in_hand also counts Powers/Status/Curses; suggest 'skill_in_hand'), recorded as hits_text with hits null."
    ],
-   "reviewed_by": "TASK-025 ticket 06 batch silent-3",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "6ae709ccf10ec31b68d551d371e03af047762c962245af6de36f22ca03704509",
-   "status": "stale",
+   "status": "converted",
    "tags": [],
    "unknowable": []
   },
@@ -12754,7 +12802,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review S1",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read .ctor (0, Attack 1, Rare 4, AllEnemies 3, 1), get_CanonicalVars DamageVar(60), OnUpgrade Damage +15, get_IsPlayable: Draw(1) pile Cards.Count == 0, get_ShouldGlowGoldInternal = IsPlayable, <OnPlay>d__5::MoveNext: VFX; Cmd.Wait(1.625); DamageCmd.Attack(Damage.BaseValue).FromCard(cardPlay).TargetingAllOpponents(CombatState).Execute. Extract diff: no change. Entry correct. Fingerprint matches.",
     "verdict": "agree"
    },
    "card_type": "Attack",
@@ -12781,7 +12830,9 @@
     "CanonicalVars DamageVar(60); OnUpgrade 06004008: Damage +15",
     "get_IsPlayable override: owner's PileType.Draw(1) Cards.Count == 0 (playable only then)",
     "OnPlay 06004006: <OnPlay>d__5 DamageCmd.Attack(Damage).TargetingAllOpponents(CombatState)",
-    "Catalog 'only playable if no cards in draw pile; 60 to all' -> 75 agrees"
+    "Catalog 'only playable if no cards in draw pile; 60 to all' -> 75 agrees",
+    "v0.113.1 re-review: unchanged behaviour (no var, cost or call change in the extract)",
+    "Read .ctor (0, Attack, 4 Rare, AllEnemies), get_CanonicalVars DamageVar(60), OnUpgrade Damage +15, get_IsPlayable: Draw(1) pile Cards.Count == 0, <OnPlay>d__5::MoveNext: VFX + Cmd.Wait(1.625); DamageCmd.Attack(Damage).FromCard(cardPlay).TargetingAllOpponents(CombatState).Execute"
    ],
    "fingerprint": "1232cafa17a67dee2143e5c695d39bf570b472853980cd509fce6e61e88d08ba",
    "hook_tokens": {
@@ -12796,9 +12847,9 @@
    "open_questions": [
     "GrandFinale: playability 'draw pile empty' is not in the recorded condition vocabulary; recorded as condition {draw_pile_empty: true} on the damage."
    ],
-   "reviewed_by": "TASK-025 ticket 06 batch silent-1",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "443de6c178031195b7098c6f1d89d4e5d965169be716dd8edc18752795090140",
-   "status": "stale",
+   "status": "converted",
    "tags": [],
    "unknowable": []
   },
@@ -13253,7 +13304,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review C2",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read .ctor (2, Attack 1, Rare 4, AnyEnemy 2, 1), get_CanonicalVars DamageVar(20), DynamicVar('Gold', 20), OnUpgrade Damage +5 / Gold +5, get_CanBeGeneratedInCombat false, get_IsAllowedInBlitz false (new per extract diff), <OnPlay>d__12::MoveNext: shouldTriggerFatal = Target.Powers.All(ShouldOwnerDeathTriggerFatal) (before the attack); DamageCmd.Attack(Damage.BaseValue).FromCard(cardPlay).Targeting(Target).Execute; if shouldTriggerFatal && Results.SelectMany.Any(WasTargetKilled): vfx; PlayerCmd.GainGold(Gold.IntValue, Owner). Entry and Blitz note correct; combat behaviour unchanged. Fingerprint matches.",
     "verdict": "agree"
    },
    "can_be_generated_in_combat": false,
@@ -13289,7 +13341,9 @@
     "OnPlay <OnPlay>d__10: shouldTriggerFatal = target.Powers.All(p => p.ShouldOwnerDeathTriggerFatal()) (snapshot before attack); attack = DamageCmd.Attack(Damage.BaseValue).FromCard.Targeting(cardPlay.Target).Execute; if shouldTriggerFatal && attack.Results.SelectMany.Any(r => r.WasTargetKilled): PlayerCmd.GainGold(Gold.IntValue, owner)",
     "No CanonicalKeywords override",
     "Catalog: 20 (25) dmg, on kill gain 20 (25) gold; agrees",
-    "hook tokens {\"OnPlay\": \"0600403C\", \"OnUpgrade\": \"0600403B\"}"
+    "hook tokens {\"OnPlay\": \"0600403C\", \"OnUpgrade\": \"0600403B\"}",
+    "v0.113.1 re-review: combat behaviour unchanged; new override get_IsAllowedInBlitz returns false (old: inherited default) -> Hand of Greed is excluded in the Blitz mode; that is a card-availability rule outside the fact vocabulary",
+    "Read .ctor (2, Attack, 4 Rare, AnyEnemy), get_CanonicalVars DamageVar(20), DynamicVar('Gold', 20), OnUpgrade Damage +5 / Gold +5, get_CanBeGeneratedInCombat false, <OnPlay>d__12::MoveNext: shouldTriggerFatal = target.Powers.All(ShouldOwnerDeathTriggerFatal); DamageCmd.Attack(Damage).FromCard(cardPlay).Targeting(target).Execute; if shouldTriggerFatal && Results.SelectMany.Any(WasTargetKilled) PlayerCmd.GainGold(Gold.IntValue, Owner)"
    ],
    "fingerprint": "e85f8f4d58de8374340a0f72d9c8e456b1c5818b7d08eb33b801c71a5f45844f",
    "hook_tokens": {
@@ -13304,9 +13358,9 @@
    "open_questions": [
     "HandOfGreed: gold gain written as effect kind 'gain_gold' (not in vocabulary; out-of-combat economy value) with the same kill condition as Feed."
    ],
-   "reviewed_by": "TASK-025 ticket 10 batch colorless-2",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "d9c7e4de60f017a806acd15fb092a5374d43abf08eb570ac23ab7563c72bb235",
-   "status": "stale",
+   "status": "converted",
    "tags": [],
    "unknowable": []
   },
@@ -14842,7 +14896,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review M2",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read .ctor (-1, Status 4, rarity 8, None 0, 1), get_CanonicalKeywords [Unplayable 4], get_CanonicalVars DamageVar(3, ValueProp 12), get_HasTurnEndInHandEffect true, get_MaxUpgradeLevel 0, <OnTurnEndInHand>d__11::MoveNext: vfx; CreatureCmd.Damage(choiceContext, owner creature, Damage var, this, null) - the DamageVar's ValueProp 12 has no Unblockable bit, so block absorbs it. Extract diff: no change. Entry (hp_loss 3 unblockable:false at turn_end in hand) correct. Fingerprint matches.",
     "verdict": "agree"
    },
    "card_type": "Status",
@@ -14856,7 +14911,9 @@
     "get_MaxUpgradeLevel 0 (cannot be upgraded); no OnUpgrade",
     "CanonicalVars DamageVar(3, ValueProp 12 = Unpowered|Move); get_HasTurnEndInHandEffect true",
     "OnTurnEndInHand 060040DD: <OnTurnEndInHand>d__11 VFX, then CreatureCmd.Damage(choiceContext, owner creature, Damage, this, null) (blockable)",
-    "Catalog: take 3 damage at end of turn if in hand; agrees"
+    "Catalog: take 3 damage at end of turn if in hand; agrees",
+    "v0.113.1 re-review: unchanged behaviour (no var, cost or call change in the extract)",
+    "Read .ctor (-1, Status, 8, None), get_CanonicalKeywords [Unplayable(4)], get_CanonicalVars DamageVar(3, ValueProp 12 = Unpowered|Move), get_HasTurnEndInHandEffect true, get_MaxUpgradeLevel 0, <OnTurnEndInHand>d__11::MoveNext: NWormyImpactVfx; CreatureCmd.Damage(choiceContext, owner creature, Damage, ...) (blockable)"
    ],
    "fingerprint": "6b689dcb94d53806cf13785162868a0ac808e6ee1a2c2bbf53ecc6121aeadc91",
    "hook_tokens": {
@@ -14887,9 +14944,9 @@
    "open_questions": [
     "Infection: self damage via CreatureCmd.Damage with ValueProp 12 (Unpowered|Move, NOT Unblockable), so block absorbs it. Recorded as hp_loss with unblockable:false; 'unblockable' is not spec vocabulary for hp_loss and the engine may treat it as raw HP loss."
    ],
-   "reviewed_by": "TASK-025 ticket 10 batch misc-2",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "6c230eba11026da913b00614a436a2ac66facf72032798d9a5224e19e7508121",
-   "status": "stale",
+   "status": "converted",
    "tags": [],
    "unknowable": []
   },
@@ -16702,7 +16759,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review M1",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read .ctor (1, Attack 1, Event 6, AnyEnemy 2, 0), get_Type = TinkerTimeType, get_TargetType = TinkerTimeType == Attack ? AnyEnemy 2 : Self 1, get_GainsBlock = TinkerTimeType == Skill, OnUpgrade AddKeyword(Innate 3) only, get_CanonicalVars (Damage 12, Block 8, SappingWeak 2, SappingVulnerable 2, HitCountVar ViolenceHits 3, ChokingDamage Strangle 6, EnergizedEnergy 2, WisdomCards 3, ExpertiseStrength 2, ExpertiseDexterity 2, CuriousReduction 1), <OnPlay>d__51 (switch Type: Attack -> ExecuteAttack, Skill -> ExecuteSkill, Power -> ExecutePower; then ExecuteRider if rider == 1 or 3..6), <ExecuteAttack>d__52 (hits = rider == Violence 2 ? ViolenceHits.IntValue : 1; Attack(Damage).WithHitCount(hits).FromCard.Targeting(target)), <ExecuteSkill>d__53 (GainBlock Block), <ExecutePower>d__54 (rider 7: Strength 2 + Dexterity 2 self; 8: CuriousPower(CuriousReduction 1); 9: ImprovementPower(1)), <ExecuteRider>d__57 (1 Weak 2 + Vulnerable 2 on target; 3 Strangle 6 on target; 4 GainEnergy 2; 5 Draw 3; 6 MockedChaosCard ?? CardFactory.GetDistinctForCombat(unlocked character pool, 1, Rng.CombatCardGeneration).First(), SetToFreeThisTurn, AddGeneratedCardToCombat to Hand 2). Extract diff: only ViolenceHits DynamicVar -> HitCountVar. Unchanged-behaviour claim holds; entry correct. Fingerprint matches.",
     "verdict": "agree"
    },
    "card_type": "Attack",
@@ -16850,7 +16908,9 @@
     "ExecuteRider: Sapping -> Weak 2 + Vulnerable 2 on cardPlay.Target; Choking -> Strangle 6 on target; Energized -> GainEnergy 2; Wisdom -> Draw 3; Chaos -> random unlocked character-pool card, SetToFreeThisTurn, to Hand(2)",
     "RiderEffect enum: 0 None, 1 Sapping, 2 Violence, 3 Choking, 4 Energized, 5 Wisdom, 6 Chaos, 7 Expertise, 8 Curious, 9 Improvement",
     "AddExtraArgsToDescription 06004191: description only",
-    "Catalog: '12 damage. ???' (unconfigured text); consistent with the Attack default"
+    "Catalog: '12 damage. ???' (unconfigured text); consistent with the Attack default",
+    "v0.113.1 re-review: unchanged behaviour (ViolenceHits is now a HitCountVar('ViolenceHits', 3) instead of a plain DynamicVar; same value; all other CanonicalVars identical)",
+    "Read get_CanonicalVars (11 vars: Damage 12, Block 8, SappingWeak 2, SappingVulnerable 2, ViolenceHits 3, ChokingDamage 6, EnergizedEnergy 2, WisdomCards 3, ExpertiseStrength 2, ExpertiseDexterity 2, CuriousReduction 1), <ExecuteAttack>d__52::MoveNext: hits = TinkerTimeRider == Violence(2) ? ViolenceHits.IntValue : 1; DamageCmd.Attack(Damage).WithHitCount(hits).FromCard(cardPlay).Targeting(target).Execute; <OnPlay>d__51 dispatch on TinkerTimeType (Attack/Skill/Power) as before"
    ],
    "fingerprint": "5018c88762f3ed6f4f22de85c3128e8eb577f2e4090363da7e5ca613c5721b40",
    "hook_tokens": {
@@ -16868,9 +16928,9 @@
     "MadScience: type and rider are per-instance fields set by the TinkerTime event (not in this card class); effects recorded with conditions tinker_type / tinker_rider (new vocabulary). Which rider combinations the event offers per type was not reviewed (riders 1/3 target an enemy and presumably only pair with Attack; 7-9 only act with Power).",
     "MadScience: Curious / Improvement / Strangle powers are non-generic and need power facts."
    ],
-   "reviewed_by": "TASK-025 ticket 10 batch misc-1",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "21a1b0e3237e9814a0e41c9851922e987525f8512ebad507f1a952b85ac551fe",
-   "status": "stale",
+   "status": "converted",
    "tags": [],
    "unknowable": [],
    "upgrade_keywords": {
@@ -17300,7 +17360,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review N2",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read .ctor (3, Skill 2, Uncommon 3, Self 1, 1), get_CanonicalVars BlockVar(13, ValueProp 8), EnergyVar(1), OnUpgrade Block +4, get_GainsBlock true, AfterDeath(choiceContext, Creature, CardModel, Boolean, Single): if arg 4 (the bool) is true return; if Pile == null or !Pile.IsCombatPile return; EnergyCost.AddThisCombat(-Energy.IntValue, false); <OnPlay>d__7::MoveNext: CreatureCmd.GainBlock(owner creature, Block, cardPlay). No creature filter. Extract diff: no var/call change (only the signature). Unchanged-behaviour claim holds. From CardEnergyCost: AddThisCombat = Relative modifier, expiration EndOfCombat, not reduce-only; effective cost is clamped at 0 (GetWithModifiers Math.Max(0, ...)). Entry correct. Fingerprint matches.",
     "verdict": "agree"
    },
    "card_type": "Skill",
@@ -17331,7 +17392,9 @@
     "CanonicalVars BlockVar(13, ValueProp 8), EnergyVar(1); OnUpgrade 060041C5: Block +4",
     "OnPlay 060041C3 (<OnPlay>d__7): CreatureCmd.GainBlock(owner.Creature, Block, cardPlay)",
     "AfterDeath 060041C4 (choiceContext, Creature, bool, float): if the bool argument is true return; if Pile != null and Pile.IsCombatPile: EnergyCost.AddThisCombat(-Energy.IntValue (=-1), false). No filter on which creature died (any enemy, ally, Osty or player)",
-    "Catalog: gain 13 (17) block; cost reduced whenever any creature dies; agrees"
+    "Catalog: gain 13 (17) block; cost reduced whenever any creature dies; agrees",
+    "v0.113.1 re-review: unchanged behaviour (AfterDeath gained an extra CardModel parameter: (choiceContext, Creature, CardModel, bool, float); the early return still tests the bool argument)",
+    "Read get_CanonicalVars BlockVar(13), EnergyVar(1), OnUpgrade Block +4, AfterDeath: if arg4 (bool) return; if Pile != null && Pile.IsCombatPile EnergyCost.AddThisCombat(-Energy.IntValue, false); <OnPlay>d__7::MoveNext: CreatureCmd.GainBlock(owner creature, Block, cardPlay)"
    ],
    "fingerprint": "b99683ce95f21f5560f4a816bdfb88d3f41771236e1bfaa96488d3354c221b8d",
    "hook_tokens": {
@@ -17348,9 +17411,9 @@
    "open_questions": [
     "Melancholy: cost_modifier trigger 'creature_died' is not spec vocabulary (spec has enemy_died); it counts any creature death incl. Osty. The early-return bool argument of AfterDeath is unnamed in the dump (presumably 'removal prevented', e.g. revives) -- confirm."
    ],
-   "reviewed_by": "TASK-025 ticket 08 batch necrobinder-2",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "71f39c447e1385e72537f641b29da46c85ab9fcdbba5021ae95fe8e973a6c3c7",
-   "status": "stale",
+   "status": "converted",
    "tags": [],
    "unknowable": []
   },
@@ -17843,7 +17906,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review M1",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read .ctor (0, Attack 1, Token 7, AnyEnemy 2, 1), get_CanonicalKeywords [Exhaust 1], get_CanonicalTags {Minion 3}, get_CanonicalVars DamageVar(11, ValueProp 8), OnUpgrade Damage +2, <OnPlay>d__7::MoveNext: DamageCmd.Attack(Damage.BaseValue).FromCard(cardPlay).WithAttackerAnim(Cast).Targeting(cardPlay.Target).WithAttackerFx(NMinionDiveBombVfx).Execute, single hit. Extract diff old->new: DamageVar 13 -> 11, upgrade delta Damage 3 -> 2, nothing else changed; matches the claimed change (13/16 -> 11/13). Fingerprint matches.",
     "verdict": "agree"
    },
    "card_type": "Attack",
@@ -17854,20 +17918,22 @@
    },
    "effects": [
     {
-     "amount": 13,
+     "amount": 11,
      "hits": 1,
      "kind": "damage",
      "target": "single",
-     "upgrade": 3
+     "upgrade": 2
     }
    ],
    "entity_key": "cards:MINION_DIVE_BOMB",
    "evidence": [
     "ctor CardModel(cost=0, Attack(1), Token(7), AnyEnemy(2))",
     "get_CanonicalTags {Minion(3)}; get_CanonicalKeywords [Exhaust(1)]",
-    "CanonicalVars DamageVar(13); OnUpgrade 060041F9: Damage +3",
-    "OnPlay 060041F8: <OnPlay>d__7 DamageCmd.Attack(Damage).FromCard.WithAttackerAnim(Cast).Targeting(cardPlay.Target)",
-    "Catalog 13 (16); agrees"
+    "CanonicalVars DamageVar(11); OnUpgrade Damage +2",
+    "OnPlay <OnPlay>d__7: DamageCmd.Attack(Damage).FromCard(cardPlay).WithAttackerAnim(Cast).Targeting(cardPlay.Target).WithAttackerFx(dive-bomb vfx).Execute",
+    "Catalog v0.113.1: 11 damage, upgraded 13; agrees",
+    "v0.113.1 re-review: changed: damage 13 -> 11, upgrade +3 -> +2 (upgraded 16 -> 13); everything else unchanged",
+    "Read get_CanonicalVars DamageVar(11), OnUpgrade Damage +2, <OnPlay>d__7::MoveNext"
    ],
    "fingerprint": "fe81aa7897488ec42eca3ad38e0c26004c87280fcb9cf084531b22d6ae42b058",
    "hook_tokens": {
@@ -17882,9 +17948,9 @@
     "Exhaust"
    ],
    "open_questions": [],
-   "reviewed_by": "TASK-025 ticket 10 batch misc-1",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "bbb32147f6805029edae4b234a20ee896d9ab6f168b4d84af53eefd71bec698a",
-   "status": "stale",
+   "status": "converted",
    "tags": [
     "Minion"
    ],
@@ -20113,7 +20179,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review M1",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read .ctor (1, Attack 1, Event 6, AnyEnemy 2, 1), get_CanonicalVars DamageVar(2), HitCountVar(3), OnUpgrade HitCount +1, <OnPlay>d__3::MoveNext: DamageCmd.Attack(Damage.BaseValue).WithHitCount(HitCount.IntValue).FromCard(cardPlay).Targeting(Target).Execute. Extract diff: only RepeatVar -> HitCountVar rename. Entry correct. Fingerprint matches.",
     "verdict": "agree"
    },
    "card_type": "Attack",
@@ -20135,9 +20202,11 @@
    "entity_key": "cards:PECK",
    "evidence": [
     "ctor CardModel(cost=1, Attack(1), Event(6), AnyEnemy(2))",
-    "CanonicalVars DamageVar(2), RepeatVar(3); OnUpgrade 060042E1: Repeat +1",
-    "OnPlay 060042E0: <OnPlay>d__3 DamageCmd.Attack(Damage).WithHitCount(Repeat.IntValue).Targeting(cardPlay.Target)",
-    "Catalog 2 x3 (2 x4); agrees"
+    "CanonicalVars DamageVar(2), HitCountVar(3); OnUpgrade HitCount +1",
+    "OnPlay <OnPlay>d__3 DamageCmd.Attack(Damage).WithHitCount(HitCount.IntValue).FromCard(cardPlay).Targeting(cardPlay.Target).Execute",
+    "Catalog 2 x3 (2 x4); agrees",
+    "v0.113.1 re-review: unchanged behaviour (RepeatVar(3) renamed to HitCountVar(3); OnUpgrade Repeat +1 -> HitCount +1; same values)",
+    "Read get_CanonicalVars, OnUpgrade, <OnPlay>d__3::MoveNext"
    ],
    "fingerprint": "1fccb49ed0e71a5fbddd4e776803404da5c56d41bf92e00cae7c5ed53f07633e",
    "hook_tokens": {
@@ -20150,9 +20219,9 @@
    ],
    "keywords": [],
    "open_questions": [],
-   "reviewed_by": "TASK-025 ticket 10 batch misc-1",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "c1890465ac6111c65f1d1da5cfe472f58efab64d7a0902783b88a98afa1ed5ee",
-   "status": "stale",
+   "status": "converted",
    "tags": [],
    "unknowable": []
   },
@@ -21349,7 +21418,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review N1",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read .ctor (1, Attack 1, Uncommon 3, AnyEnemy 2, 1), get_CanonicalVars DamageVar(5), CalculationBaseVar(0), CalculationExtraVar(1), CalculatedHitCountVar('CalculatedHits') x count of CombatHistory.Entries.OfType<CardPlayFinishedEntry>() with CardPlay.Player == Owner && WasEthereal (whole combat), ExtraHoverTips Ethereal, OnUpgrade Damage +2, <OnPlay>d__6::MoveNext: DamageCmd.Attack(Damage.BaseValue).WithHitCount((int)CalculatedHits.Calculate(Target)).FromCard(cardPlay).Targeting(Target).Execute. Extract diff: only CalculatedVar -> CalculatedHitCountVar. Entry correct. Fingerprint matches.",
     "verdict": "agree"
    },
    "card_type": "Attack",
@@ -21378,7 +21448,9 @@
     "CanonicalVars DamageVar(5), CalculationBaseVar(0), CalculationExtraVar(1), CalculatedVar('CalculatedHits').WithMultiplier(lambda: CombatHistory.Entries.OfType<CardPlayFinishedEntry>().Count(e => e.CardPlay.Player == card.Owner && e.WasEthereal))",
     "OnUpgrade 0600435D: Damage +2",
     "OnPlay 0600435C: <OnPlay>d__6 DamageCmd.Attack(Damage).WithHitCount((int)CalculatedHits.Calculate(target)).FromCard targeting cardPlay.Target",
-    "Catalog: hit once per Ethereal card played this combat, 5 (7); agrees"
+    "Catalog: hit once per Ethereal card played this combat, 5 (7); agrees",
+    "v0.113.1 re-review: unchanged behaviour (CalculatedHits is now a CalculatedHitCountVar instead of CalculatedVar; same base 0, extra 1 x owner's finished Ethereal plays this combat)",
+    "Read get_CanonicalVars DamageVar(5), <get_CanonicalVars>b__5_0 / b__1 (CombatHistory.Entries.OfType<CardPlayFinishedEntry>, CardPlay.Player == Owner && WasEthereal), OnUpgrade Damage +2, <OnPlay>d__6::MoveNext: DamageCmd.Attack(Damage).WithHitCount((int)CalculatedHits.Calculate(target)).FromCard(cardPlay).Targeting(cardPlay.Target).Execute"
    ],
    "fingerprint": "51fbac3db0db983144fd9e291412ffec02fbb16b631459e09fd96805b4b10067",
    "hook_tokens": {
@@ -21393,9 +21465,9 @@
    "open_questions": [
     "PullFromBelow: hits_scale source 'ethereal_cards_played_this_combat' is not in the spec source list (new source); 0 hits if no Ethereal card was played this combat."
    ],
-   "reviewed_by": "TASK-025 ticket 08 batch necrobinder-1",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "2d3d59f241b9a8da0dcef7506db285f23bbbd3d926f268a9a33beccc406cb6df",
-   "status": "stale",
+   "status": "converted",
    "tags": [],
    "unknowable": []
   },
@@ -21992,7 +22064,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review N3",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read .ctor (1, Attack 1, Uncommon 3, AnyEnemy 2, 1), get_CanonicalTags {OstyAttack 4}, get_CanonicalVars OstyDamageVar(7), CalculationBaseVar(0), CalculationExtraVar(1), CalculatedHitCountVar('CalculatedHits') x (1 + count of CreatureAttackedEntry with Actor == Owner.Osty && HappenedThisTurn), OnUpgrade OstyDamage +2, <OnPlay>d__8::MoveNext: if Osty.CheckMissingWithAnim(Owner) return; DamageCmd.Attack(OstyDamage.BaseValue).FromOsty(Owner.Osty, cardPlay).Targeting(Target).WithHitCount((int)CalculatedHits.Calculate(Target)).Execute. Extract diff: only CalculatedVar -> CalculatedHitCountVar. Entry correct. Fingerprint matches.",
     "verdict": "agree"
    },
    "card_type": "Attack",
@@ -22027,7 +22100,9 @@
     "CanonicalVars OstyDamageVar(7), CalculationBaseVar(0), CalculationExtraVar(1), CalculatedVar('CalculatedHits').WithMultiplier(lambda: 1 + CreatureAttackedEntry count by Osty this turn)",
     "OnUpgrade: OstyDamage +2",
     "Catalog: +1 hit per Osty attack card played this turn; code counts Osty attack history entries this turn (not cards)",
-    "OnUpgrade token 06004397"
+    "OnUpgrade token 06004397",
+    "v0.113.1 re-review: unchanged behaviour (CalculatedHits is now a CalculatedHitCountVar instead of CalculatedVar; same 1 + count of CreatureAttackedEntry by Owner.Osty this turn)",
+    "Read get_CanonicalVars OstyDamageVar(7), <get_CanonicalVars>b__7_0 / b__1, OnUpgrade OstyDamage +2, get_CanonicalTags {OstyAttack}, <OnPlay>d__8::MoveNext: if Osty.CheckMissingWithAnim return; DamageCmd.Attack(OstyDamage).FromOsty(Owner.Osty, cardPlay).Targeting(target).WithHitCount((int)CalculatedHits.Calculate(target)).Execute"
    ],
    "fingerprint": "8ab4900280e9240b10d91f4af308734abc9dc25d81eefcb2a2cb716edb476c5a",
    "hook_tokens": {
@@ -22043,9 +22118,9 @@
     "Osty attacks (AttackCommand.FromOsty) are written as damage with source 'osty' and condition osty_alive (OnPlay returns early when Osty.CheckMissingWithAnim is true); spec has no Osty-attack form.",
     "Rattle: hits source 'osty_attacks_this_turn' (CreatureAttackedEntry with Actor = Osty this turn) is not in the spec; unclear whether one entry is recorded per attack command or per hit."
    ],
-   "reviewed_by": "TASK-025 ticket 08 batch necrobinder-3",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "a2444518ea1b237cee22865a9c9c6715e2af3c99eaeec657fc6650e7ddeb1f08",
-   "status": "stale",
+   "status": "converted",
    "tags": [
     "OstyAttack"
    ],
@@ -22895,7 +22970,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review S3",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read .ctor (2, Attack 1, Common 2, RandomEnemy 4, 1), get_CanonicalKeywords [Sly 6], get_CanonicalVars DamageVar(3), HitCountVar(4), OnUpgrade HitCount +1, <OnPlay>d__5::MoveNext: DamageCmd.Attack(Damage.BaseValue).WithHitCount(HitCount.IntValue).FromCard(cardPlay).TargetingRandomOpponents(CombatState, true).Execute. Extract diff: only RepeatVar -> HitCountVar rename. Entry correct. Fingerprint matches.",
     "verdict": "agree"
    },
    "card_type": "Attack",
@@ -22918,9 +22994,11 @@
    "evidence": [
     "ctor CardModel(cost=2, Attack(1), Common(2), RandomEnemy(4))",
     "get_CanonicalKeywords [Sly(6)]",
-    "CanonicalVars DamageVar(3), RepeatVar(4); OnUpgrade 060043F1: Repeat +1",
-    "OnPlay 060043F0: <OnPlay>d__5 DamageCmd.Attack(Damage).WithHitCount(Repeat.IntValue).FromCard.TargetingRandomOpponents(CombatState, true).Execute",
-    "Catalog: 3 damage to random enemies 4/5 times; agrees (catalog omits Sly)"
+    "CanonicalVars DamageVar(3), HitCountVar(4); OnUpgrade HitCount +1",
+    "OnPlay <OnPlay>d__5 DamageCmd.Attack(Damage).WithHitCount(HitCount.IntValue).FromCard(cardPlay).TargetingRandomOpponents(CombatState, true).Execute",
+    "Catalog: 3 damage to random enemies 4/5 times; agrees (catalog omits Sly)",
+    "v0.113.1 re-review: unchanged behaviour (RepeatVar(4) renamed to HitCountVar(4); OnUpgrade Repeat +1 -> HitCount +1; same values)",
+    "Read .ctor, get_CanonicalKeywords, get_CanonicalVars, OnUpgrade, <OnPlay>d__5::MoveNext"
    ],
    "fingerprint": "e10686546618746926546b74d3bc65d0afe8d0ee590cec340a62e3ad84141856",
    "hook_tokens": {
@@ -22935,9 +23013,9 @@
     "Sly"
    ],
    "open_questions": [],
-   "reviewed_by": "TASK-025 ticket 06 batch silent-3",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "cf7df08ab285359aa11c2c66ac63c17aa472d783d49c97a1e0024b6a88e3c6f5",
-   "status": "stale",
+   "status": "converted",
    "tags": [],
    "unknowable": []
   },
@@ -23169,7 +23247,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review R3",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read .ctor (1, Power 3, Rare 4, Self 1, 1), get_CanonicalVars GoldVar(30), OnUpgrade Gold +10, get_CanBeGeneratedInCombat false, get_IsAllowedInBlitz false (new per extract diff), <OnPlay>d__7::MoveNext: TriggerAnim PowerUp; PowerCmd.Apply<RoyaltiesPower>(choiceContext, owner creature, Gold.BaseValue, owner creature, this). Entry and Blitz note correct; combat behaviour unchanged. Fingerprint matches.",
     "verdict": "agree"
    },
    "can_be_generated_in_combat": false,
@@ -23195,7 +23274,9 @@
     "OnPlay <OnPlay>d__5: TriggerAnim PowerUp; PowerCmd.Apply<RoyaltiesPower>(owner creature, Gold.BaseValue)",
     "get_CanBeGeneratedInCombat = false (cannot be produced by in-combat card generation)",
     "Catalog: gain 30 (40) gold at end of combat; agrees (payout handled by RoyaltiesPower, out-of-combat value)",
-    "hook tokens {\"OnPlay\": \"06004411\", \"OnUpgrade\": \"06004412\"}"
+    "hook tokens {\"OnPlay\": \"06004411\", \"OnUpgrade\": \"06004412\"}",
+    "v0.113.1 re-review: combat behaviour unchanged; new override get_IsAllowedInBlitz returns false (old: inherited default) -> Royalties is excluded in the Blitz mode; that is a card-availability rule outside the fact vocabulary",
+    "Read .ctor (1, Power, 4 Rare, Self), get_CanonicalVars GoldVar(30), OnUpgrade Gold +10, get_CanBeGeneratedInCombat false, <OnPlay>d__7::MoveNext: TriggerAnim PowerUp; PowerCmd.Apply<RoyaltiesPower>(choiceContext, owner creature, Gold.BaseValue, owner creature, ...)"
    ],
    "fingerprint": "ec092f900438f92c2005161464deded6e36c7b8180f1ab8b17715ff301928a3b",
    "hook_tokens": {
@@ -23210,9 +23291,9 @@
    "open_questions": [
     "Royalties: get_CanBeGeneratedInCombat returns false; recorded as 'can_be_generated_in_combat': false (field not in spec). Value is gold (run economy), not combat power."
    ],
-   "reviewed_by": "TASK-025 ticket 09 batch regent-3",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "b8e26c38ec9b5c1d7b5099ff1ceb7ce34c0fa0fb63895ac299534bdcc45d2b7c",
-   "status": "stale",
+   "status": "converted",
    "tags": [],
    "unknowable": []
   },
@@ -23402,7 +23483,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review C2",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read .ctor (1, Attack 1, Uncommon 3, AnyEnemy 2, 1), get_CanonicalVars DamageVar(10, ValueProp 8), OnUpgrade Damage +4, get_ExtraHoverTips FromKeyword(Retain 5), no keywords override, <OnPlay>d__5::MoveNext: DamageCmd.Attack(Damage.BaseValue).FromCard(cardPlay).Targeting(cardPlay.Target).WithHitFx(slash).Execute; then PowerCmd.Apply<RetainHandPower>(choiceContext, owner creature, 1, owner creature, this). Extract diff: only DamageVar 12 -> 10 (upgrade delta unchanged), matches the claimed change (12/16 -> 10/14). Fingerprint matches.",
     "verdict": "agree"
    },
    "card_type": "Attack",
@@ -23413,7 +23495,7 @@
    },
    "effects": [
     {
-     "amount": 12,
+     "amount": 10,
      "hits": 1,
      "kind": "damage",
      "target": "single",
@@ -23430,11 +23512,12 @@
    "entity_key": "cards:SALVO",
    "evidence": [
     "ctor CardModel(cost=1, Attack(1), Uncommon(3), AnyEnemy(2))",
-    "CanonicalVars DamageVar(12); OnUpgrade Damage +4",
-    "OnPlay <OnPlay>d__5: DamageCmd.Attack(Damage.BaseValue).FromCard.Targeting(cardPlay.Target).Execute; then PowerCmd.Apply<RetainHandPower>(owner creature, 1, owner creature)",
+    "CanonicalVars DamageVar(10); OnUpgrade Damage +4",
+    "OnPlay <OnPlay>d__5: DamageCmd.Attack(Damage.BaseValue).FromCard(cardPlay).Targeting(cardPlay.Target).Execute; then PowerCmd.Apply<RetainHandPower>(choiceContext, owner creature, 1, owner creature, ...)",
     "ExtraHoverTips FromKeyword(Retain(5)); no CanonicalKeywords override",
-    "Catalog: 12 (16) dmg, retain your hand this turn; agrees",
-    "hook tokens {\"OnPlay\": \"06004422\", \"OnUpgrade\": \"06004423\"}"
+    "Catalog v0.113.1: 10 (14) dmg, retain your hand this turn; agrees",
+    "v0.113.1 re-review: changed: damage 12 -> 10 (upgrade still +4, so upgraded 16 -> 14); RetainHand part unchanged",
+    "Read get_CanonicalVars DamageVar(10), OnUpgrade Damage +4, <OnPlay>d__5::MoveNext"
    ],
    "fingerprint": "49126c8b12cf8d02c2213b31b11177a8dace322a3242388a883315ccab98683e",
    "hook_tokens": {
@@ -23449,9 +23532,9 @@
    "open_questions": [
     "Salvo: applies RetainHandPower(1) to self; retain-hand behaviour/duration belongs to the RetainHand power review."
    ],
-   "reviewed_by": "TASK-025 ticket 10 batch colorless-2",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "4ae173bdf8bde1421d37e36e8ba48983ad20b824e83ebf26823567072dc57c22",
-   "status": "stale",
+   "status": "converted",
    "tags": [],
    "unknowable": []
   },
@@ -24769,7 +24852,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review C2",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read .ctor (2, Skill 2, Uncommon 3, AllEnemies 3, 1), get_CanonicalKeywords [Exhaust 1], get_CanonicalVars DynamicVar('Power', 3), OnUpgrade Power +2, <OnPlay>d__8::MoveNext: TriggerAnim Cast; vfx; amount = Power.IntValue; foreach enemy in CombatState.HittableEnemies: PowerCmd.Apply<WeakPower>(enemy, amount, owner creature); PowerCmd.Apply<VulnerablePower>(enemy, amount, owner creature). Extract diff: no change. Entry correct. Fingerprint matches.",
     "verdict": "agree"
    },
    "card_type": "Skill",
@@ -24800,7 +24884,9 @@
     "CanonicalVars DynamicVar('Power', 3); OnUpgrade Power +2; CanonicalKeywords [Exhaust(1)]",
     "OnPlay <OnPlay>d__8: TriggerAnim Cast; amount = Power.IntValue; foreach enemy in HittableEnemies: PowerCmd.Apply<WeakPower>(enemy, amount, owner creature); PowerCmd.Apply<VulnerablePower>(enemy, amount, owner creature)",
     "Catalog: apply 3 (5) Weak and Vulnerable to all enemies; agrees",
-    "hook tokens {\"OnPlay\": \"060044AC\", \"OnUpgrade\": \"060044AD\"}"
+    "hook tokens {\"OnPlay\": \"060044AC\", \"OnUpgrade\": \"060044AD\"}",
+    "v0.113.1 re-review: unchanged behaviour (no var, cost or call change in the extract)",
+    "Read .ctor (2, Skill, Uncommon, AllEnemies), get_CanonicalKeywords [Exhaust(1)], get_CanonicalVars DynamicVar('Power', 3), OnUpgrade Power +2, <OnPlay>d__8::MoveNext: amount = Power.IntValue; foreach enemy in CombatState.HittableEnemies: PowerCmd.Apply<WeakPower>(enemy, amount, owner creature); PowerCmd.Apply<VulnerablePower>(enemy, amount, owner creature)"
    ],
    "fingerprint": "8f4c03708dca0a4b3be168cf31696394c359f146745571508991471c7197c4ad",
    "hook_tokens": {
@@ -24815,9 +24901,9 @@
     "Exhaust"
    ],
    "open_questions": [],
-   "reviewed_by": "TASK-025 ticket 10 batch colorless-2",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "af1bf84a83639f1c860dda7654da16363f2a35be8b913263a523049d0b5f1c69",
-   "status": "stale",
+   "status": "converted",
    "tags": [],
    "unknowable": []
   },
@@ -25839,7 +25925,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review M1",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read .ctor (_currentDamage 10, _currentRepeats 1; 2, Attack 1, Token 7, AnyEnemy 2, 1), AddDamage, SetRepeats (writes HitCount), AfterCardChangedPiles (Forge VFX / blade-node removal only), AfterCloned (CreatedThroughForge = false), AfterDowngraded (Damage = CurrentDamage, HitCount = CurrentRepeats), AfterThisWasTransformedIntoInternal (RemoveSovereignBladeNode only), GetOwnerParryAmount (0 unless mutable, owned, in a combat pile; else owner ParryPower amount), OnUpgrade EnergyCost.UpgradeBy(-1), get_CanonicalKeywords [Retain 5], get_CanonicalVars (DamageVar 10, CalculationBase 0, CalculationExtra 1, CalculatedBlockVar x GetOwnerParryAmount, HitCountVar 1), get_HasSeekingEdge, get_TargetType (SeekingEdge ? AllEnemies 3 : AnyEnemy 2), <OnPlay>d__25::MoveNext: Attack(Damage.BaseValue).FromCard.WithHitCount(HitCount.IntValue) -> TargetingAllOpponents if HasSeekingEdge else Targeting(Target); Execute; if GetOwnerParryAmount > 0 CreatureCmd.GainBlock(owner creature, CalculatedBlock.Calculate(target), Props, cardPlay). Extract diff: RepeatVar -> HitCountVar and AfterTransformedFrom -> AfterThisWasTransformedIntoInternal only. Entry correct. Fingerprint matches.",
     "verdict": "agree"
    },
    "card_type": "Attack",
@@ -25853,7 +25940,7 @@
      "amount": 10,
      "hits": 1,
      "kind": "damage",
-     "note_text": "Damage starts at 10 and is raised by Forge (SovereignBlade.AddDamage, stored in CurrentDamage); hit count = Repeat (1, changed by SetRepeats from other cards); targets all enemies instead if owner has SeekingEdgePower",
+     "note_text": "Damage starts at 10 and is raised by Forge (SovereignBlade.AddDamage, stored in CurrentDamage); hit count = HitCount (1, changed by SetRepeats from other cards); targets all enemies instead if owner has SeekingEdgePower",
      "target": "single",
      "target_text": "single; all if owner has SeekingEdgePower",
      "upgrade": 0
@@ -25877,7 +25964,9 @@
     "OnPlay 06004522: <OnPlay>d__25 DamageCmd.Attack(Damage).FromCard.WithHitCount(Repeat) -> TargetingAllOpponents if HasSeekingEdge else Targeting(cardPlay.Target); then if GetOwnerParryAmount > 0: CreatureCmd.GainBlock(owner, CalculatedBlock.Calculate(target), Props)",
     "AfterCardChangedPiles 06004527 / AfterTransformedFrom 06004526: remove the blade VFX node only; AfterCloned 06004524: CreatedThroughForge = false; AfterDowngraded 06004525: restore Damage = CurrentDamage, Repeat = CurrentRepeats",
     "Catalog: deal 10 damage; base value agrees",
-    "2026-10-13 review: this effect's *_text is a plain remark (the structured number is complete); renamed note_text so that amount_text/hits_text/count_text always mean a value the structure does not carry."
+    "2026-10-13 review: this effect's *_text is a plain remark (the structured number is complete); renamed note_text so that amount_text/hits_text/count_text always mean a value the structure does not carry.",
+    "v0.113.1 re-review: unchanged behaviour (RepeatVar(1) renamed to HitCountVar(1), SetRepeats / AfterDowngraded now write HitCount; AfterTransformedFrom replaced by AfterThisWasTransformedIntoInternal, which only removes the blade VFX node)",
+    "Read .ctor (2, Attack, Token 7, AnyEnemy; _currentDamage 10, _currentRepeats 1), AddDamage, SetRepeats, AfterCardChangedPiles, AfterCloned, AfterDowngraded, AfterThisWasTransformedIntoInternal, GetOwnerParryAmount, OnUpgrade EnergyCost.UpgradeBy(-1), get_CanonicalKeywords [Retain(5)], get_CanonicalVars (Damage 10, CalculationBase 0, CalculationExtra 1, CalculatedBlockVar x ParryPower, HitCountVar 1), get_HasSeekingEdge, get_TargetType, <OnPlay>d__25::MoveNext: DamageCmd.Attack(Damage).FromCard.WithHitCount(HitCount.IntValue) -> TargetingAllOpponents if HasSeekingEdge else Targeting(target); Execute; if GetOwnerParryAmount > 0 CreatureCmd.GainBlock(owner creature, CalculatedBlock.Calculate(target), Props)"
    ],
    "fingerprint": "13f6e1be6fcd52f839932ec559743562a017342c31b5f5e6f5e17d8ac53619e5",
    "hook_tokens": {
@@ -25902,9 +25991,9 @@
    "open_questions": [
     "SovereignBlade: damage and hit count grow through Forge / SetRepeats from other Regent cards (state on this instance); Parry block and SeekingEdge all-target depend on Regent powers; conditions self_has_power and target_text are new vocabulary."
    ],
-   "reviewed_by": "TASK-025 ticket 10 batch misc-1",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "df3cf15ba84a49625f7e8d8310b0a232b3aa107301ef77808a018f35a7fef064",
-   "status": "stale",
+   "status": "converted",
    "tags": [],
    "unknowable": []
   },
@@ -26145,7 +26234,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review F",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read .ctor (0, Attack 1, Uncommon 3, AnyEnemy 2, 1), get_CanonicalVars DamageVar(5), HitCountVar(2), OnUpgrade HitCount +1, LostHpThisTurn + <LostHpThisTurn>b__0 (DamageReceivedEntry HappenedThisTurn && Receiver == creature && Result.UnblockedDamage > 0), <OnPlay>d__5::MoveNext: hits = LostHpThisTurn(owner creature) ? HitCount.IntValue : 1; DamageCmd.Attack(Damage.BaseValue).WithHitCount(hits).FromCard(cardPlay).Targeting(Target).Execute. Extract diff: only RepeatVar -> HitCountVar rename. Entry correct (hits_upgrade only on the conditional branch). Fingerprint matches.",
     "verdict": "agree"
    },
    "card_type": "Attack",
@@ -26180,10 +26270,12 @@
    "entity_key": "cards:SPITE",
    "evidence": [
     "ctor CardModel(cost=0, Attack, Uncommon, AnyEnemy)",
-    "CanonicalVars DamageVar(5), RepeatVar(2); OnUpgrade Repeat +1",
+    "CanonicalVars DamageVar(5), HitCountVar(2); OnUpgrade HitCount +1",
     "LostHpThisTurn(creature) = History.Entries.OfType<DamageReceivedEntry>().Any(e => e.HappenedThisTurn && e.Receiver == creature && e.Result.UnblockedDamage > 0)",
-    "OnPlay <OnPlay>d__5: hits = LostHpThisTurn(owner) ? Repeat : 1; DamageCmd.Attack(Damage).WithHitCount(hits) targeting cardPlay.Target",
-    "Catalog agrees (5 dmg, 2/3 hits if HP lost this turn)"
+    "OnPlay <OnPlay>d__5: hits = LostHpThisTurn(owner) ? HitCount : 1; DamageCmd.Attack(Damage).WithHitCount(hits).FromCard(cardPlay).Targeting(cardPlay.Target).Execute",
+    "Catalog agrees (5 dmg, 2/3 hits if HP lost this turn)",
+    "v0.113.1 re-review: unchanged behaviour (RepeatVar(2) renamed to HitCountVar(2); OnUpgrade Repeat +1 -> HitCount +1; same values)",
+    "Read get_CanonicalVars, OnUpgrade, LostHpThisTurn, <LostHpThisTurn>b__0, <OnPlay>d__5::MoveNext"
    ],
    "fingerprint": "5b1811a40f9e092ebaa82de627db541f3d319041026ba798b0eaa7074c1172cd",
    "hook_tokens": {
@@ -26198,9 +26290,9 @@
    "open_questions": [
     "Spite: condition 'lost_hp_this_turn' = owner received >0 unblocked damage this turn (DamageReceivedEntry); whether self HP loss like Hemokinesis counts depends on CreatureCmd.Damage logging a DamageReceivedEntry (likely, unverified). The two damage effects are mutually exclusive; upgrade adds +1 hit only to the conditional branch ('hits_upgrade')."
    ],
-   "reviewed_by": "TASK-025 ticket 05 batch F",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "c96176a7779c3e45bf4f28ec408a7aaa4eb6749c45771d4ddae25493aeb29321",
-   "status": "stale",
+   "status": "converted",
    "tags": [],
    "unknowable": []
   },
@@ -27827,7 +27919,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review H",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read .ctor (1, Attack 1, Common 2, RandomEnemy 4, 1), get_CanonicalVars DamageVar(3), HitCountVar(3), OnUpgrade HitCount +1, <OnPlay>d__3::MoveNext: DamageCmd.Attack(Damage.BaseValue).WithHitCount(HitCount.IntValue).FromCard(cardPlay).TargetingRandomOpponents(CombatState, true).Execute. Extract diff: only RepeatVar -> HitCountVar rename. Entry correct. Fingerprint matches.",
     "verdict": "agree"
    },
    "card_type": "Attack",
@@ -27849,9 +27942,11 @@
    "entity_key": "cards:SWORD_BOOMERANG",
    "evidence": [
     "ctor CardModel(cost=1, Attack, Common(2), RandomEnemy(4))",
-    "CanonicalVars DamageVar(3), RepeatVar(3); OnUpgrade Repeat +1",
-    "OnPlay 060045F1 (<OnPlay>d__3::MoveNext): DamageCmd.Attack(Damage).WithHitCount(Repeat.IntValue).TargetingRandomOpponents(CombatState, true)",
-    "card_type from CardModel ctor; tags from get_CanonicalTags; keywords from get_CanonicalKeywords"
+    "CanonicalVars DamageVar(3), HitCountVar(3); OnUpgrade HitCount +1",
+    "OnPlay (<OnPlay>d__3::MoveNext): DamageCmd.Attack(Damage).WithHitCount(HitCount.IntValue).FromCard(cardPlay).TargetingRandomOpponents(CombatState, true).Execute",
+    "card_type from CardModel ctor; tags from get_CanonicalTags; keywords from get_CanonicalKeywords",
+    "v0.113.1 re-review: unchanged behaviour (RepeatVar(3) renamed to HitCountVar(3); OnUpgrade Repeat +1 -> HitCount +1; same values)",
+    "Read .ctor, get_CanonicalVars, OnUpgrade, <OnPlay>d__3::MoveNext"
    ],
    "fingerprint": "38a89957d2e956cbe5a661e7be972282c5e33f5461f14366530e6a1b971823b1",
    "hook_tokens": {
@@ -27866,9 +27961,9 @@
    "open_questions": [
     "SwordBoomerang: upgrade raises hits 3 -> 4 (recorded as 'hits_upgrade', not a spec field); damage upgrade is 0"
    ],
-   "reviewed_by": "TASK-025 ticket 05 batch H",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "439e34be07d6d59330efb52bff0a8bba1eddc9f7fdc2f7c873ebb0ac2c91e2bf",
-   "status": "stale",
+   "status": "converted",
    "tags": [],
    "unknowable": []
   },
@@ -28726,7 +28821,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review S2",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read .ctor (1, Attack 1, Rare 4, AnyEnemy 2, 1), get_CanonicalKeywords [Exhaust 1], get_CanBeGeneratedInCombat false, get_CanonicalVars DamageVar(10), OnUpgrade Damage +5, <OnPlay>d__9::MoveNext: combatRoom = CombatState.RunState.CurrentRoom as CombatRoom; shouldTriggerFatal = Target.Powers.All(ShouldOwnerDeathTriggerFatal); DamageCmd.Attack(Damage.BaseValue).FromCard(cardPlay).Targeting(Target).Execute; if shouldTriggerFatal && Results.SelectMany.Any(WasTargetKilled): combatRoom.AddExtraReward(new CardReward(CardCreationOptions.ForRoom(Owner, RoomType), 3, Owner, ...)); PowerCmd.Apply<TheHuntPower>(owner creature, 1) (both inside the kill branch). Extract diff: no var/call-list change. Entry correct. Fingerprint matches.",
     "verdict": "agree"
    },
    "card_type": "Attack",
@@ -28768,7 +28864,9 @@
     "CanonicalKeywords [Exhaust(1)]; get_CanBeGeneratedInCombat = false",
     "CanonicalVars DamageVar(10); OnUpgrade Damage +5",
     "OnPlay <OnPlay>d__9: combatRoom = RunState.CurrentRoom as CombatRoom; shouldTriggerFatal = target.Powers.All(p => p.ShouldOwnerDeathTriggerFatal()); DamageCmd.Attack(Damage) targeting target; if shouldTriggerFatal && Results.SelectMany.Any(WasTargetKilled): combatRoom.AddExtraReward(new CardReward(CardCreationOptions.ForRoom(RoomType), 3, null)); PowerCmd.Apply<TheHuntPower>(owner creature, 1)",
-    "Catalog agrees on damage and extra card reward on kill; catalog omits Exhaust"
+    "Catalog agrees on damage and extra card reward on kill; catalog omits Exhaust",
+    "v0.113.1 re-review: unchanged behaviour (no var, cost or call change in the extract; the room is now read via CombatState.RunState.CurrentRoom)",
+    "Read .ctor (1, Attack, 4 Rare, AnyEnemy), get_CanonicalKeywords [Exhaust(1)], get_CanBeGeneratedInCombat false, get_CanonicalVars DamageVar(10), OnUpgrade Damage +5, <OnPlay>d__9::MoveNext: combatRoom = CombatState.RunState.CurrentRoom as CombatRoom; shouldTriggerFatal = target.Powers.All(ShouldOwnerDeathTriggerFatal); DamageCmd.Attack(Damage).FromCard(cardPlay).Targeting(target).Execute; if shouldTriggerFatal && Results.SelectMany.Any(WasTargetKilled): combatRoom.AddExtraReward(new CardReward(CardCreationOptions.ForRoom(RoomType), 3, Owner)); PowerCmd.Apply<TheHuntPower>(owner creature, 1)"
    ],
    "fingerprint": "3b24481b05c0ede4b9da6746d1fc2a8b7024bb4cc50ba59572a4c5cb410843a2",
    "hook_tokens": {
@@ -28785,9 +28883,9 @@
    "open_questions": [
     "TheHunt: 'extra_card_reward' effect and 'target_killed' condition are not in the recorded vocabulary; the reward is out-of-combat value."
    ],
-   "reviewed_by": "TASK-025 ticket 06 batch silent-2",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "43389e9e00fd6078272a2e040cece3d4b19e1a3c43b7e928d19856123f3f4317",
-   "status": "stale",
+   "status": "converted",
    "tags": [],
    "unknowable": []
   },
@@ -29928,7 +30026,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review F",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read .ctor (1, Attack 1, Common 2, AnyEnemy 2, 1), get_CanonicalTags {Strike 1}, get_CanonicalVars DamageVar(5), HitCountVar(2), OnUpgrade Damage +2 (HitCount not upgraded), <OnPlay>d__5::MoveNext: DamageCmd.Attack(Damage.BaseValue).WithHitCount(HitCount.IntValue).FromCard(cardPlay).Targeting(Target).Execute. Extract diff: only the new HitCountVar(2) replacing the literal. Entry correct. Fingerprint matches.",
     "verdict": "agree"
    },
    "card_type": "Attack",
@@ -29950,9 +30049,11 @@
    "evidence": [
     "ctor CardModel(cost=1, Attack, Common, AnyEnemy)",
     "get_CanonicalTags {Strike(1)}",
-    "CanonicalVars DamageVar(5); OnUpgrade Damage +2",
-    "OnPlay <OnPlay>d__5: DamageCmd.Attack(Damage).WithHitCount(2) targeting cardPlay.Target",
-    "Catalog agrees (5x2 / 7x2)"
+    "CanonicalVars DamageVar(5), HitCountVar(2); OnUpgrade Damage +2",
+    "OnPlay <OnPlay>d__5: DamageCmd.Attack(Damage).WithHitCount(HitCount.IntValue).FromCard(cardPlay).Targeting(cardPlay.Target).Execute",
+    "Catalog agrees (5x2 / 7x2)",
+    "v0.113.1 re-review: unchanged behaviour (the literal hit count 2 is now a HitCountVar(2); no upgrade on it)",
+    "Read .ctor, get_CanonicalTags, get_CanonicalVars, OnUpgrade, <OnPlay>d__5::MoveNext"
    ],
    "fingerprint": "85cdc92381cfab61f699730b03a6049ef0c318600b45e3f22baa351d63bbb407",
    "hook_tokens": {
@@ -29965,9 +30066,9 @@
    ],
    "keywords": [],
    "open_questions": [],
-   "reviewed_by": "TASK-025 ticket 05 batch F",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "ca238c30b9d0998744bb6733a663ba1ceee787b2806cd6e878a672dd3d4eafa7",
-   "status": "stale",
+   "status": "converted",
    "tags": [
     "Strike"
    ],
