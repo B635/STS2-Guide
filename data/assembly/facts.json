@@ -39574,20 +39574,24 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review MON1",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read v0.113.1 IL of Axebot (all getters, GenerateMoveStateMachine, AfterAddedToRoom/BootUp/HammerUppercut/OneTwo MoveNext) and StockPower.AfterDeath; fingerprint equals the current extract. HP GetValueIfAscension(8,80,70)+RespawnCount*10 with MaxInitialHp = MinInitialHp, so fixed 70 (A8 80) replacing the old 70-78 (A8 76-86) range: the claimed change is real and is the only behavioural change. Moves, numbers (block 10/A9 15, Str 3/A9 4 x RespawnCount, 14/A9 18 + Weak 2 + Frail 2, 10/A9 11 x2), state machine and HasValue-based initial move all match; no IsDread or mode-only code. StockAmount is only set by StockPower (AxebotsNormal never sets it), so the original opens with HAMMER_UPPERCUT as recorded.",
     "verdict": "agree"
    },
    "class": "Axebot",
    "entity_key": "monsters:AXEBOT",
    "evidence": [
     "AscensionHelper.GetValueIfAscension(level, a, b) IL: HasAscension(level) ? ldarg.1 : ldarg.2, i.e. the FIRST int is the ascension value and the SECOND the normal value; --enum AscensionLevel: 8 ToughEnemies (HP), 9 DeadlyEnemies (damage/amounts).",
-    "get_MinInitialHp = GetValueIfAscension(8, 76, 70) + RespawnMaxHpBonus; get_MaxInitialHp = GetValueIfAscension(8, 86, 78) + RespawnMaxHpBonus; get_RespawnMaxHpBonus = RespawnCount * 10; get_RespawnCount = 2 - StockAmount; get_StockAmount = _stockOverrideAmount.GetValueOrDefault(2).",
     "AfterAddedToRoom MoveNext: if StockAmount > 0 -> PowerCmd.Apply<StockPower>(Creature, StockAmount).",
     "GenerateMoveStateMachine: BOOT_UP_MOVE [DefendIntent, BuffIntent] -> HAMMER_UPPERCUT_MOVE; HAMMER_UPPERCUT_MOVE [SingleAttackIntent(HammerUppercutDamage), DebuffIntent] -> ONE_TWO_MOVE; ONE_TWO_MOVE [MultiAttackIntent(OneTwoDamage, 2)] -> HAMMER_UPPERCUT_MOVE. Tail: ldflda _stockOverrideAmount; get_HasValue; brfalse.s 8 -> ctor(states, HAMMER_UPPERCUT_MOVE) else ctor(states, BOOT_UP_MOVE).",
     "Encounters.AxebotsNormal.GenerateMonsters creates one Axebot via ToMutable without calling set_StockAmount, so the original Axebot opens with HAMMER_UPPERCUT and never uses BOOT_UP. DISAGREES with catalog (initial_move BOOT_UP).",
     "BootUpMove MoveNext: GainBlock(Creature, BootUpBlock) [GetValueIfAscension(9, 15, 10)]; PowerCmd.Apply<StrengthPower>(Creature, BootUpStrGain * RespawnCount) [BootUpStrGain GetValueIfAscension(9, 4, 3)]. Catalog lists block 10 / Strength 3 with no ascension values and no respawn multiplier.",
     "OneTwoMove: Attack(OneTwoDamage).WithHitCount(2), OneTwoDamage GetValueIfAscension(9, 11, 10). HammerUppercutMove: Attack(HammerUppercutDamage) [GetValueIfAscension(9, 18, 14)], then Apply<WeakPower>(targets, 2) and Apply<FrailPower>(targets, 2).",
-    "StockPower.AfterDeath MoveNext: if !wasRemovalPrevented && target == Owner && Amount > 0: ModelDb.Monster<Axebot>().ToMutable; set_ShouldPlaySpawnAnimation(true); set_StockAmount(Amount - 1); CreatureCmd.Add(monster, CombatState, Owner.Side, Owner.SlotName)."
+    "StockPower.AfterDeath MoveNext: if !wasRemovalPrevented && target == Owner && Amount > 0: ModelDb.Monster<Axebot>().ToMutable; set_ShouldPlaySpawnAnimation(true); set_StockAmount(Amount - 1); CreatureCmd.Add(monster, CombatState, Owner.Side, Owner.SlotName).",
+    "v0.113.1 re-review: HP changed from 70-78 (A8: 76-86) -> fixed 70 (A8: 80), still + RespawnMaxHpBonus; moves, numbers, state machine, Stock respawn unchanged behaviour.",
+    "v0.113.1 read: get_MinInitialHp = GetValueIfAscension(8, 80, 70) + get_RespawnMaxHpBonus; get_MaxInitialHp = callvirt MonsterModel::get_MinInitialHp (max = min); get_RespawnMaxHpBonus = RespawnCount * 10; get_RespawnCount = 2 - StockAmount; get_StockAmount = _stockOverrideAmount.GetValueOrDefault(2).",
+    "v0.113.1 read: GenerateMoveStateMachine BOOT_UP_MOVE [Defend, Buff] -> HAMMER_UPPERCUT_MOVE; HAMMER_UPPERCUT_MOVE [SingleAttack(HammerUppercutDamage), Debuff] -> ONE_TWO_MOVE; ONE_TWO_MOVE [MultiAttack(OneTwoDamage, 2)] -> HAMMER_UPPERCUT_MOVE; _stockOverrideAmount.HasValue ? initial BOOT_UP_MOVE : HAMMER_UPPERCUT_MOVE. BootUpMove MoveNext GainBlock(BootUpBlock GVIA(9,15,10)), Apply<StrengthPower>(BootUpStrGain GVIA(9,4,3) * RespawnCount); HammerUppercutMove Attack(GVIA(9,18,14)), Apply<WeakPower>(targets,2), Apply<FrailPower>(targets,2); OneTwoMove Attack(GVIA(9,11,10)).WithHitCount(2); AfterAddedToRoom StockAmount > 0 -> Apply<StockPower>(StockAmount).",
+    "v0.113.1 read: StockPower (fingerprint changed) AfterDeath unchanged behaviour: !wasRemovalPrevented && target == Owner && Amount > 0 -> ModelDb.Monster<Axebot>().ToMutable, set_ShouldPlaySpawnAnimation(true), set_StockAmount(Amount - 1), CreatureCmd.Add(same side, same SlotName); new RevealReplacementAfterDeathAnim(deathAnimLength) is visual only (CustomScaledWait then reveal)."
    ],
    "fingerprint": "a9d3f67b51cc34c8fd1154ec1fdcedf46012a78df4bb1e4d60c513189b738968",
    "hook_tokens": {
@@ -39603,10 +39607,10 @@
    "hp": {
     "ascension_level": 8,
     "bonus_text": "+10 x RespawnCount (RespawnCount = 2 - StockAmount): original copy +0, first respawn +10, second respawn +20",
-    "max": 78,
-    "max_ascension": 86,
+    "max": 70,
+    "max_ascension": 80,
     "min": 70,
-    "min_ascension": 76
+    "min_ascension": 80
    },
    "innate": [
     {
@@ -39738,9 +39742,9 @@
      }
     ]
    },
-   "reviewed_by": "TASK-025 monsters batch 1",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "eb78d12f2677ec72b0d69371138c0ac4314ef4927741e5647452b08e64ea3db0",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -41009,7 +41013,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review MON1",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read v0.113.1 IL of CeremonialBeast (all getters, GenerateMoveStateMachine, Stamp/Plow/SetStunned/Stunned/BeastCry/Stomp/Crush MoveNext); fingerprint equals the current extract. Normal-mode values: HP 252 (A8 262), Plow 150 (A9 160), Plow 18 (A9 20) + Strength 2, Stomp 15 (A9 17), Crush 17 (A9 19) + Strength 3 (A9 4), Beast Cry Ringing 1; state machine STAMP -> PLOW (loops), STUN (must perform once) -> BEAST_CRY -> STOMP -> CRUSH -> BEAST_CRY, initial STAMP. The only normal-mode change is the new Creature.HasPower<PlowPower> guard before PLOW's Strength (new call in the extract diff), recorded correctly. IsDread-only code (+30 HP, PlowStrength 3, RitualAmount 2 -> Ritual in SetStunned) is correctly left out. PlowPower and RingingPower fingerprints are unchanged and PlowPower is SetStunned's only caller, so the mechanic stays valid.",
     "verdict": "agree"
    },
    "class": "CeremonialBeast",
@@ -41023,7 +41028,10 @@
     "PlowPower.AfterDamageReceived: if target == Owner && result.UnblockedDamage > 0 && target.CurrentHp <= Amount: remove every TemporaryStrengthPower instance, PowerCmd.Remove<StrengthPower>(Owner); owner isinst CeremonialBeast -> SetStunned() (IsStunnedByPlowRemoval = true, IsInSecondPhase = true) and CreatureCmd.Stun(Owner, beast.StunnedMove, beast.BeastCryState.StateId); finally PowerCmd.Remove(this). PlowPower.ShouldScaleInMultiplayer = true.",
     "No state's FollowUpState points at STUN_MOVE; the phase change goes through Creature.StunInternal's transient 'STUNNED' MoveState (StunIntent, MustPerformOnce) whose FollowUpStateId is BEAST_CRY_MOVE.",
     "RingingPower (cross-reference, debuff on the player): afflicts the player's cards with Afflictions.Ringing; ShouldPlay blocks afflicted cards once the player has started a card play this turn; removed at the end of the owner's side turn.",
-    "Catalog disagreements: CRUSH Strength is 3 with no ascension value (code: 4 at ascension 9); STAMP Plow 150 with no ascension value (code: 160 at ascension 9)."
+    "Catalog disagreements: CRUSH Strength is 3 with no ascension value (code: 4 at ascension 9); STAMP Plow 150 with no ascension value (code: 160 at ascension 9).",
+    "v0.113.1 re-review: PLOW changed: +2 Strength was unconditional -> now only applied if Creature.HasPower<PlowPower> after the attack (no Strength regain when stunned mid-charge). Everything else unchanged behaviour for the Guide. Dread mode only (outside the Guide's scope): IsDread adds +30 HP, PlowStrength 3 instead of 2, and SetStunned applies RitualPower(RitualAmount 2) when RitualAmount > 0 (0 outside Dread).",
+    "v0.113.1 read: get_MinInitialHp GVIA(8, 262, 252) + (IsDread ? 30 : 0); get_MaxInitialHp = MinInitialHp; get_PlowAmount GVIA(9,160,150); get_PlowDamage GVIA(9,20,18); get_PlowStrength IsDread ? 3 : 2; get_StompDamage GVIA(9,17,15); get_CrushDamage GVIA(9,19,17); get_CrushStrength GVIA(9,4,3); get_RitualAmount IsDread ? 2 : 0.",
+    "v0.113.1 read: GenerateMoveStateMachine STAMP_MOVE [Buff] -> PLOW_MOVE [SingleAttack(PlowDamage), Buff] -> PLOW_MOVE; STUN_MOVE [Stun] MustPerformOnceBeforeTransitioning -> BeastCryState; BEAST_CRY_MOVE [Debuff] -> STOMP_MOVE [SingleAttack(StompDamage)] -> CRUSH_MOVE [SingleAttack(CrushDamage), Buff] -> BEAST_CRY_MOVE; initial STAMP_MOVE. StampMove Apply<PlowPower>(PlowAmount); PlowMove set_InMidCharge(true), Attack(PlowDamage).WithNoAttackerAnim, set_InMidCharge(false), then if Creature.HasPower<PlowPower> Apply<StrengthPower>(PlowStrength); BeastCryMove Apply<RingingPower>(targets, 1); StompMove Attack(StompDamage); CrushMove Attack(CrushDamage) then Apply<StrengthPower>(CrushStrength); StunnedMove set_IsStunnedByPlowRemoval(false); SetStunned sets IsStunnedByPlowRemoval/IsInSecondPhase true. PlowPower and RingingPower fingerprints unchanged."
    ],
    "fingerprint": "1997516b3de048cd8d79c64ac144bb5d4766b545d06fab32cbda91dce1b94791",
    "hook_tokens": {
@@ -41093,6 +41101,7 @@
       },
       {
        "amount": 2,
+       "amount_text": "2 Strength, only if the beast still has Plow after the attack (Creature.HasPower<PlowPower>); if the Plow attack itself triggered the Plow removal/stun (mid-charge), no Strength is gained",
        "kind": "apply_power",
        "power": "Strength",
        "target": "self"
@@ -41171,7 +41180,8 @@
    "open_questions": [
     "The phase change depends on the player's damage: PLOW repeats (+2 Strength each time) until unblocked damage brings HP to <= 150 (A9: 160). It is not a state-machine conditional, so it is recorded under mechanics.",
     "Condition owner_hp_at_most and a 'stun' effect with target self are not in the vocabulary.",
-    "Ringing is summarised from RingingPower IL; it needs its own powers:RINGING fact for the exact card-play restriction."
+    "Ringing is summarised from RingingPower IL; it needs its own powers:RINGING fact for the exact card-play restriction.",
+    "PLOW's +2 Strength is now conditional on the beast still having Plow after the hit (HasPower<PlowPower>); the vocabulary has no per-effect owner_has_power condition, so it is recorded in amount_text."
    ],
    "pattern": {
     "initial": "STAMP_MOVE",
@@ -41215,9 +41225,9 @@
      }
     ]
    },
-   "reviewed_by": "TASK-025 monsters batch 1",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "c57dabef1e51d7ee3aea4664897fc09af55ddd3994c0f2916a49e53dd20130db",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -41562,7 +41572,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review MON2",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read v0.113.1 IL of Crusher (getters, GenerateMoveStateMachine, AfterAddedToRoom and all move MoveNext); fingerprint equals the current extract. HP 209 (A8 219); Thrash 12 (A9 14); Enlarging Strike 4 (A9 4); Bug Sting 6 (A9 7) x2 + Weak 2 + Frail 2; Adapt Strength 2 (A9 3); Guarded Strike 12 (A9 14) + 18 block; cycle THRASH -> ENLARGING_STRIKE -> BUG_STING -> ADAPT -> GUARDED_STRIKE -> THRASH, initial THRASH; innate BackAttackLeft 1 + CrabRage 1. All match the entry. The only code change is the Plating apply in AfterAddedToRoom guarded by PlatingAmount > 0 with PlatingAmount = IsDread ? 14 : 0, which is Dread-only and correctly left out, so \"unchanged\" is right.",
     "verdict": "agree"
    },
    "class": "Crusher",
@@ -41578,7 +41589,9 @@
     "<EnlargingStrikeMove>d__42 / <ThrashMove>d__39: a single Attack each; no other command in the move",
     "AfterCurrentHpChanged / BeforeDeath: only background animation, audio and music-parameter calls (NKaiserCrabBossBackground, NRunMusicController) - no combat effect",
     "catalog cross-check: catalog lists ADAPT Strength 2 only; code is 2 normal / 3 at ascension 9. Everything else agrees",
-    "AscensionHelper.GetValueIfAscension(level, a, b) IL: returns arg1 (a) when RunManager.HasAscension(level), else arg2 (b) -> the FIRST number is the ascension value, the second the normal one. AscensionLevel enum (--enum): 8 ToughEnemies (HP), 9 DeadlyEnemies (damage)."
+    "AscensionHelper.GetValueIfAscension(level, a, b) IL: returns arg1 (a) when RunManager.HasAscension(level), else arg2 (b) -> the FIRST number is the ascension value, the second the normal one. AscensionLevel enum (--enum): 8 ToughEnemies (HP), 9 DeadlyEnemies (damage).",
+    "v0.113.1 re-review: unchanged behaviour. The only change is Dread mode (outside the Guide's scope): AfterAddedToRoom now also applies PlatingPower(PlatingAmount) when PlatingAmount > 0, and get_PlatingAmount = IsDread ? 14 : 0, so outside Dread nothing is added.",
+    "v0.113.1 read: get_MinInitialHp GVIA(8, 219, 209), get_MaxInitialHp = MinInitialHp; get_ThrashDamage GVIA(9,14,12); get_EnlargingStrikeDamage GVIA(9,4,4); get_BugStingDamage GVIA(9,7,6); get_BugStingTimes 2; get_GuardedStrikeDamage GVIA(9,14,12); get_AdaptStrengthGain GVIA(9,3,2). GenerateMoveStateMachine THRASH -> ENLARGING_STRIKE -> BUG_STING -> ADAPT -> GUARDED_STRIKE -> THRASH, initial THRASH_MOVE, intents unchanged. AfterAddedToRoom MoveNext Apply<BackAttackLeftPower>(1), Apply<CrabRagePower>(1), [Dread] Apply<PlatingPower>. BugSting Attack x BugStingTimes + Weak 2 + Frail 2; Adapt Apply<StrengthPower>(AdaptStrengthGain); GuardedStrike Attack then GainBlock(18); Thrash / EnlargingStrike single Attack."
    ],
    "fingerprint": "5a49186d907ca77c72e5ef345f6295ff1af63178f0d36c05d94f397dea5c7fcb",
    "hook_tokens": {
@@ -41754,9 +41767,9 @@
      }
     ]
    },
-   "reviewed_by": "TASK-025 monsters batch 2",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "16cc6d4d28f79d20879ad3d4f627afb93b6d9ff786b9bd99a30de5f385017fcb",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -42903,7 +42916,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review MON2",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read v0.113.1 IL of DevotedSculptor (.cctor, getters, GenerateMoveStateMachine, both move MoveNext); fingerprint equals the current extract. HP 162 (A8 172); FORBIDDEN_INCANTATION applies Ritual 9 (constant new Decimal(9), no ascension variant) to itself, plus banter via TalkCmd (dialogue only); SAVAGE 12 (A9 15) single hit; FORBIDDEN_INCANTATION -> SAVAGE -> SAVAGE, initial FORBIDDEN_INCANTATION. Matches the entry exactly; no IsDread or mode-only code, so \"unchanged behaviour\" is right.",
     "verdict": "agree"
    },
    "class": "DevotedSculptor",
@@ -42911,12 +42925,13 @@
    "evidence": [
     "get_MinInitialHp (8, 172, 162); get_MaxInitialHp returns MinInitialHp",
     "get_SavageDamage (9, 15, 12)",
-    ".ctor: ldc.i4.s 9 -> stfld _ritualGain (constant, no ascension call)",
     "GenerateMoveStateMachine: FORBIDDEN_INCANTATION_MOVE(BuffIntent) -> SAVAGE_MOVE(SingleAttackIntent(SavageDamage)) -> SAVAGE_MOVE; initial FORBIDDEN_INCANTATION_MOVE",
     "<ForbiddenIncantationMove>d__11::MoveNext: PowerCmd.Apply<RitualPower>(Creature, _ritualGain)",
     "<SavageMove>d__12::MoveNext: Attack(SavageDamage), single hit",
     "catalog cross-check: catalog lists no power for FORBIDDEN_INCANTATION; the IL applies Ritual 9 to itself",
-    "AscensionHelper.GetValueIfAscension(level, a, b) IL: returns arg1 (a) when RunManager.HasAscension(level), else arg2 (b) -> the FIRST number is the ascension value, the second the normal one. AscensionLevel enum (--enum): 8 ToughEnemies (HP), 9 DeadlyEnemies (damage)."
+    "AscensionHelper.GetValueIfAscension(level, a, b) IL: returns arg1 (a) when RunManager.HasAscension(level), else arg2 (b) -> the FIRST number is the ascension value, the second the normal one. AscensionLevel enum (--enum): 8 ToughEnemies (HP), 9 DeadlyEnemies (damage).",
+    "v0.113.1 re-review: unchanged behaviour. Internal rewrite: the _ritualGain field set in .ctor is gone; ForbiddenIncantationMove now passes the constant 9 directly (new Decimal(9)) to PowerCmd.Apply<RitualPower>; a new .cctor only builds the banter LocString (DEVOTED_SCULPTOR.moves.FORBIDDEN_INCANTATION.banter), dialogue only.",
+    "v0.113.1 read: get_MinInitialHp GVIA(8, 172, 162), get_MaxInitialHp = MinInitialHp; get_SavageDamage GVIA(9,15,12); GenerateMoveStateMachine FORBIDDEN_INCANTATION_MOVE [Buff] -> SAVAGE_MOVE [SingleAttack(SavageDamage)] -> SAVAGE_MOVE, initial FORBIDDEN_INCANTATION_MOVE; <ForbiddenIncantationMove>d__11 Apply<RitualPower>(Creature, 9); <SavageMove>d__12 single Attack(SavageDamage)."
    ],
    "fingerprint": "49af96c2b26acbb1461647f59c8137f9b18e60de2372c240b348057893e7a403",
    "hook_tokens": {
@@ -42984,9 +42999,9 @@
      }
     ]
    },
-   "reviewed_by": "TASK-025 monsters batch 2",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "6fa58b92353df23e58807443329eb9bb4fa83dbccd5435912bf024157c7e7755",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -44783,7 +44798,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review MON3",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read v0.113.1 IL of GasBomb (getters, GenerateMoveStateMachine, AfterAddedToRoom, ExplodeMove MoveNext); fingerprint equals the current extract. HP 7 (A8 8); innate Minion 1; single EXPLODE_MOVE [DeathBlowIntent(ExplodeDamage)] with no follow-up, initial EXPLODE; Explode sets HasExploded, attacks for 8 (A9 9) once, then kills itself unless already dead (new get_IsDead guard, the only change in the extract diff). The bomb dies either way, so \"unchanged behaviour\" and the kill_owner effect are right; no mode-only code.",
     "verdict": "agree"
    },
    "class": "GasBomb",
@@ -44796,7 +44812,9 @@
     "<ExplodeMove>d__: set_HasExploded(true); DamageCmd.Attack(get_ExplodeDamage).FromMonster (1 hit); then CreatureCmd.Kill(Creature) => the bomb dies after attacking on its first turn",
     "HasExploded is read only by GenerateAnimator; get_ShouldFadeAfterDeath = false",
     "Summoned by LivingFog.BloatMove (CreatureCmd.Add<GasBomb>)",
-    "crosscheck: catalog hp/damage/Minion agree; catalog intent 'Special' vs IL DeathBlowIntent"
+    "crosscheck: catalog hp/damage/Minion agree; catalog intent 'Special' vs IL DeathBlowIntent",
+    "v0.113.1 re-review: unchanged behaviour. <ExplodeMove>d__20 now checks Creature.get_IsDead before CreatureCmd.Kill (skips the self-kill if the bomb already died during its own attack, e.g. to Thorns); the bomb still dies after exploding either way. A new lambda <ExplodeMove>b__20_0 on the attack builder is presentation only.",
+    "v0.113.1 read: get_MinInitialHp GVIA(8, 8, 7), get_MaxInitialHp = MinInitialHp; get_ExplodeDamage GVIA(9, 9, 8); GenerateMoveStateMachine single EXPLODE_MOVE [DeathBlowIntent(b__19_0 = ExplodeDamage)], no FollowUpState, initial EXPLODE_MOVE; <AfterAddedToRoom>d__9 Apply<MinionPower>(1); <ExplodeMove>d__20 set_HasExploded(true), DamageCmd.Attack(ExplodeDamage) 1 hit, if !Creature.IsDead CreatureCmd.Kill(Creature)."
    ],
    "fingerprint": "0d72ece4994e43929d1a637e6ccbddbebc860ed0fd3f8a5b027ac90f998466b3",
    "hook_tokens": {
@@ -44858,9 +44876,9 @@
      }
     ]
    },
-   "reviewed_by": "TASK-025 monsters batch 3",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "297e390ff089e39f8c5adb25c3bbb9b4d6944535228ab9cd29b54e5a9a179745",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -45267,7 +45285,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review MON3",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read v0.113.1 IL of HauntedShip (getters, GenerateMoveStateMachine, Haunt/Stomp/Swipe MoveNext); fingerprint equals the current extract. HP 63 (A8 67); SWIPE 13 (A9 14) x1; STOMP 4 (A9 5) x3; HAUNT Weak 3 to targets + AddToCombatAndPreview<Dazed> x5 to PileType 3 (discard); HAUNT -> SWIPE -> STOMP -> SWIPE, initial HAUNT. All match the entry; the only extract change is a new stomp sound string (plus a visual skin flag), no mode-only code, so \"unchanged behaviour\" is right.",
     "verdict": "agree"
    },
    "class": "HauntedShip",
@@ -45278,7 +45297,9 @@
     "GenerateMoveStateMachine: SWIPE_MOVE (SingleAttackIntent) loc1; STOMP_MOVE (MultiAttackIntent(get_StompDamage, get_StompRepeat)) loc2; HAUNT_MOVE (DebuffIntent + StatusIntent(get_HauntDazed)) loc3; FollowUp loc3->loc1, loc1->loc2, loc2->loc1; initial loc3 HAUNT_MOVE (used once, then SWIPE/STOMP alternate)",
     "<HauntMove>d__20: PowerCmd.Apply<WeakPower>(targets, 3, Creature); CardPileCmd.AddToCombatAndPreview<Dazed>(targets, PileType 3 = Discard (--enum PileType), get_HauntDazed, ...)",
     "<StompMove>d__19: Attack(get_StompDamage).WithHitCount(get_StompRepeat); <SwipeMove>d__18: Attack(get_SwipeDamage), 1 hit",
-    "crosscheck: catalog agrees on hp/damage/Weak 3 and pattern; catalog does not give the Dazed count (IL: 5 to discard)"
+    "crosscheck: catalog agrees on hp/damage/Weak 3 and pattern; catalog does not give the Dazed count (IL: 5 to discard)",
+    "v0.113.1 re-review: unchanged behaviour. Only presentation changed: StompMove gained a sound event (haunted_ship_stomp) and a new get_HasPhobiaSpineSkin override returns true (visual skin).",
+    "v0.113.1 read: get_MinInitialHp GVIA(8, 67, 63), get_MaxInitialHp = MinInitialHp; get_SwipeDamage GVIA(9,14,13); get_StompDamage GVIA(9,5,4); get_StompRepeat 3; get_HauntDazed 5. GenerateMoveStateMachine SWIPE_MOVE [SingleAttack] (loc1), STOMP_MOVE [MultiAttack(StompDamage, StompRepeat)] (loc2), HAUNT_MOVE [Debuff, Status(HauntDazed)] (loc3); FollowUp loc3->loc1, loc1->loc2, loc2->loc1; initial loc3 HAUNT_MOVE. <HauntMove>d__21 Apply<WeakPower>(targets, 3), CardPileCmd.AddToCombatAndPreview<Dazed>(targets, PileType 3, HauntDazed); <StompMove>d__20 Attack(StompDamage).WithHitCount(StompRepeat); <SwipeMove>d__19 Attack(SwipeDamage)."
    ],
    "fingerprint": "d5098c27206e6995ab39d0ab0964bee8e7bdb6e1ebceebb2ec2a0e4f5cd0437d",
    "hook_tokens": {
@@ -45378,9 +45399,9 @@
      }
     ]
    },
-   "reviewed_by": "TASK-025 monsters batch 3",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "73ca9080bc272a223b9584a1885f9333016d3547541e3910027f0d7547b405db",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -45882,7 +45903,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review MON3",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read v0.113.1 IL of KinFollower (getters, GenerateMoveStateMachine, AfterAddedToRoom and the three move MoveNext) and TheKinBoss.GenerateMonsters; fingerprint equals the current extract. HP 58-59 (A8 62-63); QUICK_SLASH 5 (A9 5); BOOMERANG 2 (A9 2) x2; POWER_DANCE Strength 2 (A9 3); innate Minion 1; cycle QUICK_SLASH -> BOOMERANG -> POWER_DANCE -> QUICK_SLASH. Initial state is switch(Index): 0 POWER_DANCE, 1 QUICK_SLASH, 2 BOOMERANG, else throw. TheKinBoss non-Dread branch makes two followers with set_Index 0 (slot1) and 1 (slot2); only the IsDread branch adds a third with Index 2 in slot3, and KinPriest does not create followers. So normal-mode behaviour is unchanged (one opens POWER_DANCE, the other QUICK_SLASH), and the initial/initial_if fields, with the Index 2 line marked Dread-only, are an accurate record.",
     "verdict": "agree"
    },
    "class": "KinFollower",
@@ -45892,9 +45914,10 @@
     "get_QuickSlashDamage ldc.i4.s 9 / 5 / 5 (same value both ways); get_BoomerangDamage 9 / 2 / 2 (same); get_DanceStrength 9 / 3 / 2",
     "<AfterAddedToRoom>d__31: Apply<MinionPower>(self, Decimal.One)",
     "GenerateMoveStateMachine: QUICK_SLASH_MOVE loc1, BOOMERANG_MOVE (MultiAttackIntent(dmg, 2)) loc2, POWER_DANCE_MOVE (BuffIntent) loc3; FollowUp 1->2->3->1; initial: get_StartsWithDance brtrue -> loc3 else loc1",
-    "Caller scan: set_StartsWithDance(true) only in TheKinBoss.GenerateMonsters for the KinFollower in 'slot1'; the 'slot2' follower keeps false => one follower starts with POWER_DANCE, the other with QUICK_SLASH",
     "<BoomerangMove>d__35: Attack(get_BoomerangDamage).WithHitCount(2); <PowerDanceMove>d__34: Apply<StrengthPower>(self, get_DanceStrength); <QuickSlashMove>d__33: 1 hit",
-    "crosscheck: catalog hp/damage agree; catalog POWER_DANCE Strength 2 only (IL: 2, A9 3) and initial POWER_DANCE for every follower (IL: only when StartsWithDance)"
+    "crosscheck: catalog hp/damage agree; catalog POWER_DANCE Strength 2 only (IL: 2, A9 3) and initial POWER_DANCE for every follower (IL: only when StartsWithDance)",
+    "v0.113.1 re-review: unchanged behaviour in a normal fight. The StartsWithDance bool was replaced by an int Index (set_Index); GenerateMoveStateMachine picks the initial state with switch(Index): 0 -> POWER_DANCE_MOVE, 1 -> QUICK_SLASH_MOVE, 2 -> BOOMERANG_MOVE, otherwise IndexOutOfRangeException. TheKinBoss.GenerateMonsters (non-Dread branch) sets Index 0 on the slot1 follower and Index 1 on the slot2 follower, so as before one follower opens with POWER_DANCE and the other with QUICK_SLASH. pattern.initial is written as POWER_DANCE_MOVE (Index 0, the default field value) with initial_if per index. The IsDread branch adds a third follower (Index 2, slot3, opens with BOOMERANG): Dread mode, outside the Guide's scope. New .cctor / SetupSkins pick a random hair skin (Rng.Chaotic): visual only.",
+    "v0.113.1 read: get_MinInitialHp GVIA(8, 62, 58); get_MaxInitialHp GVIA(8, 63, 59); get_QuickSlashDamage GVIA(9,5,5); get_BoomerangDamage GVIA(9,2,2); get_DanceStrength GVIA(9,3,2). GenerateMoveStateMachine QUICK_SLASH_MOVE [SingleAttack] -> BOOMERANG_MOVE [MultiAttack(BoomerangDamage, 2)] -> POWER_DANCE_MOVE [Buff] -> QUICK_SLASH_MOVE. <AfterAddedToRoom>d__31 Apply<MinionPower>(1); <BoomerangMove>d__35 Attack(BoomerangDamage).WithHitCount(2); <PowerDanceMove>d__34 Apply<StrengthPower>(DanceStrength); <QuickSlashMove>d__33 Attack(QuickSlashDamage) 1 hit."
    ],
    "fingerprint": "1995100b02da3811dbb2e633a517ad6b89fa8eb972829d2046eecdd5d9ac4f10",
    "hook_tokens": {
@@ -45977,11 +46000,19 @@
    ],
    "open_questions": [],
    "pattern": {
-    "initial": "QUICK_SLASH_MOVE",
+    "initial": "POWER_DANCE_MOVE",
     "initial_if": [
      {
-      "condition": "StartsWithDance == true (set by TheKinBoss.GenerateMonsters on the slot1 follower only)",
+      "condition": "Index == 0 (TheKinBoss.GenerateMonsters: the slot1 follower)",
       "initial": "POWER_DANCE_MOVE"
+     },
+     {
+      "condition": "Index == 1 (TheKinBoss.GenerateMonsters: the slot2 follower)",
+      "initial": "QUICK_SLASH_MOVE"
+     },
+     {
+      "condition": "Index == 2 (only the Dread-mode third follower in slot3, outside the Guide's scope)",
+      "initial": "BOOMERANG_MOVE"
      }
     ],
     "states": [
@@ -46005,9 +46036,9 @@
      }
     ]
    },
-   "reviewed_by": "TASK-025 monsters batch 3",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "183af4f82775991b8ccce39e7cdca78752a05c63e2db8fcaf86b1a90eb48e5c5",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -46166,7 +46197,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review MON3",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read v0.113.1 IL of KnowledgeDemon (.cctor curse sets, getters incl. get_DisintegrationDamageValues, GenerateMoveStateMachine with both branch lambdas, ChooseCurse / CurseOfKnowledge / Slap / KnowledgeOverwhelming / Ponder MoveNext); fingerprint equals the current extract. HP 379 (A8 399); SLAP 17 (A9 18); KNOWLEDGE_OVERWHELMING 8 (A9 9) x3; PONDER 11 (A9 13) + heal 30 x players + Strength 2 (A9 3); CURSE_OF_KNOWLEDGE offers Disintegration vs MindRot / Sloth / WasteAway by counter, counter +1 in live combat; CURSE -> SLAP -> KNOWLEDGE_OVERWHELMING -> PONDER -> branch (counter < 3 -> CURSE, else SLAP), initial CURSE. I recomputed the array names: SHA-256 of little-endian int32 {6,7,8} starts D8C9807AE9FA3FFE (non-Dread branch) and {8,9,10} starts 0D24615A655FE474 (IsDread branch), so normal Disintegration stays 6/7/8 and the Dread values are correctly left out. The curse cards and MindRot/Sloth/WasteAway powers have unchanged fingerprints. The new dead-target skip and the out-of-range throw are guards only. \"Unchanged behaviour\" is right.",
     "verdict": "agree"
    },
    "class": "KnowledgeDemon",
@@ -46182,7 +46214,9 @@
     "Card OnChosen: Disintegration -> Apply<DisintegrationPower>(owner, var); MindRot -> Apply<MindRotPower>(owner, 1); Sloth -> Apply<SlothPower>(owner, 3); WasteAway -> Apply<WasteAwayPower>(owner, 1) (values from each card's CanonicalVars)",
     "Powers: DisintegrationPower.AfterSideTurnEndLate (owner's side): CreatureCmd.Damage(Owner, Amount, ValueProp 4); MindRotPower.ModifyHandDraw: Max(0, draw - Amount); SlothPower.ShouldPlay: cards played this turn < Amount (max 3 cards per turn); WasteAwayPower.ModifyMaxEnergy: - Amount",
     "<PonderMove>d__42: Attack(get_PonderDamage) 1 hit; CreatureCmd.Heal(self, ldc.i4.s 30 * CombatState.Players.Count); Apply<StrengthPower>(self, get_PonderStrength). <KnowledgeOverwhelmingMove>d__41: WithHitCount(3). IsBurnt and BeforeRemovedFromRoom are animation/music only",
-    "crosscheck: catalog agrees on hp/damage/heal 30/pattern; catalog has no detail for CURSE_OF_KNOWLEDGE and gives PONDER Strength 2 only (IL: 2, A9 3)"
+    "crosscheck: catalog agrees on hp/damage/heal 30/pattern; catalog has no detail for CURSE_OF_KNOWLEDGE and gives PONDER Strength 2 only (IL: 2, A9 3)",
+    "v0.113.1 re-review: unchanged behaviour. The Disintegration values moved from a static array to get_DisintegrationDamageValues: IsDread ? int[3] from <PrivateImplementationDetails>::0D24615A... : int[3] from ::D8C9807A...; the field names are the SHA-256 of the array bytes, and SHA-256 of little-endian int32 {6,7,8} = D8C9807AE9FA3FFE... (normal, unchanged 6/7/8) and of {8,9,10} = 0D24615A655FE474... (Dread mode only, outside the Guide's scope). <ChooseCurse>d__40 now skips a dead target (Creature.get_IsDead); <CurseOfKnowledgeMove>d__39 throws 'There are no valid sets at this index' if the counter is out of range (guard only).",
+    "v0.113.1 read: get_MinInitialHp GVIA(8, 399, 379), max = min; get_SlapDamage GVIA(9,18,17); get_KnowledgeOverwhelmingDamage GVIA(9,9,8); get_PonderDamage GVIA(9,13,11); get_PonderStrength GVIA(9,3,2). GenerateMoveStateMachine CURSE_OF_KNOWLEDGE_MOVE [Debuff] -> SLAP_MOVE [SingleAttack] -> KNOWLEDGE_OVERWHELMING_MOVE [MultiAttack(dmg, 3)] -> PONDER_MOVE [SingleAttack, Heal, Buff] -> CurseOfKnowledgeBranch; AddState(CURSE, b__38_0 counter < 3), AddState(SLAP, b__38_1 !(counter < 3)); initial CURSE_OF_KNOWLEDGE_MOVE. CurseOfKnowledgeMove ends with set_CurseOfKnowledgeCounter(counter + 1); ChooseCurse builds the set for the counter, sets Disintegration's DynamicVar 'DisintegrationPower' BaseValue to DisintegrationDamageValues[counter], CardSelectCmd.FromChooseACardScreen. PonderMove Attack(PonderDamage), Heal(30 * Players.Count), Apply<StrengthPower>(PonderStrength); KnowledgeOverwhelmingMove Attack.WithHitCount(3); SlapMove Attack(SlapDamage)."
    ],
    "fingerprint": "30e37407a08b9987028a7bcd6bc0b951d6efd1a27a03e052ba95a7a4c0128fc8",
    "hook_tokens": {
@@ -46375,9 +46409,9 @@
      }
     ]
    },
-   "reviewed_by": "TASK-025 monsters batch 3",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "15a0c8dee38c3e4d47fdde5a0b89aac7b1d0c8eda285b1af52155d3575412e25",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -46982,7 +47016,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review MON3",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read v0.113.1 IL of LivingShield (getters, GetAllyCount and its predicate, GenerateMoveStateMachine with the two branch lambdas, AfterAddedToRoom, ShieldSlam/Smash MoveNext); fingerprint equals the current extract. HP 55 (A8 65); innate Rampart 25; SHIELD_SLAM 6 (no ascension variant); SMASH 16 (A9 18) + Strength 3; SHIELD_SLAM -> SHIELD_SLAM_BRANCH (GetAllyCount() > 0 -> SHIELD_SLAM, == 0 -> SMASH), SMASH -> SMASH, initial SHIELD_SLAM. All match. Extract diff shows only sound changes (get_AttackSfx replaced by explicit events), RampartPower fingerprint unchanged, no mode-only code; \"unchanged behaviour\" is right.",
     "verdict": "agree"
    },
    "class": "LivingShield",
@@ -46995,7 +47030,9 @@
     "default left false: at the first evaluation (after the first SHIELD_SLAM) the result depends on whether the player has already killed its teammates. While any teammate lives it repeats SHIELD_SLAM (6); once alone it switches to SMASH permanently (SMASH_MOVE follows itself)",
     "<SmashMove>d__17: Attack(get_SmashDamage) then Apply<StrengthPower>(self, get_EnrageStr); <ShieldSlamMove>d__16: 1 hit",
     "RampartPower.AfterSideTurnStart: side == 1 (Player, --enum CombatSide) and CombatManager.PlayersTakingExtraTurn.Count <= 0 -> foreach enemy whose Monster is TurretOperator: GainBlock(creature, Amount, ValueProp 4). ShouldScaleInMultiplayer",
-    "crosscheck: catalog agrees on hp, damage, Rampart 25, Strength 3 and the conditional structure"
+    "crosscheck: catalog agrees on hp, damage, Rampart 25, Strength 3 and the conditional structure",
+    "v0.113.1 re-review: unchanged behaviour. Only sound changed: the get_AttackSfx call was replaced by explicit events living_shield_slam / living_shield_smash, and a get_HasDeathSfx override returns false. Lambdas renumbered (b__15_* -> b__17_*, GetAllyCount predicate b__20_0).",
+    "v0.113.1 read: get_MinInitialHp GVIA(8, 65, 55), max = min; get_ShieldSlamDamage 6; get_SmashDamage GVIA(9,18,16); get_EnrageStr 3. GenerateMoveStateMachine SHIELD_SLAM_MOVE [SingleAttack] -> SHIELD_SLAM_BRANCH; AddState(SHIELD_SLAM_MOVE, b__17_0 GetAllyCount() > 0), AddState(SMASH_MOVE, b__17_1 GetAllyCount() == 0); SMASH_MOVE [SingleAttack, Buff] -> SMASH_MOVE; initial SHIELD_SLAM_MOVE. GetAllyCount = Count(teammates where IsAlive && != Creature). <AfterAddedToRoom>d__16 Apply<RampartPower>(25); <ShieldSlamMove>d__18 Attack(6); <SmashMove>d__19 Attack(SmashDamage) then Apply<StrengthPower>(EnrageStr)."
    ],
    "fingerprint": "d0b8c0cafdbcf592917cc217dc8d8a0d386e48c8c3429f74ecc20e22d089403d",
    "hook_tokens": {
@@ -47110,9 +47147,9 @@
      }
     ]
    },
-   "reviewed_by": "TASK-025 monsters batch 3",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "5e0e10aa28f7defb6ff3da4908288197fa9b9ac2f1504c4c846718bd9a911343",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -48070,7 +48107,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review MON4",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read v0.113.1 IL of Nibbit (getters, GenerateMoveStateMachine with the three branch lambdas, Butt/Slice/Hiss MoveNext); fingerprint equals the current extract. HP 42-46 (A8 44-48); BUTT 12 (A9 13); SLICE 6 (A9 7) + block 5 (A8 6); HISS Strength 2 (A9 3); INIT_MOVE conditional built from _isAlone (alone: only IsAlone -> BUTT; otherwise !IsFront -> HISS, IsFront -> SLICE); BUTT -> SLICE -> HISS -> BUTT; initial INIT_MOVE. All match the entry. Extract diff shows only an added hiss sound; no mode-only code; \"unchanged behaviour\" is right.",
     "verdict": "agree"
    },
    "class": "Nibbit",
@@ -48082,7 +48120,9 @@
     "GenerateMoveStateMachine: BUTT_MOVE [SingleAttackIntent(ButtDamage)], SLICE_MOVE [SingleAttackIntent(SliceDamage), DefendIntent], HISS_MOVE [BuffIntent]; INIT_MOVE ConditionalBranchState. ldfld _isAlone; brfalse.s 22: if true only AddState(BUTT_MOVE, b__25_0) then br.s 40 over the rest; else AddState(HISS_MOVE, b__25_1) and AddState(SLICE_MOVE, b__25_2). FollowUps: SLICE -> HISS, BUTT -> SLICE, HISS -> BUTT; ctor initial = INIT_MOVE.",
     "b__25_0: ((Nibbit)Creature.Monster).IsAlone; b__25_1: IsFront == false; b__25_2: IsFront.",
     "Encounters.NibbitsWeak.GenerateMonsters: one Nibbit with set_IsAlone(true) -> opens BUTT. Encounters.NibbitsNormal (Slots [front, back]): Nibbit with set_IsFront(true) in \"front\" -> opens SLICE; plain Nibbit in \"back\" -> opens HISS. These are the only callers of the setters (metadata scan) and the only encounters referencing Nibbit. No default marked because the opening differs per encounter/slot.",
-    "ButtMove: Attack(ButtDamage). SliceMove: Attack(SliceDamage) then CreatureCmd.GainBlock(Creature, SliceBlock, ValueProp 8 = Move, null). HissMove: Apply<StrengthPower>(Creature, HissStrengthGain)."
+    "ButtMove: Attack(ButtDamage). SliceMove: Attack(SliceDamage) then CreatureCmd.GainBlock(Creature, SliceBlock, ValueProp 8 = Move, null). HissMove: Apply<StrengthPower>(Creature, HissStrengthGain).",
+    "v0.113.1 re-review: unchanged behaviour. Only a sound was added (SfxCmd.Play nibbit_hiss in HissMove); lambdas renumbered b__25_* -> b__26_*.",
+    "v0.113.1 read: get_MinInitialHp GVIA(8,44,42); get_MaxInitialHp GVIA(8,48,46); get_ButtDamage GVIA(9,13,12); get_SliceDamage GVIA(9,7,6); get_SliceBlock GVIA(8,6,5); get_HissStrengthGain GVIA(9,3,2). GenerateMoveStateMachine INIT_MOVE ConditionalBranchState: ldfld _isAlone brfalse.s 22 -> if alone only AddState(BUTT_MOVE, b__26_0 IsAlone), else AddState(HISS_MOVE, b__26_1 !IsFront) and AddState(SLICE_MOVE, b__26_2 IsFront); SLICE -> HISS, BUTT -> SLICE, HISS -> BUTT; initial INIT_MOVE. ButtMove Attack(ButtDamage); SliceMove Attack(SliceDamage) then GainBlock(SliceBlock, ValueProp 8); HissMove Apply<StrengthPower>(HissStrengthGain)."
    ],
    "fingerprint": "c9924487fa215b8991f5b5f563ab9f43f57050828717cda527a4a22769eb9758",
    "hook_tokens": {
@@ -48221,9 +48261,9 @@
      }
     ]
    },
-   "reviewed_by": "TASK-025 monsters batch 4",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "92f149c87f7652e48f5ce0b5696e0d85095ed90614e1bf5b840cb70c45b56c27",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -48679,16 +48719,20 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review MON4",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read v0.113.1 IL of the monster via --dump-any MegaCrit.Sts2.Core.Models.Monsters.PaelsLegion; fingerprint equals the current extract. HP 9999/9999 (no ascension variant); single NOTHING_MOVE with no intents whose delegate returns Task.CompletedTask, following itself, initial NOTHING_MOVE; get_IsInteractable returns false (UI only, replacing get_IsHealthBarVisible). Matches the entry. The only type referencing the monster is the PaelsLegion relic (PlayerCmd.AddPet / GetPet), confirming the pet explanation; no mode-only code.",
     "verdict": "agree"
    },
    "class": "PaelsLegion",
    "entity_key": "monsters:PAELS_LEGION",
    "evidence": [
     "AscensionHelper.GetValueIfAscension(level, a, b) returns a (first int) with the ascension, b otherwise; --enum AscensionLevel: 8 ToughEnemies (HP), 9 DeadlyEnemies (damage/amounts).",
-    "get_MinInitialHp ldc.i4 9999; get_MaxInitialHp ldc.i4 9999 (no ascension variant). get_IsHealthBarVisible = false.",
+    "get_MinInitialHp ldc.i4 9999; get_MaxInitialHp ldc.i4 9999 (no ascension variant).",
     "GenerateMoveStateMachine: NOTHING_MOVE with Array.Empty<AbstractIntent>() and a move delegate (b__10_0) returning Task.CompletedTask; FollowUpState = itself; initial NOTHING_MOVE.",
-    "No encounter references PaelsLegion; it is a non-acting creature with a hidden health bar. Catalog: 9999 HP, move NOTHING - agrees."
+    "No encounter references PaelsLegion; it is a non-acting creature with a hidden health bar. Catalog: 9999 HP, move NOTHING - agrees.",
+    "v0.113.1 re-review: unchanged behaviour. The get_IsHealthBarVisible override (false) was replaced by get_IsInteractable (false), and SetupSkins now reads the skin from the owning relic (Creature.PetOwner ... Relics.PaelsLegion.get_Skin, else SkinOptions[0]); both UI/visual only. Note: --dump PaelsLegion resolves to the relic class; the monster was read with --dump-any MegaCrit.Sts2.Core.Models.Monsters.PaelsLegion.",
+    "v0.113.1 read: get_MinInitialHp 9999; get_MaxInitialHp 9999; GenerateMoveStateMachine single NOTHING_MOVE (no intents, delegate <>c.b__10_0 returns Task.CompletedTask), FollowUpState = itself, initial NOTHING_MOVE.",
+    "Previous open question resolved from the relic's IL: Relics.PaelsLegion.SummonPet (called from AfterObtained when combat is in progress and from BeforeCombatStart) runs PlayerCmd.AddPet<Monsters.PaelsLegion>(Owner), so the creature is the player's pet; the relic itself (Block x2 on a card play, then a 2-turn cooldown) is described under its own relic fact."
    ],
    "fingerprint": "7afdbe6682878147776d1d521b006bdff106734dcbdc4a2b9ab247d2bdc44d9d",
    "hook_tokens": {
@@ -48714,9 +48758,7 @@
      "intents": []
     }
    ],
-   "open_questions": [
-    "PaelsLegion: which side it joins and what creates it (presumably the Pael relic line) was not traced; the class itself has no behaviour."
-   ],
+   "open_questions": [],
    "pattern": {
     "initial": "NOTHING_MOVE",
     "states": [
@@ -48728,9 +48770,9 @@
      }
     ]
    },
-   "reviewed_by": "TASK-025 monsters batch 4",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "60a97be33d30422217f04318315519e4f3e290a7915bf84657b7b4e3993b7369",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -49575,7 +49617,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review MON4",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read v0.113.1 IL of Rocket (getters, GenerateMoveStateMachine, AfterAddedToRoom and all move MoveNext), CrabRagePower, KaiserCrabBoss and KaiserCrabDominion; fingerprint equals the current extract. HP 199 (A8 209); CALCULATING 3 (A9 4); PRECISE_SMASH 18 (A9 20); CHARGE_UP Strength 2 (A9 3); ROCKET_CLAW 31 (A9 35); RECHARGE sleep; cycle CALCULATING -> PRECISE_SMASH -> CHARGE_UP -> ROCKET_CLAW -> RECHARGE -> CALCULATING, initial CALCULATING; innate Surrounded 1 on opponents, BackAttackRight 1, CrabRage 1 (CrabRage IL: other same-side creature dies -> Strength 6, block 99, remove). Renames and unchanged numbers are as claimed. Dread-only code (Plating IsDread ? 14 : 0; ROCKET_CLAW +5 when IsDread) is correctly excluded. PRECISE_SMASH_MOVE_2 is settled as never entered in normal mode: no FollowUpState points at it, the string occurs only in Rocket.GenerateMoveStateMachine (no other type in the extract references it), KaiserCrabBoss.GenerateMonsters just creates Crusher + Rocket via ToMutable with no move override, Crusher never touches Rocket, CrabRagePower only applies Strength/Block, KaiserCrabDominion (Dread) only applies Plating 7, and the only SetMoveImmediate / ForceCurrentState callers in the game are Queen, TestSubject, WaterfallGiant, ToughEgg, IllusionPower and ReattachPower. Recording it as an unreachable state with next null is correct; the open question can be closed.",
     "verdict": "agree"
    },
    "class": "Rocket",
@@ -49590,7 +49633,11 @@
     "SurroundedPower.ModifyDamageMultiplicative(target, amount, props, dealer, ...): requires dealer != null && target == Owner; Facing 0 (Right) -> dealer.HasPower<BackAttackLeftPower> ? 1.5 : 1; Facing 1 (Left) -> dealer.HasPower<BackAttackRightPower> ? 1.5 : 1 (Decimal(15, scale 1)). --enum SurroundedPower.Direction: 0 Right, 1 Left. UpdateDirection(target): Facing Right and target has BackAttackLeft -> face Left; Facing Left and target has BackAttackRight -> face Right. AfterDeath: when a creature of the owner's opposing fight dies and all remaining hittable enemies share one BackAttack side, the player turns toward them.",
     "CrabRagePower: CanonicalVars PowerVar<Strength> 6, BlockVar 99; AfterDeath(creature != Owner && creature.Side == Owner.Side): Apply<StrengthPower>(Owner, 6), GainBlock(Owner, 99), PowerCmd.Remove(this). BackAttackRightPower has no hooks (marker read by Surrounded).",
     "AfterCurrentHpChanged / BeforeDeath / BeforeRemovedFromRoom only drive the KaiserCrab background animation, sound and music.",
-    "Encounter: KaiserCrabBoss, Slots [crusher, rocket]: Crusher + Rocket. Catalog agrees on HP and damage."
+    "Encounter: KaiserCrabBoss, Slots [crusher, rocket]: Crusher + Rocket. Catalog agrees on HP and damage.",
+    "v0.113.1 re-review: moves renamed, numbers and cycle unchanged: TARGETING_RETICLE -> CALCULATING (3, A9 4), PRECISION_BEAM -> PRECISE_SMASH (18, A9 20), LASER -> ROCKET_CLAW (31, A9 35); getters renamed get_TargetingReticleDamage -> get_CalculatingDamage, get_PrecisionBeamDamage -> get_PreciseSmashDamage, get_LaserDamage -> get_RocketClawDamage. New unreachable state PRECISE_SMASH_MOVE_2 (same PreciseSmashMove delegate). Dread mode only (outside the Guide's scope): AfterAddedToRoom applies PlatingPower(PlatingAmount) when > 0 (IsDread ? 14 : 0) and get_RocketClawDamage adds IsDread ? 5 : 0.",
+    "v0.113.1 read: get_MinInitialHp GVIA(8, 209, 199), max = min; get_CalculatingDamage GVIA(9,4,3); get_PreciseSmashDamage GVIA(9,20,18); get_RocketClawDamage GVIA(9,35,31) + (IsDread ? 5 : 0); get_ChargeUpStrengthGain GVIA(9,3,2). GenerateMoveStateMachine CALCULATING_MOVE [SingleAttack] (loc1), PRECISE_SMASH_MOVE [SingleAttack] (loc2), PRECISE_SMASH_MOVE_2 [SingleAttack] (loc3), CHARGE_UP_MOVE [Buff] (loc4), ROCKET_CLAW_MOVE [SingleAttack] (loc5), RECHARGE_MOVE [Sleep] (loc6); FollowUp 1->2, 2->4, 4->5, 5->6, 6->1; loc3 only added to the list; initial loc1. <AfterAddedToRoom>d__31 Apply<SurroundedPower>(opponents, 1), Apply<BackAttackRightPower>(1), Apply<CrabRagePower>(1), [Dread] Apply<PlatingPower>. CalculatingMove / PreciseSmashMove / RocketClawMove single DamageCmd.Attack each (no WithHitCount); ChargeUpMove Apply<StrengthPower>(ChargeUpStrengthGain); RechargeMove animation only.",
+    "v0.113.1 read (helpers whose fingerprint changed): SurroundedPower.ModifyDamageMultiplicative unchanged (dealer != null, target == Owner; Facing 0 -> dealer.HasPower<BackAttackLeftPower> ? 1.5 : 1; Facing 1 -> dealer.HasPower<BackAttackRightPower> ? 1.5 : 1; Decimal(15,0,0,0,1)), hooks AfterDeath / BeforeCardPlayed / BeforePotionUsed / UpdateDirection still present. CrabRagePower.AfterDeath unchanged (creature != Owner && same Side -> Apply<StrengthPower>(Owner, 6), GainBlock(Owner, 99), PowerCmd.Remove(this)). BackAttackRightPower fingerprint unchanged.",
+    "Developer note 2026-11-16 (from the independent review): PRECISE_SMASH_MOVE_2 is unreachable in normal mode (no FollowUpState points to it, the string occurs only in Rocket.GenerateMoveStateMachine, KaiserCrabBoss sets no move, and no SetMoveImmediate / ForceCurrentState caller touches Rocket)."
    ],
    "fingerprint": "ebeb0d7b94594a4f120825d83b537e160435d0bf53638ea8b857b4574e92ab21",
    "hook_tokens": {
@@ -49678,7 +49725,7 @@
        "target": "player"
       }
      ],
-     "id": "TARGETING_RETICLE",
+     "id": "CALCULATING",
      "intents": [
       "SingleAttack"
      ]
@@ -49694,10 +49741,27 @@
        "target": "player"
       }
      ],
-     "id": "PRECISION_BEAM",
+     "id": "PRECISE_SMASH",
      "intents": [
       "SingleAttack"
      ]
+    },
+    {
+     "effects": [
+      {
+       "amount": 18,
+       "amount_ascension": 20,
+       "ascension_level": 9,
+       "hits": 1,
+       "kind": "damage",
+       "target": "player"
+      }
+     ],
+     "id": "PRECISE_SMASH_2",
+     "intents": [
+      "SingleAttack"
+     ],
+     "note": "second MoveState (PRECISE_SMASH_MOVE_2) bound to the same PreciseSmashMove; it is added to the state list but no FollowUpState points at it and it has none, so it is unreachable in the state machine"
     },
     {
      "effects": [
@@ -49726,7 +49790,7 @@
        "target": "player"
       }
      ],
-     "id": "LASER",
+     "id": "ROCKET_CLAW",
      "intents": [
       "SingleAttack"
      ]
@@ -49741,43 +49805,49 @@
    ],
    "open_questions": [],
    "pattern": {
-    "initial": "TARGETING_RETICLE_MOVE",
+    "initial": "CALCULATING_MOVE",
     "states": [
      {
-      "id": "TARGETING_RETICLE_MOVE",
-      "move": "TARGETING_RETICLE",
-      "next": "PRECISION_BEAM_MOVE",
+      "id": "CALCULATING_MOVE",
+      "move": "CALCULATING",
+      "next": "PRECISE_SMASH_MOVE",
       "type": "move"
      },
      {
-      "id": "PRECISION_BEAM_MOVE",
-      "move": "PRECISION_BEAM",
+      "id": "PRECISE_SMASH_MOVE",
+      "move": "PRECISE_SMASH",
       "next": "CHARGE_UP_MOVE",
+      "type": "move"
+     },
+     {
+      "id": "PRECISE_SMASH_MOVE_2",
+      "move": "PRECISE_SMASH_2",
+      "next": null,
       "type": "move"
      },
      {
       "id": "CHARGE_UP_MOVE",
       "move": "CHARGE_UP",
-      "next": "LASER_MOVE",
+      "next": "ROCKET_CLAW_MOVE",
       "type": "move"
      },
      {
-      "id": "LASER_MOVE",
-      "move": "LASER",
+      "id": "ROCKET_CLAW_MOVE",
+      "move": "ROCKET_CLAW",
       "next": "RECHARGE_MOVE",
       "type": "move"
      },
      {
       "id": "RECHARGE_MOVE",
       "move": "RECHARGE",
-      "next": "TARGETING_RETICLE_MOVE",
+      "next": "CALCULATING_MOVE",
       "type": "move"
      }
     ]
    },
-   "reviewed_by": "TASK-025 monsters batch 4",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "f889edfa12488b80a6a83d97e158b950e4180b8009067139bfdcf1cbc9c4f82e",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -51283,7 +51353,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review MON5",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read v0.113.1 IL of SoulFysh (getters, GenerateMoveStateMachine, AfterDeath / AfterCardChangedPilesLate, all five move MoveNext); fingerprint equals the current extract. HP 211 (A8 221); BECKON per player: Beckon to PileType 1 position 3 (draw, random) and Beckon to PileType 3 position 1 (discard, bottom); DE_GAS 16 (A9 18); GAZE 7 (A9 8) + one Beckon to discard bottom; FADE Intangible 2 on self; SCREAM 13 (A9 15) + Vulnerable 3; BECKON -> DE_GAS -> GAZE -> FADE -> SCREAM -> BECKON, initial BECKON. All match. The only new code is IsDread-only (BeckonMoveAmount 3 intent value and an extra Beckon to PileType 2 inside an IsDread guard), correctly excluded; AfterDeath / AfterCardChangedPilesLate are music only. \"Unchanged outside Dread\" is right.",
     "verdict": "agree"
    },
    "class": "SoulFysh",
@@ -51296,7 +51367,9 @@
     "<GazeMove>d__38: Attack(GazeDamage); then per target one CreateCard<Beckon> -> AddGeneratedCardToCombat(card, PileType 3 = Discard, null, 1 = Bottom). <DeGasMove>d__39: Attack(DeGasDamage). <FadeMove>d__41: set_IsInvisible(true), Apply<IntangiblePower>(Creature, 2). <ScreamMove>d__40: set_IsInvisible(false), Attack(ScreamDamage), Apply<VulnerablePower>(targets, ScreamMoveAmount).",
     "Cards.Beckon (cross-reference, has its own fact): HpLossVar 6; OnTurnEndInHand: CreatureCmd.Damage(owner creature, HpLoss, ValueProp 14 = Unblockable|Unpowered|Move).",
     "AfterDeath and AfterCardChangedPilesLate only update music parameters (soulfysh_progress / beckon); no gameplay effect. Encounters.SoulFyshBoss uses this monster.",
-    "Catalog cross-check: numbers and cycle agree; the catalog has no card data for BECKON/GAZE."
+    "Catalog cross-check: numbers and cycle agree; the catalog has no card data for BECKON/GAZE.",
+    "v0.113.1 re-review: unchanged behaviour outside Dread mode. Dread mode only (outside the Guide's scope): get_BeckonMoveAmount = IsDread ? 3 : 2, and <BeckonMove>d__37 adds a third Beckon (CreateCard<Beckon> -> AddGeneratedCardToCombat(card, PileType 2, null, position 1)) between the draw-pile and discard-pile Beckons when IsDread.",
+    "v0.113.1 read: get_MinInitialHp GVIA(8, 221, 211), max = min; get_DeGasDamage GVIA(9,18,16); get_ScreamDamage GVIA(9,15,13); get_GazeDamage GVIA(9,8,7); get_GazeMoveAmount 1; get_ScreamMoveAmount 3. GenerateMoveStateMachine BECKON_MOVE [Status(BeckonMoveAmount)] -> DE_GAS_MOVE [SingleAttack] -> GAZE_MOVE [SingleAttack, Status(GazeMoveAmount)] -> FADE_MOVE [Buff] -> SCREAM_MOVE [SingleAttack, Debuff] -> BECKON_MOVE; initial BECKON_MOVE. BeckonMove per player: Beckon to PileType 1 position 3 (Random), [Dread: PileType 2], Beckon to PileType 3 position 1 (Bottom); GazeMove Attack(GazeDamage) then Beckon to PileType 3 Bottom; DeGasMove Attack(DeGasDamage); FadeMove set_IsInvisible(true), Apply<IntangiblePower>(2); ScreamMove set_IsInvisible(false), Attack(ScreamDamage), Apply<VulnerablePower>(targets, ScreamMoveAmount)."
    ],
    "fingerprint": "0e369d88f848d401d75fa5ce971bcbf7eb1901539e3dac3b1792d7281e490005",
    "hook_tokens": {
@@ -51460,9 +51533,9 @@
      }
     ]
    },
-   "reviewed_by": "TASK-025 monsters batch 5",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "4e0a3c6bd0fe7241e30a425dcde231751ef10cae53d8897d37e315fd3e5142a9",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -51961,7 +52034,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review MON5",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read v0.113.1 IL of TerrorEel (getters, GenerateMoveStateMachine, AfterAddedToRoom, Crash/Thrash/Stun/Terror); fingerprint equals the current extract. HP 140 (A8 150); innate Shriek 70 (A8 75); CRASH 16 (A9 18); THRASH 3 (A9 4) x3 + Vigor 6; STUN does nothing (CompletedTask) and is only reachable via the Shriek stun; TERROR Vulnerable 99 to targets; CRASH <-> THRASH, STUN -> TERROR -> CRASH, initial CRASH. All match. The extract diff shows only metadata-token changes, ShriekPower and VigorPower fingerprints are unchanged, and there is no mode-only code; \"unchanged behaviour\" is right.",
     "verdict": "agree"
    },
    "class": "TerrorEel",
@@ -51974,7 +52048,9 @@
     "<CrashMove>d__27::MoveNext: Attack(CrashDamage). <ThrashMove>d__28: Attack(ThrashDamage).WithHitCount(ThrashRepeat) then Apply<VigorPower>(Creature, 6). StunMove: Task.CompletedTask. <TerrorMove>d__30: Apply<VulnerablePower>(targets, 99).",
     "ShriekPower.<AfterDamageReceived>d__10: target == Owner && result.UnblockedDamage > 0 && target.CurrentHp <= Amount -> CreatureCmd.Stun(Owner, ((TerrorEel)Owner.Monster).TerrorState.StateId) (2-argument overload (Creature, String), no move function) then PowerCmd.Remove(this).",
     "VigorPower (cross-reference): ModifyDamageAdditive adds Amount to the owner's powered attack; AfterAttack subtracts the amount held when that attack started, so Vigor 6 adds 6 to each hit of the next attack (CRASH) and is then spent.",
-    "Encounters.TerrorEelElite uses this monster. Catalog cross-check: agrees (Shriek 70/75, Vigor 6, Vulnerable 99)."
+    "Encounters.TerrorEelElite uses this monster. Catalog cross-check: agrees (Shriek 70/75, Vigor 6, Vulnerable 99).",
+    "v0.113.1 re-review: unchanged behaviour. The extract record shows no change in calls, strings or overrides (only metadata tokens); the re-read IL matches the fact. ShriekPower and VigorPower fingerprints unchanged.",
+    "v0.113.1 read: get_MinInitialHp GVIA(8, 150, 140), max = min; get_ShriekAmount GVIA(8, 75, 70); get_CrashDamage GVIA(9,18,16); get_ThrashDamage GVIA(9,4,3); get_ThrashRepeat 3. GenerateMoveStateMachine CRASH_MOVE [SingleAttack] -> THRASH_MOVE [MultiAttack(ThrashDamage, ThrashRepeat), Buff] -> CRASH_MOVE; STUN_MOVE [Stun] -> TerrorState; TERROR_MOVE [Debuff] (set_TerrorState) -> CRASH_MOVE; initial CRASH_MOVE. <AfterAddedToRoom>d__25 Apply<ShriekPower>(ShriekAmount); <CrashMove>d__27 Attack(CrashDamage); <ThrashMove>d__28 Attack(ThrashDamage).WithHitCount(ThrashRepeat) then Apply<VigorPower>(6); StunMove Task.CompletedTask; <TerrorMove>d__30 Apply<VulnerablePower>(targets, 99)."
    ],
    "fingerprint": "fcd993070c7f8e897d51a1614f25ab053c44c2fd9e2b600cd4dfb254a94d9b70",
    "hook_tokens": {
@@ -52121,9 +52197,9 @@
      }
     ]
    },
-   "reviewed_by": "TASK-025 monsters batch 5",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "e975f9874616bb95ff27ae5bfdf46cf06976c56d21a148a97ab7b0dc3d2420ce",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -53029,7 +53105,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review MON5",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read v0.113.1 IL of TheInsatiable (getters, GenerateMoveStateMachine, AfterDeath, Liquify/Thrash/Bite/Salivate MoveNext); fingerprint equals the current extract. HP 321 (A8 341); LIQUIFY_GROUND applies one Sandpit per target (SandpitAmount 4 outside Dread) and adds 6 Frantic Escape per player (i < 3 -> PileType 1 draw, else PileType 3 discard, position 3 random); THRASH and THRASH_MOVE_2 8 (A9 9) x2; LUNGING_BITE 28 (A9 31); SALIVATE Strength 2 (A9 3); LIQUIFY -> THRASH -> LUNGING_BITE -> SALIVATE -> THRASH_MOVE_2 -> THRASH, initial LIQUIFY. All match. IsDread-only code (+20 HP, Sandpit 3) is correctly excluded. SandpitPower's extract record differs only in metadata tokens and FranticEscape is unchanged, so the mechanics stand; \"unchanged outside Dread\" is right.",
     "verdict": "agree"
    },
    "class": "TheInsatiable",
@@ -53043,7 +53120,10 @@
     "SandpitPower: Type 1, InstanceType 1; <AfterSideTurnStartLate>d__12: side == CombatSide 2 (Enemy) -> PowerCmd.Decrement; <AfterRemoved>d__14: unless oldOwner.IsDead or Target.IsDead -> (animation) for each of AllAffectedCreatures (the target player's creature and pets) that IsPlayer or is Osty -> CreatureCmd.Kill.",
     "Cards.FranticEscape (cross-reference, has its own fact): OnPlay finds the Sandpit instance whose Target is the owner's creature -> PowerCmd.ModifyAmount(+1); EnergyCost.AddThisCombat(1). CanBeGeneratedInCombat false.",
     "AfterDeath hook: music parameter only. GenerateBestiaryMoveList inserts a display-only DEVOUR entry. Encounters.TheInsatiableBoss uses this monster.",
-    "Catalog cross-check: numbers and cycle agree; the catalog lists SALIVATE Strength 2 without the A9 value 3 and nothing for LIQUIFY_GROUND (IL: Sandpit 4 and 6 Frantic Escape)."
+    "Catalog cross-check: numbers and cycle agree; the catalog lists SALIVATE Strength 2 without the A9 value 3 and nothing for LIQUIFY_GROUND (IL: Sandpit 4 and 6 Frantic Escape).",
+    "v0.113.1 re-review: unchanged behaviour outside Dread mode. The Sandpit amount moved into a new getter get_SandpitAmount = IsDread ? 3 : 4 (normal still 4). Dread mode only (outside the Guide's scope): get_MinInitialHp adds IsDread ? 20 : 0 and Sandpit starts at 3.",
+    "v0.113.1 read: get_MinInitialHp GVIA(8, 341, 321) + (IsDread ? 20 : 0), max = min; get_ThrashDamage GVIA(9,9,8); get_BiteDamage GVIA(9,31,28); get_SalivateStrength GVIA(9,3,2). GenerateMoveStateMachine LIQUIFY_GROUND_MOVE [Buff, Status(6)] -> THRASH_MOVE [MultiAttack(ThrashDamage, 2)] -> LUNGING_BITE_MOVE [SingleAttack] -> SALIVATE_MOVE [Buff] -> THRASH_MOVE_2 [MultiAttack(ThrashDamage, 2)] -> THRASH_MOVE; initial LIQUIFY_GROUND_MOVE. <LiquifyMove>d__37 per target ModelDb.Power<SandpitPower>().ToMutable, set_Target, PowerCmd.Apply(power, self, SandpitAmount); loop i < 6 CreateCard<FranticEscape> -> AddGeneratedCardToCombat(i < 3 ? PileType 1 : PileType 3, position 3); set_HasLiquified(true). Thrash WithHitCount(2); Bite Attack(BiteDamage); Salivate Apply<StrengthPower>(SalivateStrength).",
+    "v0.113.1 read: SandpitPower (fingerprint changed, same overrides and calls): AfterSideTurnStartLate side == 2 -> PowerCmd.Decrement; AfterRemoved unless owner or Target IsDead -> for AllAffectedCreatures that IsPlayer or isinst Osty -> CreatureCmd.Kill; unchanged behaviour. FranticEscape fingerprint unchanged."
    ],
    "fingerprint": "450c0ef79128a8247be2a067ec856e4eee85b21b78eadef8b1eb0532792de6d6",
    "hook_tokens": {
@@ -53245,9 +53325,9 @@
      }
     ]
    },
-   "reviewed_by": "TASK-025 monsters batch 5",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "15c5282dee388546ed33094288298ae442e9f76bd94c874c24c6923468127206",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -53970,7 +54050,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review MON6",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read v0.113.1 IL of TorchHeadAmalgam (getters, GenerateMoveStateMachine, AfterAddedToRoom, all four move MoveNext, OnDieToDoom); fingerprint equals the current extract. HP 199 (A8 211); innate Minion 1; STRONG_TACKLE 26 (A9 32); TACKLE_2 18 (A9 22); BEAM 8 (A9 8) x3; TACKLE_3 and TACKLE_4 14 (A9 16); STRONG_TACKLE -> TACKLE_2 -> BEAM -> TACKLE_3 -> TACKLE_4 -> BEAM, initial STRONG_TACKLE. All match. The only new code is +5 on STRONG_TACKLE when IsDread, correctly excluded (26/32 kept as normal values); OnDieToDoom is visual. \"Unchanged outside Dread\" is right.",
     "verdict": "agree"
    },
    "class": "TorchHeadAmalgam",
@@ -53982,7 +54063,9 @@
     "GenerateMoveStateMachine: STRONG_TACKLE_MOVE [StrongTackleMove, SingleAttackIntent(StrongTackleDamage)] -> TACKLE_2_MOVE [TackleMove, SingleAttackIntent(TackleDamage)] -> BEAM_MOVE [SoulBeamMove, MultiAttackIntent(SoulBeamDamage, 3)] -> TACKLE_3_MOVE [WeakTackleMove, SingleAttackIntent(WeakTackleDamage)] -> TACKLE_4_MOVE [WeakTackleMove, same intent] -> BEAM_MOVE; ctor initial = STRONG_TACKLE_MOVE. After the first two moves the loop is BEAM, TACKLE_3, TACKLE_4.",
     "Move bodies: StrongTackleMove Attack(StrongTackleDamage); TackleMove Attack(TackleDamage); WeakTackleMove Attack(WeakTackleDamage); SoulBeamMove Attack(SoulBeamDamage).WithHitCount(3).",
     "OnDieToDoom only touches the creature node (visual). Only encounter: QueenBoss (slots amalgam, queen).",
-    "Catalog cross-check: DISAGREES on TACKLE_2: catalog 26 / 32, IL get_TackleDamage is 18 (A9: 22). Other numbers, innate MINION 1 and the pattern agree."
+    "Catalog cross-check: DISAGREES on TACKLE_2: catalog 26 / 32, IL get_TackleDamage is 18 (A9: 22). Other numbers, innate MINION 1 and the pattern agree.",
+    "v0.113.1 re-review: unchanged behaviour outside Dread mode. Dread mode only (outside the Guide's scope): get_StrongTackleDamage adds IsDread ? 5 : 0.",
+    "v0.113.1 read: get_MinInitialHp GVIA(8, 211, 199), max = min; get_StrongTackleDamage GVIA(9,32,26) + (IsDread ? 5 : 0); get_TackleDamage GVIA(9,22,18); get_WeakTackleDamage GVIA(9,16,14); get_SoulBeamDamage GVIA(9,8,8). GenerateMoveStateMachine STRONG_TACKLE_MOVE -> TACKLE_2_MOVE -> BEAM_MOVE [MultiAttack(SoulBeamDamage, 3)] -> TACKLE_3_MOVE -> TACKLE_4_MOVE -> BEAM_MOVE; initial STRONG_TACKLE_MOVE. <AfterAddedToRoom>d__16 Apply<MinionPower>(1); StrongTackle / Tackle / WeakTackle single Attack each; <SoulBeamMove>d__23 Attack(SoulBeamDamage).WithHitCount(3). OnDieToDoom visual only."
    ],
    "fingerprint": "10c1467fcba4217c5af02fd6c9f77c6f103fb4dbc69096e1b044e7d6e0a2bb3a",
    "hook_tokens": {
@@ -54132,9 +54215,9 @@
      }
     ]
    },
-   "reviewed_by": "TASK-025 monsters batch 6",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "61993e9137ec55636b46d6129266ef0bb960e9b64c8336ac2281d297b7984094",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -54366,19 +54449,22 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review MON6",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read v0.113.1 IL of Tunneler (getters, GenerateMoveStateMachine, Bite/Burrow/FromBelow/GetStunned/StillDizzy MoveNext); fingerprint equals the current extract. HP 87 (A8 92); BITE 13 (A9 15); BURROW Burrowed 1 + block 32 (A8 37); FROM_BELOW 24 (A9 28), single hit, WithNoAttackerAnim; DIZZY clears IsStunned; BITE -> BURROW -> FROM_BELOW -> FROM_BELOW, DIZZY -> BITE, initial BITE. The rename BELOW -> FROM_BELOW (string diff in the extract) and the damage now 24/28 against the main fact's 23/26 are recorded exactly; nothing else differs and there is no IsDread or mode-only code. BurrowedPower fingerprint is unchanged and its stun still targets 'BITE_MOVE', which exists, so the mechanics stay valid with the renamed text.",
     "verdict": "agree"
    },
    "class": "Tunneler",
    "entity_key": "monsters:TUNNELER",
    "evidence": [
     "AscensionHelper.GetValueIfAscension(level, a, b) returns a (first number) with that ascension, b otherwise; --enum AscensionLevel: 8 ToughEnemies, 9 DeadlyEnemies. Getter tuples below are written (level, a, b).",
-    "get_MinInitialHp (8, 92, 87); get_MaxInitialHp returns MinInitialHp. get_BiteDamage (9, 15, 13); get_BelowDamage (9, 26, 23); get_BlockGain (8, 37, 32) - Block uses ascension level 8, not 9.",
-    "GenerateMoveStateMachine: BITE_MOVE [SingleAttackIntent(BiteDamage)] -> BURROW_MOVE [BuffIntent, DefendIntent] -> BELOW_MOVE [SingleAttackIntent(BelowDamage)] -> BELOW_MOVE; DIZZY_MOVE [StillDizzyMove, StunIntent] -> BITE_MOVE; ctor initial = BITE_MOVE. No state transitions into DIZZY_MOVE.",
+    "get_MinInitialHp (8, 92, 87); get_MaxInitialHp returns MinInitialHp. get_BiteDamage (9, 15, 13); get_BlockGain (8, 37, 32) - Block uses ascension level 8, not 9.",
+    "GenerateMoveStateMachine: BITE_MOVE [SingleAttackIntent(BiteDamage)] -> BURROW_MOVE [BuffIntent, DefendIntent] -> BELOW_MOVE [SingleAttackIntent(BelowDamage)] -> BELOW_MOVE (v0.111.0 names); DIZZY_MOVE [StillDizzyMove, StunIntent] -> BITE_MOVE; ctor initial = BITE_MOVE. No state transitions into DIZZY_MOVE.",
     "BurrowMove MoveNext: PowerCmd.Apply<BurrowedPower>(Creature, Decimal.One); CreatureCmd.GainBlock(Creature, BlockGain, ValueProp 8 = Move, null). BiteMove: Attack(BiteDamage). BelowMove: Attack(BelowDamage).WithNoAttackerAnim.",
     "BurrowedPower: ShouldClearBlock(creature) => creature != Owner; AfterBlockBroken(target == Owner, Owner.Monster is Tunneler): tunneler.GetStunned(); CreatureCmd.Stun(Owner, tunneler.StillDizzyMove, 'BITE_MOVE'); PowerCmd.Remove<BurrowedPower>(Owner). AfterRemoved: CreatureCmd.LoseBlock(oldOwner, 999999999).",
     "Creature.StunInternal: transient MoveState 'STUNNED' [StunIntent], FollowUpStateId = given id, MustPerformOnceBeforeTransitioning; MonsterModel.SetMoveImmediate.",
-    "Encounters: TunnelerWeak (alone), TunnelerNormal (with a Chomper). Catalog cross-check: numbers and chain agree; catalog gives Block 32 without the A8 value 37."
+    "Encounters: TunnelerWeak (alone), TunnelerNormal (with a Chomper). Catalog cross-check: numbers and chain agree; catalog gives Block 32 without the A8 value 37.",
+    "v0.113.1 re-review: BELOW renamed and buffed: BELOW_MOVE / BelowMove / get_BelowDamage 23 (A9: 26) -> FROM_BELOW_MOVE / FromBelowMove / get_FromBelowDamage 24 (A9: 28); still a single hit that repeats (FROM_BELOW -> FROM_BELOW). Everything else unchanged behaviour; BurrowedPower fingerprint unchanged.",
+    "v0.113.1 read: get_MinInitialHp GVIA(8, 92, 87), max = min; get_BiteDamage GVIA(9,15,13); get_FromBelowDamage GVIA(9,28,24); get_BlockGain GVIA(8,37,32). GenerateMoveStateMachine BITE_MOVE [SingleAttack] -> BURROW_MOVE [Buff, Defend] -> FROM_BELOW_MOVE [SingleAttack(FromBelowDamage)] -> FROM_BELOW_MOVE; DIZZY_MOVE (StillDizzyMove) [Stun] -> BITE_MOVE; initial BITE_MOVE. <BurrowMove>d__30 Apply<BurrowedPower>(1), GainBlock(BlockGain, ValueProp 8); <BiteMove>d__29 Attack(BiteDamage); <FromBelowMove>d__31 Attack(FromBelowDamage).WithNoAttackerAnim, no WithHitCount; GetStunned / StillDizzyMove only set IsStunned and animate."
    ],
    "fingerprint": "f671f52ad2c3e6c3f4fa15c8181e9ba98b7459bc6332739ec0df6dc0c4b84c12",
    "hook_tokens": {
@@ -54410,7 +54496,7 @@
       "target_is_owner": true
      },
      "effect": {
-      "amount_text": "Tunneler.GetStunned; CreatureCmd.Stun(Owner, StillDizzyMove, 'BITE_MOVE'): the announced BELOW is replaced by a STUNNED turn, then the chain restarts at BITE -> BURROW -> BELOW; BurrowedPower is removed (AfterRemoved: LoseBlock 999999999).",
+      "amount_text": "Tunneler.GetStunned; CreatureCmd.Stun(Owner, StillDizzyMove, 'BITE_MOVE'): the announced FROM_BELOW is replaced by a STUNNED turn, then the chain restarts at BITE -> BURROW -> FROM_BELOW; BurrowedPower is removed (AfterRemoved: LoseBlock 999999999).",
       "kind": "stun",
       "target": "self"
      },
@@ -54460,15 +54546,15 @@
     {
      "effects": [
       {
-       "amount": 23,
-       "amount_ascension": 26,
+       "amount": 24,
+       "amount_ascension": 28,
        "ascension_level": 9,
        "hits": 1,
        "kind": "damage",
        "target": "player"
       }
      ],
-     "id": "BELOW",
+     "id": "FROM_BELOW",
      "intents": [
       "SingleAttack"
      ]
@@ -54497,13 +54583,13 @@
      {
       "id": "BURROW_MOVE",
       "move": "BURROW",
-      "next": "BELOW_MOVE",
+      "next": "FROM_BELOW_MOVE",
       "type": "move"
      },
      {
-      "id": "BELOW_MOVE",
-      "move": "BELOW",
-      "next": "BELOW_MOVE",
+      "id": "FROM_BELOW_MOVE",
+      "move": "FROM_BELOW",
+      "next": "FROM_BELOW_MOVE",
       "type": "move"
      },
      {
@@ -54514,9 +54600,9 @@
      }
     ]
    },
-   "reviewed_by": "TASK-025 monsters batch 6",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "742c5a43c93485ed789c34b80c9e67d59903ab40cba89ea452249ed85caf3a73",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -55000,7 +55086,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review MON6",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read v0.113.1 IL of Vantom (getters, GenerateMoveStateMachine, AfterAddedToRoom, AfterDeath, all four move MoveNext); fingerprint equals the current extract. HP 173 (A8 183); innate Slippery GVIA(8,9,8) = 8 (A8 9); INK_BLOT 7 (A9 8); INKY_LANCE 6 (A9 7) x2; DISMEMBER 26 (A9 30) + 3 Wound to PileType 3 (discard); PREPARE Strength PrepareStrength = 2 outside Dread; INK_BLOT -> INKY_LANCE -> DISMEMBER -> PREPARE -> INK_BLOT, initial INK_BLOT. All match. IsDread-only code (Slippery +2, PREPARE Strength 3) is correctly excluded; SlipperyPower fingerprint unchanged; AfterDeath is music only. \"Unchanged outside Dread\" is right.",
     "verdict": "agree"
    },
    "class": "Vantom",
@@ -55013,7 +55100,9 @@
     "InkBlotMove: Attack(InkBlotDamage). InkyLanceMove: Attack(InkyLanceDamage).WithHitCount(2). DismemberMove: Attack(DismemberDamage) then CardPileCmd.AddToCombatAndPreview<Wound>(targets, PileType 3 = Discard, 3, null, CardPilePosition 1). PrepareMove: PowerCmd.Apply<StrengthPower>(Creature, 2). The rest of each move is animation/music.",
     "SlipperyPower: ModifyHpLostAfterOsty(target, amount): target != Owner -> amount; amount < 1 -> amount; else Decimal.One. AfterDamageReceived: target == Owner && result.UnblockedDamage >= 1 -> Flash; PowerCmd.Decrement. GetScaledAmountForMultiplayer: amount x Players.Count.",
     "AfterDeath only updates a music parameter. Encounter: VantomBoss.",
-    "Catalog cross-check: agrees (HP 173/183, SLIPPERY 8/9, damages, Strength 2); catalog does not list the 3 Wounds."
+    "Catalog cross-check: agrees (HP 173/183, SLIPPERY 8/9, damages, Strength 2); catalog does not list the 3 Wounds.",
+    "v0.113.1 re-review: unchanged behaviour outside Dread mode. PREPARE's Strength moved from a constant 2 to get_PrepareStrength = IsDread ? 3 : 2 (normal still 2). Dread mode only (outside the Guide's scope): PREPARE gives 3 Strength and get_SlipperyAmt adds IsDread ? 2 : 0. SlipperyPower fingerprint unchanged.",
+    "v0.113.1 read: get_MinInitialHp GVIA(8, 183, 173), max = min; get_SlipperyAmt GVIA(8, 9, 8) + (IsDread ? 2 : 0); get_InkBlotDamage GVIA(9,8,7); get_InkyLanceDamage GVIA(9,7,6); get_DismemberDamage GVIA(9,30,26). GenerateMoveStateMachine INK_BLOT_MOVE [SingleAttack] -> INKY_LANCE_MOVE [MultiAttack(InkyLanceDamage, 2)] -> DISMEMBER_MOVE [SingleAttack, Status(3)] -> PREPARE_MOVE [Buff] -> INK_BLOT_MOVE; initial INK_BLOT_MOVE. <AfterAddedToRoom>d__36 Apply<SlipperyPower>(SlipperyAmt); <InkBlotMove>d__40 Attack; <InkyLanceMove>d__41 Attack.WithHitCount(2); <DismemberMove>d__42 Attack(DismemberDamage) then CardPileCmd.AddToCombatAndPreview<Wound>(targets, PileType 3, 3); <PrepareMove>d__43 Apply<StrengthPower>(PrepareStrength)."
    ],
    "fingerprint": "caf5c844314be61b7064f77d03b7d7195ac228f36271ea963a2a4b54febb0eaa",
    "hook_tokens": {
@@ -55172,9 +55261,9 @@
      }
     ]
    },
-   "reviewed_by": "TASK-025 monsters batch 6",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "40d0f5fb7e68494564f478f47fc26805509b4cb8b654b6fb0e4416b64dd52d9c",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
