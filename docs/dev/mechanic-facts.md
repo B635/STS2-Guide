@@ -171,7 +171,7 @@
 ### between_fights（战斗外的持续效果）
 
 用 MECHANIC 结构，`when` 取：`combat_end`（`filter.fight_kind` 可限定 `MONSTER` / `ELITE` / `BOSS`）、`room_entered`（`filter.room_type` 用 RoomType 名）、
-`rest_site`、`card_reward`、`merchant`、`treasure`、`map_generated`、`gold_gained`、`potion_procured`；效果用 OBTAIN 的 kind（如每场战斗后 `heal`）。
+`rest_site`、`card_reward`、`merchant`、`treasure`、`map_generated`、`gold_gained`、`potion_procured`、`lethal_damage`（战斗外受到致死伤害时，如蜥蜴尾巴；估值程序暂不计分，报缺口）；效果用 OBTAIN 的 kind（如每场战斗后 `heal`）。
 修正（`modifier`）：`card_reward_options`（`add`）、`card_reward_rarity`、`card_reward_upgraded`、`rest_site_heal`（`add` / `multiply`）、`rest_site_option`（`option`）、
 `merchant_price`（`multiply`）、`gold_gained`（`multiply`）、`potion_drop`、`no_potions`、`free_travel`、`unknown_room_types`、`map_change`（写 `amount_text` 说明）。
 有次数或时限的写 `limit`（如 `{"combats": 3}`）。

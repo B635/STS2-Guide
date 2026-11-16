@@ -74,7 +74,7 @@ OBTAIN_KINDS = {
 }
 BETWEEN_WHEN = {
     "combat_end", "room_entered", "rest_site", "card_reward", "merchant", "treasure",
-    "map_generated", "gold_gained", "potion_procured",
+    "map_generated", "gold_gained", "potion_procured", "lethal_damage",
 }
 BETWEEN_MODIFIERS = {
     "card_reward_options", "card_reward_rarity", "card_reward_upgraded", "rest_site_heal",
