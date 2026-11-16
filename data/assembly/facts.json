@@ -39255,7 +39255,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review MON1",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read --dump Aeonglass and --dump-any AscensionHelper (GetValueIfAscension returns arg1 when HasAscension else arg2; IsDread = RunManager.IsDread, a run-mode flag, not an ascension level). HP (8, 535, 512), Max = Min; EbbDamage (9, 26, 22), EbbBlock 33; EyeLasers (9, 12, 11) x 2; IncreasingIntensityBaseStrength (9, 4, 3) + AdditionalStrength; WitherAmount (9, 2, 1) + (IsDread ? 1 : 0), so 1/2 in normal mode. GenerateMoveStateMachine EBB [SingleAttack, Defend] -> EYE_LASERS [MultiAttack] -> INCREASING_INTENSITY [Status(WitherAmount), Buff] -> EBB, initial loc1 EBB. <AfterAddedToRoom>d__35: WitheringPresencePower per opponent (Target set) amount 6, then Artifact 3. <EbbMove>: Attack then GainBlock(33). <IncreasingIntensityMove>d__40: FakeUpgrade every Wither in each player's AllCards, WitherUpgradeCount+1, AddToCombatAndPreview<Wither>(targets, IsDread ? 1 Draw : 3 Discard, WitherAmount, null, 3 Random), Apply Strength(TotalStrength), AdditionalStrength+1. Normal mode still discard; only the in-pile position (now Random) is new and not part of the fact. Dread values are correctly kept out. AfterCardGeneratedForCombat -> MatchWitherToUpgradeCount. WitheringPresencePower, Wither and ArtifactPower fingerprints unchanged. Fingerprint matches.",
     "verdict": "agree"
    },
    "class": "Aeonglass",
@@ -39272,7 +39273,10 @@
     "AfterCardGeneratedForCombat: if card isinst Wither -> MatchWitherToUpgradeCount (loop FakeUpgrade while i < WitherUpgradeCount).",
     "WitheringPresencePower.AfterCardPlayed: if cardPlay.Card.Owner == Target.Player: CardsLeft--; when CardsLeft <= 0: AddToCombatAndPreview<Wither>(owner creature, PileType 2 = Hand, 1, null, 1) and CardsLeft reset to 6 (CanonicalVars CardsLeft 6).",
     "Cards.Wither (cross-reference): get_CanonicalKeywords CardKeyword 4 = Unplayable; DamageVar 3; FakeUpgrade: FakeUpgradeLevel+1 and Damage.UpgradeValueBy(3); OnTurnEndInHand: CreatureCmd.Damage(owner creature, DynamicVars.Damage).",
-    "AfterDeath only updates a music parameter (no gameplay effect)."
+    "AfterDeath only updates a music parameter (no gameplay effect).",
+    "v0.113.1 re-review: unchanged behaviour for normal mode. HP (8, 535, 512), EbbDamage (9, 26, 22), EbbBlock 33, EyeLasersDamage (9, 12, 11) x EyeLasersRepeat 2, IncreasingIntensityBaseStrength (9, 4, 3), WitheringPresence 6 and Artifact 3 in AfterAddedToRoom, and GenerateMoveStateMachine (EBB_MOVE -> EYE_LASERS_MOVE -> INCREASING_INTENSITY_MOVE -> EBB_MOVE, initial EBB_MOVE) all re-read and unchanged.",
+    "v0.113.1: get_WitherAmount = GetValueIfAscension(9, 2, 1) + (IsDread ? 1 : 0); <IncreasingIntensityMove>d__40::MoveNext: pile = IsDread ? 1 (Draw) : 3 (Discard), AddToCombatAndPreview<Wither>(targets, pile, WitherAmount, null, CardPilePosition 3 = Random). Normal mode still adds to the discard pile; only the in-pile position changed (Bottom -> Random), which the fact does not record. Dread mode (AscensionHelper.IsDread) is outside the Guide's scope and is not recorded in the fact.",
+    "Other diffs: AttackCommand WithHitFx -> WithAttackerFx and SfxCmd.Play calls (visual/audio only)."
    ],
    "fingerprint": "a27a518b759f4f2b4382fe02ddd2bcb38ea0485bd04ca3061f5a74eaf09a284d",
    "hook_tokens": {
@@ -39448,9 +39452,9 @@
      }
     ]
    },
-   "reviewed_by": "TASK-025 monsters batch 1",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "41dbd77f2b9cd85afc6f9fb1de018d2778dcd2d7211572f72c7639bab3bff96e",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -40848,7 +40852,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review MON1",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read --dump-any MegaCrit.Sts2.Core.Models.Monsters.Byrdpip (whole class). Min/MaxInitialHp ldc.i4 9999; GenerateMoveStateMachine single NOTHING_MOVE with Array.Empty intents, b__7_0 returns Task.CompletedTask, FollowUp itself, initial NOTHING_MOVE. get_IsInteractable returns false (UI; replaced get_IsHealthBarVisible per extract diff). SetupSkins is cosmetic. Fingerprint matches.",
     "verdict": "agree"
    },
    "class": "Byrdpip",
@@ -40857,7 +40862,8 @@
     "`--dump Byrdpip` resolves to Models.Relics.Byrdpip; the monster was read with `--dump-any MegaCrit.Sts2.Core.Models.Monsters.Byrdpip`.",
     "get_MinInitialHp / get_MaxInitialHp: ldc.i4 9999; get_IsHealthBarVisible returns false.",
     "GenerateMoveStateMachine: single MoveState NOTHING_MOVE with Array.Empty<AbstractIntent>(), lambda b__7_0 returns Task.CompletedTask, FollowUpState = itself, initial NOTHING_MOVE.",
-    "It is the player's pet, not an enemy: Relics.Byrdpip.SummonPet calls PlayerCmd.AddPet<Monsters.Byrdpip>(Owner) (BeforeCombatStart / AfterObtained). It never acts against the player."
+    "It is the player's pet, not an enemy: Relics.Byrdpip.SummonPet calls PlayerCmd.AddPet<Monsters.Byrdpip>(Owner) (BeforeCombatStart / AfterObtained). It never acts against the player.",
+    "v0.113.1 re-review: unchanged behaviour. `--dump-any MegaCrit.Sts2.Core.Models.Monsters.Byrdpip`: HP ldc.i4 9999 both; GenerateMoveStateMachine single NOTHING_MOVE (Array.Empty<AbstractIntent>, FollowUpState itself, initial NOTHING_MOVE). The only diff is override get_IsHealthBarVisible -> get_IsInteractable (returns false), a UI flag."
    ],
    "fingerprint": "85fe8b3642b51caeb611f48ad4ae465b44d369227c36c248935c877c03899997",
    "hook_tokens": {
@@ -40895,9 +40901,9 @@
      }
     ]
    },
-   "reviewed_by": "TASK-025 monsters batch 1",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "15bce2ab9cb2bb95e2795a4f6ddb79519e179ae8a4839b2199c4ee10e2ce5797",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -41314,7 +41320,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review MON1",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read --dump CorpseSlug and --dump RavenousPower. HP (8, 27, 25)/(8, 29, 27); WhipSlap 3 x 2; Glomp (9, 9, 8); GoopFrail 2; RavenousStr (9, 5, 4). GenerateMoveStateMachine WHIP_SLAP [MultiAttack] -> GLOMP [SingleAttack] -> GOOP [Debuff] -> WHIP_SLAP; initial by StarterMoveIdx % 3 (0 loc1, 1 loc2, else loc3). EnsureCorpseSlugsStartWithDifferentMoves: rng.NextInt(3), each slug idx % 3, incremented. <AfterAddedToRoom>d__36 Apply<RavenousPower>(self, RavenousStr). Moves: Attack x2, Attack, Apply<FrailPower>(targets, 2). RavenousPower <AfterDeath>d__6: !wasRemovalPrevented, target != Owner, same Side, !Owner.IsDead -> set_IsRavenous(true), CreatureCmd.Stun(Owner, StunnedMove), Apply Strength(Amount); StunnedMove only resets IsRavenous (diff is sfx/anim). No Dread/Blitz code. Fingerprint matches.",
     "verdict": "agree"
    },
    "class": "CorpseSlug",
@@ -41328,7 +41335,9 @@
     "EnsureCorpseSlugsStartWithDifferentMoves(monsters, rng): start = rng.NextInt(3); each CorpseSlug in order gets set_StarterMoveIdx(start % 3) with start incremented. Called by Encounters.CorpseSlugsNormal (3 slugs) and CorpseSlugsWeak (2 slugs) with EncounterModel.Rng.",
     "WhipSlapMove: Attack(WhipSlapDamage).WithHitCount(WhipSlapRepeat). GlompMove: Attack(GlompDamage). GoopMove: PowerCmd.Apply<FrailPower>(targets, GoopFrailAmt).",
     "RavenousPower.AfterDeath: if !wasRemovalPrevented && target != Owner && target.Side == Owner.Side && !Owner.IsDead: set_IsRavenous(true); CreatureCmd.Stun(Owner, StunnedMove, null); PowerCmd.Apply<StrengthPower>(Owner, Amount). StunnedMove only resets IsRavenous. Creature.StunInternal with a null next id resumes at the last StateLog entry after the stunned turn.",
-    "Catalog agrees on numbers; it gives no initial move."
+    "Catalog agrees on numbers; it gives no initial move.",
+    "v0.113.1 re-review: unchanged behaviour. Re-read HP (8, 27, 25)/(8, 29, 27), WhipSlap 3 x 2, Glomp (9, 9, 8), GoopFrail 2, RavenousStr (9, 5, 4), AfterAddedToRoom Apply<RavenousPower>, GenerateMoveStateMachine (WHIP_SLAP -> GLOMP -> GOOP -> WHIP_SLAP, initial by StarterMoveIdx % 3) and EnsureCorpseSlugsStartWithDifferentMoves (rng.NextInt(3), % 3). Only diff: SfxCmd.Play added in GoopMove (audio).",
+    "v0.113.1: RavenousPower fingerprint also changed with no call/string diff; re-dumped: AfterDeath still checks same Side, target != Owner, !Owner.IsDead, then set_IsRavenous(true), CreatureCmd.Stun(StunnedMove), Apply<StrengthPower>(Owner, Amount); StunnedMove resets IsRavenous. Mechanic unchanged."
    ],
    "fingerprint": "243979ecca8f6648c77a5963765d1cb1f945d27c6e224230a038501f9255836e",
    "hook_tokens": {
@@ -41454,9 +41463,9 @@
      }
     ]
    },
-   "reviewed_by": "TASK-025 monsters batch 1",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "21f3329d8e8f6d123650dd4c857b4627d16fb1ba3942c60f429a58f3e2dc27b7",
-   "status": "stale",
+   "status": "converted",
    "unknowable": [
     {
      "reason": "StarterMoveIdx comes from rng.NextInt(3) on the encounter RNG; the cycle order after the first move is fixed (WHIP_SLAP -> GLOMP -> GOOP).",
@@ -41989,7 +41998,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review MON2",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read --dump DecimillipedeSegment and --dump ReattachPower. HP (8, 46, 40)/(8, 52, 46); Writhe (9, 6, 5) x 2 (ldc.i4.2 in both intent and WithHitCount); Bulk (9, 7, 6) + Strength 2 to self; Constrict (9, 9, 8) + Weak 1 (Decimal.One) to targets. GenerateMoveStateMachine: WRITHE [MultiAttack], BULK [SingleAttack, Buff], CONSTRICT [SingleAttack, Debuff], DEAD (Array.Empty, stored in DeadState), REATTACH [Heal] MustPerformOnceBeforeTransitioning; FollowUps CONSTRICT->BULK, BULK->WRITHE, WRITHE->CONSTRICT, DEAD->REATTACH, REATTACH->RAND; RAND AddBranch(state, 2) x3; initial by StarterMoveIdx % 3 (0 WRITHE, 1 BULK, else CONSTRICT). <AfterAddedToRoom>d__46: odd MaxHp +1, while a teammate shares MaxHp +2 and wrap to ScaleHpForMultiplayer(MinInitialHp, encounter, players, act index) when above scaled MaxInitialHp; SetMaxAndCurrentHp; Apply<ReattachPower>(25). ReattachMove -> ReattachPower.DoReattach (CreatureCmd.Heal, clears isReviving). ReattachPower AfterDeath -> isReviving, SetMoveImmediate(DeadState); ShouldCreatureBeRemovedFromCombatAfterDeath false for owner; ShouldOwnerDeathTriggerFatal = AreAllOtherSegmentsDead; ShouldAllowHitting false while reviving. New code is phobia-mode textures in AfterDeath/ReattachMove and GetCreatureNode (cosmetic). No Dread/Blitz code. Fingerprint matches.",
     "verdict": "agree"
    },
    "class": "DecimillipedeSegment",
@@ -42007,7 +42017,8 @@
     "catalog cross-check: numbers agree; catalog RAND branches are empty and it has no initial move",
     "DecimillipedeSegment is the base class of the three segments: SegmentAttack has no body here and is implemented only by DecimillipedeSegmentFront / DecimillipedeSegmentMiddle / DecimillipedeSegmentBack (purely visual). Everything recorded above is defined in the base class itself; get_ShouldShowInCompendium returns false and get_Title looks up DECIMILLIPEDE_SEGMENT.name",
     "a bare DecimillipedeSegment has _starterMoveIdx 0 (field default) -> WRITHE_MOVE; in the elite encounter the index is always assigned",
-    "AscensionHelper.GetValueIfAscension(level, a, b) IL: returns arg1 (a) when RunManager.HasAscension(level), else arg2 (b) -> the FIRST number is the ascension value, the second the normal one. AscensionLevel enum (--enum): 8 ToughEnemies (HP), 9 DeadlyEnemies (damage)."
+    "AscensionHelper.GetValueIfAscension(level, a, b) IL: returns arg1 (a) when RunManager.HasAscension(level), else arg2 (b) -> the FIRST number is the ascension value, the second the normal one. AscensionLevel enum (--enum): 8 ToughEnemies (HP), 9 DeadlyEnemies (damage).",
+    "v0.113.1 re-review: unchanged behaviour. The extract shows no call/string/override diff; re-read GenerateMoveStateMachine (same states, FollowUps, RAND with three AddBranch(state, 2 = CannotRepeat), REATTACH MustPerformOnceBeforeTransitioning, initial by StarterMoveIdx % 3), all getters (HP (8, 46, 40)/(8, 52, 46), Writhe (9, 6, 5) x 2, Bulk (9, 7, 6) + Strength 2, Constrict (9, 9, 8) + Weak 1) and <AfterAddedToRoom>d__46 (odd +1, +2 while another teammate shares MaxHp, wrap to scaled MinInitialHp, then Apply<ReattachPower> 25). Creature.ScaleHpForMultiplayer is now passed the current act index as well (multiplayer scaling only); new get_PhobiaMode*Texture getters are cosmetic. ReattachPower changed only by an added Creature.GetCreatureNode call (UI node lookup)."
    ],
    "fingerprint": "f47af25f240c1bca6623ca345171122f7ce1739cc5a1f6032e7fe22795cc9193",
    "hook_tokens": {
@@ -42208,9 +42219,9 @@
      }
     ]
    },
-   "reviewed_by": "TASK-025 monsters batch 2",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "e1d1182df157512e48786d7ceff8c6e5d1fb09144702215cbbfd389c2934a671",
-   "status": "stale",
+   "status": "converted",
    "unknowable": [
     {
      "reason": "StarterMoveIdx is rolled by the encounter (Rng.NextInt(3)); only the combined result is fixed: the three segments start on three different moves",
@@ -43775,7 +43786,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review MON2",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read --dump FatGremlin (whole class). HP (8, 14, 13)/(8, 18, 17). GenerateMoveStateMachine SPAWNED_MOVE [StunIntent] -> FLEE_MOVE [EscapeIntent] -> FLEE_MOVE, ctor(list, loc1) initial SPAWNED. <SpawnedMove>d__16: WakeUpTrigger anim and set_IsAwake(true) only. <FleeMove>d__17: banter, node/anim/sfx, Wait, CreatureCmd.Escape(self, true). New GetCreatureNode is UI. No Dread/Blitz code. Fingerprint matches.",
     "verdict": "agree"
    },
    "class": "FatGremlin",
@@ -43787,7 +43799,8 @@
     "<FleeMove>d__17::MoveNext: banter line, makes the creature non-interactable, flee animation, then CreatureCmd.Escape(Creature, true)",
     "it never attacks: its first move does nothing, its second move escapes",
     "catalog cross-check: agrees",
-    "AscensionHelper.GetValueIfAscension(level, a, b) IL: returns arg1 (a) when RunManager.HasAscension(level), else arg2 (b) -> the FIRST number is the ascension value, the second the normal one. AscensionLevel enum (--enum): 8 ToughEnemies (HP), 9 DeadlyEnemies (damage)."
+    "AscensionHelper.GetValueIfAscension(level, a, b) IL: returns arg1 (a) when RunManager.HasAscension(level), else arg2 (b) -> the FIRST number is the ascension value, the second the normal one. AscensionLevel enum (--enum): 8 ToughEnemies (HP), 9 DeadlyEnemies (damage).",
+    "v0.113.1 re-review: unchanged behaviour. HP (8, 14, 13)/(8, 18, 17), GenerateMoveStateMachine SPAWNED_MOVE [StunIntent] -> FLEE_MOVE [EscapeIntent] -> FLEE_MOVE (initial SPAWNED_MOVE) re-read; <FleeMove>d__17 now fetches the node via Creature.GetCreatureNode before NCreature.SetIsInteractable / AnimateOutStateDisplay (UI) and still ends with CreatureCmd.Escape."
    ],
    "fingerprint": "86b1d23eae6cba16a9937fd277236fc3b0fb4e35187cbe1b9d851a3d56048b59",
    "hook_tokens": {
@@ -43848,9 +43861,9 @@
      }
     ]
    },
-   "reviewed_by": "TASK-025 monsters batch 2",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "88be1e5458a5c6abc7c2ff989fae4defb3574b94b5fe8ce445c7797f029348d8",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -45007,7 +45020,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review MON3",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read --dump GremlinMerc and --dump SurprisePower; --enum GameMode (4 = Blitz). HP (8, 51, 47)/(8, 53, 49); Gimme (8, 8, 7) x 2, DoubleSmash (8, 7, 6) x 2, Hehe (8, 9, 8): all damage getters use level 8, as recorded. GenerateMoveStateMachine GIMME [MultiAttack] -> DOUBLE_SMASH [MultiAttack, Debuff] -> HEHE [SingleAttack, Buff] -> GIMME, initial loc1 GIMME. <AfterAddedToRoom>d__24: Surprise 1, then per player a ThieveryPower (Target = player creature) amount 20. Moves: attack then Steal(); DoubleSmash then Weak 2 to targets; Hehe then Strength 2 to self. <Steal>d__29: returns at once when RunState.GameMode == 4 (Blitz), otherwise ThieveryPower.Steal per instance; GimmeMove only swaps a banter line in Blitz. Blitz-only behaviour is correctly left out; Standard values unchanged. SurprisePower: ShouldStopCombatFromEnding true; AfterDeath creates FatGremlin, HeistPower from ThieveryPower gold, Add<SneakyGremlin>, Add(fat), MarkGoldStolen. ThieveryPower unchanged. Fingerprint matches.",
     "verdict": "agree"
    },
    "class": "GremlinMerc",
@@ -45020,7 +45034,10 @@
     "<GimmeMove>d__23: Attack(get_GimmeDamage).WithHitCount(get_GimmeRepeat), then foreach ThieveryPower on self: Steal(). <DoubleSmashMove>d__24: Attack x get_DoubleSmashRepeat, Steal, Apply<WeakPower>(targets, 2). <HeheMove>d__25: Attack (1 hit), Steal, Apply<StrengthPower>(self, 2)",
     "ThieveryPower.Steal: if target alive and Player.Gold > 0: amount = Math.Min(Amount, Player.Gold); PlayerCmd.LoseGold(amount, player, 3); adds amount to the power's Gold var",
     "SurprisePower.AfterDeath (target == Owner, removal not prevented): creates FatGremlin, sums stolen gold of the ThieveryPower instances and applies HeistPower to the FatGremlin, CreatureCmd.Add<SneakyGremlin>(slot 'sneaky'), CreatureCmd.Add(fatGremlin); GremlinMercNormal.MarkGoldStolen when total > 0",
-    "crosscheck: catalog hp/damage/powers/cycle agree; catalog does not list Thievery 20 or the gold steal"
+    "crosscheck: catalog hp/damage/powers/cycle agree; catalog does not list Thievery 20 or the gold steal",
+    "v0.113.1 re-review: unchanged behaviour in Standard mode. Re-read HP 8/51/47 and 8/53/49, damage getters, <AfterAddedToRoom>d__21 (Surprise 1, Thievery 20 per player), GenerateMoveStateMachine (GIMME -> DOUBLE_SMASH -> HEHE -> GIMME, initial GIMME_MOVE) and the three move bodies.",
+    "v0.113.1: <Steal>d__29::MoveNext now returns without stealing when CombatState.RunState.GameMode == 4 (--enum GameMode: 4 = Blitz, 3 = Dread, 1 = Standard); <GimmeMove>d__26 plays a GIMME_BLITZ banter instead of GIMME in Blitz mode. Blitz is a new game mode outside the Guide's scope, so the lose_gold effects stay as recorded for Standard runs. set_HasSpoken now calls AssertMutable (internal).",
+    "v0.113.1: SurprisePower fingerprint changed with no call/string diff; re-dumped: ShouldStopCombatFromEnding true; AfterDeath still creates FatGremlin, applies HeistPower, CreatureCmd.Add<SneakyGremlin> then CreatureCmd.Add(fatGremlin). ThieveryPower fingerprint unchanged."
    ],
    "fingerprint": "2035d68ebfaad53323aa6ca6a9303585b14ad1310978e5cb3e17a76989c7af8a",
    "hook_tokens": {
@@ -45178,9 +45195,9 @@
      }
     ]
    },
-   "reviewed_by": "TASK-025 monsters batch 3",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "c06f44d1da8ccd5492cefb69a3cdd08691f76bf2268c56368f1d5645926b1237",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -45520,20 +45537,21 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review MON3",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read --dump InfestedPrism. Getters: MinInitialHp (8, 171, 161), Max = Min; JabDamage (9, 17, 15); WhirlwindDamage (9, 6, 5), WhirlwindRepeat 3; PulsateDamage (9, 10, 8); VitalSparkAmount (9, 3, 2); no Radiate*/PulsateBlock getters remain. GenerateMoveStateMachine: loc1 JAB_MOVE [SingleAttack(JabDamage)] JabMove, loc2 JAB_MOVE_2 [SingleAttack(JabDamage)] JabMove, loc3 WHIRLWIND_MOVE [MultiAttack(dmg, repeat)], loc4 PULSATE_MOVE [SingleAttack, Debuff, Buff]; FollowUp 1->2->3->4->1; ctor(list, loc1) so initial JAB_MOVE. <PulsateMove>d__29: Attack(PulsateDamage), Apply<VulnerablePower>(targets, 1), Apply<VitalSparkPower>(self, VitalSparkAmount); no GainBlock (extract diff: GainBlock/DefendIntent/RADIATE_MOVE removed, VulnerablePower/DebuffIntent/JAB_MOVE_2 added). <AfterAddedToRoom>d__25: Apply<VitalSparkPower>(self, VitalSparkAmount). VitalSparkPower and TaintedPower fingerprints unchanged, so the mechanic stands. No Dread/Blitz code in the class. Fingerprint matches the extract.",
     "verdict": "agree"
    },
    "class": "InfestedPrism",
    "entity_key": "monsters:INFESTED_PRISM",
    "evidence": [
     "get_MinInitialHp 8/171/161; max = min. AscensionHelper.GetValueIfAscension(level, ascensionValue, normalValue): HasAscension(level) ? arg1 : arg2 (IL: brtrue -> ldarg.1, else ldarg.2); level 8 = ToughEnemies, 9 = DeadlyEnemies (--enum AscensionLevel)",
-    "get_JabDamage 9/17/15; get_RadiateDamage 9/13/11; get_RadiateBlock ldc.i4.s 9 / 13 / 11 (level 9, not 8); get_WhirlwindDamage 9/6/5; get_WhirlwindRepeat = 3; get_PulsateDamage 9/10/8; get_PulsateBlock ldc.i4.8 / 22 / 20; get_VitalSparkAmount 9/3/2",
     "<AfterAddedToRoom>d__31: Apply<VitalSparkPower>(self, get_VitalSparkAmount)",
-    "GenerateMoveStateMachine: JAB_MOVE loc1, RADIATE_MOVE (SingleAttackIntent + DefendIntent) loc2, WHIRLWIND_MOVE (MultiAttackIntent(dmg, get_WhirlwindRepeat)) loc3, PULSATE_MOVE (SingleAttackIntent + BuffIntent + DefendIntent) loc4; FollowUp 1->2->3->4->1; initial loc1",
-    "<RadiateMove>d__34: Attack then GainBlock(self, get_RadiateBlock, ValueProp 8); <PulsateMove>d__36: Attack, GainBlock(self, get_PulsateBlock), Apply<VitalSparkPower>(self, get_VitalSparkAmount); <WhirlwindMove>d__35: WithHitCount(get_WhirlwindRepeat)",
     "VitalSparkPower: BeforeCombatStart / AfterCardEnteredCombat afflict player cards with Type == 2 (Skill) with Tainted(Amount); AfterPowerAmountChanged syncs the affliction amount; AfterCardPlayed: Tainted card -> Apply<TaintedPower>(card owner, Amount); AfterRemoved clears the afflictions",
     "TaintedPower (PowerType 2): ModifyDamageAdditive: target == Owner and IsPoweredAttack -> +Amount; AfterSideTurnEnd with side == 2 (Enemy, --enum CombatSide) -> PowerCmd.Remove",
-    "crosscheck: catalog agrees on hp/damage/cycle; catalog block values are the non-ascension ones only (11, 20) and VitalSpark on PULSATE 2 (IL: 2, A9 3)"
+    "v0.113.1 re-review: CHANGED. RADIATE removed (old: 11 (A9 13) damage + 11 (A9 13) block); its slot is now JAB_MOVE_2, a second MoveState on JabMove [SingleAttackIntent(get_JabDamage)]. PULSATE no longer gains block (old: 20, A8 22): it now applies 1 Vulnerable to the player. Cycle: JAB -> RADIATE -> WHIRLWIND -> PULSATE  ->  JAB -> JAB_2 -> WHIRLWIND -> PULSATE. Matches the patch-note hint (stab, stab, whirlwind, pulse; pulse gives 1 Vulnerable instead of block).",
+    "GenerateMoveStateMachine: JAB_MOVE loc1 [SingleAttackIntent(JabDamage)], JAB_MOVE_2 loc2 [SingleAttackIntent(JabDamage), ldftn JabMove], WHIRLWIND_MOVE loc3 [MultiAttackIntent(WhirlwindDamage, WhirlwindRepeat)], PULSATE_MOVE loc4 [SingleAttackIntent(PulsateDamage), DebuffIntent, BuffIntent]; FollowUp 1->2->3->4->1; MonsterMoveStateMachine(list, loc1) -> initial JAB_MOVE.",
+    "Getters: get_JabDamage (9, 17, 15); get_WhirlwindDamage (9, 6, 5); get_WhirlwindRepeat 3; get_PulsateDamage (9, 10, 8); get_VitalSparkAmount (9, 3, 2); get_MinInitialHp (8, 171, 161), max = min. get_RadiateDamage / get_RadiateBlock / get_PulsateBlock no longer exist.",
+    "<PulsateMove>d__29::MoveNext: DamageCmd.Attack(PulsateDamage); PowerCmd.Apply<VulnerablePower>(targets, Decimal.One, Creature); PowerCmd.Apply<VitalSparkPower>(Creature, VitalSparkAmount). No CreatureCmd.GainBlock anywhere in the class (removed from calls)."
    ],
    "fingerprint": "990f252eb1eb8e76f28d729027c599f225d415c3cb3fd455dd6a4bdd27154bfb",
    "hook_tokens": {
@@ -45602,26 +45620,19 @@
     {
      "effects": [
       {
-       "amount": 11,
-       "amount_ascension": 13,
+       "amount": 15,
+       "amount_ascension": 17,
        "ascension_level": 9,
        "hits": 1,
        "kind": "damage",
        "target": "player"
-      },
-      {
-       "amount": 11,
-       "amount_ascension": 13,
-       "ascension_level": 9,
-       "kind": "block",
-       "target": "self"
       }
      ],
-     "id": "RADIATE",
+     "id": "JAB_2",
      "intents": [
-      "SingleAttack",
-      "Defend"
-     ]
+      "SingleAttack"
+     ],
+     "note": "second state reusing JabMove (same body and damage as JAB)"
     },
     {
      "effects": [
@@ -45650,11 +45661,10 @@
        "target": "player"
       },
       {
-       "amount": 20,
-       "amount_ascension": 22,
-       "ascension_level": 8,
-       "kind": "block",
-       "target": "self"
+       "amount": 1,
+       "kind": "apply_power",
+       "power": "Vulnerable",
+       "target": "player"
       },
       {
        "amount": 2,
@@ -45668,8 +45678,8 @@
      "id": "PULSATE",
      "intents": [
       "SingleAttack",
-      "Buff",
-      "Defend"
+      "Debuff",
+      "Buff"
      ]
     }
    ],
@@ -45680,12 +45690,12 @@
      {
       "id": "JAB_MOVE",
       "move": "JAB",
-      "next": "RADIATE_MOVE",
+      "next": "JAB_MOVE_2",
       "type": "move"
      },
      {
-      "id": "RADIATE_MOVE",
-      "move": "RADIATE",
+      "id": "JAB_MOVE_2",
+      "move": "JAB_2",
       "next": "WHIRLWIND_MOVE",
       "type": "move"
      },
@@ -45703,9 +45713,9 @@
      }
     ]
    },
-   "reviewed_by": "TASK-025 monsters batch 3",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "8145234d86c38514f28273c35adc1131816361d293b487dd516bb341dc140a12",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -46002,7 +46012,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review MON3",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read --dump KinPriest. HP (8, 199, 190), Max = Min; OrbOfFrailty (9, 9, 8), OrbOfWeakness (9, 9, 8), Beam (9, 3, 3) x 3 (ldc.i4.3 in intent and WithHitCount), RitualStrength (9, 3, 2). GenerateMoveStateMachine ORB_OF_FRAILTY [SingleAttack, Debuff] -> ORB_OF_WEAKNESS [SingleAttack, Debuff] -> BEAM [MultiAttack] -> RITUAL [Buff] -> ORB_OF_FRAILTY, initial loc1. Move bodies: Attack then Apply<FrailPower>(targets, 1); Attack then Apply<WeakPower>(targets, 1); Beam x3; Ritual Apply<StrengthPower>(self, RitualStrength). AfterDeath only music/TalkCmd. GenerateBestiaryMoveList filter and set_SpeechUsed AssertMutable are UI/internal. No Dread/Blitz code. Fingerprint matches.",
     "verdict": "agree"
    },
    "class": "KinPriest",
@@ -46013,7 +46024,8 @@
     "GenerateMoveStateMachine: ORB_OF_FRAILTY_MOVE (SingleAttackIntent + DebuffIntent) loc1, ORB_OF_WEAKNESS_MOVE (same intents) loc2, BEAM_MOVE (MultiAttackIntent(dmg, 3)) loc3, RITUAL_MOVE (BuffIntent) loc4; FollowUp 1->2->3->4->1; initial loc1",
     "<OrbOfFrailtyMove>d__37: Attack then Apply<FrailPower>(targets, Decimal.One); <OrbOfWeaknessMove>d__38: Attack then Apply<WeakPower>(targets, Decimal.One); <BeamMove>d__39: WithHitCount(3); <RitualMove>d__40: Apply<StrengthPower>(self, get_RitualStrength) (only the priest itself)",
     "AfterDeath: only music parameter updates and a TalkCmd line when all KinFollowers are dead (AllFollowerDeathResponse) - no combat effect; no AfterAddedToRoom override",
-    "crosscheck: catalog agrees except RITUAL Strength 2 only (IL: 2, A9 3)"
+    "crosscheck: catalog agrees except RITUAL Strength 2 only (IL: 2, A9 3)",
+    "v0.113.1 re-review: unchanged behaviour. No call/string diff in the extract; re-read HP (8, 199, 190), OrbOfFrailty/OrbOfWeakness (9, 9, 8), Beam (9, 3, 3) x 3, RitualStrength (9, 3, 2), GenerateMoveStateMachine (ORB_OF_FRAILTY -> ORB_OF_WEAKNESS -> BEAM -> RITUAL -> ORB_OF_FRAILTY, initial loc1) and the move bodies (Frail 1, Weak 1, Strength to self). New pieces are UI only: GenerateBestiaryMoveList lambda filtering ORB_OF_WEAKNESS_MOVE, set_SpeechUsed calls AssertMutable."
    ],
    "fingerprint": "ba72b6c0d250e9a2e7bbf69c9bba6d49aad0038b5a3dd23777ea58bf19224406",
    "hook_tokens": {
@@ -46147,9 +46159,9 @@
      }
     ]
    },
-   "reviewed_by": "TASK-025 monsters batch 3",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "c6d908e1e9b9a30ce5d14d6a224f240df259b8487946aaf2b86be7b14468bcbf",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -46370,9 +46382,9 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review MON3",
-    "notes": "Auditor: PlatingPower.BeforeSideTurnStart gives an enemy owner Block equal to Plating at the start of the player's turn in round 1; the fact recorded only the enemy-turn-end Block. Developer resolved per IL: added the round-1 turn_start block mechanic.",
-    "verdict": "resolved"
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read --dump LagavulinMatriarch. Normal-mode values: MinInitialHp (8, 233, 222) + (IsDread ? 22 : 0), Max = Min; Slash (9, 21, 19); Slash2Damage (9, 14, 12) + (IsDread ? 2 : 0); Slash2Block (8, 14, 12) + (IsDread ? 2 : 0) (level 8, as recorded); Disembowel (9, 10, 9) x 2; DebuffAmount IsDread ? -3 : -2. Entry carries only the non-Dread values. GenerateMoveStateMachine: SLEEP [Sleep] -> SLEEP_BRANCH (b__45_0 HasPower<Asleep> -> SLEEP, b__45_1 !HasPower<Asleep> -> SLASH); SLASH -> DISEMBOWEL -> SLASH2 [SingleAttack, Defend] -> SOUL_SIPHON [Debuff, Buff] -> SLASH; initial loc1 SLEEP. <Sleep>d__42: IsAwake false, Plating 12, Asleep 3 (from AfterAddedToRoom). <Slash2Move>: Attack then GainBlock(Slash2Block). <SoulSiphonMove>d__51: Strength(DebuffAmount) and Dexterity(DebuffAmount) on targets, Strength 2 on self. SleepMove no effect; WakeUpMove anim + IsAwake. AsleepPower and PlatingPower fingerprints unchanged. Fingerprint matches.",
+    "verdict": "agree"
    },
    "class": "LagavulinMatriarch",
    "entity_key": "monsters:LAGAVULIN_MATRIARCH",
@@ -46388,7 +46400,9 @@
     "AsleepPower.AfterDamageReceived: target == Owner and result.UnblockedDamage != 0 (brtrue) -> remove PlatingPower if present, set_IsAwake(true), CreatureCmd.Stun(Owner, LagavulinMatriarch.WakeUpMove, \"SLASH_MOVE\"), remove Asleep. BeforeSideTurnEndVeryEarly: Amount <= 1 -> remove PlatingPower. AfterSideTurnEnd: PowerCmd.Decrement; Amount <= 0 -> WakeUpMove(empty)",
     "<WakeUpMove>d__45: animation and set_IsAwake(true) only. LagavulinMatriarch.AfterDamageReceived (CurrentHp <= MaxHp/2 -> IsShellAwake) and AfterDeath are animation only",
     "PlatingPower: BeforeSideTurnEndEarly (owner's side) GainBlock(Owner, Amount, ValueProp 4); AfterSideTurnStart for enemy-side owners after round 1: ModifyAmount(-Decrement) with Decrement = RunState.Players.Count (set in AfterApplied for side 2 = Enemy); BeforeSideTurnStart: block for non-player owners when side == 1 and RoundNumber <= 1. ShouldScaleInMultiplayer",
-    "crosscheck: catalog agrees on hp/damage/block/innate; catalog SOUL_SIPHON lists only Strength 2 self (IL also -2 Strength and -2 Dexterity on the player); catalog block for SLASH2 12 only (IL 12, A8 14); catalog SLEEP_MOVE next = null and SLEEP_BRANCH branches empty (IL: SLEEP_MOVE -> SLEEP_BRANCH with the two branches above)"
+    "crosscheck: catalog agrees on hp/damage/block/innate; catalog SOUL_SIPHON lists only Strength 2 self (IL also -2 Strength and -2 Dexterity on the player); catalog block for SLASH2 12 only (IL 12, A8 14); catalog SLEEP_MOVE next = null and SLEEP_BRANCH branches empty (IL: SLEEP_MOVE -> SLEEP_BRANCH with the two branches above)",
+    "v0.113.1 re-review: unchanged behaviour outside Dread mode. The only diff is AscensionHelper.IsDread: get_MinInitialHp = (8, 233, 222) + (IsDread ? 22 : 0); get_Slash2Block = (8, 14, 12) + (IsDread ? 2 : 0); get_Slash2Damage = (9, 14, 12) + (IsDread ? 2 : 0); new get_DebuffAmount = IsDread ? -3 : -2, used by <SoulSiphonMove> for both Apply<StrengthPower>(targets) and Apply<DexterityPower>(targets) (was ldc.i4.s -2 inline); self Strength still ldc.i4.2. Dread mode (AscensionHelper.IsDread) is outside the Guide's scope and is not recorded in the fact.",
+    "Re-read GenerateMoveStateMachine (SLEEP -> SLEEP_BRANCH; SLASH -> DISEMBOWEL -> SLASH2 -> SOUL_SIPHON -> SLASH; branch lambdas b__45_0 HasPower<AsleepPower>, b__45_1 !HasPower<AsleepPower>; initial loc1 SLEEP_MOVE), Sleep (Plating 12, Asleep 3), SlashDamage (9, 21, 19), Disembowel (9, 10, 9) x 2. AsleepPower and PlatingPower fingerprints unchanged."
    ],
    "fingerprint": "70937168ef489d9db65bc9d77ba804c97a9474ddf7d1c5b44d344d4d406b80d1",
    "hook_tokens": {
@@ -46636,9 +46650,9 @@
      }
     ]
    },
-   "reviewed_by": "TASK-025 monsters batch 3",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "a4053aaefba6e7866b296117072e55db43ec0f688e196c866771022c1a800c95",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -47433,7 +47447,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review MON3",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read --dump Mawler (whole class). HP (8, 76, 72), Max = Min; RipAndTear (9, 16, 14); Claw (9, 5, 4) x 2 (ldc.i4.2 in intent and WithHitCount). GenerateMoveStateMachine: RIP_AND_TEAR [SingleAttack], ROAR [Debuff], CLAW [MultiAttack], all FollowUp -> RAND; RAND AddBranch(RIP_AND_TEAR, 2, 1f), (ROAR, 3, 1f), (CLAW, 2, 1f) = CannotRepeat / UseOnlyOnce / CannotRepeat, weight 1; ctor(list, loc3) so initial CLAW_MOVE. <RoarMove>d__12 Apply<VulnerablePower>(targets, 3). Only additions are sfx. No Dread/Blitz code. Fingerprint matches.",
     "verdict": "agree"
    },
    "class": "Mawler",
@@ -47444,7 +47459,8 @@
     "RandomBranchState.AddBranch overloads resolved by method token (helper monsters-3-addbranch.ps1, read-only metadata scan): 06001653=(state, MoveRepeatType) weight 1; 06001652=(state, Int32 maxTimes) weight 1 CanRepeatXTimes; 06001650=(state, Int32 maxTimes, Single weight); 0600164e=(state, MoveRepeatType, Single weight). MoveRepeatType: 0 CanRepeatForever, 1 CanRepeatXTimes, 2 CannotRepeat, 3 UseOnlyOnce (--enum). GetStateWeight: CannotRepeat = weight 0 if the last logged state is this one; CanRepeatXTimes = weight 0 if the last maxTimes logged states are all this one; UseOnlyOnce = weight 0 once it is in the StateLog; cooldown 0 in all these overloads.",
     "<RoarMove>d__11: Apply<VulnerablePower>(targets, 3); <ClawMove>d__12: Attack(get_ClawDamage).WithHitCount(2); <RipAndTearMove>d__10: 1 hit",
     "ROAR is UseOnlyOnce: after it has been used once its weight is 0 for the rest of the combat, leaving RIP_AND_TEAR / CLAW alternating",
-    "crosscheck: catalog agrees on hp/damage/Vulnerable 3/initial CLAW and the three RAND branches (no weights/repeat rules in catalog)"
+    "crosscheck: catalog agrees on hp/damage/Vulnerable 3/initial CLAW and the three RAND branches (no weights/repeat rules in catalog)",
+    "v0.113.1 re-review: unchanged behaviour. Re-read HP (8, 76, 72), RipAndTear (9, 16, 14), Claw (9, 5, 4) x 2, GenerateMoveStateMachine (all moves -> RAND; AddBranch(RIP_AND_TEAR, 2, 1f), (ROAR, 3, 1f), (CLAW, 2, 1f); initial loc3 CLAW_MOVE) and <RoarMove>d__12 Apply<VulnerablePower>(targets, 3). Only diff: SfxCmd.Play (mawler_roar) added; async state-machine names shifted by one (RoarMove d__11 -> d__12)."
    ],
    "fingerprint": "94f8d1a6d9ba59230badea9d0d31dfd74746f6aca3de56268378882bb43800c0",
    "hook_tokens": {
@@ -47563,9 +47579,9 @@
      }
     ]
    },
-   "reviewed_by": "TASK-025 monsters batch 3",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "e7bf0912d82c17c3320c4df4100931be7d64f5251ee26052425938f70e94d4ef",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -48287,7 +48303,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review MON4",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read --dump Osty (whole class). Min/MaxInitialHp ldc.i4.1; GenerateMoveStateMachine single NOTHING_MOVE (Array.Empty intents, b__17_0 returns CompletedTask, FollowUp itself, initial NOTHING_MOVE). get_IsHealthBarVisible no longer exists (extract diff: override and its IsAlive call removed); the older evidence line about it is stale, as the re-review line says. Remaining code is animation/offset/sfx. Fingerprint matches.",
     "verdict": "agree"
    },
    "class": "Osty",
@@ -48296,7 +48313,8 @@
     "AscensionHelper.GetValueIfAscension(level, a, b) returns a (first int) with the ascension, b otherwise; --enum AscensionLevel: 8 ToughEnemies (HP), 9 DeadlyEnemies (damage/amounts).",
     "get_MinInitialHp ldc.i4.1; get_MaxInitialHp ldc.i4.1 (no ascension variant). get_IsHealthBarVisible = Creature.IsAlive.",
     "GenerateMoveStateMachine: NOTHING_MOVE with Array.Empty<AbstractIntent>() and a move delegate (b__19_0) that returns Task.CompletedTask; FollowUpState = itself; initial NOTHING_MOVE.",
-    "Osty is the player-side pet (CheckMissingWithAnim reads Player.IsOstyMissing); it appears in no encounter and never acts as an enemy. Its effective HP is set by the summoning code, not by this class. Catalog: 1/1 HP, move NOTHING - agrees."
+    "Osty is the player-side pet (CheckMissingWithAnim reads Player.IsOstyMissing); it appears in no encounter and never acts as an enemy. Its effective HP is set by the summoning code, not by this class. Catalog: 1/1 HP, move NOTHING - agrees.",
+    "v0.113.1 re-review: unchanged behaviour. HP ldc.i4.1 / ldc.i4.1; GenerateMoveStateMachine single NOTHING_MOVE (Array.Empty intents, b__17_0 returns Task.CompletedTask, FollowUp itself, initial NOTHING_MOVE). The only diff is the removed get_IsHealthBarVisible override (UI; the old evidence line about it no longer applies)."
    ],
    "fingerprint": "2051de57735e0b4e6e2b8a01a6e20f2081afb2958e1f38bfda23454c52aa707a",
    "hook_tokens": {
@@ -48332,9 +48350,9 @@
      }
     ]
    },
-   "reviewed_by": "TASK-025 monsters batch 4",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "22e08da13e2f02e53c9a2d63cdb65bf341ab15924b1c330f1a61daa72c000150",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -49291,7 +49309,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review MON4",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read --dump Queen. HP (8, 419, 400), Max = Min; OffWithYourHead (9, 4, 3) x 5; Execution (9, 18, 15); ChainsOfBindingAmount 3. GenerateMoveStateMachine: PUPPET_STRINGS [CardDebuff] -> YOU_ARE_MINE [Debuff] -> YOURE_MINE_NOW_BRANCH (b__43_0 !HasAmalgamDied -> BURN_BRIGHT_FOR_ME, b__43_1 HasAmalgamDied -> OFF_WITH_YOUR_HEAD); BURN_BRIGHT [Buff, Defend] -> BURN_BRIGHT_FOR_ME_BRANCH (b__43_2/3 same); OFF_WITH_YOUR_HEAD -> EXECUTION -> ENRAGE -> OFF_WITH_YOUR_HEAD; ctor initial IsDread ? DREAD_INITIAL : PUPPET_STRINGS, so PUPPET_STRINGS in normal mode; DREAD_INITIAL_MOVE (Chains 3 + Frail/Weak/Vulnerable 99) is reachable only in Dread and is correctly left out. Moves: Chains 3; Frail/Weak/Vulnerable 99 to targets; BurnBright strengthAmount = IsDread ? 2 : 1 to teammates other than self, then GainBlock 20; Enrage Strength 2 self. AfterDeath: Amalgam death sets HasAmalgamDied and SetMoveImmediate(EnragedState) when NextMove is BurnBrightForMeState. Minor: BurnBright Strength no longer goes through GetValueIfAscension, so amount_ascension 1 / ascension_level 9 is a leftover, but the value (1 at every ascension) is still right. ChainsOfBindingPower unchanged. Fingerprint matches.",
     "verdict": "agree"
    },
    "class": "Queen",
@@ -49308,7 +49327,9 @@
     "OffWithYourHeadMove: Attack(OffWithYourHeadDamage).WithHitCount(5). ExecutionMove: Attack(ExecutionDamage). EnrageMove: Apply<StrengthPower>(Creature, 2).",
     "AfterAddedToRoom: base call; Amalgam = CombatState.Enemies.First(e => e.Monster is TorchHeadAmalgam); music parameter. No innate powers.",
     "ChainsOfBindingPower: AfterCardDrawn (card.Owner == Owner.Player, CombatState.CurrentSide == Owner.Side, Bound.CanAfflict(card), count of this turn's CardAfflictedEntry with Bound and Actor == Owner < Amount) -> CardCmd.AfflictAndPreview<Bound>(card, Amount); BeforeCardPlayed: playing a Bound card sets boundCardPlayed; ShouldPlay(card with Bound) = !boundCardPlayed; BeforeSideTurnEnd (owner's side): boundCardPlayed = false and CardCmd.ClearAffliction on every Bound card.",
-    "Encounter: QueenBoss, Slots [amalgam, queen]: TorchHeadAmalgam + Queen. Catalog agrees on HP, damage and debuff amounts."
+    "Encounter: QueenBoss, Slots [amalgam, queen]: TorchHeadAmalgam + Queen. Catalog agrees on HP, damage and debuff amounts.",
+    "v0.113.1 re-review: unchanged behaviour outside Dread mode. New DREAD_INITIAL_MOVE state (DreadInitialMove [CardDebuffIntent, DebuffIntent]: ChainsOfBinding plus Frail/Weak/Vulnerable in one move, FollowUp -> YOURE_MINE_NOW_BRANCH) is only the initial state when IsDread (GenerateMoveStateMachine ends IsDread ? loc3 DREAD_INITIAL : loc1 PUPPET_STRINGS); <BurnBrightForMeMove>d__47 strengthAmount = IsDread ? 2 : 1 (was GetValueIfAscension(9, 1, 1) = 1). Dread mode (AscensionHelper.IsDread) is outside the Guide's scope and is not recorded in the fact.",
+    "Re-read for normal mode: PUPPET_STRINGS -> YOU_ARE_MINE -> YOURE_MINE_NOW_BRANCH (b__43_0 !HasAmalgamDied -> BURN_BRIGHT_FOR_ME, b__43_1 HasAmalgamDied -> OFF_WITH_YOUR_HEAD); BURN_BRIGHT_FOR_ME -> BURN_BRIGHT_FOR_ME_BRANCH (b__43_2 / b__43_3 same conditions); OFF_WITH_YOUR_HEAD [MultiAttackIntent(dmg, 5)] -> EXECUTION -> ENRAGE -> OFF_WITH_YOUR_HEAD. Getters HP (8, 419, 400), OffWithYourHead (9, 4, 3), Execution (9, 18, 15), new get_ChainsOfBindingAmount ldc.i4.3 (was inline 3); YoureMine 99 Frail/Weak/Vulnerable; BurnBright block ldc.i4.s 20; Enrage Strength 2; AfterDeath still SetMoveImmediate(EnragedState) when the Amalgam dies. ChainsOfBindingPower and Bound fingerprints unchanged. ShouldShowMoveInBestiary is UI."
    ],
    "fingerprint": "92fa7fdb8f9d7b135252f12cab15766873b8e07bc52df56e33850b9187fe6181",
    "hook_tokens": {
@@ -49547,9 +49568,9 @@
      }
     ]
    },
-   "reviewed_by": "TASK-025 monsters batch 4",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "36f55f9eb0458082aa5c5573fc155c58533d8db0e45c5c5e663a50c689c16695",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -51100,7 +51121,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review MON5",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read --dump SnappingJaxfruit (whole class). HP (8, 34, 31)/(8, 36, 33); EnergyDamage (9, 4, 3). GenerateMoveStateMachine single ENERGY_ORB_MOVE [SingleAttack(EnergyDamage), Buff] FollowUp itself, initial ENERGY_ORB. <EnergyOrb>d__13: vfx guard, Attack(EnergyDamage) then Apply<StrengthPower>(self, 2). AfterAddedToRoom/BeforeRemovedFromRoom are sfx loops only. Diffs are WithAttackerFx and an sfx string. No Dread/Blitz code. Fingerprint matches.",
     "verdict": "agree"
    },
    "class": "SnappingJaxfruit",
@@ -51111,7 +51133,8 @@
     "GenerateMoveStateMachine: single state ENERGY_ORB_MOVE (method EnergyOrb) [SingleAttackIntent(EnergyDamage), BuffIntent], FollowUpState = itself; ctor initial = ENERGY_ORB_MOVE.",
     "<EnergyOrb>d__12::MoveNext: (vfx only when a creature node exists) Attack(EnergyDamage).FromMonster.Execute then PowerCmd.Apply<StrengthPower>(Creature, 2).",
     "<AfterAddedToRoom>d__9 and BeforeRemovedFromRoom only start/stop a looping sfx; no powers applied.",
-    "Encounters SnappingJaxfruitNormal (with Flyconid) and SlitheringStranglerNormal use it; neither sets a field. Catalog cross-check: agrees."
+    "Encounters SnappingJaxfruitNormal (with Flyconid) and SlitheringStranglerNormal use it; neither sets a field. Catalog cross-check: agrees.",
+    "v0.113.1 re-review: unchanged behaviour. Re-read HP (8, 34, 31)/(8, 36, 33), EnergyDamage (9, 4, 3), GenerateMoveStateMachine single ENERGY_ORB_MOVE [SingleAttackIntent, BuffIntent] looping on itself, and <EnergyOrb> MoveNext: Attack(EnergyDamage) then Apply<StrengthPower>(Creature, 2). Only diffs: AttackCommand.WithAttackerFx and a new sfx string (visual/audio)."
    ],
    "fingerprint": "b3f60fecf7de5e68eba1af20388a8c05fcd308cc9a2dd08e4d6e71a21f5f3c7b",
    "hook_tokens": {
@@ -51172,9 +51195,9 @@
      }
     ]
    },
-   "reviewed_by": "TASK-025 monsters batch 5",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "d0db40f87e3f5fcb3285c67c1e392114a8c396191d19b2092010820409593824",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -51444,7 +51467,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review MON5",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read --dump SoulNexus (whole class). HP (8, 254, 234), Max = Min; SoulBurn (9, 31, 29); Maelstrom (9, 7, 6) x MaelstromRepeat (9, 4, 4); DrainLife (9, 19, 18). GenerateMoveStateMachine: SOUL_BURN [SingleAttack], MAELSTROM [MultiAttack], DRAIN_LIFE [SingleAttack, Debuff], all -> RAND; RAND AddBranch(x, 2 = CannotRepeat, 1f) x3; ctor(list, loc1) initial SOUL_BURN. <DrainLifeMove>d__25: Attack then Vulnerable 2 and Weak 2 to targets (no heal). AfterAddedToRoom only subscribes Died; AfterDeath/BeforeAnimPlayedInCompendium/BeforeRemovedFromRoom are animation. No Dread/Blitz code. Fingerprint matches.",
     "verdict": "agree"
    },
    "class": "SoulNexus",
@@ -51455,7 +51479,8 @@
     "GenerateMoveStateMachine: SOUL_BURN_MOVE [SingleAttackIntent(SoulBurnDamage)], MAELSTROM_MOVE [MultiAttackIntent(MaelstromDamage, MaelstromRepeat)], DRAIN_LIFE_MOVE [SingleAttackIntent(DrainLifeDamage), DebuffIntent]; all three FollowUpState = RAND; RAND.AddBranch(x, 2, 1f) three times, overload (state, repeatType, weight) confirmed from the signature blob (20-03-01-12-88-48-11-88-3C-0C): MoveRepeatType 2 = CannotRepeat, weight 1; ctor initial = SOUL_BURN_MOVE (ldloc.1).",
     "<SoulBurnMove>d__22::MoveNext: Attack(SoulBurnDamage). <MaelstromMove>d__23: Attack(MaelstromDamage).WithHitCount(MaelstromRepeat). <DrainLifeMove>d__24: Attack(DrainLifeDamage), Apply<VulnerablePower>(targets, 2), Apply<WeakPower>(targets, 2). No heal despite the name.",
     "<AfterAddedToRoom>d__18 only subscribes Died; AfterDeath / BeforeRemovedFromRoom handle animation tracks and sfx; no powers applied. Encounters.SoulNexusElite uses this monster.",
-    "Catalog cross-check: agrees. ShouldShowMoveInBestiary hides MAELSTROM_MOVE (display only)."
+    "Catalog cross-check: agrees. ShouldShowMoveInBestiary hides MAELSTROM_MOVE (display only).",
+    "v0.113.1 re-review: unchanged behaviour. Re-read HP (8, 254, 234), SoulBurn (9, 31, 29), Maelstrom (9, 7, 6) x (9, 4, 4), DrainLife (9, 19, 18), GenerateMoveStateMachine (three moves -> RAND, AddBranch(x, 2 = CannotRepeat, 1f) x3, initial loc1 SOUL_BURN_MOVE) and <DrainLifeMove>d__25 (Vulnerable 2, Weak 2). Only diffs: new BeforeAnimPlayedInCompendium override, Creature.GetCreatureNode call and a \"die\" anim string (compendium/visual)."
    ],
    "fingerprint": "4679dfd08337a5adb905602194ba481ec3f6cd4224003f5e44aca55eda9d60eb",
    "hook_tokens": {
@@ -51597,9 +51622,9 @@
      }
     ]
    },
-   "reviewed_by": "TASK-025 monsters batch 5",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "ec93033bc8c3b8d24c2c9ed9ae02fd67641c5d731dd30a2f573c88d7fa3b39f9",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -52103,7 +52128,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review MON5",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read --dump TestSubject. Normal-mode values: FirstFormHp (8, 111, 100) = Min = Max; SecondFormHp (8, 212, 200); ThirdFormHp (8, 313, 300); Bite (9, 22, 20); SkullBash (9, 16, 14); MultiClaw (9, 11, 10); BaseMultiClawCount IsDread ? 4 : 3; Phase3Lacerate (9, 11, 10) x 3; BigPounce 45; BurnCount (9, 5, 3); BurningGrowlStrengthGain (9, 3, 2) + (IsDread ? 3 : 0); EnrageAmount (9, 3, 2) + (IsDread ? 1 : 0). Entry uses only the non-Dread values. GenerateMoveStateMachine: RESPAWN [Heal, Buff] MustPerformOnce = DeadState -> REVIVE_BRANCH (AddState MULTI_CLAW b__70_1, PHASE3_LACERATE b__70_2); BITE <-> SKULL_BASH; MULTI_CLAW -> itself; PHASE3_LACERATE -> BIG_POUNCE -> BURNING_GROWL -> PHASE3_LACERATE; initial loc1 BITE. <AfterAddedToRoom>: Adaptable 1, Enrage(EnrageAmount). <RespawnMove>: Respawns+1, AdaptablePower.DoRevive, 1 -> Revive(SecondFormHp) + PainfulStabs 1; 2 -> Revive(ThirdFormHp) + Nemesis 1, remove Adaptable and PainfulStabs. <Revive>: ScaleHpForMultiplayer, SetMaxHp, Heal. SkullBash Vulnerable 1; MultiClaw WithHitCount(MultiClawTotalCount) then ExtraMultiClawCount+1; BurningGrowl AddToCombatAndPreview<Burn>(targets, 3 Discard, BurnCount, null, 1 Bottom) then Strength. AdaptablePower changed fingerprint but has no call/string diff; Enrage/PainfulStabs/Nemesis unchanged. Fingerprint matches.",
     "verdict": "agree"
    },
    "class": "TestSubject",
@@ -52123,7 +52149,9 @@
     "PainfulStabsPower.<AfterAttack>d__8: command.Attacker == Owner, target side != owner side, IsPoweredAttack, any result with UnblockedDamage > 0 -> per player receiver: AddToCombatAndPreview<Wound>(receiver, PileType 3 = Discard, Amount * (count of that player's results with UnblockedDamage > 0), null, 1).",
     "NemesisPower.<AfterSideTurnEnd>d__5: participants contains Owner -> _shouldApplyIntangible = !_shouldApplyIntangible; if true Apply<IntangiblePower>(Owner, Decimal.One), else remove IntangiblePower if present.",
     "TestSubject.AfterDeath (hook): only when the Adaptable power is gone (final death): colour and music. get_ShouldDisappearFromDoom: !(Respawns < 2). Encounters.TestSubjectBoss uses this monster.",
-    "Catalog cross-check: the catalog has no HP; the IL gives 100/200/300 (A8 111/212/313). The catalog lists BURNING_GROWL Strength 2 without the ascension value 3 and no Burn count (IL 3, A9 5); MULTI_CLAW has no hit count in the catalog (IL 3 + 1 per previous use). Other numbers agree."
+    "Catalog cross-check: the catalog has no HP; the IL gives 100/200/300 (A8 111/212/313). The catalog lists BURNING_GROWL Strength 2 without the ascension value 3 and no Burn count (IL 3, A9 5); MULTI_CLAW has no hit count in the catalog (IL 3 + 1 per previous use). Other numbers agree.",
+    "v0.113.1 re-review: unchanged behaviour outside Dread mode. The only diff is AscensionHelper.IsDread: get_BaseMultiClawCount = IsDread ? 4 : 3; get_BurningGrowlStrengthGain = (9, 3, 2) + (IsDread ? 3 : 0); get_EnrageAmount = (9, 3, 2) + (IsDread ? 1 : 0). Dread mode (AscensionHelper.IsDread) is outside the Guide's scope and is not recorded in the fact.",
+    "Re-read GenerateMoveStateMachine (RESPAWN_MOVE DeadState with MustPerformOnceBeforeTransitioning -> REVIVE_BRANCH; BITE <-> SKULL_BASH; MULTI_CLAW -> itself; PHASE3_LACERATE -> BIG_POUNCE -> BURNING_GROWL -> PHASE3_LACERATE; REVIVE_BRANCH AddState(MULTI_CLAW, b__70_1 Respawns < 2), AddState(PHASE3_LACERATE, b__70_2); initial loc1 BITE_MOVE), all getters (HP 100/200/300, A8 111/212/313; Bite (9, 22, 20); SkullBash (9, 16, 14); MultiClaw (9, 11, 10); Lacerate x 3; BigPounce 45; BurnCount (9, 5, 3)), <BurningGrowlMove> AddToCombatAndPreview<Burn>(PileType 3 = Discard, count, null, 1 = Bottom), <RespawnMove> (Revive(SecondFormHp) + PainfulStabs 1; Revive(ThirdFormHp) + Nemesis 1, remove Adaptable and PainfulStabs). AdaptablePower changed fingerprint with no call/string diff; re-dumped: AfterDeath still sets isReviving and calls TestSubject.TriggerDeadState, ShouldStopCombatFromEnding true. EnragePower, PainfulStabsPower, NemesisPower unchanged."
    ],
    "fingerprint": "c64be185670df6294565a486d728f66f0cb8ac3e5d451cb8f2bee32a1ae266bc",
    "hook_tokens": {
@@ -52497,9 +52525,9 @@
      }
     ]
    },
-   "reviewed_by": "TASK-025 monsters batch 5",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "4c15bcf2552864e0685c5d80f7877b2945282cc07735916732d3102e94a56e93",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -53515,7 +53543,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review MON6",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read --dump ThievingHopper. HP (8, 84, 79), Max = Min; Theft (9, 19, 17), HatTrick (9, 23, 21), Nab (9, 16, 14). GenerateMoveStateMachine: loc1 THIEVERY [SingleAttack(Theft), CardDebuff] -> loc4 FLUTTER [Buff] -> loc3 HAT_TRICK -> loc2 NAB -> loc5 ESCAPE [Escape] -> loc5; ctor(list, loc1) so initial THIEVERY. <AfterAddedToRoom>d__27: Apply<EscapeArtistPower>(self, 5). <FlutterMove>d__39: set_IsHovering(true), Apply<FlutterPower>(self, 5). <EscapeMove>d__40: CreatureCmd.Escape(self, true). <ThieveryMove>d__36: per target not IsDead, Player ?? PetOwner, CardPile.GetCards(player, [1 Draw, 3 Discard]).Where(b__36_0: DeckVersion != null && Rarity != 10).ToList; candidate list defaults to all, replaced by the first _stealPriorities tier with Any; RunRng.CombatCardSelection.NextItem; RemoveFromCombat; then per stolen card SwipePower.ToMutable/Steal/Apply(1); finally Attack(Theft).WithNoAttackerAnim. Tiers: b__43_0 !Imbued && Rarity 3; b__43_1 !Imbued && Rarity in {2,4,6} (switch on Rarity-2, offsets 2,6,2,6,2: 2 -> true, 6 -> false); b__43_2 !Imbued && Rarity == 1 only; b__43_3 Rarity 5 || Imbued. Extract diff: CombatCardGeneration -> CombatCardSelection only. Swipe/Flutter/EscapeArtist power fingerprints unchanged. No Dread/Blitz code. The old tier-3 {1,10} cannot be re-read (no old IL), but the Quest exclusion and Basic-only tier match the current IL. Fingerprint matches.",
     "verdict": "agree"
    },
    "class": "ThievingHopper",
@@ -53525,13 +53554,15 @@
     "get_MinInitialHp (8, 84, 79); get_MaxInitialHp returns MinInitialHp. get_TheftDamage (9, 19, 17); get_HatTrickDamage (9, 23, 21); get_NabDamage (9, 16, 14).",
     "AfterAddedToRoom MoveNext: base call then PowerCmd.Apply<EscapeArtistPower>(Creature, 5).",
     "GenerateMoveStateMachine: THIEVERY_MOVE [SingleAttackIntent(TheftDamage), CardDebuffIntent] -> FLUTTER_MOVE [BuffIntent] -> HAT_TRICK_MOVE [SingleAttackIntent(HatTrickDamage)] -> NAB_MOVE [SingleAttackIntent(NabDamage)] -> ESCAPE_MOVE [EscapeIntent] -> ESCAPE_MOVE; ctor initial = THIEVERY_MOVE (ldloc.1). No random or conditional states.",
-    "<ThieveryMove>d__36 MoveNext: for each target not IsDead: player = target.Player ?? target.PetOwner; CardPile.GetCards(player, PileType[]{1 Draw, 3 Discard}).Where(c => c.DeckVersion != null); loop over static _stealPriorities taking the first predicate with any match; Rng.NextItem (RunRng.CombatCardGeneration); CardPileCmd.RemoveFromCombat(card). Then per stolen card: ModelDb.Power<SwipePower>().ToMutable; swipe.Steal(card); PowerCmd.Apply(swipe, Creature, Decimal.One, Creature). Finally DamageCmd.Attack(TheftDamage).FromMonster.WithNoAttackerAnim.Execute - the steal happens before the damage.",
-    ".cctor _stealPriorities (--enum CardRarity: 1 Basic, 2 Common, 3 Uncommon, 4 Rare, 5 Ancient, 6 Event, 10 Quest): b__43_0 Enchantment not Imbued && Rarity == 3; b__43_1 not Imbued && Rarity in {2,4,6} (switch on Rarity-2, targets 2,6,2,6,2); b__43_2 not Imbued && Rarity in {1,10}; b__43_3 Rarity == 5 || Enchantment is Imbued.",
+    "<ThieveryMove>d__36 MoveNext: for each target not IsDead: player = target.Player ?? target.PetOwner; CardPile.GetCards(player, PileType[]{1 Draw, 3 Discard}).Where(c => c.DeckVersion != null && c.Rarity != 10 Quest) (v0.113.1); loop over static _stealPriorities taking the first predicate with any match; Rng.NextItem (v0.113.1: RunRng.CombatCardSelection); CardPileCmd.RemoveFromCombat(card). Then per stolen card: ModelDb.Power<SwipePower>().ToMutable; swipe.Steal(card); PowerCmd.Apply(swipe, Creature, Decimal.One, Creature). Finally DamageCmd.Attack(TheftDamage).FromMonster.WithNoAttackerAnim.Execute - the steal happens before the damage.",
+    ".cctor _stealPriorities (--enum CardRarity: 1 Basic, 2 Common, 3 Uncommon, 4 Rare, 5 Ancient, 6 Event, 10 Quest): b__43_0 Enchantment not Imbued && Rarity == 3; b__43_1 not Imbued && Rarity in {2,4,6} (switch on Rarity-2, targets 2,6,2,6,2); b__43_2 not Imbued && Rarity == 1 (v0.113.1; was {1,10}); b__43_3 Rarity == 5 || Enchantment is Imbued.",
     "SwipePower: Steal sets Target = card.Owner.Creature, StolenCard = card, and if card.DeckVersion != null CardPileCmd.RemoveFromDeck(DeckVersion) + MarkLootStolen. BeforeDeath(creature == Owner, StolenCard?.DeckVersion != null): RunState.AddCard + SpecialCardReward + MarkLootReturned.",
     "FlutterMove: set_IsHovering(true); PowerCmd.Apply<FlutterPower>(Creature, 5). FlutterPower: CanonicalVars DamageDecrease 50; ModifyDamageMultiplicative returns 50/100 for powered attacks on the owner; AfterDamageReceived (target == Owner, result.UnblockedDamage != 0, props.IsPoweredAttack): PowerCmd.Decrement; if Amount <= 0: CreatureCmd.Stun(Owner, StunnedMove, StateLog.Last().GetNextState(Owner, MonsterAi rng)) and ThievingHopper.IsHovering = false.",
     "MonsterMoveStateMachine.FindNextMoveState adds the newly selected move to StateLog when the move is rolled (addToLog true from RollMove), so during the player's turn StateLog.Last() is the announced move; Creature.StunInternal builds a transient MoveState 'STUNNED' [StunIntent] with FollowUpStateId = the given id and MonsterModel.SetMoveImmediate.",
     "EscapeArtistPower.AfterSideTurnEnd: if participants contains Owner and Amount > 1 -> PowerCmd.Decrement; StartPulsing at 1. It has no other hook; the escape is ESCAPE_MOVE: CreatureCmd.Escape(Creature, true).",
-    "Catalog cross-check: HP, damage numbers, innate ESCAPE_ARTIST 5, FLUTTER 5 and the move chain agree. Catalog does not describe the card theft."
+    "Catalog cross-check: HP, damage numbers, innate ESCAPE_ARTIST 5, FLUTTER 5 and the move chain agree. Catalog does not describe the card theft.",
+    "v0.113.1 re-review: CHANGED (theft target only). <ThieveryMove>b__36_0 now filters DeckVersion != null && Rarity != 10 (Quest), so Quest cards can never be stolen (old: Quest cards were in tier 3 with Basic); <.cctor>b__43_2 is now not Imbued && Rarity == 1 (Basic only). The random pick uses RunRng.CombatCardSelection instead of CombatCardGeneration (RNG stream only). Matches the patch-note hint.",
+    "Re-read unchanged parts: HP (8, 84, 79), Theft (9, 19, 17), HatTrick (9, 23, 21), Nab (9, 16, 14); GenerateMoveStateMachine THIEVERY -> FLUTTER -> HAT_TRICK -> NAB -> ESCAPE -> ESCAPE, initial loc1 THIEVERY_MOVE; b__43_0 / b__43_1 / b__43_3 tiers as before; ThieveryMove still steals (RemoveFromCombat, SwipePower) before the attack. SwipePower, FlutterPower, EscapeArtistPower fingerprints unchanged."
    ],
    "fingerprint": "c9a0a4986d4903da6c75ebd7c6d8c3a03982fef2d7031b9b158882148cc38e53",
    "hook_tokens": {
@@ -53630,19 +53661,20 @@
     {
      "effects": [
       {
-       "amount_text": "CardPileCmd.RemoveFromCombat(card); a new SwipePower instance holds it: SwipePower.Steal sets StolenCard and removes card.DeckVersion from the run deck (CardPileCmd.RemoveFromDeck); the power is applied to the Hopper with amount 1. Nothing is stolen if draw and discard hold no deck cards.",
+       "amount_text": "CardPileCmd.RemoveFromCombat(card); a new SwipePower instance holds it: SwipePower.Steal sets StolenCard and removes card.DeckVersion from the run deck (CardPileCmd.RemoveFromDeck); the power is applied to the Hopper with amount 1. Nothing is stolen if draw and discard hold no non-Quest deck cards.",
        "choice": "random",
        "count": 1,
        "destination": "stolen",
        "filter": {
-        "deck_card": true
+        "deck_card": true,
+        "not_rarity": "Quest"
        },
        "from": [
         "draw",
         "discard"
        ],
        "kind": "move_card",
-       "priority_text": "first non-empty tier: (1) Uncommon and not Imbued-enchanted; (2) Common/Rare/Event and not Imbued; (3) Basic/Quest and not Imbued; (4) Ancient or Imbued; if no tier matches, any deck card in draw+discard. One random card (RunRng.CombatCardGeneration) per living target player.",
+       "priority_text": "candidates: deck cards in draw+discard that are not Quest rarity; first non-empty tier: (1) Uncommon and not Imbued-enchanted; (2) Common/Rare/Event and not Imbued; (3) Basic and not Imbued; (4) Ancient or Imbued; if no tier matches, any candidate. One random card (RunRng.CombatCardSelection) per living target player.",
        "target": "player"
       },
       {
@@ -53768,9 +53800,9 @@
      }
     ]
    },
-   "reviewed_by": "TASK-025 monsters batch 6",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "03b908080b5db684acbd5661e5d3a9d1e9ecdc40075602fd18fd883f00134499",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -54107,7 +54139,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review MON6",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read --dump ToughEgg. HP (8, 15, 14)/(8, 19, 18); HatchlingMinHp (8, 20, 19), HatchlingMaxHp (8, 23, 22); Nibble (9, 5, 4). GenerateMoveStateMachine: HATCH_MOVE [SummonIntent] -> NIBBLE_MOVE [SingleAttack(Nibble)] -> NIBBLE_MOVE, set_AfterHatchedState(NIBBLE), ctor(list, loc1) initial HATCH. <AfterAddedToRoom>d__33: if !IsHatched Apply<HatchPower>(self, CurrentSide == 2 ? 2 : 1) else Hatch() + ForceCurrentState(AfterHatchedState). <HatchMove>d__35: set_IsHatched(true), Remove<HatchPower>, _hatched = true, remove every power where b__35_0 (isinst MinionPower -> false; else !(isinst ImpaledPower)) i.e. Minion and Impaled are kept, then Hatch(). <Hatch>d__36: RunRng.Niche.NextInt(HatchlingMinHp, HatchlingMaxHp + 1), ScaleHpForMultiplayer(hp, encounter, players, act index), SetMaxAndCurrentHp. Extract diff: only ImpaledPower type reference added; HatchPower/MinionPower unchanged. No Dread/Blitz code. Fingerprint matches.",
     "verdict": "agree"
    },
    "class": "ToughEgg",
@@ -54117,11 +54150,13 @@
     "get_MinInitialHp (8, 15, 14); get_MaxInitialHp (8, 19, 18); get_HatchlingMinHp (8, 20, 19); get_HatchlingMaxHp (8, 23, 22); get_NibbleDamage (9, 5, 4).",
     "GenerateMoveStateMachine: HATCH_MOVE [SummonIntent] -> NIBBLE_MOVE [SingleAttackIntent(NibbleDamage)] -> NIBBLE_MOVE; set_AfterHatchedState(NIBBLE_MOVE); ctor initial = HATCH_MOVE.",
     "AfterAddedToRoom MoveNext: base; if !IsHatched: amount = (CombatState.CurrentSide == 2) ? 2 : 1 (--enum CombatSide: 1 Player, 2 Enemy); PowerCmd.Apply<HatchPower>(Creature, amount). Else: Hatch() and MoveStateMachine.ForceCurrentState(AfterHatchedState). set_IsHatched is only called from HatchMove (callers scan), so a freshly added egg always takes the first path.",
-    "HatchMove MoveNext: set_IsHatched(true); PowerCmd.Remove<HatchPower>(Creature); _hatched = true; for each power that is not MinionPower: PowerCmd.Remove; Hatch(). Hatch MoveNext: TriggerAnim 'Hatch'; hp = RunRng.Niche.NextInt(HatchlingMinHp, HatchlingMaxHp + 1); Creature.ScaleHpForMultiplayer(hp, encounter, players count, act index); CreatureCmd.SetMaxAndCurrentHp.",
+    "HatchMove MoveNext: set_IsHatched(true); PowerCmd.Remove<HatchPower>(Creature); _hatched = true; for each power that is not MinionPower (v0.113.1: and not ImpaledPower): PowerCmd.Remove; Hatch(). Hatch MoveNext: TriggerAnim 'Hatch'; hp = RunRng.Niche.NextInt(HatchlingMinHp, HatchlingMaxHp + 1); Creature.ScaleHpForMultiplayer(hp, encounter, players count, act index); CreatureCmd.SetMaxAndCurrentHp.",
     "HatchPower.AfterSideTurnEnd: participants contains Owner -> PowerCmd.Decrement. No other hooks.",
     "NibbleMove: Attack(NibbleDamage). get_Title switches to HATCHLING.name once _hatched.",
     "Source: Ovicopter.LayEggsMove calls CreatureCmd.Add<ToughEgg> into a free encounter slot (OvicopterNormal slots egg1..egg5); no encounter creates a ToughEgg directly.",
-    "Catalog cross-check: HP and NIBBLE 4/5 agree; catalog has no follow-ups ('Always uses HATCH') - IL: HATCH once, then NIBBLE forever. Catalog lacks the hatchling HP."
+    "Catalog cross-check: HP and NIBBLE 4/5 agree; catalog has no follow-ups ('Always uses HATCH') - IL: HATCH once, then NIBBLE forever. Catalog lacks the hatchling HP.",
+    "v0.113.1 re-review: CHANGED (minor). <HatchMove>b__35_0 now keeps ImpaledPower as well as MinionPower when hatching (isinst MinionPower -> keep; else keep if isinst ImpaledPower), so an Impaled debuff placed on the egg carries over to the hatchling. Old: only MinionPower was kept.",
+    "Re-read unchanged parts: HP (8, 15, 14)/(8, 19, 18), hatchling (8, 20, 19)-(8, 23, 22), Nibble (9, 5, 4); GenerateMoveStateMachine HATCH_MOVE [SummonIntent] -> NIBBLE_MOVE -> NIBBLE_MOVE, AfterHatchedState = NIBBLE_MOVE, initial HATCH_MOVE; <AfterAddedToRoom>d__33 Hatch amount CurrentSide == 2 ? 2 : 1."
    ],
    "fingerprint": "ff6e2db5c7a89b0f8a5bf4bbe29df85896723fe99b87be7ded8176f8310f3e04",
    "hook_tokens": {
@@ -54181,7 +54216,7 @@
        "target": "self"
       },
       {
-       "amount_text": "removes every power on the egg except MinionPower",
+       "amount_text": "removes every power on the egg except MinionPower and ImpaledPower",
        "kind": "remove_power",
        "target": "self"
       },
@@ -54235,9 +54270,9 @@
      }
     ]
    },
-   "reviewed_by": "TASK-025 monsters batch 6",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "51a08c921c9a0c29bd6f30f6ec32d1721101253e53baa599ffe4f0afed0f120d",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -54701,7 +54736,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review MON6",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read --dump TwigSlimeS (whole class). MinInitialHp (8, 8, 7), MaxInitialHp (8, 12, 11), TackleDamage (9, 5, 4); GenerateMoveStateMachine single TACKLE_MOVE [SingleAttack(Tackle)] FollowUp itself, initial TACKLE_MOVE; <TackleMove>d__11 Attack(TackleDamage) only. New get_HasPhobiaSpineSkin returns true (skin only). No Dread/Blitz code. Fingerprint matches.",
     "verdict": "agree"
    },
    "class": "TwigSlimeS",
@@ -54710,7 +54746,8 @@
     "AscensionHelper.GetValueIfAscension(level, a, b) returns a (first number) with that ascension, b otherwise; --enum AscensionLevel: 8 ToughEnemies, 9 DeadlyEnemies. Getter tuples below are written (level, a, b).",
     "get_MinInitialHp (8, 8, 7); get_MaxInitialHp (8, 12, 11); get_TackleDamage (9, 5, 4).",
     "GenerateMoveStateMachine: TACKLE_MOVE [SingleAttackIntent(TackleDamage)] -> TACKLE_MOVE; ctor initial = TACKLE_MOVE. TackleMove: Attack(TackleDamage). No other hooks.",
-    "Catalog cross-check: agrees."
+    "Catalog cross-check: agrees.",
+    "v0.113.1 re-review: unchanged behaviour. Full class re-read: HP (8, 8, 7)/(8, 12, 11), TackleDamage (9, 5, 4), GenerateMoveStateMachine TACKLE_MOVE -> itself (initial TACKLE_MOVE), <TackleMove>d__11 Attack(TackleDamage). Only diff: new get_HasPhobiaSpineSkin override returning true (cosmetic skin)."
    ],
    "fingerprint": "48af6eb79bd388401708c71100ced76f07341e019640be6301331a709c658929",
    "hook_tokens": {
@@ -54758,9 +54795,9 @@
      }
     ]
    },
-   "reviewed_by": "TASK-025 monsters batch 6",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "df7da88b54159f80a48069e26265f62d062cbf8421287e3942e0ab97a903d01f",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -55275,7 +55312,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review MON6",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read --dump WaterfallGiant. HP (8, 250, 240), Max = Min; SiphonHeal (8, 15, 10) level 8; Pressurize (9, 20, 15); Stomp (9, 16, 15); Ram (9, 11, 10); PressureUp (9, 14, 13); BasePressureGun (9, 23, 20); PressureGunIncrease 5; new SteamBoostAmount IsDread ? 4 : 3, so 3 in normal mode (Dread 4 correctly left out). GenerateMoveStateMachine: PRESSURIZE [Buff] -> STOMP [SingleAttack, Debuff, Buff] -> RAM [SingleAttack, Buff] -> SIPHON [Heal, Buff] -> PRESSURE_GUN [SingleAttack(b__70_0), Buff] -> PRESSURE_UP [SingleAttack, Buff] -> STOMP; ABOUT_TO_BLOW [Stun] MustPerformOnce (AboutToBlowState) -> EXPLODE [DeathBlow(b__70_1)] -> EXPLODE; initial loc1 PRESSURIZE. Moves: Pressurize SteamEruption(PressurizeAmount); Stomp Attack, Weak 1 (Decimal.One) to targets, SteamEruption(SteamBoost); Ram/PressureUp Attack + SteamBoost; Siphon Heal(SiphonHeal x players) + SteamBoost; PressureGun Attack(CurrentPressureGunDamage), +5, SteamBoost; AboutToBlow stores GetPowerAmount<SteamEruption> and removes it; Explode Attack(SteamEruptionDamage) then CreatureCmd.Kill. AfterAddedToRoom sets CurrentPressureGunDamage = Base. TriggerAboutToBlowState: IsAboutToBlow, SetMaxAndCurrentHp 999999999, SetMoveImmediate(AboutToBlowState). SteamEruptionPower changed fingerprint with no call/string diff. Fingerprint matches.",
     "verdict": "agree"
    },
    "class": "WaterfallGiant",
@@ -55289,7 +55327,9 @@
     "SteamEruptionPower.AfterDeath MoveNext: if !wasRemovalPrevented && creature == Owner -> ((WaterfallGiant)creature.Monster).TriggerAboutToBlowState(). TriggerAboutToBlowState: set_IsAboutToBlow(true); CreatureCmd.SetMaxAndCurrentHp(Creature, 999999999); Creature.HpDisplay = 2; SetMoveImmediate(AboutToBlowState, true).",
     "AboutToBlowMove: SteamEruptionDamage = Creature.GetPowerAmount<SteamEruptionPower>(); PowerCmd.Remove<SteamEruptionPower>. ExplodeMove: Attack(SteamEruptionDamage).FromMonster; CreatureCmd.Kill(Creature, false). DeathBlowIntent derives from SingleAttackIntent (IntentType 13).",
     "WaterfallGiant.AfterDeath itself only updates music/ambient sfx (and returns early while it still has SteamEruption). Encounter: WaterfallGiantBoss.",
-    "Catalog cross-check: HP, damages and STEAM_ERUPTION amounts agree; catalog has no heal number for SIPHON (IL 10, A8 15, x players), no PRESSURE_GUN damage (IL 20 / A9 23, +5 per use), no A9 value for PRESSURIZE (20) and no EXPLODE damage rule."
+    "Catalog cross-check: HP, damages and STEAM_ERUPTION amounts agree; catalog has no heal number for SIPHON (IL 10, A8 15, x players), no PRESSURE_GUN damage (IL 20 / A9 23, +5 per use), no A9 value for PRESSURIZE (20) and no EXPLODE damage rule.",
+    "v0.113.1 re-review: unchanged behaviour outside Dread mode. The only diff is a new get_SteamBoostAmount = IsDread ? 4 : 3, now used by STOMP, RAM, SIPHON, PRESSURE_GUN and PRESSURE_UP for Apply<SteamEruptionPower>(Creature, ...) (was ldc 3 inline); normal value still 3. Dread mode (AscensionHelper.IsDread) is outside the Guide's scope and is not recorded in the fact.",
+    "Re-read GenerateMoveStateMachine (PRESSURIZE -> STOMP -> RAM -> SIPHON -> PRESSURE_GUN -> PRESSURE_UP -> STOMP; ABOUT_TO_BLOW (MustPerformOnceBeforeTransitioning, AboutToBlowState) -> EXPLODE -> EXPLODE; lambdas now b__70_0 / b__70_1; initial loc1 PRESSURIZE_MOVE), getters HP (8, 250, 240), SiphonHeal (8, 15, 10), Pressurize (9, 20, 15), Stomp (9, 16, 15), Ram (9, 11, 10), PressureUp (9, 14, 13), BasePressureGun (9, 23, 20), PressureGunIncrease 5; Stomp Weak Decimal.One; TriggerAboutToBlowState SetMaxAndCurrentHp; Explode CreatureCmd.Kill. SteamEruptionPower changed fingerprint with no call/string diff; re-dumped: AfterDeath still calls WaterfallGiant.TriggerAboutToBlowState, ShouldStopCombatFromEnding true, not removed after owner death."
    ],
    "fingerprint": "2470f6e497ba04d639a7025829dfd1a8f5d56a9f3b6e143ca1a7a7428f32e0b0",
    "hook_tokens": {
@@ -55571,9 +55611,9 @@
      }
     ]
    },
-   "reviewed_by": "TASK-025 monsters batch 6",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "07bceaf2e0628c8dac51dee5ecb980656afda444e10f2604076ab0a5a59d16ad",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
