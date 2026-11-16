@@ -66514,8 +66514,8 @@
   },
   {
    "audit": {
-    "by": "TASK-027 ticket 01 independent review",
-    "notes": "IL matches. get_CanonicalVars: DynamicVar(\"PotionSlots\", 4). AfterObtained d__7: originalSlotCount = Owner.MaxPotionCount; PlayerCmd.GainMaxPotionCount(4, Owner) (Player.AddToMaxPotionCount); potions = PotionFactory.CreateRandomPotionsOutOfCombat(Owner, 4, RunState.Rng.CombatPotionGeneration, null); then for each: PotionCmd.TryToProcure(potion.ToMutable(), Owner, originalSlotCount + i). CreateRandomPotions rolls rarity per pick (NextFloat <= 0.1 Rare, <= 0.35 Uncommon, else Common), takes Rng.NextItem among unlocked character + shared potions of that rarity, and removes each pick, so the 4 potions are distinct. TryToProcure d__1 returns success false, failureReason 2 when Hook.ShouldProcurePotion is false (e.g. Sozu), otherwise Player.AddPotionInternal(potion, slotIndex). The slots are gained either way. No combat or between-fight hook.",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read <AfterObtained>d__7: originalSlotCount = Owner.MaxPotionCount; PlayerCmd.GainMaxPotionCount(PotionSlots 4); PotionFactory.CreateRandomPotionsOutOfCombat(Owner, 4, Owner.PlayerRng.NonCombatGeneration, null); TryToProcure each into slot originalSlotCount + i. get_CanonicalVars PotionSlots 4, rarity 7. Extract diff: only the RNG stream calls changed (RunState.Rng.CombatPotionGeneration -> PlayerRng.NonCombatGeneration). obtain [potion_slots 4, gain_potion random x4] complete; no other hook, so no between_fights. fingerprint equals the current extract record.",
     "verdict": "agree"
    },
    "category": "irrelevant",
@@ -66527,7 +66527,9 @@
     "TASK-027: get_CanonicalVars: DynamicVar(\"PotionSlots\", 4). AfterObtained 06001C0C (d__7): originalSlotCount = Owner.MaxPotionCount; PlayerCmd.GainMaxPotionCount(PotionSlots 4, Owner); potions = PotionFactory.CreateRandomPotionsOutOfCombat(Owner, 4, RunState.Rng.CombatPotionGeneration, null); for i: PotionCmd.TryToProcure(potion.ToMutable(), Owner, slotIndex originalSlotCount + i) -> each of the 4 new slots gets one potion. get_Rarity 7 (Ancient)",
     "Potion distribution (PotionFactory.CreateRandomPotions, 4 picks in one call): each pick rolls rarity with rng.NextFloat(1): <= 0.1 -> Rare (3), <= 0.35 -> Uncommon (2), else Common (1), then Rng.NextItem (uniform) among Character.PotionPool + SharedPotionPool unlocked potions of that rarity; a picked potion is removed from the candidate list -> the 4 potions are distinct",
     "PotionCmd.TryToProcure d__1: fails (failureReason 2) when Hook.ShouldProcurePotion is false (e.g. Sozu); the 4 slots are gained either way",
-    "catalog cross-check: 'gain 4 potion slots filled with random potions' on pickup; agrees"
+    "catalog cross-check: 'gain 4 potion slots filled with random potions' on pickup; agrees",
+    "v0.113.1 re-review: unchanged behaviour. Only the RNG stream changed: CreateRandomPotionsOutOfCombat now uses Owner.PlayerRng.NonCombatGeneration (was RunState.Rng.CombatPotionGeneration); gain 4 potion slots then TryToProcure 4 random potions into slots originalSlotCount + i, as before",
+    "v0.113.1: get_CanonicalVars DynamicVar(\"PotionSlots\", 4); get_Rarity 7; <AfterObtained>d__7::MoveNext: Owner.MaxPotionCount -> originalSlotCount; PlayerCmd.GainMaxPotionCount(PotionSlots, Owner); PotionFactory.CreateRandomPotionsOutOfCombat(Owner, PotionSlots, Owner.PlayerRng.NonCombatGeneration, null); foreach PotionCmd.TryToProcure(potion.ToMutable(), Owner, originalSlotCount + i). No combat hook"
    ],
    "fingerprint": "79c97400eb74858ea5730132e4774280b42bf91d74b010d0ec7888c84c7dbd68",
    "hook_tokens": {
@@ -66548,9 +66550,9 @@
      "potion": "random"
     }
    ],
-   "reviewed_by": "TASK-027 ticket 01",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "b2c0b115d85188860aa8aa903cb4677b8e8566dccc5cd057b7a9ea58940a2208",
-   "status": "stale",
+   "status": "converted",
    "triage": {
     "category": "irrelevant",
     "hook_groups": {
@@ -66703,8 +66705,8 @@
   },
   {
    "audit": {
-    "by": "TASK-027 ticket 01 independent review",
-    "notes": "IL matches. get_TranscendenceUpgrades: Bash->Break, Neutralize->Suppress, Unleash->Protector, FallingStar->MeteorShower, Dualcast->Quadcast. GetTranscendenceStarterCard = player.Deck.Cards.FirstOrDefault(TranscendenceUpgrades.ContainsKey(card.Id)), i.e. the first in deck order. GetTranscendenceTransformedCard does RunState.CreateCard(mapped, owner), CardCmd.Upgrade(new) if card.IsUpgraded, and CardCmd.Enchant(card.Enchantment.MutableClone(), new, Amount) if the card has an enchantment; it falls back to CreateCard<Doubt> for an unmapped card. SetupForPlayer returns false when no starter is found. Orobas.get_OptionPool3 then omits the option, but adds it unconditionally when the event has no Owner. AfterObtained d__27 recomputes the starter (it does not read the saved StarterCard/AncientCard) and calls CardCmd.Transform(starter, transformed, CardPreviewStyle 1). Transform replaces the card at the same deck index with no upgrade step and applies Hook.ModifyCardBeingAddedToDeck. AfterCloned only resets the hover-tip list. The non-spec into.map / keep_upgrade / keep_enchantment keys are flagged in open_questions.",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read get_TranscendenceUpgrades: six Dictionary.Add pairs Bash->Break, Neutralize->Suppress, Unleash->Protector, FallingStar->MeteorShower, Dualcast->Quadcast, FoolishShot->DivineShot (extract diff adds exactly ModelDb.Card<FoolishShot>/<DivineShot>). GetTranscendenceStarterCard = Deck.Cards.FirstOrDefault(ContainsKey); GetTranscendenceTransformedCard: CreateCard(mapped), CardCmd.Upgrade if source IsUpgraded, CardCmd.Enchant(source enchantment MutableClone, Amount); Doubt only for an unmapped card. SetupForPlayer sets StarterCard / AncientCard (false when no mapped card). <AfterObtained>d__27: CardCmd.Transform(starter, transformed, 1). Claimed change (6th pair) is exactly what the IL shows; obtain map, keep_upgrade/keep_enchantment, choice first and obtain_params correct; cards:FOOLISH_SHOT and cards:DIVINE_SHOT exist in facts.json. fingerprint equals the current extract record.",
     "verdict": "agree"
    },
    "category": "irrelevant",
@@ -66717,7 +66719,9 @@
     "GetTranscendenceStarterCard(player): player.Deck.Cards.FirstOrDefault(id is a TranscendenceUpgrades key) -> the first such card in deck order (not a choice, not random). GetTranscendenceTransformedCard(card): RunState.CreateCard(mapped card, owner); CardCmd.Upgrade(new) if card.IsUpgraded; if card has an enchantment, CardCmd.Enchant(enchantment MutableClone, new, same Amount); a card outside the map would give Doubt (not reachable from SetupForPlayer / AfterObtained)",
     "SetupForPlayer(player) (called by Orobas.get_OptionPool3 when the event has an Owner): starter = GetTranscendenceStarterCard; null -> returns false and Orobas does not add the option; else StarterCard = starter.ToSerializable(), AncientCard = GetTranscendenceTransformedCard(starter).ToSerializable() -> obtain_params name these two saved properties; both follow from the deck (first Basic starter card in deck order, its upgrade and enchantment), so they can be derived from the run state",
     "AfterObtained 06001C2D (d__27): starter = GetTranscendenceStarterCard(Owner) (recomputed at pickup); CardCmd.Transform(starter, GetTranscendenceTransformedCard(starter), CardPreviewStyle 1). AfterCloned 06001C26 only resets the hover-tip list. get_CanonicalVars: StringVar StarterCard / AncientCard (text only). get_Rarity 7 (Ancient)",
-    "catalog cross-check: 'transform a starter card into its Ancient version' on pickup; agrees"
+    "catalog cross-check: 'transform a starter card into its Ancient version' on pickup; agrees",
+    "v0.113.1 re-review: changed. get_TranscendenceUpgrades gained a sixth pair FoolishShot -> DivineShot (new character); old map had 5 pairs -> new map has 6. Rest unchanged: first matching deck card (FirstOrDefault), CreateCard of the mapped card, Upgrade if the source was upgraded, Enchant with a clone of the source enchantment, CardCmd.Transform at pickup; SetupForPlayer still fails (no option) when no mapped card is in the deck",
+    "v0.113.1: get_TranscendenceUpgrades Dictionary adds Bash->Break, Neutralize->Suppress, Unleash->Protector, FallingStar->MeteorShower, Dualcast->Quadcast, FoolishShot->DivineShot; GetTranscendenceStarterCard Deck.Cards.FirstOrDefault(ContainsKey); GetTranscendenceTransformedCard; <AfterObtained>d__27::MoveNext CardCmd.Transform(starter, transformed, 1); get_Rarity 7"
    ],
    "fingerprint": "f16f8a7c3554e2d6913aa20a062c986bfc652fc26139bfa41cd40d83baa4a0e8",
    "hook_tokens": {
@@ -66739,7 +66743,8 @@
        "Neutralize",
        "Unleash",
        "FallingStar",
-       "Dualcast"
+       "Dualcast",
+       "FoolishShot"
       ]
      },
      "into": {
@@ -66747,6 +66752,7 @@
        "Bash": "Break",
        "Dualcast": "Quadcast",
        "FallingStar": "MeteorShower",
+       "FoolishShot": "DivineShot",
        "Neutralize": "Suppress",
        "Unleash": "Protector"
       }
@@ -66764,9 +66770,9 @@
    "open_questions": [
     "transform_cards 'into': {'map': ...} (result fixed per source card) and keep_upgrade / keep_enchantment (result upgraded when the source was, enchantment copied) are not in the documented vocabulary"
    ],
-   "reviewed_by": "TASK-027 ticket 01",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "5eb19bc56da8a716180a85d7adad7150d0b08b919c4a7f6888f69e65f272b882",
-   "status": "stale",
+   "status": "converted",
    "triage": {
     "category": "irrelevant",
     "hook_groups": {
@@ -67118,8 +67124,8 @@
   },
   {
    "audit": {
-    "by": "TASK-027 ticket 01 independent review",
-    "notes": "IL matches. AfterObtained (synchronous): PileType 6 (Deck) cards .Where(ModelDb.Enchantment<Swift>.CanEnchant) -> IEnumerableExtensions.TakeRandom(Cards 4, RunState.Rng.Niche) (= ToList, ListExtensions.UnstableShuffle Fisher-Yates, Take 4) -> foreach CardCmd.Enchant<Swift>(card, DynamicVars[\"Swift\"].IntValue 2). get_CanonicalVars: CardsVar 4, DynamicVar(\"Swift\", 2). Swift overrides no CanEnchant / CanEnchantCardType / IsStackable; base EnchantmentModel.CanEnchant returns false for CardType 4-6, for a Deck-pile card with CardKeyword 4 Unplayable, and for a card that already has an enchantment (IsStackable false). No combat or between-fight hook.",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read AfterObtained (synchronous): Deck (PileType 6) cards Where(Swift.CanEnchant) -> TakeRandom(Cards 4, PlayerRng.NonCombatGeneration) -> CardCmd.Enchant<Swift>(card, Swift 2). CanonicalVars CardsVar 4, Swift 2, rarity 7. Only the RNG stream changed (Niche -> NonCombatGeneration). obtain enchant_cards Swift 2 x4 random, filter can_enchant correct; no other hook. fingerprint equals the current extract record.",
     "verdict": "agree"
    },
    "category": "irrelevant",
@@ -67132,7 +67138,9 @@
     "AfterObtained 06001C55 (synchronous, returns Task.CompletedTask): PileType 6 (Deck).GetPile(Owner).Cards.Where(ModelDb.Enchantment<Swift>.CanEnchant) -> IEnumerableExtensions.TakeRandom(Cards.IntValue=4, RunState.Rng.Niche) -> foreach CardCmd.Enchant<Swift>(card, DynamicVars[\"Swift\"].IntValue=2)",
     "TakeRandom = ToList + ListExtensions.UnstableShuffle(rng) + Take(n): 4 distinct eligible cards, every eligible card when fewer than 4; not a player choice",
     "Swift overrides no CanEnchant / CanEnchantCardType / IsStackable -> base EnchantmentModel.CanEnchant: false for CardType 4..6 (Status, Curse, Quest); false for a card in the Deck pile with CardKeyword 4 (Unplayable); false when the card already has an enchantment (Swift is not stackable); otherwise true. Basic Strike/Defend are eligible",
-    "Swift effect (enchantments:SWIFT fact): the first time the enchanted card is played each combat, draw Amount (2) cards"
+    "Swift effect (enchantments:SWIFT fact): the first time the enchanted card is played each combat, draw Amount (2) cards",
+    "v0.113.1 re-review: unchanged behaviour. Only the RNG stream changed: TakeRandom now uses Owner.PlayerRng.NonCombatGeneration (was RunState.Rng.Niche); still 4 random deck cards (PileType 6) passing Swift.CanEnchant, each CardCmd.Enchant<Swift>(card, 2)",
+    "v0.113.1: get_CanonicalVars CardsVar(4), DynamicVar(\"Swift\", 2); get_Rarity 7; AfterObtained: Deck.Cards.Where(swift.CanEnchant).TakeRandom(Cards, PlayerRng.NonCombatGeneration) -> CardCmd.Enchant<Swift>(card, Swift.IntValue)"
    ],
    "fingerprint": "c954e0bc8bb8d8023f6572369f9cbbcc1fe21a908b3d274f5cf0f0c558275ce6",
    "hook_tokens": {
@@ -67157,9 +67165,9 @@
    "open_questions": [
     "obtain filter key 'can_enchant' (cards accepted by the enchantment's CanEnchant) is not in the documented filter vocabulary; the base CanEnchant rules (exclude Status/Curse/Quest, Unplayable deck cards, already-enchanted cards) are written in evidence because no enchantment fact records them"
    ],
-   "reviewed_by": "TASK-027 ticket 01",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "db0e41553276927075005078d458803feae57cc5170cf073c5e7ba08f9e98ca3",
-   "status": "stale",
+   "status": "converted",
    "triage": {
     "category": "irrelevant",
     "hook_groups": {
@@ -67988,9 +67996,25 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review relic-A",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read <AfterCardChangedPiles>d__18: return if Owner dead, card.Owner != Owner, or card.Pile?.Type != 6; CardsAdded += 1; CardsAddedSinceLastTrigger (CardsAdded % Cards 5) == 0 -> DoActivateVisuals + CreatureCmd.Heal(Owner, Heal 20). CardsVar 5, HealVar 20, rarity 2. Extract diff: only IsAllowed (IsBeforeAct3TreasureChest) removed, pool gating only. Effect unchanged; between_fights entry and the card_reward_choice mechanic unchanged and still accurate (vocabulary gaps already in open_questions). No AfterObtained -> obtain [] correct. fingerprint equals the current extract record.",
     "verdict": "agree"
    },
+   "between_fights": [
+    {
+     "amount_text": "every card that enters the deck pile (PileType 6) from any source counts (card rewards, merchant, events, relic pickups), not only card rewards; each 5th such card heals 20 HP; CardsAdded is never reset",
+     "condition": {
+      "card_added_to_deck": true
+     },
+     "counter": "run",
+     "effect": {
+      "amount": 20,
+      "kind": "heal"
+     },
+     "every": 5,
+     "when": "card_reward"
+    }
+   ],
    "category": "trigger",
    "class": "BookOfFiveRings",
    "entity_key": "relics:BOOK_OF_FIVE_RINGS",
@@ -67999,7 +68023,10 @@
     "AfterCardChangedPiles 06001CB4 (<AfterCardChangedPiles>d__19): owner alive, owner card, card.Pile type == 6 (Deck) -> CardsAdded += 1; when CardsAdded % 5 == 0 -> CreatureCmd::Heal(owner, 20). Counter never reset (persistent over the run).",
     "IsAllowed 06001CAB: RelicModel::IsBeforeAct3TreasureChest (pool gating only).",
     "Only deck-acquisition (out-of-combat) effect; no combat mechanic.",
-    "TASK-025 ticket 04 review fix: affects the take/skip decision itself, so it is disclosed on card rewards instead of being irrelevant"
+    "TASK-025 ticket 04 review fix: affects the take/skip decision itself, so it is disclosed on card rewards instead of being irrelevant",
+    "TASK-027 ticket 06b: AfterCardChangedPiles (<AfterCardChangedPiles>d__19): leave if Owner.Creature.IsDead or card.Owner != Owner or card.Pile?.Type != 6 (Deck); CardsAdded += 1; when CardsAdded % Cards == 0 -> DoActivateVisuals + CreatureCmd.Heal(Owner.Creature, Heal.BaseValue). get_CanonicalVars: CardsVar 5, HealVar 20. No AfterObtained; IsAllowed = IsBeforeAct3TreasureChest (pool gating only). get_Rarity 2 (Common).",
+    "v0.113.1 re-review: unchanged behaviour. The IsAllowed override (IsBeforeAct3TreasureChest, pool gating only) was removed, so the relic is no longer restricted to before the Act 3 treasure chest; the effect itself is unchanged: every card entering the Deck pile increments CardsAdded (never reset), every 5th heals 20",
+    "v0.113.1: get_CanonicalVars CardsVar(5), HealVar(20); get_Rarity 2; <AfterCardChangedPiles>d__18::MoveNext: skip if Owner.Creature.IsDead, card.Owner != Owner, or card.Pile?.Type != 6; CardsAdded += 1; CardsAddedSinceLastTrigger (CardsAdded % Cards) == 0 -> DoActivateVisuals + CreatureCmd.Heal(Owner.Creature, Heal.BaseValue). No AfterObtained"
    ],
    "fingerprint": "14d8cfe38b4092ce250d29d48bf17811d2d7924a9fbf80b6203bb9d40c9f62ba",
    "hook_tokens": {
@@ -68015,12 +68042,14 @@
      "on": "take"
     }
    ],
+   "obtain": [],
    "open_questions": [
-    "Out-of-combat value: each card added to the deck is worth 20/5 = 4 HP of healing. Spec has no vocabulary for run-level rewards tied to card acquisition (affects take-vs-skip)."
+    "Out-of-combat value: each card added to the deck is worth 20/5 = 4 HP of healing. Spec has no vocabulary for run-level rewards tied to card acquisition (affects take-vs-skip).",
+    "No between_fights 'when' for 'a card was added to the deck' from any source: written as when card_reward + non-spec condition card_added_to_deck (every 5, counter run) with amount_text. Not read: whether transforms (new card) and in-combat permanent deck additions go through AfterCardChangedPiles with the Deck pile (CardPileCmd not dumped)."
    ],
-   "reviewed_by": "TASK-025 ticket 04 batch A",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "195193f5ee85bda300766e3c3004efab00a935e40b19080b580dc1b711915b06",
-   "status": "stale",
+   "status": "converted",
    "triage": {
     "category": "trigger",
     "hook_groups": {
@@ -68223,15 +68252,26 @@
   },
   {
    "audit": {
-    "by": "structural rule (tests/test_assembly_facts.py)",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read ModifyGoldGained: player == Owner -> amount * GoldIncrease.BaseValue (decimal 125 scale 2 = 1.25), else amount; AfterModifyingGoldGained only Flash; get_IsAllowedInShops false; rarity 3. Extract diff: only the IsAllowed override (IsBeforeAct3TreasureChest) removed. between_fights gold_gained x1.25 correct, obtain [] correct. fingerprint equals the current extract record.",
     "verdict": "agree"
    },
+   "between_fights": [
+    {
+     "modifier": "gold_gained",
+     "multiply": 1.25
+    }
+   ],
    "category": "irrelevant",
    "class": "BowlerHat",
    "entity_key": "relics:BOWLER_HAT",
    "evidence": [
     "structural review: only out-of-combat hooks AfterModifyingGoldGained 06001CD0, IsAllowed 06001CCD, ModifyGoldGained 06001CCF",
-    "no combat command is called from a room-entry hook; pickup changes are already in the observed deck"
+    "no combat command is called from a room-entry hook; pickup changes are already in the observed deck",
+    "TASK-027 06b get_CanonicalVars: DynamicVar(\"GoldIncrease\", new decimal(125, 0, 0, false, scale 2)) -> 1.25. get_Rarity 3 (Uncommon); get_IsAllowedInShops false; IsAllowed = IsBeforeAct3TreasureChest",
+    "TASK-027 06b ModifyGoldGained(player, amount): player == Owner -> amount * GoldIncrease.BaseValue (1.25); AfterModifyingGoldGained only Flash. No combat hook",
+    "v0.113.1 re-review: unchanged behaviour. The IsAllowed override (IsBeforeAct3TreasureChest, pool gating only) was removed; ModifyGoldGained still multiplies the owner's gained gold by GoldIncrease 1.25",
+    "v0.113.1: get_CanonicalVars DynamicVar(\"GoldIncrease\", decimal(125, scale 2) = 1.25); get_Rarity 3; get_IsAllowedInShops false; ModifyGoldGained(player, amount): player == Owner -> amount * GoldIncrease.BaseValue, else amount; AfterModifyingGoldGained only Flash"
    ],
    "fingerprint": "4eef886c0af933a0e59727098c11b2129657c60dd7edead6daf10bbaa56c9b4e",
    "hook_tokens": {
@@ -68243,9 +68283,13 @@
     "ModifyGoldGained"
    ],
    "mechanics": [],
-   "reviewed_by": "TASK-025 ticket 04 (structural)",
+   "obtain": [],
+   "open_questions": [
+    "Rounding of the 1.25x gold amount happens in the caller of Hook.ModifyGoldGained (PlayerCmd.GainGold), which was not read."
+   ],
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "2161140f54fef3c56c126941b49841aae9411d498f9ee8d70a0eadc6aa4dbd56",
-   "status": "stale",
+   "status": "converted",
    "triage": {
     "category": "irrelevant",
     "hook_groups": {
@@ -68538,15 +68582,22 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review relic-A",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read <AfterCardExhausted>d__9: card.Owner == Owner, !WasUsedThisCombat, card.Type == 2 (Skill) -> Flash, WasUsedThisCombat = true, CardPileCmd.AddGeneratedCardToCombat(card.CreateClone(), PileType 2 Hand, Owner, true), Status 0. AfterRoomEntered (CombatRoom) and AfterCombatEnd reset the flag; rarity 5. Reorder is internal only. Mechanic (card_exhausted, Skill, copy to hand, once_per_combat) correct; no out-of-combat effect, obtain/between_fights empty correct. fingerprint equals the current extract record.",
     "verdict": "agree"
    },
+   "between_fights": [],
    "category": "trigger",
    "class": "BurningSticks",
    "entity_key": "relics:BURNING_STICKS",
    "evidence": [
     "AfterCardExhausted 06001CF9 (<AfterCardExhausted>d__9): owner card, !WasUsedThisCombat, CardModel::get_Type == 2 (Skill) -> CardModel::CreateClone -> CardPileCmd::AddGeneratedCardToCombat(clone, PileType 2 Hand, owner), then set_WasUsedThisCombat(true).",
-    "AfterRoomEntered 06001CF8 (combat room) and AfterCombatEnd 06001CFA reset WasUsedThisCombat -> once per combat."
+    "AfterRoomEntered 06001CF8 (combat room) and AfterCombatEnd 06001CFA reset WasUsedThisCombat -> once per combat.",
+    "TASK-027 06b: no out-of-combat effect; overrides checked: AfterCardExhausted, AfterCombatEnd, AfterRoomEntered, get_ExtraHoverTips, get_Rarity (5 Shop). No AfterObtained",
+    "TASK-027 06b AfterCombatEnd: WasUsedThisCombat = false, Status = 0; AfterRoomEntered: room is CombatRoom -> WasUsedThisCombat = false, Status = 1. Both only reset the once-per-combat flag",
+    "TASK-027 06b AfterCardExhausted d__9: card.Owner == Owner, not WasUsedThisCombat, card.Type == 2 (Skill) -> Flash, card.CreateClone(), CardPileCmd.AddGeneratedCardToCombat(clone, PileType 2 Hand, Owner, true), WasUsedThisCombat = true; existing card_exhausted mechanic confirmed",
+    "v0.113.1 re-review: unchanged behaviour. Internal reorder only: WasUsedThisCombat is now set before the clone is added (was after), and Status is set to 0 after the trigger (display); calls and values are the same",
+    "v0.113.1: <AfterCardExhausted>d__9::MoveNext: card.Owner == Owner, !WasUsedThisCombat, card.Type == 2 (Skill) -> Flash, WasUsedThisCombat = true, CardPileCmd.AddGeneratedCardToCombat(card.CreateClone(), PileType 2 Hand, Owner, true), Status = 0; AfterRoomEntered (CombatRoom) and AfterCombatEnd reset WasUsedThisCombat; get_Rarity 5. No AfterObtained"
    ],
    "fingerprint": "7028948700947377ef18873e2f6c9994ea3326f8a05c70615d15f11e225eb7a0",
    "hook_tokens": {
@@ -68575,12 +68626,11 @@
      "when": "card_exhausted"
     }
    ],
-   "open_questions": [
-    "Spec add_card needs a fixed card or pool; here it is a clone of the exhausted Skill. Needs a 'copy of triggering card' value (used 'copy_of_exhausted_card')."
-   ],
-   "reviewed_by": "TASK-025 ticket 04 batch A",
+   "obtain": [],
+   "open_questions": [],
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "5b2163b076f8574057e0be474cd70689bac7feea084d17163474e3a4c506f1ef",
-   "status": "stale",
+   "status": "converted",
    "triage": {
     "category": "trigger",
     "hook_groups": {
@@ -68688,8 +68738,8 @@
   },
   {
    "audit": {
-    "by": "TASK-027 ticket 01 independent review",
-    "notes": "IL matches. AfterObtained d__9: CardPileCmd.AddCurseToDeck<CurseOfTheBell>(Owner) -> AddCursesToDeck (throws unless CardType 5) -> RunState.CreateCard -> CardPileCmd.Add(card, PileType 6 Deck, CardPilePosition 1); then Cmd.Wait(0.75); then RewardsCmd.OfferCustom(Owner, GenerateRewards()). GenerateRewards with TestMode off: new RelicReward(RelicRarity 2, Owner), RelicReward(3, Owner), RelicReward(4, Owner). Each is populated by RelicFactory.PullNextRelicFromFront(player, rarity): grab-bag pull, no rarity roll, Circlet fallback. TestMode alone gives Anchor / GremlinHorn / MummifiedHand. DynamicVar(\"Relics\", 3) is text only. CurseOfTheBell: CardType 5 / rarity 9, keywords Eternal (7) + Unplayable (4), MaxUpgradeLevel 0, CanBeGeneratedByModifiers false. No combat or between-fight hook.",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read <AfterObtained>d__9: CardPileCmd.AddCurseToDeck<CurseOfTheBell>(Owner); Cmd.Wait 0.75; RewardsCmd.OfferCustom(Owner, GenerateRewards()). GenerateRewards (TestMode off): new RelicReward(rarity 2/3/4, Owner, null). Also read RelicReward (--dump-any): ctor(rarity, player, rng) stores _rarity and _rngOverride; Populate with _rarity != 0 -> RelicFactory.PullNextRelicFromFront(Player, _rarity) (player grab bag, Circlet fallback, removed from shared bag); the rng override is only used when no rarity is set. obtain (curse to deck, then Common/Uncommon/Rare next_in_pool relic rewards) correct. fingerprint equals the current extract record.",
     "verdict": "agree"
    },
    "category": "irrelevant",
@@ -68701,7 +68751,9 @@
     "TASK-027: AfterObtained 06001D0C (d__9): CardPileCmd.AddCurseToDeck<CurseOfTheBell>(Owner) (AddCursesToDeck: asserts CardType 5 Curse, CreateCard, CardPileCmd.Add(card, PileType 6 Deck, CardPilePosition 1)); Cmd.Wait(0.75); RewardsCmd.OfferCustom(Owner, GenerateRewards()). get_Rarity 7 (Ancient)",
     "GenerateRewards (TestMode off): new RelicReward(RelicRarity 2 Common, Owner), new RelicReward(3 Uncommon, Owner), new RelicReward(4 Rare, Owner) -> each Populate = RelicFactory.PullNextRelicFromFront(player, rarity) = the next relic of that rarity from the run's relic grab bag (SharedRelicPool + Character.RelicPool unlocked, shuffled per rarity), Circlet if none; only TestMode gives the fixed Anchor / GremlinHorn / MummifiedHand. get_CanonicalVars DynamicVar(\"Relics\", 3) is text only",
     "CurseOfTheBell (cards:CURSE_OF_THE_BELL fact): Curse, keywords Eternal + Unplayable, no hooks, cannot be upgraded -> a permanent dead card (Eternal cards cannot be removed or transformed from the deck)",
-    "catalog cross-check: 'gain a unique curse and 3 relics' on pickup; agrees"
+    "catalog cross-check: 'gain a unique curse and 3 relics' on pickup; agrees",
+    "v0.113.1 re-review: unchanged behaviour. RelicReward constructors gained a third Rng argument (rng override); CallingBell passes null, and with a rarity set RelicReward.Populate still calls RelicFactory.PullNextRelicFromFront(player, rarity), so the three rewards are still the next Common, Uncommon and Rare relic from the run's pool",
+    "v0.113.1: <AfterObtained>d__9::MoveNext: CardPileCmd.AddCurseToDeck<CurseOfTheBell>(Owner); Cmd.Wait(0.75); RewardsCmd.OfferCustom(Owner, GenerateRewards()); GenerateRewards (TestMode off): new RelicReward(rarity 2 / 3 / 4, Owner, null); RelicReward.Populate: _rarity != 0 -> PullNextRelicFromFront(Player, _rarity); get_CanonicalVars DynamicVar(\"Relics\", 3); get_Rarity 7"
    ],
    "fingerprint": "72bf62c18686f13ba70ce00ab32309624e260fe1f130efc2bc4879f308ddb511",
    "hook_tokens": {
@@ -68743,9 +68795,9 @@
    "open_questions": [
     "offer_rewards relic entries use non-spec keys rarity (fixed Common / Uncommon / Rare, no rarity roll) and source 'next_in_pool' (from gain_relic); the spec's relic reward entry has no fields."
    ],
-   "reviewed_by": "TASK-027 ticket 01",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "b7cffae11df7aa7985ff1469589e3475f6cb0572e938a579eb55ee88f9c74b5c",
-   "status": "stale",
+   "status": "converted",
    "triage": {
     "category": "irrelevant",
     "hook_groups": {
@@ -69872,8 +69924,8 @@
   },
   {
    "audit": {
-    "by": "TASK-027 ticket 01 independent review",
-    "notes": "AfterObtained d__9: ModelDb.CardPool<CurseCardPool>().GetUnlockedCards(Owner.UnlockState, RunState.CardMultiplayerConstraint).Where(b__9_0: CanBeGeneratedByModifiers).OrderBy(b__9_1: Id).ToList(); for i < DynamicVars['Curses'] (2): RunState.Rng.Niche.NextItem(list) -> list.Remove(card) -> RunState.CreateCard(card, Owner) -> CardPileCmd.Add(PileType 6 Deck); then for i < DynamicVars.Cards (CardsVar 3): RunState.CreateCard<Apparition>(Owner) -> CardPileCmd.Add(PileType 6). CurseCardPool.GenerateAllCards has the 18 curses listed in evidence; CardModel.get_CanBeGeneratedByModifiers returns true and AscendersBane, BadLuck, CurseOfTheBell, Enthralled, Folly, Greed, PoorSleep, SporeMind override it to false (re-dumped each), leaving exactly the 10 candidates in the draft. Two distinct random curses plus three APPARITION (no upgrade): matches; no between_fights.",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read <AfterObtained>d__9: CurseCardPool.GetUnlockedCards(UnlockState, CardMultiplayerConstraint).Where(CanBeGeneratedByModifiers).OrderBy(Id).ToList(); for i < Curses 2: PlayerRng.NonCombatGeneration.NextItem, Remove from list, CreateCard, CardPileCmd.Add(PileType 6); then for i < Cards 3: CreateCard<Apparition> -> Add(PileType 6). Only the RNG stream changed. obtain (2 distinct random curses from the 10 listed, 3 Apparition, not upgraded) correct; candidate list not re-derived by me (curse class overrides not dumped), relying on the unchanged extract. fingerprint equals the current extract record.",
     "verdict": "agree"
    },
    "category": "irrelevant",
@@ -69885,7 +69937,9 @@
     "TASK-027 ticket 01: AfterObtained d__9: pool = ModelDb.CardPool<CurseCardPool>().GetUnlockedCards(Owner.UnlockState, RunState.CardMultiplayerConstraint).Where(c => c.CanBeGeneratedByModifiers) (lambda b__9_0).OrderBy(c => c.Id).ToList(); for i < DynamicVars['Curses'] (2): card = RunState.Rng.Niche.NextItem(pool); pool.Remove(card); RunState.CreateCard(card, Owner) -> CardPileCmd.Add(PileType 6 Deck). Two different curses.",
     "Then for i < Cards.IntValue (3): RunState.CreateCard<Apparition>(Owner) -> CardPileCmd.Add(PileType 6 Deck): three APPARITION (cards:APPARITION, Ancient Skill), no upgrade call.",
     "CurseCardPool.GenerateAllCards = AscendersBane, BadLuck, Clumsy, CurseOfTheBell, Debt, Decay, Doubt, Enthralled, Folly, Greed, Guilty, Injury, Normality, PoorSleep, Regret, Shame, SporeMind, Writhe. CardModel.CanBeGeneratedByModifiers defaults to true; AscendersBane, BadLuck, CurseOfTheBell, Enthralled, Folly, Greed, PoorSleep and SporeMind override it to false, leaving Clumsy, Debt, Decay, Doubt, Guilty, Injury, Normality, Regret, Shame, Writhe.",
-    "No other gameplay override -> no between_fights; owned relic keeps empty mechanics (the cards are in the deck)."
+    "No other gameplay override -> no between_fights; owned relic keeps empty mechanics (the cards are in the deck).",
+    "v0.113.1 re-review: unchanged behaviour. Only the RNG stream changed: the curse pick uses Owner.PlayerRng.NonCombatGeneration.NextItem (was RunState.Rng.Niche); still 2 distinct curses from CurseCardPool.GetUnlockedCards.Where(CanBeGeneratedByModifiers).OrderBy(Id), then 3 Apparition, all CardPileCmd.Add to PileType 6 Deck. Curse card set and the 8 CanBeGeneratedByModifiers overrides are the same in the v0.113.1 extract",
+    "v0.113.1: get_CanonicalVars DynamicVar(\"Curses\", 2), CardsVar(3); get_Rarity 7; <AfterObtained>d__9::MoveNext as above, CardCmd.PreviewCardPileAdd for each group"
    ],
    "fingerprint": "044a813b621d6e68be339c3772db3e3f62f38dc8b20722bc90c2f45316d4a193",
    "hook_tokens": {
@@ -69927,12 +69981,12 @@
     }
    ],
    "open_questions": [
-    "add_card pool source 'curse' (CurseCardPool) and 'distinct' (picked without replacement) are not in the spec's pool vocabulary. 'candidates' lists the 10 curses that pass CanBeGeneratedByModifiers; the pick is Rng.Niche.NextItem over the remaining list each time.",
+    "add_card pool source 'curse' (CurseCardPool) and 'distinct' (picked without replacement) are not in the spec's pool vocabulary. 'candidates' lists the 10 curses that pass CanBeGeneratedByModifiers; the pick is Owner.PlayerRng.NonCombatGeneration.NextItem over the remaining list each time.",
     "CardPoolModel.GetUnlockedCards also applies FilterThroughEpochs(Owner.UnlockState): on a profile that has not unlocked some curse, the candidate list is shorter. Not resolvable from IL alone."
    ],
-   "reviewed_by": "TASK-027 ticket 01",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "52590ac92b249fb1a2dfd1895690ed098f4a6bffb36282d8b60f197e28565e2b",
-   "status": "stale",
+   "status": "converted",
    "triage": {
     "category": "irrelevant",
     "hook_groups": {
@@ -70159,15 +70213,48 @@
   },
   {
    "audit": {
-    "by": "structural rule (tests/test_assembly_facts.py)",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read TryModifyRestSiteHealRewards(player, rewards, isMimicked): player == Owner -> rewards.Add(new CardReward(CardCreationOptions.ForRoom(player, 1), 3, Owner, null, null)); Flash; true. ModifyExtraRestSiteHealText text only (LocalContext.IsMe); rarity 6; no AfterObtained. Only the CardReward constructor gained a null argument. between_fights rest_site HEAL -> one extra 3-option character card reward correct; obtain [] correct. fingerprint equals the current extract record.",
     "verdict": "agree"
    },
+   "between_fights": [
+    {
+     "effect": {
+      "kind": "offer_rewards",
+      "rewards": [
+       {
+        "options": 3,
+        "pool": {
+         "rarity_odds": "RegularEncounter",
+         "rarity_roll": "run_offset",
+         "source": "character"
+        },
+        "skippable": true,
+        "type": "card",
+        "upgrade_roll": true
+       }
+      ]
+     },
+     "filter": {
+      "option": "HEAL"
+     },
+     "when": "rest_site"
+    }
+   ],
    "category": "irrelevant",
    "class": "DreamCatcher",
    "entity_key": "relics:DREAM_CATCHER",
    "evidence": [
     "structural review: only out-of-combat hooks ModifyExtraRestSiteHealText 06001D9A, TryModifyRestSiteHealRewards 06001D99",
-    "no combat command is called from a room-entry hook; pickup changes are already in the observed deck"
+    "no combat command is called from a room-entry hook; pickup changes are already in the observed deck",
+    "TASK-027 06b: no get_CanonicalVars; get_Rarity 6 (Event); no AfterObtained -> nothing on pickup",
+    "TryModifyRestSiteHealRewards(player, rewards, isMimicked): player == Owner -> rewards.Add(new CardReward(CardCreationOptions.ForRoom(player, RoomType 1 Monster), 3, Owner, null)); Flash; returns true (isMimicked is not read)",
+    "CardCreationOptions.ForRoom(player, Monster): pools = [player.Character.CardPool], CardCreationSource 1 (Encounter), CardRarityOddsType 1 (RegularEncounter) -> the same options as a normal monster-fight card reward. CardFactory.RollForRarity with Source Encounter and odds 1..3 calls PlayerOdds.CardRarity.Roll (uses and moves the run's rare-odds offset), not RollWithBaseOdds",
+    "CardReward(options, 3, player, null): CanSkip true, Options = options.WithFlags(128 IsCardReward); Populate -> Hook.TryModifyCardRewardOptions, else CardFactory.CreateForReward(player, 3, options)",
+    "HealRestSiteOption.ExecuteRestSiteHeal d__13 (OptionId HEAL): CreatureCmd.Heal(GetHealAmount = MaxHp x 0.3 then Hook.ModifyRestSiteHealAmount) -> Hook.AfterRestSiteHeal -> rewards = new List; Hook.ModifyRestSiteHealRewards(runState, player, rewards, isMimicked) -> RewardsCmd.OfferCustom(player, rewards) -> one extra card reward each time the player rests (HEAL), mimicked heals included",
+    "ModifyExtraRestSiteHealText only appends AdditionalRestSiteHealText for the local owner",
+    "v0.113.1 re-review: unchanged behaviour. The CardReward constructor gained a fifth argument (CardSelectorStack, UI/multiplayer selection plumbing); DreamCatcher passes null for both synchronizer and selector stack. Still one extra 3-option character card reward with monster-room options added whenever the owner rests (HEAL)",
+    "v0.113.1: TryModifyRestSiteHealRewards(player, rewards, isMimicked): player == Owner -> rewards.Add(new CardReward(CardCreationOptions.ForRoom(player, RoomType 1), 3, Owner, null, null)); Flash; return true. CardReward .ctor(CardCreationOptions, Int32, Player, PlayerChoiceSynchronizer, CardSelectorStack). ModifyExtraRestSiteHealText text only; get_Rarity 6"
    ],
    "fingerprint": "e529b398c4206a501c1c15ada028f31321caad72e6da3a5d5f7eeb3bc28a9973",
    "hook_tokens": {
@@ -70179,9 +70266,13 @@
     "TryModifyRestSiteHealRewards"
    ],
    "mechanics": [],
-   "reviewed_by": "TASK-025 ticket 04 (structural)",
+   "obtain": [],
+   "open_questions": [
+    "filter key 'option' (HEAL) on when rest_site, and the card reward fields rarity_odds / rarity_roll ('run_offset' = PlayerOdds.CardRarity.Roll as in a normal combat reward, unlike the base-odds rewards of LostCoffer) / upgrade_roll are not in the documented vocabulary."
+   ],
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "3211cb81fdccd3ca40d9504c49ba7d31d6e99aad7e612a036962f04e012a12cf",
-   "status": "stale",
+   "status": "converted",
    "triage": {
     "category": "irrelevant",
     "hook_groups": {
@@ -71280,8 +71371,8 @@
   },
   {
    "audit": {
-    "by": "TASK-027 ticket 01 independent review",
-    "notes": "IL matches. No AfterObtained. AfterCombatEnd(room): returns unless room.Encounter.RoomType == 1 Monster; CombatsSeen += 1 (relic field, kept for the run); if CombatsSeen % DynamicVar('Combats', 3) == 0: Flash, PileType 6 Deck cards Where b__13_0 IsUpgradable -> RunState.Rng.Niche.NextItem -> CardCmd.Upgrade(card) when not null. Other overrides only get_CanonicalVars, get_DisplayAmount (CombatsSeen % 3), get_ShowCounter, get_Rarity 7. between_fights (combat_end, fight_kind MONSTER, every 3, counter run, upgrade 1 random upgradable deck card) is right.",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read AfterCombatEnd(room): room.Encounter.RoomType != 1 -> return; CombatsSeen += 1; CombatsSeen % Combats 3 == 0 -> Flash, Deck (PileType 6) Where(IsUpgradable) NextItem(PlayerRng.NonCombatGeneration) -> CardCmd.Upgrade(card, 1). Combats 3, rarity 7, no AfterObtained. Only the RNG stream changed. between_fights (combat_end MONSTER, every 3, counter run, upgrade 1 random upgradable deck card) correct. The entry has no obtain key (it was never written); absent = no pickup effect, which matches the IL (no AfterObtained). fingerprint equals the current extract record.",
     "verdict": "agree"
    },
    "between_fights": [
@@ -71311,7 +71402,9 @@
     "no combat command is called from a room-entry hook; pickup changes are already in the observed deck",
     "get_CanonicalVars: DynamicVar('Combats', 3); get_Rarity 7 Ancient; no AfterObtained (nothing on pickup)",
     "AfterCombatEnd(room): returns unless room.Encounter.RoomType == 1 Monster (elites and bosses do not count); CombatsSeen += 1; if CombatsSeen % Combats(3) == 0: Owner Deck pile (PileType 6) cards Where b__13_0 IsUpgradable -> RunState.Rng.Niche.NextItem -> CardCmd.Upgrade(card) (nothing if no card is upgradable)",
-    "CombatsSeen is a relic field (counter kept across the run, shown by get_DisplayAmount = CombatsSeen % 3) -> every 3rd normal fight after pickup upgrades one random upgradable deck card"
+    "CombatsSeen is a relic field (counter kept across the run, shown by get_DisplayAmount = CombatsSeen % 3) -> every 3rd normal fight after pickup upgrades one random upgradable deck card",
+    "v0.113.1 re-review: unchanged behaviour. Only the RNG stream changed: the upgraded card is Owner.PlayerRng.NonCombatGeneration.NextItem (was RunState.Rng.Niche); still every 3rd Monster-room combat (CombatsSeen kept across the run) upgrades one random upgradable deck card",
+    "v0.113.1: AfterCombatEnd(room): room.Encounter.RoomType != 1 -> return; CombatsSeen += 1; CombatsSeen % Combats(3) == 0 -> Flash; Deck (PileType 6).Cards.Where(IsUpgradable) NextItem(PlayerRng.NonCombatGeneration) -> CardCmd.Upgrade if not null. get_CanonicalVars DynamicVar(\"Combats\", 3); get_Rarity 7"
    ],
    "fingerprint": "03eb1c7498f9fa0fb006ef91e4ba1e4a293cb045a583c20705f9b655e5f506a4",
    "hook_tokens": {
@@ -71321,9 +71414,9 @@
     "AfterCombatEnd"
    ],
    "mechanics": [],
-   "reviewed_by": "TASK-027 ticket 01",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "7752c27792db6e62338caa58f00d3a36a31563afa4e1456184918887e7539e9f",
-   "status": "stale",
+   "status": "converted",
    "triage": {
     "category": "irrelevant",
     "hook_groups": {
@@ -71388,15 +71481,22 @@
   },
   {
    "audit": {
-    "by": "structural rule (tests/test_assembly_facts.py)",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read <AfterObtained>d__7: CreatureCmd.Damage(ThrowingPlayerChoiceContext, Owner.Creature, HpLoss 15, ValueProp 6, null, null); then Deck (PileType 6) Where(card != null && IsUpgradable).ToList().StableShuffle(PlayerRng.NonCombatGeneration).Take(Cards 2) -> CardCmd.Upgrade(card, 2). HpLossVar 15, CardsVar 2, rarity 6. Only the RNG stream changed. obtain [hp_loss 15, upgrade 2 random] correct and complete; no between-fight hook. fingerprint equals the current extract record.",
     "verdict": "agree"
    },
+   "between_fights": [],
    "category": "irrelevant",
    "class": "FragrantMushroom",
    "entity_key": "relics:FRAGRANT_MUSHROOM",
    "evidence": [
     "structural review: only out-of-combat hooks AfterObtained 06001E33",
-    "no combat command is called from a room-entry hook; pickup changes are already in the observed deck"
+    "no combat command is called from a room-entry hook; pickup changes are already in the observed deck",
+    "TASK-027 06b: get_CanonicalVars HpLossVar(15), CardsVar(2); get_HasUponPickupEffect true; get_Rarity 6 (Event)",
+    "AfterObtained d__7: (1) CreatureCmd.Damage(ThrowingPlayerChoiceContext, Owner.Creature, HpLoss.BaseValue 15, ValueProp 6, null, null) -> lose 15 HP; (2) PileType 6 (Deck) cards where card != null && IsUpgradable (b__7_0) .ToList().StableShuffle(RunState.Rng.Niche).Take(Cards.IntValue 2) -> CardCmd.Upgrade(card, 2) each -> 2 random upgradable deck cards upgraded (fewer if fewer are upgradable)",
+    "no between-fight hook",
+    "v0.113.1 re-review: unchanged behaviour. Only the RNG stream changed: StableShuffle uses Owner.PlayerRng.NonCombatGeneration (was RunState.Rng.Niche); still lose 15 HP (CreatureCmd.Damage, ValueProp 6) then upgrade 2 random upgradable deck cards",
+    "v0.113.1: get_CanonicalVars HpLossVar(15), CardsVar(2); get_Rarity 6; <AfterObtained>d__7::MoveNext: CreatureCmd.Damage(ThrowingPlayerChoiceContext, Owner.Creature, HpLoss.BaseValue, 6, null, null); Deck (PileType 6).Cards.Where(card != null && IsUpgradable).ToList().StableShuffle(PlayerRng.NonCombatGeneration).Take(Cards) -> CardCmd.Upgrade(card, 2)"
    ],
    "fingerprint": "35759fc12c445d8a018abd00c38571c05edf068bdbcc42c263c8bdc956a735d5",
    "hook_tokens": {
@@ -71406,9 +71506,25 @@
     "AfterObtained"
    ],
    "mechanics": [],
-   "reviewed_by": "TASK-025 ticket 04 (structural)",
+   "obtain": [
+    {
+     "amount": 15,
+     "kind": "hp_loss"
+    },
+    {
+     "choice": "random",
+     "count": 2,
+     "filter": {
+      "upgradable": true
+     },
+     "kind": "upgrade_cards",
+     "scope": "deck"
+    }
+   ],
+   "open_questions": [],
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "9de06d7ce1f5a6b248795fd20aeb247acece46263097600ac4ddb2285435100c",
-   "status": "stale",
+   "status": "converted",
    "triage": {
     "category": "irrelevant",
     "hook_groups": {
@@ -71588,9 +71704,9 @@
   },
   {
    "audit": {
-    "by": "TASK-027 ticket 01 independent review",
-    "notes": "Pickup marking and the 1-HP effects match the IL: AfterObtained sets FurCoatActIndex = RunState.CurrentActIndex and calls AddMarkedRooms(RunState.Map). That builds new Rng(Owner, Id, 0) and takes GetAllMapPoints().Where(PointType 5 or 6 and no FurCoat quest).UnstableShuffle().Take(Combats 8), stores col/row arrays, sets FurCoatCoordsSet and calls AddQuest. Visited points are not excluded. BeforeCombatStart d__26 calls SetCurrentHp(each HittableEnemies, 1) and sets IsAffectedByFurCoat. AfterCreatureAddedToCombat d__27 does the same for a Side 2 creature. WRONG: 'other acts are not affected' (between_fights amount_text, act 'current'). Only AddMarkedRooms reads the act index; in a later act it returns the new map unchanged, so there are no new marks and no quest markers. RunManager.SetActInternal sets CurrentActIndex before GenerateMap, and Hook.ModifyGeneratedMap also runs the Late hook. Nothing clears the stored coordinates: only AddMarkedRooms writes FurCoatCoordCols/Rows/CoordsSet. Both combat hooks test only GetMarkedCoords() (non-null whenever FurCoatCoordsSet).Contains(RunState.CurrentMapPoint.coord), with no FurCoatActIndex check. So in every later act, any combat at a map point whose (col,row) equals one of the 8 stored coordinates also sets all enemies to 1 HP, with no marker shown. | Developer ruling 2026-10-31: the reviewer is right (only AddMarkedRooms reads the act; the stored coordinates are never cleared, so a combat at a stored (col,row) in a later act is also set to 1 HP, without markers); the between-fight effect now covers every act.",
-    "verdict": "resolved"
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read AfterObtained (FurCoatActIndex = CurrentActIndex; AddMarkedRooms(RunState.Map)); AddMarkedRooms (only when CurrentActIndex == FurCoatActIndex; new seeded Rng(Owner, Id, 0); map points with PointType 5/6 and no FurCoat quest, UnstableShuffle, Take(Combats 8); store cols/rows, FurCoatCoordsSet = true, AddQuest; else re-add quests at stored coords); ModifyGeneratedMapLate -> AddMarkedRooms; <BeforeCombatStart>d__26 (current coord marked -> IsAffectedByFurCoat, Flash, bite VFX, SetCurrentHp(each HittableEnemies, 1)); <AfterCreatureAddedToCombat>d__27 (Side 2 and marked -> SetCurrentHp 1). Only the coords-set flag and VFX are new; GetMarkedCoords never clears. Mechanics and between_fights unchanged and correct. fingerprint equals the current extract record.",
+    "verdict": "agree"
    },
    "between_fights": [
     {
@@ -71622,7 +71738,9 @@
     "--enum MapPointType: 5 Monster, 6 Elite (resolves the earlier MapPointType open question); Unknown (1) points are never marked",
     "BeforeCombatStart d__26: GetMarkedCoords contains RunState.CurrentMapPoint.coord -> PlayerMapPointHistoryEntry.IsAffectedByFurCoat = true, Flash, CreatureCmd.SetCurrentHp(each CombatState.HittableEnemies, 1). AfterCreatureAddedToCombat d__27: creature.Side == 2 (enemy) and current point marked -> SetCurrentHp(creature, 1). Combat rewards are unchanged (no reward hook)",
     "between_fights map_change records the pickup marking (a later-room effect), not an OBTAIN: no OBTAIN kind marks map rooms",
-    "Developer ruling 2026-10-31: the reviewer is right (only AddMarkedRooms reads the act; the stored coordinates are never cleared, so a combat at a stored (col,row) in a later act is also set to 1 HP, without markers); the between-fight effect now covers every act."
+    "Developer ruling 2026-10-31: the reviewer is right (only AddMarkedRooms reads the act; the stored coordinates are never cleared, so a combat at a stored (col,row) in a later act is also set to 1 HP, without markers); the between-fight effect now covers every act.",
+    "v0.113.1 re-review: unchanged behaviour. Internal rewrite only: AddMarkedRooms now also records a FurCoatCoordsSet flag and the BeforeCombatStart / AfterCreatureAddedToCombat paths add a bite VFX; marking (8 random Monster/Elite points of the pickup act without a FurCoat quest, seeded Rng, UnstableShuffle) and setting enemies in a marked coordinate to 1 HP are the same, and the stored coordinates are still never cleared",
+    "v0.113.1: get_CanonicalVars DynamicVar(\"Combats\", 8); get_Rarity 7; AfterObtained: FurCoatActIndex = CurrentActIndex; AddMarkedRooms(RunState.Map); ModifyGeneratedMapLate -> AddMarkedRooms; <BeforeCombatStart>d__26: GetMarkedCoords contains CurrentMapPoint.coord -> IsAffectedByFurCoat = true, Flash, CreatureCmd.SetCurrentHp(each HittableEnemies, 1); <AfterCreatureAddedToCombat>d__27: creature.Side == 2 and marked -> SetCurrentHp(creature, 1)"
    ],
    "fingerprint": "85d6087650028be9e2319c043dd2c988e9390eaf2609995805d634ed82595a4d",
    "hook_tokens": {
@@ -71666,9 +71784,9 @@
     "Effect 'set_enemy_hp' and the 'marked_room' filter are not in the vocabulary; affects only 8 marked combat nodes of the act it was obtained in, not deck capability. Scorer may treat as irrelevant for card choice.",
     "map_change for FurCoat uses non-spec keys rooms / point_types / act / effect beside amount_text: its value is the number of marked rooms on the route the player will take (8 marked among the act's Monster/Elite points), which needs the current map; the history entry flag IsAffectedByFurCoat can check it"
    ],
-   "reviewed_by": "TASK-027 ticket 01",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "42fd0d684bff2eaceb248a4725412556ec7b78a9586cb5a5c3f411366caf994e",
-   "status": "stale",
+   "status": "converted",
    "triage": {
     "category": "baseline",
     "hook_groups": {
@@ -71970,8 +72088,8 @@
   },
   {
    "audit": {
-    "by": "TASK-027 ticket 01 independent review",
-    "notes": "IL matches. AfterObtained d__2 builds a CardRarity[5] from <PrivateImplementationDetails> 18B1B068...; the FieldRVA blob, re-read, is int32 2, 2, 3, 3, 4 = Common, Common, Uncommon, Uncommon, Rare. For each rarity: CardCreationOptions.ForNonCombatWithUniformOdds([Owner.Character.CardPool], card.Rarity == rarity) = new(pools, Source 3, RarityOdds 5 Uniform, filter).WithFlags(2), then .WithFlags(1). Each becomes new CardReward(options, 3, Owner): CanSkip true, flag 128 added. Then RewardsCmd.OfferCustom(Owner, rewards) shows one screen with 5 skippable pick-1-of-3 rewards. Single-card CardFactory.CreateForReward: options = Hook.ModifyCardRewardCreationOptions; candidates = unlocked pool cards passing the filter, minus cards already in this reward, FilterForPlayerCount; Uniform drops Basic/Ancient; Rng.NextItem with PlayerRng.Rewards -> 3 distinct cards. Flag 2 skips RollForUpgrade, so the cards are not upgraded. Flag 8 is not set, so Glitter and Driftwood apply. Nuance: flag 16 is not set either, so an owned PrismaticGem would add other characters' pools.",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read <AfterObtained>d__2: CardRarity[5] from InitializeArray blob 18B1B068... (same token as before); for each rarity: CardCreationOptions.ForNonCombatWithUniformOdds([Owner.Character.CardPool], card.Rarity == rarity).WithFlags(1); new CardReward(options, 3, Owner, null, null); RewardsCmd.OfferCustom(Owner, rewards). rarity 7. I did not re-decode the blob bytes; the token is unchanged, so the Common, Common, Uncommon, Uncommon, Rare reading stands. obtain (5 skippable 3-option rewards) correct. fingerprint equals the current extract record.",
     "verdict": "agree"
    },
    "category": "irrelevant",
@@ -71983,7 +72101,9 @@
     "TASK-027: AfterObtained 06001E81 (d__2): rarities = CardRarity[5] from <PrivateImplementationDetails> 18B1B068... (InitializeArray; FieldRVA blob read from the assembly metadata: 02 02 03 03 04 = Common, Common, Uncommon, Uncommon, Rare); for each: options = CardCreationOptions.ForNonCombatWithUniformOdds([Owner.Character.CardPool], card.Rarity == rarity).WithFlags(1 NoRarityModification); new CardReward(options, 3, Owner); then RewardsCmd.OfferCustom(Owner, rewards) -> one reward screen with 5 card rewards. No CanonicalVars; get_Rarity 7 (Ancient)",
     "ForNonCombatWithUniformOdds = new CardCreationOptions(pools, Source 3 Other, RarityOdds 5 Uniform, filter).WithFlags(2 NoUpgradeRoll); WithFlags ORs the flags; CardReward ctor adds 128 (IsCardReward) and CanSkip = true -> each reward: pick 1 of 3 or skip",
     "CardFactory.CreateForReward (single card): options = Hook.ModifyCardRewardCreationOptions(...); candidates = options.GetPossibleCards (unlocked cards of the pools passing the filter) except cards already in this reward, FilterForPlayerCount (single player: drops MultiplayerConstraint 1 cards); Uniform odds -> Rarity not Basic (1) and not Ancient (5), then Rng.NextItem (uniform) with PlayerRng.Rewards -> 3 distinct cards of that rarity from the character pool. CreateForReward(count) skips RollForUpgrade because flag 2 is set; NoModifyHooks (8) is not set, so card-reward hooks (e.g. Glitter) and Driftwood's reroll apply",
-    "catalog cross-check: '2 Common, 2 Uncommon and 1 Rare card rewards' on pickup; agrees"
+    "catalog cross-check: '2 Common, 2 Uncommon and 1 Rare card rewards' on pickup; agrees",
+    "v0.113.1 re-review: unchanged behaviour. The CardReward constructor gained a fifth argument (CardSelectorStack, selection plumbing), passed null; the same InitializeArray blob 18B1B068... (Common, Common, Uncommon, Uncommon, Rare) still builds five 3-option uniform-odds character card rewards with NoRarityModification, offered together",
+    "v0.113.1: <AfterObtained>d__2::MoveNext: for each rarity: CardCreationOptions.ForNonCombatWithUniformOdds([Owner.Character.CardPool], card.Rarity == rarity).WithFlags(1); new CardReward(options, 3, Owner, null, null); RewardsCmd.OfferCustom(Owner, rewards). get_Rarity 7; no CanonicalVars"
    ],
    "fingerprint": "4ec8aaa41b7c297fcfe7c258c31156a185071877386b79a08644d6473a83baad",
    "hook_tokens": {
@@ -72050,9 +72170,9 @@
      ]
     }
    ],
-   "reviewed_by": "TASK-027 ticket 01",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "ec80d765cdd891d720b0bf097742bfdc33c1890e7bf2ccdc51b1e55f3c527c50",
-   "status": "stale",
+   "status": "converted",
    "triage": {
     "category": "irrelevant",
     "hook_groups": {
@@ -73029,8 +73149,8 @@
   },
   {
    "audit": {
-    "by": "TASK-027 ticket 01 independent review",
-    "notes": "Overrides are only BeforeHandDraw and get_Rarity: no AfterObtained, no out-of-combat hook -> no obtain / between_fights. BeforeHandDraw d__2: player == Owner and TurnNumber <= 1 -> PileType 1 (Draw) cards.Where(b__2_0: Type == 3 Power).ToList(); empty -> nothing; prefer .Where(b__2_1: no CardKeyword 3 Innate) if non-empty, else all Powers; RunState.Rng.CombatCardSelection.NextItem -> Flash, SetToFreeThisTurn -> CardPileCmd.Add(card, PileType 2 Hand). Mechanic (combat start, random Power from draw pile to hand, free this turn) matches.",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read <BeforeHandDraw>d__2: player == Owner, TurnNumber <= 1; draw pile (PileType 1) Where(Type == 3 Power).ToList(); prefer Where(!Keywords.Contains(3 Innate)) when non-empty; RunState.Rng.CombatCardSelection.NextItem; Flash; card.SetToFreeThisCombat(); CardPileCmd.Add(card, PileType 2 Hand). Extract diff confirms the only change is SetToFreeThisTurn -> SetToFreeThisCombat. The claimed change (free this_turn -> this_combat) is exactly what the IL shows; rest of the mechanic unchanged; no out-of-combat hook. fingerprint equals the current extract record.",
     "verdict": "agree"
    },
    "category": "baseline",
@@ -73039,7 +73159,9 @@
    "evidence": [
     "BeforeHandDraw 06001EEF: player==Owner and TurnNumber <= 1 -> GetPile(1 = Draw).Cards where Type == 3 (Power); prefer those without CardKeyword 3 (fallback to all Powers); Rng.CombatCardSelection.NextItem -> card.SetToFreeThisTurn(); CardPileCmd::Add(card, 2 = Hand)",
     "Catalog says free for the whole combat; code calls SetToFreeThisTurn (free on turn 1 only) - code wins",
-    "TASK-027 ticket 01 re-read: overrides are only BeforeHandDraw and get_Rarity; no AfterObtained and no out-of-combat hook -> no obtain / between_fights. BeforeHandDraw d__2: player == Owner and TurnNumber <= 1 -> draw pile (PileType 1) Powers (lambda b__2_0: Type == 3); prefer those without CardKeyword 3 (lambda b__2_1; --enum CardKeyword: 3 = Innate, now verified), else all Powers; RunState.Rng.CombatCardSelection.NextItem -> SetToFreeThisTurn -> CardPileCmd.Add(card, PileType 2 Hand). Mechanic confirmed."
+    "TASK-027 ticket 01 re-read: overrides are only BeforeHandDraw and get_Rarity; no AfterObtained and no out-of-combat hook -> no obtain / between_fights. BeforeHandDraw d__2: player == Owner and TurnNumber <= 1 -> draw pile (PileType 1) Powers (lambda b__2_0: Type == 3); prefer those without CardKeyword 3 (lambda b__2_1; --enum CardKeyword: 3 = Innate, now verified), else all Powers; RunState.Rng.CombatCardSelection.NextItem -> SetToFreeThisTurn -> CardPileCmd.Add(card, PileType 2 Hand). Mechanic confirmed.",
+    "v0.113.1 re-review: changed. The moved Power is now made free for the whole combat: CardModel.SetToFreeThisTurn -> SetToFreeThisCombat (free 'this_turn' -> 'this_combat'); the catalog's 'free for the whole combat' now agrees. Selection unchanged: turn 1 BeforeHandDraw, draw-pile Powers, non-Innate preferred, RunState.Rng.CombatCardSelection.NextItem, CardPileCmd.Add to Hand",
+    "v0.113.1: <BeforeHandDraw>d__2::MoveNext: player == Owner, TurnNumber <= 1; GetPile(1).Cards.Where(Type == 3).ToList(); prefer Where(!Keywords.Contains(3)) when non-empty; NextItem(RunState.Rng.CombatCardSelection); Flash; card.SetToFreeThisCombat(); CardPileCmd.Add(card, PileType 2, 1, null, false). get_Rarity 7"
    ],
    "fingerprint": "0513a54f5fcf3ee717c2b7636ce88e2c151bc5f96852e94ed80b016b74370012",
    "hook_tokens": {
@@ -73056,7 +73178,7 @@
       "filter": {
        "card_type": "Power"
       },
-      "free": "this_turn",
+      "free": "this_combat",
       "from": "draw",
       "kind": "move_card",
       "to": "hand"
@@ -73065,11 +73187,12 @@
     }
    ],
    "open_questions": [
-    "Effect 'move_card' is listed in the spec but not scored yet; value depends on the number of Power cards in the deck (non-Innate Powers are preferred, falling back to any Power in the draw pile)."
+    "Effect 'move_card' is listed in the spec but not scored yet; value depends on the number of Power cards in the deck (non-Innate Powers are preferred, falling back to any Power in the draw pile).",
+    "free 'this_combat' (CardModel.SetToFreeThisCombat) is not a documented value of add_card/move_card 'free'; the moved Power costs 0 for the whole combat."
    ],
-   "reviewed_by": "TASK-027 ticket 01",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "880beccbe637cd2b5e63d545fbced9f743280f75ac8dabd76deecaab609c63e7",
-   "status": "stale",
+   "status": "converted",
    "triage": {
     "category": "baseline",
     "hook_groups": {
@@ -73196,15 +73319,30 @@
   },
   {
    "audit": {
-    "by": "structural rule (tests/test_assembly_facts.py)",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read ModifyUnknownMapPointRoomTypes: copy of the incoming set, Remove(1 Monster), Remove(2 Elite), return; rarity 2; no other hook (extract diff: IsAllowed / IsBeforeAct3TreasureChest removed). The remove [Monster, Elite] field is exactly what the IL does. Settled the Elite question by reading the caller: RunManager.RollRoomTypeFor(Unknown) -> UnknownMapPointOdds.Roll (--dump-any UnknownMapPointOdds). The set passed to Hook.ModifyUnknownMapPointRoomTypes is _nonEventOdds.Keys (Monster, Elite, Treasure, Shop) + Event, minus the caller's excluded types, so Elite IS in the set, but its odds are -1 (ctor sets Monster 0.1, Elite -1, Treasure 0.02, Shop 0.03) and Roll skips any type with odds < 0; the unrolled-type increase adds the base odds (-1) so Elite stays negative. The only code that makes Elite rollable is the DeadlyEvents run modifier (scan of all IL for set_EliteOdds / SetBaseOdds callers: DeadlyEvents.AfterRunCreated sets EliteOdds 0.1 and base 0.1, AfterRunLoaded base 0.1), and that same AfterRunCreated removes JuzuBracelet from every player's RelicGrabBag and the SharedRelicGrabBag. So in normal play the added Elite removal has no effect; it only matters if Juzu is obtained some other way in a Deadly Events run. Also seen: on a profile's first run (UnlockState.NumberOfRuns == 0) Roll forces the first two Unknown points to Event and the third to Monster before the hook is called, so Juzu does not stop that Monster. Suggest (not required) recording both facts in evidence/open_questions in place of the unread-caller open question. fingerprint equals the current extract record.",
     "verdict": "agree"
    },
+   "between_fights": [
+    {
+     "modifier": "unknown_room_types",
+     "remove": [
+      "Monster",
+      "Elite"
+     ]
+    }
+   ],
    "category": "irrelevant",
    "class": "JuzuBracelet",
    "entity_key": "relics:JUZU_BRACELET",
    "evidence": [
     "structural review: only out-of-combat hooks IsAllowed 06001F09, ModifyUnknownMapPointRoomTypes 06001F0A",
-    "no combat command is called from a room-entry hook; pickup changes are already in the observed deck"
+    "no combat command is called from a room-entry hook; pickup changes are already in the observed deck",
+    "TASK-027 06b get_Rarity 2 (Common); IsAllowed = IsBeforeAct3TreasureChest; no get_CanonicalVars, no AfterObtained",
+    "TASK-027 06b ModifyUnknownMapPointRoomTypes(set): copies the incoming RoomType set into a new HashSet and Remove(1) (RoomType 1 = Monster) -> Unknown map points can no longer roll a Monster room; other types (e.g. Event, Treasure, Shop, Elite if present) keep their chances relative to each other. No owner check (the hook takes no player)",
+    "v0.113.1 re-review: changed. ModifyUnknownMapPointRoomTypes now removes RoomType 2 (Elite) as well as RoomType 1 (Monster) (remove [Monster] -> [Monster, Elite]); the v0.111.0 evidence recorded only Remove(1). The IsAllowed override (IsBeforeAct3TreasureChest, pool gating only) was also removed",
+    "v0.113.1: ModifyUnknownMapPointRoomTypes(set): new HashSet copy of the incoming set; Remove(1); Remove(2); return. get_Rarity 2; no CanonicalVars, no AfterObtained, no combat hook",
+    "Developer note 2026-11-16 (from the independent review): Elite is always in the room-type list the hook receives, but its odds start at -1 and stay negative (UnknownMapPointOdds skips types below 0); only the Deadly Events run modifier sets them to 0.1, and that modifier removes Juzu Bracelet from all relic pools. In normal play the added Elite removal has no effect. On a profile's very first run the third '?' point is forced to Monster before the hook runs."
    ],
    "fingerprint": "ee35fb81ae9f7f6c737d0fa07bb4752b9673221cd81f4378712fe144ebf2d462",
    "hook_tokens": {
@@ -73214,9 +73352,13 @@
     "ModifyUnknownMapPointRoomTypes"
    ],
    "mechanics": [],
-   "reviewed_by": "TASK-025 ticket 04 (structural)",
+   "obtain": [],
+   "open_questions": [
+    "unknown_room_types uses non-spec key remove (room types taken out of the Unknown-point roll); the roll weights of the remaining types are in the map/room selection code, not read."
+   ],
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "1cf62c86a5505e5ff14693e2744799fa020e2800214679141a6244558776d404",
-   "status": "stale",
+   "status": "converted",
    "triage": {
     "category": "irrelevant",
     "hook_groups": {
@@ -73408,16 +73550,22 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review relic-A",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read <AfterCardPlayed>d__19: card.Owner == Owner, CombatManager.IsInProgress, card.Type == 1 -> AttacksPlayedThisTurn += 1; AttacksPlayedThisTurn % Cards 3 == 0 -> RunState.Rng.CombatTargets.NextItem(HittableEnemies), CreatureCmd.Damage(choiceContext, target, Damage, Owner.Creature). AfterSideTurnEnd (participants contain owner), BeforeCombatStart, AfterCombatEnd reset the counter. CardsVar 3, DamageVar 6 ValueProp 4, rarity 3. Mechanic correct; no out-of-combat effect. fingerprint equals the current extract record.",
     "verdict": "agree"
    },
+   "between_fights": [],
    "category": "trigger",
    "class": "Kusarigama",
    "entity_key": "relics:KUSARIGAMA",
    "evidence": [
     "get_CanonicalVars: CardsVar(3), DamageVar(6, ValueProp 4).",
     "AfterCardPlayed 06001F33 (<AfterCardPlayed>d__19): owner card, combat in progress, get_Type == 1 (Attack) -> AttacksPlayedThisTurn += 1; if % 3 == 0 -> Rng CombatTargets NextItem(HittableEnemies) -> CreatureCmd::Damage(target, 6).",
-    "AfterSideTurnEnd 06001F32, BeforeCombatStart 06001F31, AfterCombatEnd 06001F35 reset the counter -> 'turn'."
+    "AfterSideTurnEnd 06001F32, BeforeCombatStart 06001F31, AfterCombatEnd 06001F35 reset the counter -> 'turn'.",
+    "TASK-027 06b: no out-of-combat effect; overrides checked: AfterCardPlayed, AfterCombatEnd (Status = 0, IsActivating = false), AfterSideTurnEnd (AttacksPlayedThisTurn = 0), BeforeCombatStart (AttacksPlayedThisTurn = 0), get_CanonicalVars (CardsVar 3, DamageVar 6 with ValueProp 4), get_Rarity (3 Uncommon). No AfterObtained",
+    "TASK-027 06b AfterCardPlayed d__19: card.Owner == Owner, CombatManager.IsInProgress, card.Type == 1 (Attack) -> AttacksPlayedThisTurn += 1; when AttacksPlayedThisTurn % 3 == 0 -> RunState.Rng.CombatTargets.NextItem(HittableEnemies), CreatureCmd.Damage(target, Damage 6, Owner.Creature); existing mechanic confirmed",
+    "v0.113.1 re-review: unchanged behaviour. Internal rewrite only: AfterSideTurnEnd now takes the list of creatures whose side ended the turn and resets the counter when it contains the owner's creature; counter display moved into UpdateDisplay / Status. Every 3rd Attack per turn still deals 6 damage to a random hittable enemy",
+    "v0.113.1: get_CanonicalVars CardsVar(3), DamageVar(6, ValueProp 4); get_Rarity 3; <AfterCardPlayed>d__19::MoveNext: card.Owner == Owner, CombatManager.IsInProgress, card.Type == 1 -> AttacksPlayedThisTurn += 1; AttacksPlayedThisTurn % Cards == 0 -> RunState.Rng.CombatTargets.NextItem(HittableEnemies) -> CreatureCmd.Damage(choiceContext, target, Damage, Owner.Creature); AfterSideTurnEnd(owner creature included) / BeforeCombatStart / AfterCombatEnd reset AttacksPlayedThisTurn"
    ],
    "fingerprint": "4d0df6c1d34e361667fd5a4f33e87a7e05c6990acc777b7508c30eaaf6db653e",
    "hook_tokens": {
@@ -73449,10 +73597,11 @@
      "when": "card_played"
     }
    ],
+   "obtain": [],
    "open_questions": [],
-   "reviewed_by": "TASK-025 ticket 04 batch A",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "c326cb1a27392a7c5ac771858262b65718dd82d1460fdea530ec47054cfebb34",
-   "status": "stale",
+   "status": "converted",
    "triage": {
     "category": "trigger",
     "hook_groups": {
@@ -73588,10 +73737,23 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review relic-B",
-    "notes": "evidence corrected: reward hook requires flags 128 and 256",
-    "verdict": "resolved"
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read BeforeCombatRewardOffered (Player == Owner, set has a CardReward -> IsInTriggeringCombat ? DoActivateVisuals; CombatRewardsSeen += 1), IsInTriggeringCombat (> 0 and % 2 == 1), TryModifyCardRewardOptions (Owner, Source 1, triggering, Flags 128 and 256 -> non-duplicate Power filter, allowDupes fallback, CardFactory.CreateForReward(Owner, 1, new CardCreationOptions(CardPools, 3, RarityOdds, filter).WithFlags(24)).FirstOrDefault() appended), IsAllowedInternal (false if any Ironclad with NumberOfRuns 0). Extract diff: IsAllowed -> IsAllowedInternal without IsBeforeAct3TreasureChest. between_fights card_reward_options entry unchanged and correct. fingerprint equals the current extract record.",
+    "verdict": "agree"
    },
+   "between_fights": [
+    {
+     "add": 1,
+     "amount_text": "every 2nd combat reward screen that contains a card reward (the 2nd, 4th, 6th ... after pickup) shows one extra card: a Power from the same card pools, not a duplicate of the offered cards (duplicates allowed only when no other Power is left), rarity rolled with the same odds type but base odds (Source Other), cardpool/modify hooks skipped (flags 24)",
+     "applies_to": "combat_card_rewards",
+     "counter": "run",
+     "every": 2,
+     "filter": {
+      "card_type": "Power"
+     },
+     "modifier": "card_reward_options"
+    }
+   ],
    "category": "irrelevant",
    "class": "LastingCandy",
    "entity_key": "relics:LASTING_CANDY",
@@ -73599,7 +73761,17 @@
     "BeforeCombatRewardOffered: owner rewards containing a CardReward -> CombatRewardsSeen += 1; IsInTriggeringCombat = CombatRewardsSeen > 0 and CombatRewardsSeen % 2 == 1",
     "TryModifyCardRewardOptions: owner, Source == 1, IsInTriggeringCombat, Flags has 128 and has 256 (IsFromCombat) -> CardFactory.CreateForReward(new CardCreationOptions(same pools, CardType 3, same RarityOdds, filter non-duplicate Power).WithFlags(24), 1) -> appends one extra Power card to the reward options (dupes allowed only if no unique Power remains)",
     "IsAllowed: not offered to a first-run Ironclad; IsBeforeAct3TreasureChest",
-    "out-of-combat behaviour (not scored): [{\"modifier\": \"card_reward_extra_card\", \"filter\": {\"card_type\": \"Power\"}, \"count\": 1, \"every_combat_rewards\": 2}]"
+    "out-of-combat behaviour (not scored): [{\"modifier\": \"card_reward_extra_card\", \"filter\": {\"card_type\": \"Power\"}, \"count\": 1, \"every_combat_rewards\": 2}]",
+    "TASK-027 06b: no get_CanonicalVars; get_Rarity 3 (Uncommon); no AfterObtained -> nothing on pickup",
+    "BeforeCombatRewardOffered(rewardsSet, room): rewardsSet.Player == Owner and the set contains at least one CardReward (All(r is not CardReward) -> return) -> if IsInTriggeringCombat run DoActivateVisuals; then CombatRewardsSeen += 1. IsInTriggeringCombat = CombatRewardsSeen > 0 && CombatRewardsSeen % 2 == 1",
+    "Order (CombatRoom.OfferRoomEndRewards d__49): RewardsCmd.GenerateForRoomEnd (RewardsSet.GenerateWithoutOffering -> Reward.Populate -> CardReward.Populate -> Hook.TryModifyCardRewardOptions) runs before Hook.BeforeCombatRewardOffered -> the counter is read before it is incremented: 1st combat card reward seen = 0 (no), 2nd = 1 (yes), 3rd = 2 (no) ... -> every 2nd combat card-reward screen",
+    "TryModifyCardRewardOptions(player, options, creationOptions): player == Owner, creationOptions.Source == 1 (Encounter), IsInTriggeringCombat, Flags has 128 (IsCardReward) and 256 (IsFromCombat; set only by RewardsSet.GenerateRewardsFor for Monster / Elite / Boss rooms) -> candidates = creationOptions.GetPossibleCards(player) where CardPoolFilter(card, options, allowDupes false): card.Type == 3 (Power) and no offered option has the same Id; if none, allowDupes true (any Power); none at all -> no change",
+    "extra card: CardFactory.CreateForReward(Owner, 1, new CardCreationOptions(creationOptions.CardPools, Source 3 Other, creationOptions.RarityOdds, filter = original CardPoolFilter && CardPoolFilter(...)).WithFlags(24 = NoModifyHooks 8 | NoCardPoolModifications 16)).FirstOrDefault() -> appended to the reward options (result.ModifyCard(card, this)); returns true when a card was added",
+    "IsAllowed: false when any player is an Ironclad whose UnlockState.NumberOfRuns == 0; otherwise RelicModel.IsBeforeAct3TreasureChest(runState)",
+    "catalog cross-check: every 2 combats card rewards contain one extra Power card; agrees (the IL counts reward screens with a card reward, not combats)",
+    "the earlier open question (keep or drop the descriptive card_reward_extra_card entry) is settled by TASK-027: the behaviour now lives in between_fights, mechanics stay empty",
+    "v0.113.1 re-review: unchanged behaviour. Pool gating moved from IsAllowed to IsAllowedInternal and no longer calls IsBeforeAct3TreasureChest (still false when any player is an Ironclad with UnlockState.NumberOfRuns == 0); the reward effect (every 2nd combat card-reward screen gets one extra non-duplicate Power, base odds Source 3, flags 24) is the same",
+    "v0.113.1: BeforeCombatRewardOffered(rewardsSet, room): Player == Owner, set has a CardReward -> IsInTriggeringCombat ? DoActivateVisuals; CombatRewardsSeen += 1. IsInTriggeringCombat = CombatRewardsSeen > 0 && % 2 == 1. TryModifyCardRewardOptions: Owner, Source == 1, IsInTriggeringCombat, Flags has 128 and 256 -> CardFactory.CreateForReward(Owner, 1, new CardCreationOptions(CardPools, 3, RarityOdds, filter).WithFlags(24)).FirstOrDefault() appended via ModifyCard. get_Rarity 3"
    ],
    "fingerprint": "95824ca73272eb46375bbb866c4c7ab940c768c57d3c4fbcb83dee34a043fc27",
    "hook_tokens": {
@@ -73613,12 +73785,13 @@
     "TryModifyCardRewardOptions"
    ],
    "mechanics": [],
+   "obtain": [],
    "open_questions": [
-    "Offer-pool change only: every 2nd combat card reward gets an extra Power option. The scorer sees that card among the candidates, so no scoring change; spec says irrelevant relics have no mechanics -> keep or drop this descriptive entry?"
+    "card_reward_options carries non-spec keys every / counter / applies_to and a card_type filter (the spec's card_reward_options has only add). The extra Power is drawn with base rarity odds (Source Other) from the same pools; dupes only when no unique Power is left (in evidence)."
    ],
-   "reviewed_by": "TASK-025 ticket 04 batch B",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "0609950ab2dd3a85e098703f8a1d462735a9628f000a3352f5007b19c228cf24",
-   "status": "stale",
+   "status": "converted",
    "triage": {
     "category": "needs_review",
     "hook_groups": {
@@ -73936,16 +74109,21 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review relic-A",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read <AfterCardPlayed>d__19: owner card, combat in progress, Type == 2 -> SkillsPlayedThisTurn += 1; % Cards 3 == 0 -> CreatureCmd.Damage(choiceContext, HittableEnemies, Damage 5, Owner.Creature). Resets in BeforeCombatStart and AfterSideTurnStart (participants contain owner, TurnNumber != 1). CardsVar 3, DamageVar 5, rarity 3. Mechanic correct; no out-of-combat effect. fingerprint equals the current extract record.",
     "verdict": "agree"
    },
+   "between_fights": [],
    "category": "trigger",
    "class": "LetterOpener",
    "entity_key": "relics:LETTER_OPENER",
    "evidence": [
     "get_CanonicalVars: CardsVar(3), DamageVar(5, ValueProp 4).",
     "AfterCardPlayed 06001F76 (<AfterCardPlayed>d__19): owner card, combat in progress, get_Type == 2 (Skill) -> SkillsPlayedThisTurn += 1; if % 3 == 0 -> CreatureCmd::Damage(HittableEnemies, 5).",
-    "AfterSideTurnStart 06001F75 (turn > 1), BeforeCombatStart 06001F74, AfterCombatEnd 06001F78 reset the counter -> 'turn'."
+    "AfterSideTurnStart 06001F75 (turn > 1), BeforeCombatStart 06001F74, AfterCombatEnd 06001F78 reset the counter -> 'turn'.",
+    "TASK-027 06b: overrides checked: AfterCardPlayed (d__19), AfterCombatEnd, AfterSideTurnStart, BeforeCombatStart, DoActivateVisuals, UpdateDisplay, get_CanonicalVars, get_Rarity 3 (Uncommon). No AfterObtained and no out-of-combat effect. Correction to the earlier evidence line: AfterCombatEnd only sets Status 0 and IsActivating false; SkillsPlayedThisTurn is reset by BeforeCombatStart and by AfterSideTurnStart (turn > 1), so the existing per-turn counter is still right",
+    "v0.113.1 re-review: unchanged behaviour. Internal signature change only: AfterSideTurnStart now receives the list of creatures whose turn starts and resets when it contains the owner's creature and TurnNumber != 1; every 3rd Skill per turn still deals 5 damage to all hittable enemies",
+    "v0.113.1: get_CanonicalVars CardsVar(3), DamageVar(5, ValueProp 4); get_Rarity 3; <AfterCardPlayed>d__19::MoveNext: card.Owner == Owner, CombatManager.IsInProgress, card.Type == 2 -> SkillsPlayedThisTurn += 1; % Cards == 0 -> CreatureCmd.Damage(choiceContext, HittableEnemies, Damage, Owner.Creature); resets in BeforeCombatStart and AfterSideTurnStart (owner creature, turn != 1)"
    ],
    "fingerprint": "3afda1a82d314289deead55fca203eb5d9df865b05b6b3de725cd860e2a1701b",
    "hook_tokens": {
@@ -73977,10 +74155,11 @@
      "when": "card_played"
     }
    ],
+   "obtain": [],
    "open_questions": [],
-   "reviewed_by": "TASK-025 ticket 04 batch A",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "340ef0f33b4a0f0b2354da78532b63bcb7973468f0ba02a3ba4348283197e3c2",
-   "status": "stale",
+   "status": "converted",
    "triage": {
     "category": "trigger",
     "hook_groups": {
@@ -74265,8 +74444,8 @@
   },
   {
    "audit": {
-    "by": "TASK-027 ticket 01 independent review",
-    "notes": "IL matches. AfterObtained d__4: rewards = [new CardReward(new CardCreationOptions([Owner.Character.CardPool], Source 3 Other, RarityOdds 1 RegularEncounter, null), 3, Owner, null), new PotionReward(Owner)] -> RewardsCmd.OfferCustom (new RewardsSet(Owner).WithCustomRewards(rewards).Offer(), skipping allowed). CardReward(options, 3, player): CanSkip true, Options = options.WithFlags(128 IsCardReward); Populate -> CardFactory.CreateForReward(player, 3, Options): 3 distinct, RollForRarity with Source Other -> RollWithBaseOdds(RegularEncounter) (Rare 0.03 / A7 0.0149, Uncommon 0.37), RollForUpgrade (0 at act index 0), then IsCardReward hooks (SilkenTress, SilverCrucible) apply. PotionReward.Populate: PotionFactory.CreateRandomPotionOutOfCombat(player, PlayerRng.Rewards): NextFloat <= 0.1 Rare, <= 0.35 Uncommon, else Common, uniform among unlocked potions of that rarity in Character.PotionPool + SharedPotionPool; taking it -> PotionCmd.TryToProcure: Hook.ShouldProcurePotion, then Player.AddPotionInternal(slot -1 -> _potionSlots.IndexOf(null)) fails when no slot is empty, nothing is discarded.",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read <AfterObtained>d__4: rewards = [new CardReward(new CardCreationOptions([Owner.Character.CardPool], 3 Other, 1 RegularEncounter, null), 3, Owner, null, null), new PotionReward(Owner)]; RewardsCmd.OfferCustom. HasUponPickupEffect true, rarity 7. Only the CardReward ctor gained a null argument. obtain offer_rewards correct. fingerprint equals the current extract record.",
     "verdict": "agree"
    },
    "category": "irrelevant",
@@ -74278,7 +74457,9 @@
     "no get_CanonicalVars; get_HasUponPickupEffect true; get_Rarity 7 Ancient",
     "AfterObtained d__4: rewards = [new CardReward(new CardCreationOptions([Owner.Character.CardPool], Source 3 Other, RarityOdds 1 RegularEncounter, null), 3, Owner, null), new PotionReward(Owner)] -> RewardsCmd.OfferCustom(Owner, rewards)",
     "CardReward(options, 3, player): Options = options.WithFlags(128 IsCardReward), CanSkip true; Populate -> CardFactory.CreateForReward(player, 3, options): 3 distinct cards of the owner's character pool (unlocked, single player drops MultiplayerOnly); rarity via RollForRarity with Source Other -> RollWithBaseOdds(RegularEncounter): Rare 0.03 (A7+ 0.0149), Uncommon 0.37, else Common (no change to the run's rare-odds offset); RollForUpgrade (0 at act index 0); IsCardReward hooks (e.g. SilkenTress, SilverCrucible) apply",
-    "PotionReward(player).Populate: PotionFactory.CreateRandomPotionOutOfCombat(player, PlayerRng.Rewards): NextFloat <= 0.1 Rare, <= 0.35 Uncommon, else Common, then uniform among unlocked potions of that rarity in the character potion pool + SharedPotionPool; taking it -> PotionCmd.TryToProcure: Hook.ShouldProcurePotion, Player.AddPotionInternal uses the first empty slot and fails when there is none (nothing is discarded)"
+    "PotionReward(player).Populate: PotionFactory.CreateRandomPotionOutOfCombat(player, PlayerRng.Rewards): NextFloat <= 0.1 Rare, <= 0.35 Uncommon, else Common, then uniform among unlocked potions of that rarity in the character potion pool + SharedPotionPool; taking it -> PotionCmd.TryToProcure: Hook.ShouldProcurePotion, Player.AddPotionInternal uses the first empty slot and fails when there is none (nothing is discarded)",
+    "v0.113.1 re-review: unchanged behaviour. The CardReward constructor gained a fifth argument (CardSelectorStack, selection plumbing), passed null; still one 3-option character card reward (Source 3 Other, RarityOdds 1) plus one PotionReward, offered together. PotionReward / CardFactory internals were not re-read",
+    "v0.113.1: <AfterObtained>d__4::MoveNext: rewards = [new CardReward(new CardCreationOptions([Owner.Character.CardPool], 3, 1, null), 3, Owner, null, null), new PotionReward(Owner)]; RewardsCmd.OfferCustom(Owner, rewards). get_HasUponPickupEffect true; get_Rarity 7"
    ],
    "fingerprint": "fd70a653d0aac4074d428f91db7ded877b684bc27d0f02313792aca1e5d36ecb",
    "hook_tokens": {
@@ -74311,9 +74492,9 @@
    "open_questions": [
     "card reward pool key rarity_odds and the reward field upgrade_roll are not in the documented vocabulary."
    ],
-   "reviewed_by": "TASK-027 ticket 01",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "4bc2477ca90036bb559937ef43ad9cad090821654879030367824b5d3fcbd4ee",
-   "status": "stale",
+   "status": "converted",
    "triage": {
     "category": "irrelevant",
     "hook_groups": {
@@ -74509,8 +74690,8 @@
   },
   {
    "audit": {
-    "by": "TASK-027 ticket 01 independent review",
-    "notes": "IL matches. IsAllowed(runState) = Players.Count > 1 (never in single player). AfterObtained d__3: CardFactory.CreateForReward(Owner, 3 (literal), new CardCreationOptions([Owner.Character.CardPool, ModelDb.CardPool<ColorlessCardPool>], Source 3 Other, RarityOdds 1 RegularEncounter, b__3_0 MultiplayerConstraint == 1 MultiplayerOnly)) with no WithFlags -> 3 distinct options, RollWithBaseOdds(RegularEncounter) + GetNextAllowedRarity over the rarities present, RollForUpgrade (0 at act index 0), no IsCardReward; CardSelectCmd.FromChooseACardScreen(ctx, options, Owner, canSkip true) -> if chosen: CardPileCmd.Add(chosen, PileType 6 Deck, Bottom). --enum CardMultiplayerConstraint: 1 = MultiplayerOnly. Non-standard pool keys are already raised in open_questions.",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read IsAllowedInternal (Players.Count > 1) and <AfterObtained>d__3: CardFactory.CreateForReward(Owner, 3, new CardCreationOptions([Character.CardPool, ColorlessCardPool], 3, 1, MultiplayerConstraint == 1)).Select(Card); CardSelectCmd.FromChooseACardScreen(Blocking ctx, options, Owner, true); chosen -> CardPileCmd.Add(chosen, PileType 6, 1); new CardChoiceHistoryEntry writes (history only). rarity 7. obtain (choose 1 of 3, skippable, character + colorless multiplayer-only) correct. fingerprint equals the current extract record.",
     "verdict": "agree"
    },
    "category": "irrelevant",
@@ -74522,7 +74703,9 @@
     "no get_CanonicalVars (3 is a literal); get_Rarity 7 Ancient",
     "IsAllowed(runState): Players.Count > 1 -> multiplayer runs only (never offered in single player)",
     "AfterObtained d__3: CardFactory.CreateForReward(Owner, 3, new CardCreationOptions([Owner.Character.CardPool, ModelDb.CardPool<ColorlessCardPool>], Source 3 Other, RarityOdds 1 RegularEncounter, b__3_0 card.MultiplayerConstraint == 1 MultiplayerOnly)) (no WithFlags) -> CardSelectCmd.FromChooseACardScreen(ctx, options, Owner, canSkip = true) -> if chosen: CardPileCmd.Add(chosen, PileType 6 Deck, Bottom)",
-    "rarity per card: RollWithBaseOdds(RegularEncounter) (Rare 0.03 / A7+ 0.0149, Uncommon 0.37, else Common) then GetNextAllowedRarity over the rarities present among the filtered multiplayer-only cards; 3 distinct options; RollForUpgrade (0 at act index 0); IsCardReward not set"
+    "rarity per card: RollWithBaseOdds(RegularEncounter) (Rare 0.03 / A7+ 0.0149, Uncommon 0.37, else Common) then GetNextAllowedRarity over the rarities present among the filtered multiplayer-only cards; 3 distinct options; RollForUpgrade (0 at act index 0); IsCardReward not set",
+    "v0.113.1 re-review: unchanged behaviour. IsAllowed was renamed to IsAllowedInternal with the same rule (Players.Count > 1, multiplayer only); AfterObtained now also writes the unchosen options to the map-point history (CardChoiceHistoryEntry) and previews the added card; the choose-1-of-3 multiplayer-only character + colorless card, skippable, added to the deck bottom, is the same",
+    "v0.113.1: <AfterObtained>d__3::MoveNext: CardFactory.CreateForReward(Owner, 3, new CardCreationOptions([Character.CardPool, ColorlessCardPool], 3, 1, MultiplayerConstraint == 1)).Select(Card); CardSelectCmd.FromChooseACardScreen(BlockingPlayerChoiceContext, options, Owner, true); chosen -> CardPileCmd.Add(chosen, PileType 6, 1, null, false). get_Rarity 7"
    ],
    "fingerprint": "edc53543ff71e73eb574eba00eefd42e890f0788a027c9121078176811127a2e",
    "hook_tokens": {
@@ -74555,9 +74738,9 @@
    "open_questions": [
     "pool.source as a list (character + colorless) with multiplayer_only and rarity_odds keys, and the add_card field upgrade_roll, are not in the documented vocabulary."
    ],
-   "reviewed_by": "TASK-027 ticket 01",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "cd7f8c946b7207b822ab1cdc7391053ac7ea23f768f00080f302c961528cbec2",
-   "status": "stale",
+   "status": "converted",
    "triage": {
     "category": "needs_review",
     "hook_groups": {
@@ -74739,15 +74922,25 @@
   },
   {
    "audit": {
-    "by": "structural rule (tests/test_assembly_facts.py)",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read ModifyMerchantPrice(player, entry, price): player == Owner -> price * (Discount.BaseValue / 100), else price; Discount 50; rarity 5. Extract diff: only LocalContext.IsMe removed. between_fights merchant_price x0.5 correct, obtain [] correct. fingerprint equals the current extract record.",
     "verdict": "agree"
    },
+   "between_fights": [
+    {
+     "modifier": "merchant_price",
+     "multiply": 0.5
+    }
+   ],
    "category": "irrelevant",
    "class": "MembershipCard",
    "entity_key": "relics:MEMBERSHIP_CARD",
    "evidence": [
     "structural review: only out-of-combat hooks ModifyMerchantPrice 06001FC4",
-    "no combat command is called from a room-entry hook; pickup changes are already in the observed deck"
+    "no combat command is called from a room-entry hook; pickup changes are already in the observed deck",
+    "TASK-027 ticket 06b: ModifyMerchantPrice(player, entry, price): player == Owner and LocalContext.IsMe(Owner) -> price * Discount / 100; otherwise price unchanged. get_CanonicalVars: DynamicVar Discount 50 -> x0.5 on every merchant entry. No AfterObtained; get_Rarity 5 (Shop).",
+    "v0.113.1 re-review: unchanged behaviour for the owner. The LocalContext.IsMe(Owner) check was removed (multiplayer local-player guard; in single player IsMe was always true); price is still x Discount/100 = x0.5 for the owner's merchant entries",
+    "v0.113.1: ModifyMerchantPrice(player, entry, price): player == Owner -> price * (Discount.BaseValue / 100), else price. get_CanonicalVars DynamicVar(\"Discount\", 50); get_Rarity 5; no AfterObtained, no combat hook"
    ],
    "fingerprint": "4bbd3d93229e65dcdb17223231ae4ce90edaf47146f2331846b7e3321fe8dd81",
    "hook_tokens": {
@@ -74757,9 +74950,11 @@
     "ModifyMerchantPrice"
    ],
    "mechanics": [],
-   "reviewed_by": "TASK-025 ticket 04 (structural)",
+   "obtain": [],
+   "open_questions": [],
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "71745c310858b0dadea26b028fc2da3da0d968aa4b49eddc467b814464b103b3",
-   "status": "stale",
+   "status": "converted",
    "triage": {
     "category": "irrelevant",
     "hook_groups": {
@@ -75335,8 +75530,8 @@
   },
   {
    "audit": {
-    "by": "TASK-027 ticket 01 independent review",
-    "notes": "IL matches. GetValidRelics(owner): ModelDb.Event<Neow>.AllPossibleOptions (Neow.get_AllPossibleOptions = CurseOptions (CursedPearl, DowsingRod, HeftyTablet, LargeCapsule, LeafyPoultice, NeowsBones, NeowsSacrifice, PrecariousShears, SilkenTress, SilverCrucible) + PositiveOptions (ArcaneScroll, BoomingConch, FishingRod, GoldenPearl, Kaleidoscope, LeadPaperweight, LostCoffer, MassiveScroll, NeowsTorment, NewLeaf, PhialHolster, PreciseScissors, ScrollBoxes, WingedBoots) + LavaRock, NeowsTalisman, NutritiousOyster, Pomander, SmallCapsule, StoneHumidifier = this batch's 30) Where b__0: Relic != null && Relic.IsAllowedAtNeow(owner) && !(Relic is NeowsBones). RelicModel.IsAllowedAtNeow = IsAllowed(RunState) (base true); in this set only Kaleidoscope and ScrollBoxes override IsAllowedAtNeow and MassiveScroll (>1 player), SilverCrucible and WingedBoots (1 player) override IsAllowed. AfterObtained d__7: list ToList, PlayerRng.Rewards.Shuffle, Take(Relics 2) -> new RelicReward(relic, Owner) each -> new RewardsSet(Owner).WithCustomRewards(list).WithSkippingDisallowed().Offer() (both must be taken, each runs its own AfterObtained via RelicCmd.Obtain). Then availableCurses = ModelDb.CardPool<CurseCardPool>.GetUnlockedCards(UnlockState, CardMultiplayerConstraint).Where(b__7_1 CanBeGeneratedByModifiers).OrderBy(Id); for i < Curses 1: RunState.Rng.Niche.NextItem (removed from the list) -> CreateCard -> CardPileCmd.Add(PileType 6 Deck, Bottom). CurseCardPool.GenerateAllCards = the 18 curses listed in evidence; CardModel.get_CanBeGeneratedByModifiers is true and exactly AscendersBane, BadLuck, CurseOfTheBell, Enthralled, Folly, Greed, PoorSleep, SporeMind override it with ldc.i4.0 -> the curse is uniform among the unlocked ones of CLUMSY, DEBT, DECAY, DOUBT, GUILTY, INJURY, NORMALITY, REGRET, SHAME, WRITHE. Non-standard source keys are already raised in open_questions.",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read GetValidRelics (Neow.AllPossibleOptions Where Relic != null && Relic.IsAllowedAtNeow(owner) && !(Relic is NeowsBones)) and <AfterObtained>d__7: ToList, UnstableShuffle(PlayerRng.NonCombatGeneration), Take(Relics 2), RelicReward(relic, Owner, null), new RewardsSet(Owner, null).WithCustomRewards.WithSkippingDisallowed().Offer(); then curse loop (Curses 1): CurseCardPool unlocked Where(CanBeGeneratedByModifiers).OrderBy(Id), NextItem(NonCombatGeneration), CardPileCmd.Add(PileType 6). Only the RNG streams changed. obtain (gain_relic 2 neow_options, add 1 curse) correct; contents of Neow.AllPossibleOptions not re-read (as the entry says). fingerprint equals the current extract record.",
     "verdict": "agree"
    },
    "category": "irrelevant",
@@ -75349,7 +75544,9 @@
     "GetValidRelics(owner): ModelDb.Event<Neow>.AllPossibleOptions (CurseOptions + PositiveOptions + LavaRock, NeowsTalisman, NutritiousOyster, Pomander, SmallCapsule, StoneHumidifier options = the 30 relics of this batch) Where option.Relic != null && Relic.IsAllowedAtNeow(owner) (base = IsAllowed(RunState); e.g. MassiveScroll needs > 1 player, Kaleidoscope needs all characters unlocked) && !(Relic is NeowsBones)",
     "AfterObtained d__7: valid relics ToList, PlayerRng.Rewards.Shuffle, Take(Relics 2) -> RelicReward(relic, Owner) each -> new RewardsSet(Owner).WithCustomRewards(list).WithSkippingDisallowed().Offer() -> both relics must be taken (RelicReward.OnSelect -> RelicCmd.Obtain, so their own pickup effects run)",
     "then availableCurses = ModelDb.CardPool<CurseCardPool>.GetUnlockedCards(...).Where(CanBeGeneratedByModifiers).OrderBy(Id); for i < Curses (1): RunState.Rng.Niche.NextItem(availableCurses) (removed from the list) -> CreateCard -> CardPileCmd.Add(PileType 6 Deck, Bottom)",
-    "CurseCardPool = AscendersBane, BadLuck, Clumsy, CurseOfTheBell, Debt, Decay, Doubt, Enthralled, Folly, Greed, Guilty, Injury, Normality, PoorSleep, Regret, Shame, SporeMind, Writhe; get_CanBeGeneratedByModifiers returns false (override ldc.i4.0) for AscendersBane, BadLuck, CurseOfTheBell, Enthralled, Folly, Greed, PoorSleep, SporeMind (CardModel default true) -> the curse is uniform among the unlocked ones of CLUMSY, DEBT, DECAY, DOUBT, GUILTY, INJURY, NORMALITY, REGRET, SHAME, WRITHE"
+    "CurseCardPool = AscendersBane, BadLuck, Clumsy, CurseOfTheBell, Debt, Decay, Doubt, Enthralled, Folly, Greed, Guilty, Injury, Normality, PoorSleep, Regret, Shame, SporeMind, Writhe; get_CanBeGeneratedByModifiers returns false (override ldc.i4.0) for AscendersBane, BadLuck, CurseOfTheBell, Enthralled, Folly, Greed, PoorSleep, SporeMind (CardModel default true) -> the curse is uniform among the unlocked ones of CLUMSY, DEBT, DECAY, DOUBT, GUILTY, INJURY, NORMALITY, REGRET, SHAME, WRITHE",
+    "v0.113.1 re-review: unchanged behaviour. RNG streams changed: the relic shuffle is now ListExtensions.UnstableShuffle(PlayerRng.NonCombatGeneration) (was PlayerRng.Rewards.Shuffle) and the curse pick is PlayerRng.NonCombatGeneration.NextItem (was RunState.Rng.Niche); RelicReward got the new null rng-override argument. Still 2 distinct relics from Neow's allowed options (not NeowsBones), offered with skipping disallowed, then 1 curse from CurseCardPool.Where(CanBeGeneratedByModifiers) added to the deck. The contents of Neow.AllPossibleOptions in v0.113.1 were not re-read",
+    "v0.113.1: get_CanonicalVars DynamicVar(\"Relics\", 2), DynamicVar(\"Curses\", 1); get_Rarity 7; GetValidRelics: Neow.AllPossibleOptions.Where(Relic != null && Relic.IsAllowedAtNeow(owner) && Relic is not NeowsBones); <AfterObtained>d__7::MoveNext: UnstableShuffle, Take(Relics), new RelicReward(relic, Owner, null); new RewardsSet(Owner, null).WithCustomRewards(...).WithSkippingDisallowed().Offer(); curse loop CardPileCmd.Add(PileType 6, 1)"
    ],
    "fingerprint": "bd44df716b2b8d93a6978b8b8f030f1f7cc077d50fb8ff7be7f1acc93d2d4b0a",
    "hook_tokens": {
@@ -75379,9 +75576,9 @@
    "open_questions": [
     "gain_relic source 'neow_options' (2 distinct random relics from Neow's own option list, each with its own pickup effect) and add_card pool.source 'curse' are not in the documented vocabulary (gain_relic source: next_in_pool or rarity; pool source: character / colorless / character_of)."
    ],
-   "reviewed_by": "TASK-027 ticket 01",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "3ea24b6b1c93408665b016c81e7d66775fc99cf1c9849942ffad1b5768e61a5e",
-   "status": "stale",
+   "status": "converted",
    "triage": {
     "category": "irrelevant",
     "hook_groups": {
@@ -75924,15 +76121,20 @@
   },
   {
    "audit": {
-    "by": "structural rule (tests/test_assembly_facts.py)",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read <AfterObtained>d__8: PlayerCmd.GainGold(Gold.BaseValue 300, Owner, false). GoldVar 300, HasUponPickupEffect true, IsAllowedInShops false, rarity 4; IsAllowed override removed (extract diff). obtain gain_gold 300 correct; nothing else. fingerprint equals the current extract record.",
     "verdict": "agree"
    },
+   "between_fights": [],
    "category": "irrelevant",
    "class": "OldCoin",
    "entity_key": "relics:OLD_COIN",
    "evidence": [
     "structural review: only out-of-combat hooks AfterObtained 06002042, IsAllowed 0600203E",
-    "no combat command is called from a room-entry hook; pickup changes are already in the observed deck"
+    "no combat command is called from a room-entry hook; pickup changes are already in the observed deck",
+    "TASK-027 ticket 06b: AfterObtained (<AfterObtained>d__9): PlayerCmd.GainGold(Gold.BaseValue, Owner). get_CanonicalVars: GoldVar 300. IsAllowed = IsBeforeAct3TreasureChest; get_IsAllowedInShops false; get_HasUponPickupEffect true; get_Rarity 4 (Rare). No other hook.",
+    "v0.113.1 re-review: unchanged behaviour. The IsAllowed override (IsBeforeAct3TreasureChest, pool gating only) was removed; pickup still gains 300 gold",
+    "v0.113.1: get_CanonicalVars GoldVar(300); get_HasUponPickupEffect true; get_IsAllowedInShops false; get_Rarity 4; <AfterObtained>d__8::MoveNext: PlayerCmd.GainGold(Gold.BaseValue, Owner, false). No other hook"
    ],
    "fingerprint": "b1c83fc4e363abeefb38671711e547088be2b99ab0978cfe11ac94de05ffba6c",
    "hook_tokens": {
@@ -75942,9 +76144,16 @@
     "AfterObtained"
    ],
    "mechanics": [],
-   "reviewed_by": "TASK-025 ticket 04 (structural)",
+   "obtain": [
+    {
+     "amount": 300,
+     "kind": "gain_gold"
+    }
+   ],
+   "open_questions": [],
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "fce281c9af06a4cd4aae0cfbaca5a426a046bbc029fa29e979cae579f533de49",
-   "status": "stale",
+   "status": "converted",
    "triage": {
     "category": "irrelevant",
     "hook_groups": {
@@ -76260,8 +76469,8 @@
   },
   {
    "audit": {
-    "by": "TASK-027 ticket 01 independent review",
-    "notes": "AfterObtained only set_WasOwnerPartOfLastPlayerTurn(CombatManager.Instance.IsPartOfPlayerTurn(Owner)) -> no pickup effect; AfterCombatEnd only set_Status(0) + set_UsedThisCombat(false) -> no between_fights. Combat: BeforeSideTurnEndEarly d__16 (owner in participants, !UsedThisCombat, !AnyCardsPlayedThisTurn, WasOwnerPartOfLastPlayerTurn) -> CardPile.GetCards(Owner, [PileType 2]).ToList() -> CardCmd.Exhaust each; ShouldTakeExtraTurn same conditions and player == Owner; AfterTakingExtraTurn(Owner) -> UsedThisCombat = true (once per combat). AnyCardsPlayedThisTurn: TurnNumber 1 and owner has WhisperingEarring (b__19_0 isinst) -> true; else CombatHistory.CardPlaysFinished.Any(b__19_1: actor is owner creature, HappenedThisTurn, !IsAutoPlay). BeforeCardPlayed only clears Status. Mechanics (turn_end exhaust all hand + extra_turn, cards played this turn at most 0, once per combat) match.",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read ShouldTakeExtraTurnEarly (!UsedThisCombat, !AnyCardsPlayedThisTurn, WasOwnerPartOfLastPlayerTurn, player == Owner), <BeforeSideTurnEndEarly>d__16 (same conditions + participants contain owner -> CardCmd.Exhaust each hand card), AfterTakingExtraTurn (UsedThisCombat = true), AfterCombatEnd reset, AnyCardsPlayedThisTurn (turn 1 + WhisperingEarring -> true; else non-autoplay CardPlayFinished by owner this turn), AfterObtained state init only. Extract diff: only ShouldTakeExtraTurn -> ShouldTakeExtraTurnEarly. I also read Hook.ShouldTakeExtraTurn: it first loops all listeners' ShouldTakeExtraTurnEarly and returns the first true one as the source, and only then the regular ShouldTakeExtraTurn listeners; so Pael's Eye now wins the extra-turn query (and is the source passed to AfterTakingExtraTurn) when another regular extra-turn source also qualifies. That ordering is the patch-note change; the relic's own effects and both mechanics are unchanged and correct; the 'ordering not read' line in evidence can be replaced with this. fingerprint equals the current extract record.",
     "verdict": "agree"
    },
    "category": "trigger",
@@ -76274,7 +76483,10 @@
     "BeforeCardPlayed: an autoplay card by owner while unused sets a flag path (autoplays do not count as 'played')",
     "TASK-027 ticket 01 re-read: AfterObtained only does set_WasOwnerPartOfLastPlayerTurn(CombatManager.IsPartOfPlayerTurn(Owner)) (state init so a mid-combat pickup works); no gameplay effect at pickup -> no obtain. AfterCombatEnd only resets Status and UsedThisCombat -> no between_fights.",
     "Correction to the BeforeCardPlayed line above: it returns early when CardPlay.IsAutoPlay is true; for a non-autoplay card of the owner while unused it calls set_Status(0) (display only, the relic stops glowing). The trigger itself is decided in AnyCardsPlayedThisTurn (lambda b__19_1: CardPlayFinished entries by the owner's creature, HappenedThisTurn, !IsAutoPlay; lambda b__19_0: owner has WhisperingEarring -> turn 1 counts as played). Combat mechanics unchanged.",
-    "BeforeSideTurnEndEarly d__16: CardPile.GetCards(Owner, [PileType 2 Hand]).ToList() -> CardCmd.Exhaust each (confirmed)."
+    "BeforeSideTurnEndEarly d__16: CardPile.GetCards(Owner, [PileType 2 Hand]).ToList() -> CardCmd.Exhaust each (confirmed).",
+    "v0.113.1 re-review: unchanged behaviour for the relic's own effect. The extra-turn hook moved from ShouldTakeExtraTurn to ShouldTakeExtraTurnEarly (same conditions: !UsedThisCombat, !AnyCardsPlayedThisTurn, WasOwnerPartOfLastPlayerTurn, player == Owner); this is the hook-ordering change behind the patch note about Pael's Eye and Ambergris (the early query is resolved before the regular extra-turn hooks). The ordering against other extra-turn sources was not read (Hook / CombatManager not dumped)",
+    "v0.113.1: <BeforeSideTurnEndEarly>d__16::MoveNext: participants contain Owner.Creature, !UsedThisCombat, !AnyCardsPlayedThisTurn, WasOwnerPartOfLastPlayerTurn -> CardCmd.Exhaust(choiceContext, each card of CardPile.GetCards(Owner, [PileType 2])); AfterTakingExtraTurn(Owner) -> UsedThisCombat = true; AfterCombatEnd resets; AnyCardsPlayedThisTurn: turn 1 with WhisperingEarring -> true, else CardPlaysFinished by owner this turn and !IsAutoPlay; AfterSideTurnStart tracks WasOwnerPartOfLastPlayerTurn; get_Rarity 7",
+    "Developer note 2026-11-16 (from the independent review): all ShouldTakeExtraTurnEarly checks run before the regular ones, so Pael's Eye is resolved first when another extra-turn source also qualifies."
    ],
    "fingerprint": "c1a81845cb1db1c26a23db32bea6dc6c1a54cc5766f99d66564d573e2d933bc6",
    "hook_tokens": {
@@ -76329,9 +76541,9 @@
     "Missing vocabulary: effect 'extra_turn' (a full additional player turn: draw, energy, turn_start relics). Exhaust-all-hand cost is real (cards in hand are lost for the combat). Value depends on willingness to skip a turn; scorer needs a model for a free extra turn once per combat.",
     "Exhausting the hand also fires card_exhausted triggers for each exhausted card."
    ],
-   "reviewed_by": "TASK-027 ticket 01",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "be34cc64cb0da56020beddd25e9ad1b33111d6f24697a7816e07c8625e37a1b1",
-   "status": "stale",
+   "status": "converted",
    "triage": {
     "category": "needs_review",
     "hook_groups": {
@@ -76733,8 +76945,8 @@
   },
   {
    "audit": {
-    "by": "TASK-027 ticket 01 independent review",
-    "notes": "No AfterObtained -> no obtain. TryModifyCardRewardAlternatives(player, reward, alternatives): player == Owner -> alternatives.Add(new CardRewardAlternative('SACRIFICE', OnSacrifice, 2)); --enum PostAlternateCardRewardAction: 2 = EndSelectionAndCompleteReward (reward closes, no card taken). OnSacrifice d__19: RewardsSacrificed += 1; if RewardsSacrificed % DynamicVars['Sacrifices'] (2) == 0 -> RelicFactory.PullNextRelicFromFront(Owner).ToMutable() -> RelicCmd.Obtain. The counter is a relic field never reset (run-long). RollRarity(PlayerRng.Rewards): NextFloat < 0.5 Common, < 0.83 Uncommon, else Rare; PullFromFront on Player.RelicGrabBag, fallback Circlet, removed from SharedRelicGrabBag. between_fights card_reward / sacrificed / every 2 / counter run / gain_relic next_in_pool and the card_reward_choice mechanic match.",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read TryModifyCardRewardAlternatives (player == Owner -> add CardRewardAlternative('SACRIFICE', OnSacrifice, 2)) and <OnSacrifice>d__19 (RewardsSacrificed += 1; Flash; % Sacrifices 2 == 0 -> RelicCmd.Obtain(RelicFactory.PullNextRelicForRewardFromFront(Owner).ToMutable(), Owner)). Read RelicFactory (--dump-any): PullNextRelicForRewardFromFront = RollRarityForReward (RollRarity(PlayerRng.Rewards): < 0.5 Common, < 0.83 Uncommon, else Rare) then PullNextRelicFromFront(player, rarity, always-true) -> player RelicGrabBag.PullFromFront, Circlet fallback, removed from SharedRelicGrabBag. Same as before. between_fights / mechanics correct. fingerprint equals the current extract record.",
     "verdict": "agree"
    },
    "between_fights": [
@@ -76764,7 +76976,9 @@
     "TASK-027 ticket 01: TryModifyCardRewardAlternatives (player == Owner, every CardReward offered to the owner): alternatives.Add(new CardRewardAlternative('SACRIFICE', OnSacrifice, PostAlternateCardRewardAction 2 = EndSelectionAndCompleteReward)) -> picking it closes the reward with no card taken.",
     "OnSacrifice d__19: RewardsSacrificed += 1; if RewardsSacrificed % DynamicVars['Sacrifices'] (2) == 0 -> RelicFactory.PullNextRelicFromFront(Owner).ToMutable() -> RelicCmd.Obtain(relic, Owner). The counter is a relic field never reset -> counted over the run.",
     "RelicFactory.PullNextRelicFromFront(Player): RollRarity(PlayerRng.Rewards): NextFloat < 0.5 -> Common (2), < 0.83 -> Uncommon (3), else Rare (4); then Player.RelicGrabBag.PullFromFront(rarity, filter always true, RunState), fallback Circlet if empty, and removed from SharedRelicGrabBag.",
-    "No AfterObtained -> no obtain."
+    "No AfterObtained -> no obtain.",
+    "v0.113.1 re-review: unchanged behaviour. OnSacrifice now calls RelicFactory.PullNextRelicForRewardFromFront(Owner) (was PullNextRelicFromFront(Owner)); in v0.113.1 that helper is RollRarityForReward = RollRarity(PlayerRng.Rewards) (< 0.5 Common, < 0.83 Uncommon, else Rare) then PullNextRelicFromFront(player, rarity) from the player's grab bag, Circlet fallback, removed from the shared bag -> same as the earlier evidence. Every 2nd SACRIFICE still obtains that relic; counter never reset",
+    "v0.113.1: get_CanonicalVars DynamicVar(\"Sacrifices\", 2); get_Rarity 7; TryModifyCardRewardAlternatives(player == Owner): alternatives.Add(new CardRewardAlternative(\"SACRIFICE\", OnSacrifice, 2)); <OnSacrifice>d__19::MoveNext: RewardsSacrificed += 1; Flash; RewardsSacrificed % Sacrifices == 0 -> RelicCmd.Obtain(PullNextRelicForRewardFromFront(Owner).ToMutable(), Owner)"
    ],
    "fingerprint": "882a27324edda26f5d8af1e674ff5463e4035ac10792ef1d0ff10b435977e6bc",
    "hook_tokens": {
@@ -76784,9 +76998,9 @@
     "Adds a 'sacrifice' option to each card reward worth half a relic. This raises the value of skipping a card reward; the scorer's skip baseline could include it. Not a deck-capability change.",
     "between_fights uses when 'card_reward' with condition 'card_reward_sacrificed' (the player picks the SACRIFICE alternative instead of a card; not in the spec's condition list) and every 2 / counter run. The relic rarity distribution is in evidence (RelicFactory.RollRarity thresholds)."
    ],
-   "reviewed_by": "TASK-027 ticket 01",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "aed0776ab277b8b8454049fb3914aa614d81cd89557887b7f70dd44597052eb0",
-   "status": "stale",
+   "status": "converted",
    "triage": {
     "category": "needs_review",
     "hook_groups": {
@@ -76990,15 +77204,19 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review relic-D",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read <AfterSideTurnEnd>d__4: participants contain Owner.Creature; Owner.Creature.Block < Block.BaseValue 10 -> return; target = RunState.Rng.CombatTargets.NextItem(HittableEnemies); VFX; CreatureCmd.Damage(choiceContext, target, Damage 6, Owner.Creature). BlockVar 10, DamageVar 6, rarity 3. Mechanic correct; no out-of-combat hook. fingerprint equals the current extract record.",
     "verdict": "agree"
    },
+   "between_fights": [],
    "category": "baseline",
    "class": "ParryingShield",
    "entity_key": "relics:PARRYING_SHIELD",
    "evidence": [
     "get_CanonicalVars: BlockVar(10, ValueProp 4) used as threshold, DamageVar(6, ValueProp 4)",
-    "AfterSideTurnEnd 060020E1: Owner in participants; if Owner.Creature.Block < Block(10) -> return; else Rng.CombatTargets.NextItem(HittableEnemies) -> CreatureCmd::Damage(target, Damage=6, Owner.Creature)"
+    "AfterSideTurnEnd 060020E1: Owner in participants; if Owner.Creature.Block < Block(10) -> return; else Rng.CombatTargets.NextItem(HittableEnemies) -> CreatureCmd::Damage(target, Damage=6, Owner.Creature)",
+    "v0.113.1 re-review: unchanged behaviour. AfterSideTurnEnd still checks participants contain the owner's creature and Block >= 10, then deals 6 to a random hittable enemy (RunState.Rng.CombatTargets); only a VFX call was added. No out-of-combat hook (no AfterObtained, combat-end, room or reward override) -> obtain / between_fights empty",
+    "v0.113.1: get_CanonicalVars BlockVar(10, ValueProp 4), DamageVar(6, ValueProp 4); get_Rarity 3; <AfterSideTurnEnd>d__4::MoveNext: participants.Contains(Owner.Creature); Owner.Creature.Block < Block.BaseValue -> return; target = RunState.Rng.CombatTargets.NextItem(HittableEnemies); VfxCmd.PlayOnCreatureCenter; CreatureCmd.Damage(choiceContext, target, Damage, Owner.Creature)"
    ],
    "fingerprint": "6c054b28089383604a1987e35ca90917f790f688c6a284d3e78a040126f365cf",
    "hook_tokens": {
@@ -77022,10 +77240,11 @@
      "when": "turn_end"
     }
    ],
+   "obtain": [],
    "open_questions": [],
-   "reviewed_by": "TASK-025 ticket 04 batch D",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "a616f79875f714988227e526f31e5873decade4f536f75ff1b702bfcca4135b2",
-   "status": "stale",
+   "status": "converted",
    "triage": {
     "category": "baseline",
     "hook_groups": {
@@ -77294,10 +77513,11 @@
   },
   {
    "audit": {
-    "by": "TASK-027 ticket 01 independent review",
-    "notes": "IL matches. AfterObtained d__8: PlayerCmd.GainMaxPotionCount(DynamicVar('PotionSlots', 1), Owner) (Player.AddToMaxPotionCount) first, then PotionFactory.CreateRandomPotionsOutOfCombat(Owner, DynamicVar('Potions', 2), RunState.Rng.CombatPotionGeneration, null) -> for each: PotionCmd.TryToProcure(potion.ToMutable(), Owner). CreateRandomPotions: per potion NextFloat <= 0.1 Rare, <= 0.35 Uncommon, else Common, uniform among unlocked potions of that rarity in Character.PotionPool + SharedPotionPool, the picked potion is removed from the list (2 distinct). TryToProcure: Hook.ShouldProcurePotion, then the first empty slot; a full belt rejects the potion without discarding (the new slot is added before the potions).",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read <AfterObtained>d__8: PlayerCmd.GainMaxPotionCount(PotionSlots 1, Owner) first, then CreateRandomPotionsOutOfCombat(Owner, Potions 2, PlayerRng.NonCombatGeneration, null) -> PotionCmd.TryToProcure each. Only the RNG stream changed. obtain [potion_slots 1, gain_potion random x2 distinct] correct. fingerprint equals the current extract record.",
     "verdict": "agree"
    },
+   "between_fights": [],
    "category": "irrelevant",
    "class": "PhialHolster",
    "entity_key": "relics:PHIAL_HOLSTER",
@@ -77307,7 +77527,9 @@
     "get_CanonicalVars: DynamicVar('PotionSlots', 1), DynamicVar('Potions', 2); get_HasUponPickupEffect true; get_Rarity 7 Ancient",
     "AfterObtained d__8: PlayerCmd.GainMaxPotionCount(PotionSlots 1, Owner) first, then PotionFactory.CreateRandomPotionsOutOfCombat(Owner, Potions 2, RunState.Rng.CombatPotionGeneration, null) -> for each: PotionCmd.TryToProcure(potion.ToMutable(), Owner)",
     "CreateRandomPotions: per potion NextFloat <= 0.1 Rare, <= 0.35 Uncommon, else Common, then uniform among the unlocked potions of that rarity in the character potion pool + SharedPotionPool; a picked potion is removed from the list (the 2 are distinct)",
-    "TryToProcure: Hook.ShouldProcurePotion, then the first empty slot; with no empty slot the potion is not added and nothing is discarded (the slot is added before the potions)"
+    "TryToProcure: Hook.ShouldProcurePotion, then the first empty slot; with no empty slot the potion is not added and nothing is discarded (the slot is added before the potions)",
+    "v0.113.1 re-review: unchanged behaviour. Only the RNG stream changed: CreateRandomPotionsOutOfCombat now uses Owner.PlayerRng.NonCombatGeneration (was RunState.Rng.CombatPotionGeneration), matching the patch note about Phial Holster's RNG stream; still +1 potion slot first, then 2 distinct random potions via TryToProcure",
+    "v0.113.1: get_CanonicalVars DynamicVar(\"PotionSlots\", 1), DynamicVar(\"Potions\", 2); get_Rarity 7; <AfterObtained>d__8::MoveNext: PlayerCmd.GainMaxPotionCount(PotionSlots, Owner); PotionFactory.CreateRandomPotionsOutOfCombat(Owner, Potions, PlayerRng.NonCombatGeneration, null); foreach PotionCmd.TryToProcure(potion.ToMutable(), Owner)"
    ],
    "fingerprint": "766ae956e87915ce94d1b4f3fc42c3ab1f662307fcb340ac4b8777ecbb5bbe4a",
    "hook_tokens": {
@@ -77329,9 +77551,9 @@
      "potion": "random"
     }
    ],
-   "reviewed_by": "TASK-027 ticket 01",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "d59a8ea4afc612451a2217ba213d148780344a408f322ec8b34e4a79afea1865",
-   "status": "stale",
+   "status": "converted",
    "triage": {
     "category": "irrelevant",
     "hook_groups": {
@@ -77694,15 +77916,21 @@
   },
   {
    "audit": {
-    "by": "structural rule (tests/test_assembly_facts.py)",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read <AfterObtained>d__8: PlayerCmd.GainMaxPotionCount(PotionSlots 2, Owner); new IsAllowedInternal: IsLateInAct3(runState) && GameMode != 4 -> false, else true (pool gating only). rarity 2. obtain potion_slots 2 correct; no between-fight hook. fingerprint equals the current extract record.",
     "verdict": "agree"
    },
+   "between_fights": [],
    "category": "irrelevant",
    "class": "PotionBelt",
    "entity_key": "relics:POTION_BELT",
    "evidence": [
     "structural review: only out-of-combat hooks AfterObtained 0600214B",
-    "no combat command is called from a room-entry hook; pickup changes are already in the observed deck"
+    "no combat command is called from a room-entry hook; pickup changes are already in the observed deck",
+    "TASK-027 06b: get_CanonicalVars DynamicVar PotionSlots 2; get_HasUponPickupEffect true; get_Rarity 2 (Common)",
+    "AfterObtained d__7: PlayerCmd.GainMaxPotionCount(DynamicVars[PotionSlots].IntValue 2, Owner); no other hook -> no between-fight effect; catalog: gain 2 potion slots on pickup; agrees",
+    "v0.113.1 re-review: unchanged behaviour. New pool gating only: IsAllowedInternal returns false when IsLateInAct3(runState) and GameMode != 4, else true (not offered late in Act 3 outside game mode 4); pickup still gains 2 potion slots",
+    "v0.113.1: get_CanonicalVars DynamicVar(\"PotionSlots\", 2); get_HasUponPickupEffect true; get_Rarity 2; <AfterObtained>d__8::MoveNext: PlayerCmd.GainMaxPotionCount(PotionSlots.IntValue, Owner). No other hook"
    ],
    "fingerprint": "624224c5f518dc7243a790bfe9def936ada8ca93b99790fe8ac14986a80d3e1f",
    "hook_tokens": {
@@ -77714,9 +77942,16 @@
     "IsAllowedInternal"
    ],
    "mechanics": [],
-   "reviewed_by": "TASK-025 ticket 04 (structural)",
+   "obtain": [
+    {
+     "amount": 2,
+     "kind": "potion_slots"
+    }
+   ],
+   "open_questions": [],
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "77953a516ddeadf2f5ad46512fb56cd830c85b95f8cf94f9c2727171a24fb65c",
-   "status": "stale",
+   "status": "converted",
    "triage": {
     "category": "needs_review",
     "hook_groups": {
@@ -77792,15 +78027,40 @@
   },
   {
    "audit": {
-    "by": "structural rule (tests/test_assembly_facts.py)",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read TryModifyRewards(player, rewards, room): player != Owner -> false; room null or RoomType != 1 -> false; rewards.Add(new CardReward(CardCreationOptions.ForRoom(player, 1), 3, player, null, null)); true. rarity 4, no AfterObtained. between_fights (combat_end MONSTER, extra 3-option character card reward) correct. fingerprint equals the current extract record.",
     "verdict": "agree"
    },
+   "between_fights": [
+    {
+     "effect": {
+      "kind": "offer_rewards",
+      "rewards": [
+       {
+        "options": 3,
+        "pool": {
+         "rarity_odds": "RegularEncounter",
+         "source": "character"
+        },
+        "type": "card"
+       }
+      ]
+     },
+     "filter": {
+      "fight_kind": "MONSTER"
+     },
+     "when": "combat_end"
+    }
+   ],
    "category": "irrelevant",
    "class": "PrayerWheel",
    "entity_key": "relics:PRAYER_WHEEL",
    "evidence": [
     "structural review: only out-of-combat hooks TryModifyRewards 06002152",
-    "no combat command is called from a room-entry hook; pickup changes are already in the observed deck"
+    "no combat command is called from a room-entry hook; pickup changes are already in the observed deck",
+    "TASK-027 ticket 06b: TryModifyRewards(player, rewards, room): player == Owner, room != null and room.RoomType == 1 (Monster) -> rewards.Add(new CardReward(CardCreationOptions.ForRoom(player, 1), 3, player)); returns true. ForRoom (--dump-any CardCreationOptions): pools = [player.Character.CardPool], source 1 (Encounter), rarity odds 1 (RegularEncounter) for RoomType 1. Custom reward sets pass no room, so only the Monster room's end-of-fight rewards get the extra card reward. No AfterObtained; get_Rarity 4 (Rare).",
+    "v0.113.1 re-review: unchanged behaviour. The CardReward constructor gained a fifth argument (CardSelectorStack), passed null; still: owner, room not null and RoomType 1 (Monster) -> one extra 3-option character card reward (ForRoom(player, 1)); null room or other room types -> no change",
+    "v0.113.1: TryModifyRewards(player, rewards, room): player != Owner -> false; room?.RoomType != 1 -> false; rewards.Add(new CardReward(CardCreationOptions.ForRoom(player, 1), 3, player, null, null)); true. get_Rarity 4; no AfterObtained"
    ],
    "fingerprint": "6a516fe49c5cb1e0145f8f1d823e69c8e1dda61466018c4265b435da155b34d2",
    "hook_tokens": {
@@ -77810,9 +78070,13 @@
     "TryModifyRewards"
    ],
    "mechanics": [],
-   "reviewed_by": "TASK-025 ticket 04 (structural)",
+   "obtain": [],
+   "open_questions": [
+    "card reward pool key rarity_odds is not in the documented vocabulary; CardReward's own generation (rarity roll, upgrade roll) was not re-read here."
+   ],
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "01044e00c612d4af22db0dbd7b9c01fde1311787d80264829087dbfb17ec6a4d",
-   "status": "stale",
+   "status": "converted",
    "triage": {
     "category": "irrelevant",
     "hook_groups": {
@@ -78627,14 +78891,19 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review relic-E",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read the class: the only gameplay override is <AfterRoomEntered>d__4: room is CombatRoom -> Flash; PowerCmd.Apply<RetainHandPower>(ThrowingPlayerChoiceContext, Owner.Creature, 1, Owner.Creature, null, false); rarity 5; no AfterObtained, no ShouldFlush (extract diff: ShouldFlush removed, AfterRoomEntered added). Read RetainHandPower (--dump-any): Type 1, StackType 1 Counter, ShouldFlush(player) false for the owner's player, AfterSideTurnEnd (participants contain owner) -> PowerCmd.Decrement. Claimed change (retain_hand turn 1 -> combat_start apply_power RetainHand 1 self) is exactly what the IL shows; the stacking note is right; obtain/between_fights empty correct. fingerprint equals the current extract record.",
     "verdict": "agree"
    },
+   "between_fights": [],
    "category": "baseline",
    "class": "RingingTriangle",
    "entity_key": "relics:RINGING_TRIANGLE",
    "evidence": [
-    "ShouldFlush 060021B8: for owner returns TurnNumber > 1 (cgt with ldc.i4.1); on turn 1 the hand is not flushed at end of turn, i.e. hand retained after turn 1"
+    "ShouldFlush 060021B8: for owner returns TurnNumber > 1 (cgt with ldc.i4.1); on turn 1 the hand is not flushed at end of turn, i.e. hand retained after turn 1",
+    "TASK-027 ticket 06b: only override is ShouldFlush (combat: TurnNumber > 1). No AfterObtained; get_Rarity 5 (Shop). no AfterObtained effect outside combat and no lasting out-of-combat effect -> obtain [] / between_fights []",
+    "v0.113.1 re-review: changed. The ShouldFlush override (retain hand while TurnNumber <= 1) was replaced by AfterRoomEntered: on entering a CombatRoom, Flash and PowerCmd.Apply<RetainHandPower>(Owner.Creature, 1). Mechanic modifier retain_hand turns [1] -> combat_start apply_power RetainHand 1 to self (matches the patch note 'grants a stack of Retain Hand at combat start'). Net turn-1 effect is the same; the stack now combines with other Retain Hand sources",
+    "v0.113.1: <AfterRoomEntered>d__4::MoveNext: room is CombatRoom -> Flash; PowerCmd.Apply<RetainHandPower>(ThrowingPlayerChoiceContext, Owner.Creature, 1, Owner.Creature, null, false). RetainHandPower: StackType 1 Counter; ShouldFlush(player == Owner.Player) false; AfterSideTurnEnd participants contain Owner -> PowerCmd.Decrement. get_Rarity 5; no AfterObtained, nothing out of combat"
    ],
    "fingerprint": "f568d78a4190ffb2eb11f54c0e95d68f89ca14e80396c94d94258458d2e7a8b0",
    "hook_tokens": {
@@ -78645,16 +78914,23 @@
    ],
    "mechanics": [
     {
-     "modifier": "retain_hand",
-     "turns": [
-      1
-     ]
+     "effect": {
+      "amount": 1,
+      "kind": "apply_power",
+      "power": "RetainHand",
+      "target": "self",
+      "upgrade": 0
+     },
+     "when": "combat_start"
     }
    ],
-   "open_questions": [],
-   "reviewed_by": "TASK-025 ticket 04 batch E",
+   "obtain": [],
+   "open_questions": [
+    "The power is applied in AfterRoomEntered when the room is a CombatRoom (before the first turn), written as when combat_start. With 1 stack the hand is kept at the end of turn 1 (powers:RETAIN_HAND: ShouldFlush false, decremented at the owner's turn end; flush-before-decrement order is that fact's open question). Unlike the old ShouldFlush override, it now stacks with other Retain Hand sources (an extra stack keeps the hand for an extra turn)."
+   ],
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "8f0b1d6b547eadabdbc89066f7b18c91d8975514e4721ce713dcb36fed0f6471",
-   "status": "stale",
+   "status": "converted",
    "triage": {
     "category": "baseline",
     "hook_groups": {
@@ -79112,10 +79388,11 @@
   },
   {
    "audit": {
-    "by": "TASK-027 ticket 01 independent review",
-    "notes": "IL matches. get_CanonicalVars: CardsVar 6. AfterObtained (synchronous): PileType 6 Deck cards .Where(card != null && card.IsUpgradable).ToList() -> ListExtensions.StableShuffle(RunState.Rng.Niche) (Sort, then UnstableShuffle Fisher-Yates) -> Take(Cards.IntValue 6) -> foreach CardCmd.Upgrade(card, CardPreviewStyle 4). So 6 distinct random upgradable cards (all of them when fewer), not a player choice. Other overrides: get_HasUponPickupEffect, get_Rarity 7. No combat or between-fight hook.",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read AfterObtained: Deck (PileType 6) Where(card != null && IsUpgradable).ToList().StableShuffle(PlayerRng.NonCombatGeneration).Take(Cards 6) -> CardCmd.Upgrade(card, 4); preview-grid UI call. CardsVar 6, rarity 7. Only the RNG stream changed. obtain upgrade 6 random correct. fingerprint equals the current extract record.",
     "verdict": "agree"
    },
+   "between_fights": [],
    "category": "irrelevant",
    "class": "SandCastle",
    "entity_key": "relics:SAND_CASTLE",
@@ -79123,7 +79400,9 @@
     "structural review: only out-of-combat hooks AfterObtained 060021EB",
     "no combat command is called from a room-entry hook; pickup changes are already in the observed deck",
     "TASK-027: get_CanonicalVars: CardsVar(ldc.i4.6). AfterObtained 060021EB (synchronous): PileType 6 (Deck) cards where card != null and card.IsUpgradable -> ToList -> ListExtensions.StableShuffle(RunState.Rng.Niche) -> Take(Cards.IntValue = 6) -> foreach CardCmd.Upgrade(card, CardPreviewStyle 4) -> 6 distinct random upgradable deck cards (all of them when fewer), not a player choice. get_Rarity 7 (Ancient)",
-    "catalog cross-check: 'upgrade 6 random cards' on pickup; agrees"
+    "catalog cross-check: 'upgrade 6 random cards' on pickup; agrees",
+    "v0.113.1 re-review: unchanged behaviour. Only the RNG stream changed: StableShuffle uses Owner.PlayerRng.NonCombatGeneration (was RunState.Rng.Niche); a preview-grid layout call was added. Still upgrades 6 random upgradable deck cards",
+    "v0.113.1: get_CanonicalVars CardsVar(6); get_Rarity 7; AfterObtained: Deck (PileType 6).Cards.Where(card != null && IsUpgradable).ToList().StableShuffle(PlayerRng.NonCombatGeneration).Take(Cards) -> CardCmd.Upgrade(card, 4)"
    ],
    "fingerprint": "2d56381d0a65f43e70630a906d56f135e4bcb108039d85c947b43cf2ae50395f",
    "hook_tokens": {
@@ -79144,9 +79423,9 @@
      "scope": "deck"
     }
    ],
-   "reviewed_by": "TASK-027 ticket 01",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "454a69362c609b82fe4826389480d6f0b0d4c9a80af1cd34e62d32ab8d4ee925",
-   "status": "stale",
+   "status": "converted",
    "triage": {
     "category": "irrelevant",
     "hook_groups": {
@@ -79465,10 +79744,11 @@
   },
   {
    "audit": {
-    "by": "TASK-027 ticket 01 independent review",
-    "notes": "AfterObtained d__10: CreatureCmd.LoseMaxHp(new ThrowingPlayerChoiceContext(), Owner.Creature, DynamicVars.HpLoss.BaseValue (HpLossVar 9), false) (LoseMaxHp d__23: newMax = MaxHp - amount; if newMax < CurrentHp -> damage CurrentHp - newMax, as in evidence); then for i < DynamicVars['Wishes'] (3): RunState.CreateCard(ModelDb.Card<Wish>(), Owner) -> CardPileCmd.Add(PileType 6 Deck) -> PreviewCardPileAdd. No other gameplay override. obtain lose_max_hp 9 then add_card WISH x3 (not upgraded) matches.",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read <AfterObtained>d__10: CreatureCmd.LoseMaxHp(ThrowingPlayerChoiceContext, Owner.Creature, HpLoss 9, null); for i < Wishes 3: CreateCard(ModelDb.Card<Wish>) -> CardPileCmd.Add(PileType 6); PreviewCardPileAdd; Wait 0.75. HpLossVar 9, Wishes 3, rarity 7. obtain [lose_max_hp 9, add 3 WISH] correct. fingerprint equals the current extract record.",
     "verdict": "agree"
    },
+   "between_fights": [],
    "category": "irrelevant",
    "class": "SereTalon",
    "entity_key": "relics:SERE_TALON",
@@ -79477,7 +79757,9 @@
     "no combat command is called from a room-entry hook; pickup changes are already in the observed deck",
     "TASK-027 ticket 01: AfterObtained d__10: CreatureCmd.LoseMaxHp(ThrowingPlayerChoiceContext, Owner.Creature, HpLoss.BaseValue = 9 (HpLossVar 9), false); then for i < DynamicVars['Wishes'] (3): RunState.CreateCard(ModelDb.Card<Wish>(), Owner) -> CardPileCmd.Add(PileType 6 Deck) -> PreviewCardPileAdd. Three WISH (cards:WISH, Ancient Skill), no upgrade call.",
     "CreatureCmd.LoseMaxHp: newMax = MaxHp - amount; if CurrentHp > newMax -> CreatureCmd.Damage(CurrentHp - newMax) so current HP drops to the new max; then SetMaxHp(Math.Max(newMax, 1)). Current HP is lowered only when it was above the new max.",
-    "No other gameplay override -> no between_fights; owned relic keeps empty mechanics."
+    "No other gameplay override -> no between_fights; owned relic keeps empty mechanics.",
+    "v0.113.1 re-review: unchanged behaviour. CreatureCmd.LoseMaxHp's last argument is now passed null (was the literal false; a changed signature, CreatureCmd not re-read); amounts and order are the same: lose 9 max HP, then 3 Wish to the deck with a 0.75 s wait added after the preview",
+    "v0.113.1: get_CanonicalVars HpLossVar(9), DynamicVar(\"Wishes\", 3); get_Rarity 7; <AfterObtained>d__10::MoveNext: CreatureCmd.LoseMaxHp(ThrowingPlayerChoiceContext, Owner.Creature, HpLoss.BaseValue, null); for i < Wishes: RunState.CreateCard(ModelDb.Card<Wish>, Owner) -> CardPileCmd.Add(PileType 6, 1, null, false); CardCmd.PreviewCardPileAdd"
    ],
    "fingerprint": "5e7a6777ee0bab652fdb941d2e2b6b8116f2fca95dfde9f96f603dfb1a2088b2",
    "hook_tokens": {
@@ -79500,9 +79782,9 @@
      "upgraded": false
     }
    ],
-   "reviewed_by": "TASK-027 ticket 01",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "503d9df03e3115ed95b4dcac57a6b9a5737c968e146831faca5c3b88d9c1e1a0",
-   "status": "stale",
+   "status": "converted",
    "triage": {
     "category": "irrelevant",
     "hook_groups": {
@@ -79741,8 +80023,8 @@
   },
   {
    "audit": {
-    "by": "TASK-027 ticket 01 independent review",
-    "notes": "IL matches. No AfterObtained; get_CanonicalVars CardsVar(3); IsAllowed = Players.Count == 1. TryModifyCardRewardOptionsLate: player == Owner, TimesUsed < Cards 3, Flags HasFlag 128 -> every IsUpgradable offered card is replaced by RunState.CloneCard + CardCmd.Upgrade via result.ModifyCard; returns true even if no card was upgradable, and AfterModifyingCardRewardOptions does TimesUsed += 1 -> the first 3 IsCardReward rewards generated after pickup. ShouldGenerateTreasure(player) = player != Owner || TreasureRoomsEntered > 1; AfterRoomEntered increments TreasureRoomsEntered for a TreasureRoom, and TreasureRoom.EnterInternal d__6 awaits Hook.AfterRoomEntered before TreasureRoomRelicSynchronizer.BeginRelicPicking -> in the first chest after pickup BeginRelicPicking adds no relic for the owner and OneOffSynchronizer.DoTreasureRoomRewards d__13 returns 0 before PlayerRng.Rewards.NextInt(42, 53) gold (x poverty multiplier at A3). RewardsSet.GenerateRewardsFor returns an empty list for a TreasureRoom, so only rewards added by other relics' ModifyRewards hooks (TreasureRoom.DoExtraRewardsIfNeeded -> RewardsCmd.GenerateForRoomEnd) can still appear there. Later chests are normal.",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read TryModifyCardRewardOptionsLate (Owner, TimesUsed < Cards 3, Flags has 128 -> every IsUpgradable option CloneCard + CardCmd.Upgrade + ModifyCard; returns true), AfterModifyingCardRewardOptions (TimesUsed += 1 while < 3), AfterRoomEntered (TreasureRoom -> TreasureRoomsEntered += 1), ShouldGenerateTreasure (player != Owner -> true, else TreasureRoomsEntered > 1), IsAllowedInternal (Players.Count == 1), IsUsedUp. Unchanged apart from the rename. between_fights entries correct; obtain [] correct. fingerprint equals the current extract record.",
     "verdict": "agree"
    },
    "between_fights": [
@@ -79778,7 +80060,9 @@
     "TASK-027 re-check: no AfterObtained (nothing on pickup); get_Rarity 7 Ancient; IsAllowed(runState) = Players.Count == 1",
     "card rewards: CardCreationFlags 128 = IsCardReward (set by every CardReward, including rewards offered by relics such as LostCoffer / Kaleidoscope); TryModifyCardRewardOptionsLate returns true even when no offered card is upgradable, so each IsCardReward reward after pickup consumes one of the 3 uses (Hook.AfterModifyingCardRewardOptions only calls modifiers that returned true); IsUsedUp = TimesUsed >= 3 && TreasureRoomsEntered > 0",
     "treasure: AfterRoomEntered(room) increments TreasureRoomsEntered when room is TreasureRoom; TreasureRoom.EnterInternal calls Hook.AfterRoomEntered before TreasureRoomRelicSynchronizer.BeginRelicPicking, so the first treasure room after pickup sees TreasureRoomsEntered == 1 -> ShouldGenerateTreasure false",
-    "with ShouldGenerateTreasure false the owner gets nothing from that chest: BeginRelicPicking adds no relic for the player (normally RelicFactory.RollRarity + SharedRelicGrabBag.PullFromFront) and OneOffSynchronizer.DoTreasureRoomRewards returns before the gold (normally PlayerRng.Rewards.NextInt(42, 53), times the poverty multiplier at A3+); later chests are normal"
+    "with ShouldGenerateTreasure false the owner gets nothing from that chest: BeginRelicPicking adds no relic for the player (normally RelicFactory.RollRarity + SharedRelicGrabBag.PullFromFront) and OneOffSynchronizer.DoTreasureRoomRewards returns before the gold (normally PlayerRng.Rewards.NextInt(42, 53), times the poverty multiplier at A3+); later chests are normal",
+    "v0.113.1 re-review: unchanged behaviour. IsAllowed was renamed to IsAllowedInternal with the same rule (Players.Count == 1); card-reward upgrades (first 3 IsCardReward rewards, each upgradable offered card cloned and upgraded, use counted even with nothing upgradable) and the empty first treasure chest (ShouldGenerateTreasure: TreasureRoomsEntered > 1) are the same",
+    "v0.113.1: get_CanonicalVars CardsVar(3); get_Rarity 7; TryModifyCardRewardOptionsLate(player == Owner, TimesUsed < Cards, Flags has 128) -> for each IsUpgradable option: CloneCard, CardCmd.Upgrade, ModifyCard; returns true; AfterModifyingCardRewardOptions: TimesUsed += 1 while < Cards; AfterRoomEntered(TreasureRoom) -> TreasureRoomsEntered += 1; ShouldGenerateTreasure(player): player != Owner -> true, else TreasureRoomsEntered > 1. No AfterObtained"
    ],
    "fingerprint": "debe04c6fe6ad29872facabff438470ad5a2117583cfb868ff74f422fe303459",
    "hook_tokens": {
@@ -79796,12 +80080,13 @@
     "TryModifyCardRewardOptionsLate"
    ],
    "mechanics": [],
+   "obtain": [],
    "open_questions": [
     "No documented effect for 'this treasure room gives nothing' (the first chest's relic and 42-52 gold are lost); written as when treasure + offer_rewards with empty rewards and replaces_room_rewards true, limit {treasure_rooms: 1}. card_reward_upgraded carries filter {upgradable: true} because only upgradable offered cards change."
    ],
-   "reviewed_by": "TASK-027 ticket 01",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "f12029924ed68528f463d02304a3ddb646e4fee7bcaa32cd3b70ec7f5c9d6d39",
-   "status": "stale",
+   "status": "converted",
    "triage": {
     "category": "needs_review",
     "hook_groups": {
@@ -81300,10 +81585,11 @@
   },
   {
    "audit": {
-    "by": "TASK-027 ticket 01 independent review",
-    "notes": "IL matches. get_RefinementUpgrades: BurningBlood->BlackBlood, RingOfTheSnake->RingOfTheDrake, DivineRight->DivineDestiny, BoundPhylactery->PhylacteryUnbound, CrackedCore->InfusedCore. GetUpgradedStarterRelic returns Circlet.ToMutable() for an unmapped relic. GetStarterRelic = player.Relics.FirstOrDefault(Rarity == 1 Starter). SetupForPlayer returns false when there is no Starter relic; then Orobas.get_OptionPool3 omits the option (it is added without setup when the event has no Owner). Otherwise it stores StarterRelic / UpgradedRelic ids. AfterObtained d__24: id = StarterRelic ?? Owner.Relics.First(Rarity == 1).Id; relic = Owner.GetRelicById(id); target = UpgradedRelic ?? GetUpgradedStarterRelic(relic).Id; RelicCmd.Replace(relic, ModelDb.GetById<RelicModel>(target).ToMutable()). Replace d__3: IndexOf, then RelicCmd.Remove(old), then RelicCmd.Obtain(new, owner, index). Obtain d__1 calls AddRelicInternal and the new relic's AfterObtained. All 11 relic facts exist in data/assembly/facts.json.",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read get_RefinementUpgrades: six pairs BurningBlood->BlackBlood, RingOfTheSnake->RingOfTheDrake, DivineRight->DivineDestiny, BoundPhylactery->PhylacteryUnbound, CrackedCore->InfusedCore, SongBow->Storyteller (extract diff adds exactly ModelDb.Relic<SongBow>/<Storyteller>). GetStarterRelic = Relics.FirstOrDefault(Rarity == 1); GetUpgradedStarterRelic: TryGetValue else Circlet; SetupForPlayer sets StarterRelic / UpgradedRelic ids (false without a Starter relic); <AfterObtained>d__24: id = StarterRelic ?? Relics.First(Rarity 1).Id; RelicCmd.Replace(GetRelicById(id), GetById(UpgradedRelic ?? mapped).ToMutable()). Claimed change is exactly the IL; obtain map/fallback and obtain_params correct; relics:SONG_BOW and relics:STORYTELLER exist in facts.json. fingerprint equals the current extract record.",
     "verdict": "agree"
    },
+   "between_fights": [],
    "category": "irrelevant",
    "class": "TouchOfOrobas",
    "entity_key": "relics:TOUCH_OF_OROBAS",
@@ -81314,7 +81600,9 @@
     "SetupForPlayer(player) (called by Orobas.get_OptionPool3 when the event has an Owner): starter null -> false and Orobas does not add the option; else StarterRelic = starter.Id, UpgradedRelic = GetUpgradedStarterRelic(starter).Id -> obtain_params name these two saved ModelIds; both follow from the run state (the first owned Starter-rarity relic, normally the character's own)",
     "AfterObtained 060022E8 (d__24): id = StarterRelic ?? Owner.Relics.First(Rarity == 1).Id; relic = Owner.GetRelicById(id); target = UpgradedRelic ?? GetUpgradedStarterRelic(relic).Id; RelicCmd.Replace(relic, ModelDb.GetById<RelicModel>(target).ToMutable()). RelicCmd.Replace d__3: index = Owner.Relics.IndexOf(old); RelicCmd.Remove(old); RelicCmd.Obtain(new, owner, index) -> the new relic's own pickup hooks run. AfterCloned 060022E3 only resets the hover-tip list. get_CanonicalVars: StringVar StarterRelic / UpgradedRelic (text only). get_Rarity 7 (Ancient)",
     "Value = (upgraded relic facts) - (starter relic facts); all eleven relic facts (the five pairs and Circlet) exist in data/assembly/facts.json",
-    "catalog cross-check: 'replace your starter relic with its Ancient version' on pickup; agrees"
+    "catalog cross-check: 'replace your starter relic with its Ancient version' on pickup; agrees",
+    "v0.113.1 re-review: changed. get_RefinementUpgrades gained a sixth pair SongBow -> Storyteller (new character's starter relic); map of 5 pairs -> 6 pairs. Rest unchanged: first owned Starter-rarity relic, Circlet for an unmapped starter, RelicCmd.Replace at pickup; SetupForPlayer still fails (no option) without a Starter relic. relics:SONG_BOW and relics:STORYTELLER entries exist in data/assembly/facts.json",
+    "v0.113.1: get_RefinementUpgrades adds BurningBlood->BlackBlood, RingOfTheSnake->RingOfTheDrake, DivineRight->DivineDestiny, BoundPhylactery->PhylacteryUnbound, CrackedCore->InfusedCore, SongBow->Storyteller; <AfterObtained>d__24::MoveNext: id = StarterRelic ?? Owner.Relics.First(Rarity == 1).Id; RelicCmd.Replace(Owner.GetRelicById(id), ModelDb.GetById(UpgradedRelic ?? GetUpgradedStarterRelic(relic).Id).ToMutable()); get_Rarity 7"
    ],
    "fingerprint": "8eb99cd5261a5876613e73e1949818909a7fe88d39cd8492730de9ddc83871e3",
    "hook_tokens": {
@@ -81338,7 +81626,8 @@
        "BurningBlood": "BlackBlood",
        "CrackedCore": "InfusedCore",
        "DivineRight": "DivineDestiny",
-       "RingOfTheSnake": "RingOfTheDrake"
+       "RingOfTheSnake": "RingOfTheDrake",
+       "SongBow": "Storyteller"
       }
      }
     }
@@ -81350,9 +81639,9 @@
    "open_questions": [
     "replace_relic uses from 'starter' + non-spec 'to': {'map': ..., 'fallback': 'Circlet'}; choice 'first' = the first owned relic with Rarity Starter."
    ],
-   "reviewed_by": "TASK-027 ticket 01",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "290e0188adc8c462409847b0e4cf6bd785b7ca3025318082333ccb0ac2eb20d8",
-   "status": "stale",
+   "status": "converted",
    "triage": {
     "category": "irrelevant",
     "hook_groups": {
@@ -81476,8 +81765,8 @@
   },
   {
    "audit": {
-    "by": "TASK-027 ticket 01 independent review",
-    "notes": "AfterObtained d__24: for i < DynamicVars['Relics'] (5): RelicFactory.PullNextRelicFromFront(Owner).ToMutable() -> set_IsWax(true) -> rewards.Add(new RelicReward(relic, Owner)); then RewardsCmd.OfferCustom(Owner, rewards). PullNextRelicFromFront: RollRarity(PlayerRng.Rewards) < 0.5 Common, < 0.83 Uncommon, else Rare; front of RelicGrabBag, fallback Circlet. AfterCombatEnd d__25 (no room check): if !IsUsedUp (CombatsSeen >= Combats 3 x Relics 5 = 15) -> CombatsSeen += 1; if CombatsSeen % 3 == 0 -> Owner.Relics.FirstOrDefault(b__25_0: IsWax && !IsMelted) -> RelicCmd.Melt d__4 (Player.MeltRelicInternal + relic.AfterRemoved). CombatState.IterateHookListeners d__69 skips relics with IsMelted, so a melted relic stops working. Note the melt target is the first unmelted wax relic in the relic bar, from any source. obtain offer_rewards (5 wax relics, next_in_pool) and between_fights combat_end every 3 remove_relic (15 combats) match.",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read <AfterObtained>d__24: for i < Relics 5: PullNextRelicForRewardFromFront(Owner).ToMutable(), IsWax = true, RelicReward(relic, Owner, null); RewardsCmd.OfferCustom. <AfterCombatEnd>d__25: !IsUsedUp -> CombatsSeen += 1; % Combats 3 == 0 -> RelicCmd.Melt(Owner.Relics.FirstOrDefault(IsWax && !IsMelted)). IsUsedUp = CombatsSeen >= 15. RelicFactory read: same rarity roll and grab bag as before. obtain (5 wax relic rewards) and between_fights (melt every 3 combats, 15 combats) correct. fingerprint equals the current extract record.",
     "verdict": "agree"
    },
    "between_fights": [
@@ -81504,7 +81793,9 @@
     "TASK-027 ticket 01: AfterObtained d__24: for i < DynamicVars['Relics'] (5): RelicFactory.PullNextRelicFromFront(Owner).ToMutable() -> set_IsWax(true) -> rewards.Add(new RelicReward(relic, Owner)); then RewardsCmd.OfferCustom(Owner, rewards). PullNextRelicFromFront: RollRarity(PlayerRng.Rewards) NextFloat < 0.5 Common, < 0.83 Uncommon, else Rare; front of Player.RelicGrabBag for that rarity, fallback Circlet.",
     "AfterCombatEnd d__25 (any CombatRoom): if !IsUsedUp -> CombatsSeen += 1; if CombatsSeen % DynamicVars['Combats'] (3) == 0 -> Owner.Relics.FirstOrDefault(r => r.IsWax && !r.IsMelted) (lambda b__25_0) -> RelicCmd.Melt(relic). IsUsedUp = CombatsSeen >= Combats x Relics (15).",
     "RelicCmd.Melt d__4 -> Player.MeltRelicInternal (requires IsWax, not already melted; set_IsMelted(true), Status 2) then relic.AfterRemoved(). The CombatState hook-listener iterator skips relics whose IsMelted is true, so a melted wax relic stops working.",
-    "Category irrelevant kept: ToyBox itself has no combat hook (the wax relics are separate owned relics)."
+    "Category irrelevant kept: ToyBox itself has no combat hook (the wax relics are separate owned relics).",
+    "v0.113.1 re-review: unchanged behaviour. AfterObtained now calls RelicFactory.PullNextRelicForRewardFromFront(Owner) (was PullNextRelicFromFront(Owner)), which in v0.113.1 is RollRarity(PlayerRng.Rewards) + PullNextRelicFromFront(player, rarity), the same rarity roll and grab bag as before; RelicReward got the new null rng-override argument. Melting (every 3rd combat end, first unmelted wax relic, up to 15 combats) is the same",
+    "v0.113.1: get_CanonicalVars DynamicVar(\"Relics\", 5), DynamicVar(\"Combats\", 3); get_Rarity 7; <AfterObtained>d__24::MoveNext: for i < Relics: relic = PullNextRelicForRewardFromFront(Owner).ToMutable(); IsWax = true; rewards.Add(new RelicReward(relic, Owner, null)); RewardsCmd.OfferCustom(Owner, rewards). <AfterCombatEnd>d__25::MoveNext: !IsUsedUp -> CombatsSeen += 1; % Combats == 0 -> RelicCmd.Melt(Owner.Relics.FirstOrDefault(IsWax && !IsMelted))"
    ],
    "fingerprint": "0726349bb3b360947a4fa86c7b9f2754391985267f392176e984fb60da7ba5ab",
    "hook_tokens": {
@@ -81551,9 +81842,9 @@
    "open_questions": [
     "Value = five random relics (rarity per RelicFactory.RollRarity, see evidence) that each work only for a limited time: the wax relics melt one every 3 combats in relic-bar order (left first), so they last about 3, 6, 9, 12 and 15 combats. 'wax' on the relic rewards and 'which' on remove_relic are the closest structured forms; the scorer needs a time-limited relic value."
    ],
-   "reviewed_by": "TASK-027 ticket 01",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "f38b6a49451b831293d4f4dd000af7f5fba3facdfcc96ab353f387b39d6b2286",
-   "status": "stale",
+   "status": "converted",
    "triage": {
     "category": "irrelevant",
     "hook_groups": {
@@ -82354,8 +82645,8 @@
   },
   {
    "audit": {
-    "by": "TASK-027 ticket 01 independent review",
-    "notes": "Only gameplay override is AfterCombatVictory (synchronous, victory only): room.RoomType == 2 (Elite) -> Flash; PileType 6 cards.Where(b__4_0: IsUpgradable).ToList() -> ListExtensions.StableShuffle(RunState.Rng.Niche) -> Take(DynamicVars.Cards.IntValue = CardsVar 4) -> CardCmd.Upgrade each. No AfterObtained, no combat hook. between_fights combat_end (Elite) random upgrade of 4 upgradable deck cards matches; it fires only after a won Elite fight.",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read AfterCombatVictory(room): RoomType == 2 -> Flash; Deck (PileType 6) Where(IsUpgradable).ToList().StableShuffle(PlayerRng.NonCombatGeneration).Take(Cards 4) -> CardCmd.Upgrade(card, 1). CardsVar 4, rarity 7, no AfterObtained. Only the RNG stream changed. between_fights (combat_end ELITE, victory only, 4 random upgrades) correct. fingerprint equals the current extract record.",
     "verdict": "agree"
    },
    "between_fights": [
@@ -82382,7 +82673,9 @@
     "structural review: only out-of-combat hooks AfterCombatVictory 06002371",
     "no combat command is called from a room-entry hook; pickup changes are already in the observed deck",
     "TASK-027 ticket 01: AfterCombatVictory (synchronous; victory only, so combat_end of a won fight): room.RoomType == 2 (Elite, --enum RoomType) -> Flash; deck (PileType 6) cards Where IsUpgradable (lambda b__4_0) .ToList() -> ListExtensions.StableShuffle(RunState.Rng.Niche) -> Take(Cards.IntValue = 4) -> CardCmd.Upgrade(card) each. The 4 are the first 4 of that shuffled list (shuffle algorithm not inspected); fewer than 4 upgradable -> all of them.",
-    "No AfterObtained -> no obtain; no combat hook, owned relic keeps empty mechanics (the upgrades land in the deck)."
+    "No AfterObtained -> no obtain; no combat hook, owned relic keeps empty mechanics (the upgrades land in the deck).",
+    "v0.113.1 re-review: unchanged behaviour. Only the RNG stream changed: StableShuffle uses Owner.PlayerRng.NonCombatGeneration (was RunState.Rng.Niche); still on each won Elite combat (RoomType 2) upgrades 4 random upgradable deck cards",
+    "v0.113.1: get_CanonicalVars CardsVar(4); get_Rarity 7; AfterCombatVictory(room): room.RoomType == 2 -> Flash; Deck (PileType 6).Cards.Where(IsUpgradable).ToList().StableShuffle(PlayerRng.NonCombatGeneration).Take(Cards) -> CardCmd.Upgrade(card, 1). No AfterObtained"
    ],
    "fingerprint": "f8128d2d2495644ab5160f30158ba992f6feb1b1d7ccbd2d556c789f941f4e0d",
    "hook_tokens": {
@@ -82392,9 +82685,10 @@
     "AfterCombatVictory"
    ],
    "mechanics": [],
-   "reviewed_by": "TASK-027 ticket 01",
+   "obtain": [],
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "bac9b3a076c2f8b561b9d96f50874939a9075a2d33e70fdd349479b65ac251e6",
-   "status": "stale",
+   "status": "converted",
    "triage": {
     "category": "irrelevant",
     "hook_groups": {
@@ -82446,15 +82740,21 @@
   },
   {
    "audit": {
-    "by": "structural rule (tests/test_assembly_facts.py)",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read AfterObtained: Deck (PileType 6) Where(Type == 1 && IsUpgradable).ToList().StableShuffle(PlayerRng.NonCombatGeneration).Take(Cards 2) -> CardCmd.Upgrade(card, 1). CardsVar 2, HasUponPickupEffect true, rarity 2. Only the RNG stream changed. obtain upgrade 2 random Attacks correct. fingerprint equals the current extract record.",
     "verdict": "agree"
    },
+   "between_fights": [],
    "category": "irrelevant",
    "class": "Whetstone",
    "entity_key": "relics:WHETSTONE",
    "evidence": [
     "structural review: only out-of-combat hooks AfterObtained 0600237B",
-    "no combat command is called from a room-entry hook; pickup changes are already in the observed deck"
+    "no combat command is called from a room-entry hook; pickup changes are already in the observed deck",
+    "TASK-027 06b get_CanonicalVars: CardsVar(2) -> 2. get_Rarity 2 (Common); get_HasUponPickupEffect true",
+    "TASK-027 06b AfterObtained (synchronous): PileType 6 (Deck).GetPile(Owner).Cards.Where(card != null && card.Type == 1 (Attack) && card.IsUpgradable).ToList() -> ListExtensions.StableShuffle(RunState.Rng.Niche) -> Take(Cards.IntValue 2) -> foreach CardCmd.Upgrade(card, 1). Fewer than 2 eligible Attacks -> all of them",
+    "v0.113.1 re-review: unchanged behaviour. Only the RNG stream changed: StableShuffle uses Owner.PlayerRng.NonCombatGeneration (was RunState.Rng.Niche); still upgrades 2 random upgradable Attacks in the deck on pickup",
+    "v0.113.1: get_CanonicalVars CardsVar(2); get_HasUponPickupEffect true; get_Rarity 2; AfterObtained: Deck (PileType 6).Cards.Where(card != null && Type == 1 && IsUpgradable).ToList().StableShuffle(PlayerRng.NonCombatGeneration).Take(Cards) -> CardCmd.Upgrade(card, 1)"
    ],
    "fingerprint": "0c87f17e5e70dfb1d5c957bf05770acd0d1870b52e71b77dbd368a718bb8db48",
    "hook_tokens": {
@@ -82464,9 +82764,22 @@
     "AfterObtained"
    ],
    "mechanics": [],
-   "reviewed_by": "TASK-025 ticket 04 (structural)",
+   "obtain": [
+    {
+     "choice": "random",
+     "count": 2,
+     "filter": {
+      "card_type": "Attack",
+      "upgradable": true
+     },
+     "kind": "upgrade_cards",
+     "scope": "deck"
+    }
+   ],
+   "open_questions": [],
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "07cd922fff3818ce0910ca1506c4864771531268d0161ab6150300601765becd",
-   "status": "stale",
+   "status": "converted",
    "triage": {
     "category": "irrelevant",
     "hook_groups": {
@@ -82542,15 +82855,36 @@
   },
   {
    "audit": {
-    "by": "structural rule (tests/test_assembly_facts.py)",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read ShouldForcePotionReward(player, roomType): player == Owner && RoomTypeExtensions.IsCombatRoom(roomType) -> true, else false; rarity 4; the IsAllowed override (IsBeforeAct3TreasureChest) is gone (extract diff). between_fights potion_drop chance 1 for combat rooms correct (PotionRewardOdds not re-read, as stated). fingerprint equals the current extract record.",
     "verdict": "agree"
    },
+   "between_fights": [
+    {
+     "amount_text": "every combat room's reward screen includes a potion reward; the potion-chance roll is skipped and its odds value is not changed",
+     "chance": 1,
+     "filter": {
+      "fight_kind": [
+       "MONSTER",
+       "ELITE",
+       "BOSS"
+      ]
+     },
+     "modifier": "potion_drop"
+    }
+   ],
    "category": "irrelevant",
    "class": "WhiteBeastStatue",
    "entity_key": "relics:WHITE_BEAST_STATUE",
    "evidence": [
     "structural review: only out-of-combat hooks IsAllowed 06002386, ShouldForcePotionReward 06002387",
-    "no combat command is called from a room-entry hook; pickup changes are already in the observed deck"
+    "no combat command is called from a room-entry hook; pickup changes are already in the observed deck",
+    "TASK-027 06b: only overrides IsAllowed (RelicModel.IsBeforeAct3TreasureChest), ShouldForcePotionReward, get_Rarity 4 (Rare); no AfterObtained -> nothing on pickup",
+    "ShouldForcePotionReward(player, roomType): player == Owner and RoomTypeExtensions.IsCombatRoom(roomType) -> true",
+    "RewardsSet.GenerateRewardsFor: Monster / Elite / Boss rooms call RollForPotionAndAddTo -> PotionRewardOdds.Roll(player, roomType): if Hook.ShouldForcePotionReward -> return true at once (CurrentValue not changed); else NextFloat < CurrentValue (+0.125 for Elite) with CurrentValue -0.1 on a drop / +0.1 otherwise -> with the relic every combat reward has a PotionReward",
+    "catalog cross-check: always drop a potion after combat; agrees",
+    "v0.113.1 re-review: unchanged behaviour. The IsAllowed override (IsBeforeAct3TreasureChest, pool gating only) was removed; ShouldForcePotionReward is the same. PotionRewardOdds / RewardsSet were not re-read",
+    "v0.113.1: ShouldForcePotionReward(player, roomType): player == Owner && RoomTypeExtensions.IsCombatRoom(roomType) -> true, else false. get_Rarity 4; no AfterObtained, no combat hook"
    ],
    "fingerprint": "660c86f59e58cc684845d14c6b0aceb7676fa30238dfc1e2184caa223c613d8d",
    "hook_tokens": {
@@ -82560,9 +82894,13 @@
     "ShouldForcePotionReward"
    ],
    "mechanics": [],
-   "reviewed_by": "TASK-025 ticket 04 (structural)",
+   "obtain": [],
+   "open_questions": [
+    "potion_drop has no documented fields: written with non-spec chance 1 and a fight_kind list filter. Because the forced drop skips the odds update, the potion odds stay where they were when the relic was picked up."
+   ],
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "56de12f02511a68270f1ea9173505ece011ee7ba932a6c7d254777166da23107",
-   "status": "stale",
+   "status": "converted",
    "triage": {
     "category": "irrelevant",
     "hook_groups": {
@@ -82638,8 +82976,8 @@
   },
   {
    "audit": {
-    "by": "TASK-027 ticket 01 independent review",
-    "notes": "IL matches. No AfterObtained; IsAllowed = Players.Count == 1. ShouldAllowFreeTravel = !IsUsedUp; IsUsedUp = TimesUsed >= 3 (literal), set_TimesUsed sets Rooms = 3 - TimesUsed and Status 2 when used up. AfterRoomEntered: skipped when used up, when RunState.CurrentRoomCount > 1, or with VisitedMapCoords.Count <= 1; previous = Map.GetPoint(VisitedMapCoords[Count - 2]); if previous.Children does not contain CurrentMapPoint -> TimesUsed += 1, so only path-ignoring moves use a charge. Resolves the open question: Hook.ShouldAllowFreeTravel is an OR over listeners and MapTravel.GetTravelablePointsFrom(runState, point) returns Map.GetPointsInRow(point.coord.row + 1) when it is true, else point.Children (used by NMapScreen.RecalculateTravelability) -> while charges remain, any room of the next row can be chosen.",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read ShouldAllowFreeTravel (!IsUsedUp), IsUsedUp (TimesUsed >= 3), AfterRoomEntered (skip if used up, CurrentRoomCount > 1, RunState not RunState, VisitedMapCoords.Count <= 1, previous point or CurrentMapPoint null; previous.Children does not contain CurrentMapPoint -> TimesUsed += 1), IsAllowedInternal (Players.Count == 1), Rooms 3, rarity 7. between_fights free_travel uses 3 correct; obtain [] correct. fingerprint equals the current extract record.",
     "verdict": "agree"
    },
    "between_fights": [
@@ -82660,7 +82998,9 @@
     "IsAllowed(runState): Players.Count == 1 (single player only)",
     "ShouldAllowFreeTravel: !IsUsedUp (Hook.ShouldAllowFreeTravel is true when any listener returns true); IsUsedUp = TimesUsed >= 3 (literal 3), then Status 2",
     "AfterRoomEntered: skipped when used up, when RunState.CurrentRoomCount > 1, or with fewer than 2 VisitedMapCoords; previous = Map.GetPoint(VisitedMapCoords[Count - 2]); if previous.Children does not contain CurrentMapPoint (the move ignored the map paths) -> TimesUsed += 1 -> 3 path-ignoring moves in total; normal moves cost nothing",
-    "catalog agrees: 3 times you may ignore the current path when choosing the next floor's room (the map screen side of the hook was not read)"
+    "catalog agrees: 3 times you may ignore the current path when choosing the next floor's room (the map screen side of the hook was not read)",
+    "v0.113.1 re-review: unchanged behaviour. IsAllowed was renamed to IsAllowedInternal with the same rule (Players.Count == 1); AfterRoomEntered now also returns early when the previous point or the current map point is null (null guards); 3 path-ignoring moves are still allowed (ShouldAllowFreeTravel = !IsUsedUp, IsUsedUp = TimesUsed >= 3)",
+    "v0.113.1: get_CanonicalVars DynamicVar(\"Rooms\", 3); get_Rarity 7; AfterRoomEntered: !IsUsedUp, CurrentRoomCount <= 1, RunState.VisitedMapCoords.Count > 1, previous = Map.GetPoint(VisitedMapCoords[Count - 2]) and CurrentMapPoint not null, !previous.Children.Contains(CurrentMapPoint) -> TimesUsed += 1. No AfterObtained"
    ],
    "fingerprint": "3761f89a8d1e9a8ae39b27c6a5ab9b3fae7514d28f52c4d29cc20303897183ba",
    "hook_tokens": {
@@ -82674,12 +83014,13 @@
     "ShouldAllowFreeTravel"
    ],
    "mechanics": [],
+   "obtain": [],
    "open_questions": [
     "limit {uses: 3} counts moves to a map point that is not a child of the previous one; the map screen code that consumes Hook.ShouldAllowFreeTravel (which nodes become selectable) is outside the model types and was not read."
    ],
-   "reviewed_by": "TASK-027 ticket 01",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "1cac2360997013dd2b998ac806df44667d225041e96d999c96333fbff15f7619",
-   "status": "stale",
+   "status": "converted",
    "triage": {
     "category": "needs_review",
     "hook_groups": {
@@ -82844,10 +83185,11 @@
   },
   {
    "audit": {
-    "by": "TASK-027 ticket 01 independent review",
-    "notes": "AfterObtained d__10: CardSelectCmd.FromDeckForUpgrade(Owner, new CardSelectorPrefs(UpgradeSelectionPrompt, DynamicVars.Cards.IntValue = CardsVar 4)) (pool = PileType 6 cards with IsUpgradable, b__21_0; if the pool is not larger than MinSelect it is taken whole) -> ToList -> CardCmd.Upgrade(card) each. AfterCloned / get_IconBaseName are cosmetic (per-character icon). No other gameplay override. upgrade_cards deck choose 4 upgradable matches; no between_fights.",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read <AfterObtained>d__10: CardSelectCmd.FromDeckForUpgrade(Owner, new CardSelectorPrefs(UpgradeSelectionPrompt, Cards 4)).ToList() -> CardCmd.Upgrade(card, 1) each. CardsVar 4, HasUponPickupEffect true, rarity 7; get_IconBaseName gains a Fool branch (cosmetic). obtain choose 4 upgrades correct. fingerprint equals the current extract record.",
     "verdict": "agree"
    },
+   "between_fights": [],
    "category": "irrelevant",
    "class": "YummyCookie",
    "entity_key": "relics:YUMMY_COOKIE",
@@ -82855,7 +83197,9 @@
     "structural review: only out-of-combat hooks AfterCloned 060023B0, AfterObtained 060023B2",
     "no combat command is called from a room-entry hook; pickup changes are already in the observed deck",
     "TASK-027 ticket 01: AfterObtained d__10: CardSelectCmd.FromDeckForUpgrade(Owner, new CardSelectorPrefs(UpgradeSelectionPrompt, Cards.IntValue = 4)) (MinSelect = MaxSelect = 4; pool = deck cards with IsUpgradable, lambda b__21_0) -> .ToList() -> CardCmd.Upgrade(card) for each. Four chosen upgrades.",
-    "AfterCloned / get_IconBaseName only choose a per-character icon (cosmetic). No other gameplay override -> no between_fights; owned relic keeps empty mechanics."
+    "AfterCloned / get_IconBaseName only choose a per-character icon (cosmetic). No other gameplay override -> no between_fights; owned relic keeps empty mechanics.",
+    "v0.113.1 re-review: unchanged behaviour. Only get_IconBaseName changed (cosmetic): a Fool branch with icon yummy_cookie_fool was added for the new character; pickup still upgrades 4 deck cards chosen by the player",
+    "v0.113.1: get_CanonicalVars CardsVar(4); get_HasUponPickupEffect true; get_Rarity 7; <AfterObtained>d__10::MoveNext: CardSelectCmd.FromDeckForUpgrade(Owner, new CardSelectorPrefs(UpgradeSelectionPrompt, Cards)) .ToList() -> CardCmd.Upgrade(card, 1) each"
    ],
    "fingerprint": "9c1f8d002d05095d27301d4385c4379dd37149b41a76c32e53d1991087731d03",
    "hook_tokens": {
@@ -82878,9 +83222,9 @@
      "scope": "deck"
     }
    ],
-   "reviewed_by": "TASK-027 ticket 01",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "25802ab6654040e367cda89d91b5106366f31499dade640aa8d91907ecf59832",
-   "status": "stale",
+   "status": "converted",
    "triage": {
     "category": "irrelevant",
     "hook_groups": {
