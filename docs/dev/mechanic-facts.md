@@ -304,7 +304,7 @@
 |---|---|---|
 | A shot | `damage` + **`"source": "arrow"`**. Meaning: needs an available arrow (none: no damage), the damage carries FromArrow, and the target is impaled after the attack | `source` key (Osty) |
 | Extra arrow slot | effect **`arrow_slots`** `{amount, upgrade}` (this combat) | like `orb_slots` |
-| Loosen arrows | effect **`dislodge_arrow`** `{count: 1 or "all", owner_only}` + `condition` (UPROOT, WREST: `"all"`) | — |
+| Loosen arrows | effect **`dislodge_arrow`** `{count: 1 or "all", owner_only}` + `condition` (RECALL, UPROOT, WREST: `"all"`) | — |
 | Arrow destroyed after impaling | QUIETUS power: modifier on the next shot `{"modifier": "damage", "multiply": 2, "filter": {"from_arrow": true}, "limit": "next_shot"}` + `"destroys_arrow": true` | `damage` modifier |
 | Target impaled | effect condition **`target_impaled`** (`"any"` or `"owner"`, after the helper called) | `condition` |
 | Owner has an arrow | effect condition **`has_arrow`**: true | `condition` |
@@ -329,10 +329,12 @@
 起草与复核中补充的约定（批次 f1、f2）：
 
 - 射击有两种写法：`ShootArrowAtTarget` 配攻击命令，或配一个动作（`Func<Task>`）：先射出，有箭才执行动作，最后施加扎穿；没有箭时整张牌无效（能量照扣）。
-- `dislodge_arrow` 写 `count`（数字或 `"all"`）与 `owner_only`；UPROOT、WREST 是一直松脱到目标身上没有本玩家的箭为止（`count: "all"`），目标未被本玩家扎穿时整张牌无效。
+- `dislodge_arrow` 写 `count`（数字或 `"all"`）与 `owner_only`；RECALL、UPROOT、WREST 是一直松脱到目标身上没有本玩家的箭为止（`count: "all"`），目标未被本玩家扎穿时整张牌无效。
 - 整张牌都取决于扎穿的（如 NAIL），在每个效果上写 `condition`。
 - 重射的瞄准算两倍：伤害效果写 `aim_multiplier: 2`。
 - 条件 `arrow_dislodged_by_this_card`（本牌这一击让自己的箭松脱，如 EPIC_RETRIEVAL）。
 - 尚无数值来源、暂写 `amount 0` + `amount_text` + 待查问题：本牌造成的伤害（BLOSSOM_SHOT）、自身拉伸层数（CHO_KI）、本场消耗的射击牌数（FLORESCENCE）。
-- 只在多人模式出现的牌写 `multiplayer_only: true`（COVERING_FIRE、ENSEMBLE、SELF_DEPRECATE）。
+- 只在多人模式出现的牌写 `multiplayer_only: true`（COVERING_FIRE、ENSEMBLE、SELF_DEPRECATE、COMPOST、ENRAPTURE、YOGA）。
+- `cost_modifier` 可带 `condition`（如 CHO_LIMBS：持有哇或叽旋律时减费）；箭矢事件的 `filter` 可用 `dealer: owner`。
+- 尚无写法、暂写 `amount_text`：手牌中的悲伤张数（GROWTH，建议来源名 `sadness_in_hand`）、卡牌自身数值整局成长（SHOW_OFF）。
 - 引擎暂不计分：箭的供应与回收、扎穿条件、悲伤、塔罗牌（报缺口）；计划先支持拉伸、瞄准、旋律，箭按“每回合最多按箭位数射击”的暂定规则估计（TASK-029 第 3 步之后）。
