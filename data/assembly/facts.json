@@ -57086,7 +57086,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review P1b",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read --dump BufferPower: ModifyHpLostAfterOstyLate returns amount unchanged if target != Owner or cardSource (arg 5) isinst BrightestFlame, else Decimal.Zero; <AfterModifyingHpLostAfterOsty>d__5 only PowerCmd::Decrement; StackType 1, Type 1; GetScaledAmountForMultiplayer = amount * ((Players-1)*2+1) (multiplayer only). Read Hook.ModifyHpLost: in every phase (BeforeOsty, BeforeOstyLate, AfterOsty, AfterOstyLate) a listener is added to the modifiers list only when Truncate(before) != Truncate(after), so the stack is used only when the loss was actually changed (not for Brightest Flame, not for a 0 loss). Old/new extract diff: only the new BrightestFlame type reference. Fingerprint matches.",
     "verdict": "agree"
    },
    "category": "baseline",
@@ -57101,7 +57102,9 @@
     "get_StackType=1 (Counter), get_Type=1 (Buff).",
     "ModifyHpLostAfterOstyLate 06002451: target == Owner -> return 0 (that HP loss fully prevented, applied after Osty absorption); else unchanged.",
     "AfterModifyingHpLostAfterOsty 06002452 (<AfterModifyingHpLostAfterOsty>d__5): PowerCmd::Decrement -> one stack per prevented HP loss.",
-    "GetScaledAmountForMultiplayer 06002453: amount * ((Players.Count - 1) * 2 + 1)."
+    "GetScaledAmountForMultiplayer 06002453: amount * ((Players.Count - 1) * 2 + 1).",
+    "v0.113.1 re-review: changed. ModifyHpLostAfterOstyLate now returns the amount unchanged when the cardSource (arg 5) is BrightestFlame (isinst MegaCrit.Sts2.Core.Models.Cards.BrightestFlame), so Brightest Flame's HP loss is neither prevented nor consumes a stack. Old: any HP loss on the Owner -> 0; new: any HP loss on the Owner except from Brightest Flame -> 0. Stack type, Decrement in <AfterModifyingHpLostAfterOsty>d__5 and multiplayer scaling unchanged.",
+    "v0.113.1: Hook.ModifyHpLost adds a listener to the modifier list (and so later calls its AfterModifyingHpLostAfterOsty) only when Truncate(before) != Truncate(after); a 0-amount loss or the Brightest Flame exception therefore does not consume a stack. This resolves the old open question about 0-damage instances."
    ],
    "fingerprint": "f07dd71f67ef3099151cc57a734fb488aa951746b9d0b76b475f28492bebca8e",
    "hook_tokens": {
@@ -57116,17 +57119,20 @@
    ],
    "mechanics": [
     {
+     "filter": {
+      "source_card_not": "BRIGHTEST_FLAME"
+     },
      "limit_per_stack": 1,
      "modifier": "hp_loss_negate"
     }
    ],
    "open_questions": [
     "Vocabulary: no documented modifier for full HP-loss prevention; recorded as 'hp_loss_negate' with 'limit_per_stack': 1.",
-    "Whether AfterModifyingHpLostAfterOsty fires (consuming a stack) for 0-damage instances depends on the hook dispatcher, not visible in this class."
+    "Vocabulary: the exclusion of HP loss whose source card is Brightest Flame is recorded as filter 'source_card_not', which is not documented."
    ],
-   "reviewed_by": "TASK-025 ticket 10 batch powers-1",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "b8da27e3f69f9c9a1eef68907251818fbf58a348aa5f5d62676d1eaa4b8626ef",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -57957,7 +57963,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review P1b",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read --dump CoveredPower: ModifyDamageMultiplicative target == Owner && IsPoweredAttack -> 0 else 1; <AfterApplied>d__9 sets the Applier name var, Apply<InterceptPower>(Applier, 1) if Applier lacks it, then AddCoveredCreature(Owner); <AfterDeath>d__10 !wasRemovalPrevented && creature == Applier -> Remove; new <AfterRemoved>d__11 (Applier's InterceptPower, skip if oldOwner still has another CoveredPower from the same Applier, else RemoveCoveredCreature(oldOwner) and Remove InterceptPower when !IsCovering); <AfterSideTurnEnd>d__13 side == 2 and Owner.Powers contains this -> Remove. StackType 2, Type 1, InstanceType 1. New code is multiplayer Intercept bookkeeping only; the covered creature's effect is unchanged, matching the extract diff (AfterRemoved override + 4 Intercept/Powers calls). Fingerprint matches.",
     "verdict": "agree"
    },
    "category": "baseline",
@@ -57975,7 +57982,9 @@
     "ModifyDamageMultiplicative 060024CC: target == Owner && IsPoweredAttack -> 0 (owner takes no attack damage); else 1.",
     "Context InterceptPower.ModifyDamageMultiplicative: the applier's powered-attack damage taken is multiplied by (covered count + 1).",
     "AfterDeath 060024CB (<AfterDeath>d__10): !wasRemovalPrevented && creature == Applier -> Remove.",
-    "AfterSideTurnEnd 060024CD (<AfterSideTurnEnd>d__12): side == 2 (CombatSide.Enemy, read via --enum) -> Remove."
+    "AfterSideTurnEnd 060024CD (<AfterSideTurnEnd>d__12): side == 2 (CombatSide.Enemy, read via --enum) -> Remove.",
+    "v0.113.1 re-review: unchanged behaviour for the covered creature (powered-attack damage x0, removed at enemy turn end or when the applier dies). New bookkeeping only: AfterRemoved (<AfterRemoved>d__11) now, when the old owner has no other CoveredPower from the same Applier (GetPowerInstances<CoveredPower> + Any), calls Applier's InterceptPower.RemoveCoveredCreature(oldOwner) and removes InterceptPower via PowerCmd::Remove once InterceptPower.get_IsCovering is false; <AfterSideTurnEnd>d__13 now checks Owner.Powers contains this before PowerCmd::Remove.",
+    "v0.113.1: read ModifyDamageMultiplicative (target == Owner && IsPoweredAttack -> 0), <AfterApplied>d__9 (PowerCmd::Apply<InterceptPower>(Applier, 1) if absent; AddCoveredCreature(Owner)), <AfterDeath>d__10, <AfterRemoved>d__11, <AfterSideTurnEnd>d__13 (side == 2)."
    ],
    "fingerprint": "ace5cf7140051b11789c854944a5c05feed1fc28cf9891f2e2e75cc3c391cb8a",
    "hook_tokens": {
@@ -58008,9 +58017,9 @@
     "Covered/Intercept is a multiplayer protection mechanic (owner = teammate); whether a card can target the player itself or Osty is decided by the applying card.",
     "Vocabulary: 'damage_received' multiply 0 is not scored; 'instance_type' is not documented."
    ],
-   "reviewed_by": "TASK-025 ticket 10 batch powers-1",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "97d4bc84d5538ad50949fecb1b9fe927addc7bd2cfa6806f0bbc6c864a9b9e67",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -58686,7 +58695,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review P2b",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read --dump DisintegrationPower: <AfterSideTurnEndLate>d__4 participants contains Owner -> CreatureCmd::Damage(ctx, Owner, Amount, props 4 Unpowered, Owner) then VfxCmd blunt vfx; no decrement/remove; StackType 1, Type 2 (Debuff). Extract record identical to the old one apart from the fingerprint, so unchanged is right. Fingerprint matches.",
     "verdict": "agree"
    },
    "category": "trigger",
@@ -58699,7 +58709,8 @@
    "evidence": [
     "get_StackType=1 (Counter), get_Type=2 (Debuff). Owned by the player (from the Status card cards:DISINTEGRATION, PowerVar 6).",
     "AfterSideTurnEndLate 0600253B (<AfterSideTurnEndLate>d__4): participants contains Owner -> CreatureCmd::Damage(choiceContext, Owner, Amount, props 4 Unpowered, Owner, ...) + blunt vfx. Not Unblockable (2), so block absorbs it.",
-    "No decrement/remove -> deals Amount at every own turn end for the rest of combat."
+    "No decrement/remove -> deals Amount at every own turn end for the rest of combat.",
+    "v0.113.1 re-review: unchanged behaviour. <AfterSideTurnEndLate>d__4::MoveNext still: participants contains Owner -> CreatureCmd::Damage(choiceContext, Owner, Amount, props 4 Unpowered, Owner) + VfxCmd::PlayOnCreatureCenter(vfx_attack_blunt); get_StackType 1, get_Type 2; no decrement or remove. The extract record is identical apart from the fingerprint."
    ],
    "fingerprint": "9108ebc3731ebdb6bd63ad3b1518e249fbd12f47803076703856841ae3ab5936",
    "hook_tokens": {
@@ -58729,9 +58740,9 @@
    "open_questions": [
     "Vocabulary: self 'damage' that block can absorb (not hp_loss); 'blockable' and 'timing' are not documented."
    ],
-   "reviewed_by": "TASK-025 ticket 10 batch powers-2",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "158238e9343374c1db6cbe8660071c24da94262e8e238bd3690219436712f809",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -58750,7 +58761,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review P2b",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read --dump DoomPower: <BeforeSideTurnEnd>d__8 returns when side == 1, else ShouldDoomTrigger(participants) -> DoomKill(GetDoomedCreatures(side)); <AfterSideTurnEnd>d__9 returns when side == 2, same otherwise; IsOwnerDoomed = !(CurrentHp > Amount); ShouldDoomTrigger checks not IsOverOrEnding, participants contains Owner, not dead, doomed, and First(GetDoomedCreatures(Owner.Side)) == Owner; <DoomKill>d__6 per living creature PlayVfx + CreatureCmd::Kill, then Hook::AfterDiedToDoom. Only new call GetCreatureNode is the first check in <PlayVfx>d__11 (no node -> skip animation), visuals only. StackType 1, Type 2. Fingerprint matches.",
     "verdict": "agree"
    },
    "category": "trigger",
@@ -58764,7 +58776,8 @@
     "get_StackType=1 (Counter), get_Type=2 (Debuff). Sits on enemies (applied by BLIGHT_STRIKE, DEATHBRINGER, END_OF_DAYS, NEGATIVE_PULSE, NO_ESCAPE, SCOURGE).",
     "IsOwnerDoomed: Owner.CurrentHp <= Amount. ShouldDoomTrigger: combat not over/ending, participants contains Owner, owner not dead, owner doomed, and owner is the first doomed creature on its side (one kill pass per side).",
     "BeforeSideTurnEnd 06002542 (<BeforeSideTurnEnd>d__8): skip if side == 1 (Player); else if ShouldDoomTrigger -> DoomKill(GetDoomedCreatures(side)). AfterSideTurnEnd 06002543 (<AfterSideTurnEnd>d__9): skip if side == 2 (Enemy); same for a player-side owner. CombatSide enum: 1 Player, 2 Enemy.",
-    "DoomKill: foreach creature PlayVfx, CreatureCmd::Kill; then Hook::AfterDiedToDoom. No decrement/remove: Doom stacks accumulate all combat; the check happens at each end of the owner's turn."
+    "DoomKill: foreach creature PlayVfx, CreatureCmd::Kill; then Hook::AfterDiedToDoom. No decrement/remove: Doom stacks accumulate all combat; the check happens at each end of the owner's turn.",
+    "v0.113.1 re-review: unchanged behaviour. The only new call is Creature::GetCreatureNode in <PlayVfx>d__11 (skips the doom animation when the creature has no node; visuals only). <BeforeSideTurnEnd>d__8 (side == 1 -> return; ShouldDoomTrigger -> DoomKill(GetDoomedCreatures(side))), <AfterSideTurnEnd>d__9 (side == 2 -> return; same), IsOwnerDoomed (CurrentHp <= Amount), ShouldDoomTrigger and <DoomKill>d__6 (PlayVfx, CreatureCmd::Kill, Hook::AfterDiedToDoom) read and unchanged."
    ],
    "fingerprint": "e9f789beb0a21154b42cca80a7f1c867951f66f13789cba2fd2195e9d0201a6a",
    "hook_tokens": {
@@ -58796,9 +58809,9 @@
    "open_questions": [
     "Vocabulary: condition 'owner_hp_at_most_stacks', fields 'owner' and 'timing' are not documented; effect 'doom_kill' is."
    ],
-   "reviewed_by": "TASK-025 ticket 10 batch powers-2",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "35af2f702d1b47a12ca0e1ef1250d86e60ba5a3e0d96be53fa2e33c8f297ffd0",
-   "status": "stale",
+   "status": "converted",
    "unknowable": [
     {
      "reason": "Depends on the enemy's HP at its turn end, i.e. other damage dealt and enemy healing.",
@@ -58822,13 +58835,14 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review P2b",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read --dump DrawCardsNextTurnPower: ModifyHandDraw player == Owner.Player && AmountOnTurnStart != 0 -> draw + Amount; new <AfterModifyingHandDraw>d__5 is only PowerCmd::Remove(this); no AfterSideTurnStart any more (extract diff: override AfterSideTurnStart replaced by AfterModifyingHandDraw). Read Hook.ModifyHandDraw: a listener goes into the modifiers list only when (int)before != (int)after, in both the ModifyHandDraw and ModifyHandDrawLate loops, so removal happens only after the power actually raised a hand draw. Claimed change is exactly what the IL shows; normal-turn result (+Amount next own turn, then removed) unchanged. Fingerprint matches.",
     "verdict": "agree"
    },
    "category": "baseline",
    "class": "DrawCardsNextTurnPower",
    "duration": {
-    "consumed_at": "owner_next_turn_start",
+    "consumed_at": "the first later hand draw it actually increases",
     "kind": "until_triggered",
     "stack_type": "Counter"
    },
@@ -58836,7 +58850,8 @@
    "evidence": [
     "get_StackType=1 (Counter), get_Type=1 (Buff).",
     "ModifyHandDraw 06002552: player == Owner.Player && AmountOnTurnStart != 0 -> draw + Amount (only when the power already existed at the turn start, i.e. it was applied on an earlier turn).",
-    "AfterSideTurnStart 06002553 (<AfterSideTurnStart>d__5): participants contains Owner && AmountOnTurnStart != 0 -> PowerCmd::Remove(this). Net: +Amount hand draw on the owner's next turn, then removed."
+    "Old (v0.111.0): AfterSideTurnStart (<AfterSideTurnStart>d__5): participants contains Owner && AmountOnTurnStart != 0 -> PowerCmd::Remove(this).",
+    "v0.113.1 re-review: changed removal. AfterSideTurnStart override is gone; removal is now in AfterModifyingHandDraw (<AfterModifyingHandDraw>d__5: PowerCmd::Remove(this)). Hook.ModifyHandDraw adds a listener to the modifier list (and so calls its AfterModifyingHandDraw) only when its ModifyHandDraw changed the draw count. Old: removed at the owner's next side turn start whether or not the bonus was applied; new: removed only after it has actually added Amount to a hand draw. ModifyHandDraw unchanged (player == Owner.Player && AmountOnTurnStart != 0 -> draw + Amount). Net for normal turns: +Amount hand draw on the owner's next turn, then removed, as before."
    ],
    "fingerprint": "d38868532ccd35a3e46b00dcee2fb01664efcfced476b60f047030e45d4523ab",
    "hook_tokens": {
@@ -58855,11 +58870,12 @@
     }
    ],
    "open_questions": [
-    "Vocabulary: hand_draw with 'turns': 'next_own_turn' and 'add_per_stack' is not documented (documented 'turns' are absolute lists)."
+    "Vocabulary: hand_draw with 'turns': 'next_own_turn' and 'add_per_stack' is not documented (documented 'turns' are absolute lists).",
+    "If an own turn's hand draw is skipped entirely (Hook.ModifyHandDraw never runs), the power now stays and adds to the following hand draw; which effects skip the hand draw is outside this class."
    ],
-   "reviewed_by": "TASK-025 ticket 10 batch powers-2",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "984436475dd24d9baed32c4593a5919d3b6965dcbb0a76ec992df4420f1dfe5b",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -59128,7 +59144,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review P2b",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read --dump EntropyPower: <AfterPlayerTurnStart>d__6 player == Owner.Player -> CardSelectCmd::FromHand(ctx, player, CardSelectorPrefs(TransformSelectionPrompt, Amount), null, this); foreach selected CardCmd::TransformToRandom(card, RunState.Rng.CombatCardGeneration, true). StackType 1, Type 1, hover tip only otherwise. Extract diff is only the RNG stream (CombatCardSelection -> CombatCardGeneration), which does not change the fact. Fingerprint matches.",
     "verdict": "agree"
    },
    "category": "trigger",
@@ -59140,7 +59157,8 @@
    "entity_key": "powers:ENTROPY",
    "evidence": [
     "get_StackType=1 (Counter), get_Type=1 (Buff); no remove hook -> all combat.",
-    "AfterPlayerTurnStart 0600257A (<AfterPlayerTurnStart>d__6): player == Owner.Player -> CardSelectCmd::FromHand(choiceContext, player, CardSelectorPrefs(TransformSelectionPrompt, Amount), null, this); foreach selected: CardCmd::TransformToRandom(card, RunState.Rng.CombatCardSelection, true)."
+    "AfterPlayerTurnStart 0600257A (<AfterPlayerTurnStart>d__6): player == Owner.Player -> CardSelectCmd::FromHand(choiceContext, player, CardSelectorPrefs(TransformSelectionPrompt, Amount), null, this); foreach selected: CardCmd::TransformToRandom(card, RunState.Rng.CombatCardSelection, true).",
+    "v0.113.1 re-review: unchanged behaviour. Only the RNG stream changed: CardCmd::TransformToRandom now uses RunState.Rng.CombatCardGeneration (was CombatCardSelection). <AfterPlayerTurnStart>d__6::MoveNext still: player == Owner.Player -> CardSelectCmd::FromHand(ctx, player, CardSelectorPrefs(TransformSelectionPrompt, Amount), null, this); foreach selected TransformToRandom(card, rng, true)."
    ],
    "fingerprint": "14b9919c3f4709bbb03b6600e11a8c3c12e2cab6b93c17c1f1bb87fe76ebead9",
    "hook_tokens": {
@@ -59170,9 +59188,9 @@
    "open_questions": [
     "Vocabulary: transform 'into': 'random' and 'count_per_stack' are not documented; CardSelectorPrefs(prompt, Amount) read as choose Amount, as in reviewed cards (CHARGE, SEANCE)."
    ],
-   "reviewed_by": "TASK-025 ticket 10 batch powers-2",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "c30b21e40c497c3f5d35bb082da0ace2732b8b83f59abf2a1d4a6d08048c5174",
-   "status": "stale",
+   "status": "converted",
    "unknowable": [
     {
      "reason": "Random transform result from combat RNG.",
@@ -60427,7 +60445,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review P3b",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read --dump HauntPower: <AfterCardPlayed>d__4 card isinst Soul && card.Owner.Creature == Owner && HittableEnemies.Count != 0 -> Rng.CombatTargets.NextItem(HittableEnemies); CreatureCmd::Damage(ctx, [target], Amount, props 6, null, null, null, 14). StackType 1, Type 1. Extract record identical apart from fingerprint. Fingerprint matches.",
     "verdict": "agree"
    },
    "category": "trigger",
@@ -60440,7 +60459,8 @@
    "evidence": [
     "get_StackType=1 (Counter), get_Type=1 (Buff); no remove hook -> all combat.",
     "AfterCardPlayed 0600262E (<AfterCardPlayed>d__4): cardPlay.Card is Soul && card.Owner.Creature == Owner && CombatState.HittableEnemies.Count != 0 -> target = Rng.CombatTargets.NextItem(HittableEnemies); CreatureCmd::Damage(ctx, [target], Amount, props 6 (Unblockable|Unpowered), ...).",
-    "Applied to self by cards:HAUNT (7, +2 upgraded); value depends on how many Soul cards the deck generates/plays."
+    "Applied to self by cards:HAUNT (7, +2 upgraded); value depends on how many Soul cards the deck generates/plays.",
+    "v0.113.1 re-review: unchanged behaviour. The extract record is identical apart from the fingerprint. <AfterCardPlayed>d__4::MoveNext: card isinst Soul && card.Owner.Creature == Owner && HittableEnemies.Count != 0 -> Rng.CombatTargets.NextItem(HittableEnemies); CreatureCmd::Damage(ctx, [target], Amount, props 6, null, null, null, ModifyDamageHookType 14)."
    ],
    "fingerprint": "cf8d9ebb3f0511c670e62d13c41c188538fa41460c2af314dadbb419bdf794de",
    "hook_tokens": {
@@ -60471,9 +60491,9 @@
    "open_questions": [
     "Vocabulary: filter 'card' (specific card class Soul) and damage flags 'unblockable'/'unpowered' are not documented."
    ],
-   "reviewed_by": "TASK-025 ticket 10 batch powers-3",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "e5bf25808bb648420a845add98c84e4934477fdfaf71c78ca76c36165af367ce",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -60804,13 +60824,14 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review P3b",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read --dump ImitationLearningPower: BeforeCardPlayed (throws if no player target) card.Owner == PlayerTarget && Type == 3 && IsFirstInSeries -> CreateCloneForPlayer(Owner.Player) into cardsAndClones; <AfterCardPlayed>d__16 FindIndex (none -> return), take Item2, RemoveAt, Flash, then Hook::ShouldPlay(CombatState, clone, out _, AutoPlayType 1) false -> return with no Decrement and no play; true -> PowerCmd::Decrement then CardCmd::AutoPlay(ctx, clone, null, 1, false, false). Claimed change matches the IL and the extract diff (Hook::ShouldPlay, get_CombatState). StackType 1, Type 1, InstanceType 1; multiplayer only, category irrelevant stays. Fingerprint matches.",
     "verdict": "agree"
    },
    "category": "irrelevant",
    "class": "ImitationLearningPower",
    "duration": {
-    "consumed_per": "copied Power card",
+    "consumed_per": "copied Power card that can actually be played (Hook.ShouldPlay)",
     "decrement": 1,
     "instance_type": "Instanced",
     "kind": "until_triggered",
@@ -60820,9 +60841,10 @@
    "evidence": [
     "get_StackType=1 (Counter), get_Type=1 (Buff), get_InstanceType=1 (Instanced); PlayerTarget set by cards:IMITATION_LEARNING (MultiplayerOnly).",
     "BeforeCardPlayed 06002676: card.Owner == PlayerTarget && card.Type == 3 (Power) && cardPlay.IsFirstInSeries -> clone = card.CreateCloneForPlayer(Owner.Player); Data.cardsAndClones.Add((card, clone)).",
-    "AfterCardPlayed 06002677 (<AfterCardPlayed>d__16): if cardsAndClones has the played card -> remove it; Flash; PowerCmd::Decrement(this); CardCmd::AutoPlay(ctx, clone, null, ...). Amount = remaining copies.",
+    "Old (v0.111.0) AfterCardPlayed (<AfterCardPlayed>d__16): if cardsAndClones has the played card -> remove it; Flash; PowerCmd::Decrement(this); CardCmd::AutoPlay(ctx, clone, null, ...). Amount = remaining copies.",
     "InitInternalData 06002675: new Data (cardsAndClones).",
-    "Copies only another player's Power cards -> no effect in single player; category 'irrelevant'."
+    "Copies only another player's Power cards -> no effect in single player; category 'irrelevant'.",
+    "v0.113.1 re-review: changed. <AfterCardPlayed>d__16::MoveNext now: FindIndex the played card in cardsAndClones (none -> return); clone = Item2; RemoveAt; Flash; if !Hook::ShouldPlay(CombatState, clone, true) -> return without decrementing or playing; else PowerCmd::Decrement(this) then CardCmd::AutoPlay(ctx, clone, null, 1, false, false). Old: a stack was used up even when the copy could not be played; new: a copy that cannot be played keeps the stack. BeforeCardPlayed (PlayerTarget, Type == 3 Power, IsFirstInSeries -> CreateCloneForPlayer) unchanged. Still multiplayer only, category irrelevant."
    ],
    "fingerprint": "befe93cc93a8bca9279f1c55c904830ddd410bdb5c6abf2822ecfb633b28721e",
    "hook_tokens": {
@@ -60857,9 +60879,9 @@
    "open_questions": [
     "Vocabulary: filter 'player'/'first_in_series' and multiplayer-only trigger are not documented."
    ],
-   "reviewed_by": "TASK-025 ticket 10 batch powers-3",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "052a7cebca67b8bbb6dcad7249e33caf7368b883353556102817cc0e107d2b44",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -61228,7 +61250,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review P1",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read --dump JugglingPower: BeforeCardPlayed own card && Type == 1 -> attacksPlayedThisTurn += 1; == 3 -> Data.cardToClone = card (no copies made there any more); new <AfterCardPlayed>d__8 cardToClone == cardPlay.Card -> cardToClone = null, Flash, for i < Amount CardPileCmd::AddGeneratedCardToCombat(cardPlay.Card.CreateClone(), 2 Hand, Owner.Player, 1); AfterApplied counts this turn's owner Attack CardPlaysStarted; AfterSideTurnEnd participants contains Owner -> counter 0. Copies now taken after the Attack resolved, as claimed (extract diff: new AfterCardPlayed override). Fingerprint matches.",
     "verdict": "agree"
    },
    "category": "trigger",
@@ -61240,9 +61263,10 @@
    "entity_key": "powers:JUGGLING",
    "evidence": [
     "get_StackType=1 (Counter), get_Type=1 (Buff); no remove hook -> all combat.",
-    "BeforeCardPlayed 060026AC (<BeforeCardPlayed>d__7): own card && get_Type == 1 (Attack) -> Data.attacksPlayedThisTurn += 1; if == 3 (equality, so only the 3rd Attack each turn) -> Amount times CardPileCmd::AddGeneratedCardToCombat(card.CreateClone(), 2 Hand).",
+    "BeforeCardPlayed: own card && get_Type == 1 (Attack) -> Data.attacksPlayedThisTurn += 1; if == 3 (equality, so only the 3rd Attack each turn) -> Data.cardToClone = card. (Old v0.111.0: the Amount copies were made right here, before the card resolved.)",
     "AfterApplied 060026AB: initializes attacksPlayedThisTurn from CombatHistory (Attacks already played this turn by owner).",
-    "AfterSideTurnEnd 060026AD: participants contains Owner -> attacksPlayedThisTurn = 0 (counter 'turn'). InitInternalData 060026AA."
+    "AfterSideTurnEnd 060026AD: participants contains Owner -> attacksPlayedThisTurn = 0 (counter 'turn'). InitInternalData 060026AA.",
+    "v0.113.1 re-review: changed timing of the copy. New AfterCardPlayed override (<AfterCardPlayed>d__8): if Data.cardToClone == the played card -> cardToClone = null; Flash; Amount times CardPileCmd::AddGeneratedCardToCombat(card.CreateClone(), 2 Hand, Owner.Player, 1). Old: copies cloned in BeforeCardPlayed (before the card resolved); new: cloned after the card has resolved, so changes made to the card during its play (such as cost reductions) are on the copies. Count, 3rd-Attack-per-turn rule, AfterApplied history init and AfterSideTurnEnd reset unchanged."
    ],
    "fingerprint": "dbb4dfbd248e350e9ea1abf13d0bb45e7421df16bfd946ef2f4478f47f570bb3",
    "hook_tokens": {
@@ -61265,7 +61289,7 @@
      "counter": "turn",
      "effect": {
       "amount_per_stack": 1,
-      "card": "copy of the played Attack (CreateClone)",
+      "card": "copy of the played Attack (CreateClone after it resolves)",
       "destination": "hand",
       "kind": "add_card"
      },
@@ -61280,9 +61304,9 @@
    "open_questions": [
     "Vocabulary: add_card of 'a copy of the triggering card' has no documented field; recorded in 'card' text."
    ],
-   "reviewed_by": "TASK-025 ticket 05 batch P1",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "bd06c8b305ffdae80a38dc5a45fc5e86e64a6c78fed29518ae2e73fe4a64d278",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -61378,7 +61402,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review P3b",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read --dump LethalityPower: ModifyDamageMultiplicative IsPoweredAttack, card != null, card.Owner.Creature == Owner; card.Pile.Type == 5 && CurrentPlayIndex > 0 -> 1; n = CardPlaysStarted.Count(HappenedThisTurn && Type == 1 && Player == Owner.Player); inPlay = (Pile.Type == 5 && cardPlay != null) ? 1 : 0; n > inPlay -> 1; else 1 + Amount/100. Extract record identical apart from fingerprint; the drafter's caveat about cardPlay != null is accurate and does not affect normal card plays. Fingerprint matches.",
     "verdict": "agree"
    },
    "category": "trigger",
@@ -61392,7 +61417,8 @@
     "get_StackType=1 (Counter), get_Type=1 (Buff); no remove hook -> all combat.",
     "ModifyDamageMultiplicative 060026BE: IsPoweredAttack && card != null && card.Owner.Creature == Owner; if card is in Play pile (5) && CurrentPlayIndex > 0 -> 1 (replays excluded); n = History.CardPlaysStarted.Count(e => e.HappenedThisTurn && e.CardPlay.Card.Type == 1 (Attack) && e.CardPlay.Player == Owner.Player); inPlay = card.Pile.Type == 5 ? 1 : 0; if n > inPlay -> 1; else return 1 + Amount / 100.",
     "So only the first Attack played this turn gets x(1 + Amount/100): 50 -> x1.5, 75 (upgraded card) -> x1.75.",
-    "Applied to self by cards:LETHALITY (50, +25 upgraded)."
+    "Applied to self by cards:LETHALITY (50, +25 upgraded).",
+    "v0.113.1 re-review: unchanged behaviour. The extract record is identical apart from the fingerprint. ModifyDamageMultiplicative read: IsPoweredAttack, card != null, card.Owner.Creature == Owner; card in Play pile (5) && CurrentPlayIndex > 0 -> 1; n = CardPlaysStarted.Count(<ModifyDamageMultiplicative>b__4_0: HappenedThisTurn && Type == 1 && Player == Owner.Player); inPlay = (card.Pile.Type == 5 && cardPlay != null) ? 1 : 0; n > inPlay -> 1; else 1 + Amount / 100. The 'cardPlay != null' part of inPlay is not in the old evidence; whether it is new cannot be told without the old IL, and it only matters for card damage dealt with no CardPlay while the card is in the Play pile."
    ],
    "fingerprint": "ed096f10db78295d46b9561d1d72185768c9bd7b04581032bfdb83ae2ff083f0",
    "hook_tokens": {
@@ -61418,9 +61444,9 @@
    "open_questions": [
     "Vocabulary: 'multiply_base' + 'multiply_add_per_stack' (multiplier = 1 + 0.01 x Amount) and the first-Attack-per-turn scope are not documented."
    ],
-   "reviewed_by": "TASK-025 ticket 10 batch powers-3",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "cc475a1298c26d60b10ac19d1de95a5871d1c329e83f49941e89e1f050c440a5",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -62047,7 +62073,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review P3b",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read --dump NightmarePower: SetSelectedCard clone = card.CreateClone(); CardCmd::ClearAffliction(clone); clone.EndOfTurnCleanup(); Data.selectedCard = clone; <BeforeHandDraw>d__11 player == Owner.Player -> Amount times AddGeneratedCardToCombat(selectedCard.CreateClone(), 2 Hand, Owner.Player, true), then PowerCmd::Remove. Read CardModel.EndOfTurnCleanup (via --dump-any): clears ExhaustOnNextPlay, single-turn Retain and Sly, ExtraReplayThisTurn, energy-cost modifiers whose expiration has the this-turn flag (CardEnergyCost.EndOfTurnCleanup, LocalCostModifierExpiration flag 2) and temporary star costs. The mechanic text (this-turn modifications cleared) is exact; the evidence phrase 'the copies have the card's normal cost' is slightly broad, since this-combat and until-played cost changes are kept. Wording only, no field change needed. Fingerprint matches.",
     "verdict": "agree"
    },
    "category": "baseline",
@@ -62061,9 +62088,11 @@
    "entity_key": "powers:NIGHTMARE",
    "evidence": [
     "get_StackType=1 (Counter), get_Type=1 (Buff), get_InstanceType=1 (Instanced). CanonicalVars StringVar 'Card' (display).",
-    "SetSelectedCard: Data.selectedCard = CardCmd::ClearAffliction(card.CreateClone()) (called by cards:NIGHTMARE with the card chosen from hand).",
+    "SetSelectedCard: clone = card.CreateClone(); CardCmd::ClearAffliction(clone); clone.EndOfTurnCleanup(); Data.selectedCard = clone (called by cards:NIGHTMARE with the card chosen from hand).",
     "BeforeHandDraw 0600270F (<BeforeHandDraw>d__11): player == Owner.Player -> for i < Amount: CardPileCmd::AddGeneratedCardToCombat(selectedCard.CreateClone(), PileType 2 (Hand), Owner.Player, true); then PowerCmd::Remove(this).",
-    "cards:NIGHTMARE applies 3 -> 3 copies of the chosen card added to hand at the next own turn start."
+    "cards:NIGHTMARE applies 3 -> 3 copies of the chosen card added to hand at the next own turn start.",
+    "v0.113.1 re-review: changed. SetSelectedCard now also calls CardModel::EndOfTurnCleanup on the stored clone. Old: the copies kept the chosen card's this-turn state (e.g. made free this turn); new: that this-turn state is cleared before copying, so the copies have the card's normal cost. <BeforeHandDraw>d__11 unchanged: player == Owner.Player -> Amount times CardPileCmd::AddGeneratedCardToCombat(selectedCard.CreateClone(), 2 Hand, Owner.Player, true); PowerCmd::Remove(this).",
+    "Developer note 2026-11-17 (from the independent review): EndOfTurnCleanup clears this-turn state only; combat-long and until-played cost changes stay on the copies."
    ],
    "fingerprint": "0624de6df230336ef45f7b431370af6684e6580202d08046899dd307080b19f6",
    "hook_tokens": {
@@ -62079,7 +62108,7 @@
      "condition": null,
      "counter": null,
      "effect": {
-      "card": "copy of the card chosen when Nightmare was played (affliction cleared)",
+      "card": "copy of the card chosen when Nightmare was played (affliction cleared, this-turn modifications cleared by EndOfTurnCleanup)",
       "count_per_stack": 1,
       "destination": "hand",
       "kind": "add_card"
@@ -62095,9 +62124,9 @@
    "open_questions": [
     "Vocabulary: 'turns': 'next_own_turn' and limit 'once' (same as ENERGY_NEXT_TURN); add_card 'count_per_stack'."
    ],
-   "reviewed_by": "TASK-025 ticket 10 batch powers-3",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "7335f8140b849744292e8b363a4686daf213bb231f90371f2a9958d4c40abea3",
-   "status": "stale",
+   "status": "converted",
    "unknowable": [
     {
      "reason": "Chosen from the hand at play time.",
@@ -62367,7 +62396,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review P4b",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read --dump OneForAllPower: ModifyDamageAdditive 0 unless IsPoweredAttack, card != null, card.Owner.Creature == Owner, not CostsX (cardPlay.Card's or card's EnergyCost); cardPlay != null && !IsAutoPlay -> needs Resources.EnergySpent == 0; cardPlay != null && IsAutoPlay -> needs Resources.EnergyValue == 0; cardPlay == null -> needs EnergyCost.GetWithModifiers(-1) == 0; then +Amount. Traced the auto-play store (--dump-any CardCmd, <AutoPlay>d__0): ResourceInfo { EnergySpent = 0, EnergyValue = card.EnergyCost.GetAmountToSpend(), StarsSpent = 0, StarValue = Max(0, GetStarCostWithModifiers) } passed to OnPlayWrapper; CardEnergyCost.GetAmountToSpend = Max(0, GetWithModifiers(-1)) for non-X cards. So an auto-played attack counts when its current cost with all modifiers is 0 (a 0-cost card or one reduced to 0 counts; a card that normally costs energy and is merely auto-played free does not). This resolves the second open question; the amount_text is consistent with it. Fingerprint matches.",
     "verdict": "agree"
    },
    "category": "trigger",
@@ -62379,8 +62409,10 @@
    "entity_key": "powers:ONE_FOR_ALL",
    "evidence": [
     "get_StackType=1 (Counter), get_Type=1 (Buff); no removal hook -> all combat.",
-    "ModifyDamageAdditive 06002738: returns Amount only if props.IsPoweredAttack, card != null, card.Owner.Creature == Owner, card is not X-cost (EnergyCost.CostsX false), and energy actually spent is 0 (cardPlay.Resources.EnergySpent == 0; without a cardPlay, EnergyCost.GetWithModifiers(-1) == 0); otherwise 0.",
-    "So the owner's 0-cost (as actually paid) non-X attack cards deal +Amount damage per hit."
+    "ModifyDamageAdditive: returns Amount only if props.IsPoweredAttack, card != null, card.Owner.Creature == Owner, card is not X-cost (EnergyCost.CostsX false), and: cardPlay != null && !IsAutoPlay -> Resources.EnergySpent == 0; cardPlay != null && IsAutoPlay -> Resources.EnergyValue == 0; cardPlay == null -> EnergyCost.GetWithModifiers == 0; otherwise 0.",
+    "So the owner's 0-cost (as actually paid) non-X attack cards deal +Amount damage per hit.",
+    "v0.113.1 re-review: changed for auto-played cards. New calls CardPlay::get_IsAutoPlay and ResourceInfo::get_EnergyValue. Old: any play with EnergySpent == 0 got +Amount, so every auto-played attack (which spends no energy) was boosted; new: an auto-played attack is boosted only when its ResourceInfo.EnergyValue is 0 (normally 0-cost). Normal plays unchanged (EnergySpent == 0).",
+    "Developer note 2026-11-17 (from the independent review, CardCmd.<AutoPlay>d__0): auto-play records EnergySpent 0 and EnergyValue = GetAmountToSpend() = Max(0, cost with all modifiers), so an auto-played card is boosted when its current cost is 0 (also when reduced to 0), not when a costly card is merely played for free."
    ],
    "fingerprint": "e0125e98cb0c3cca6fc7a0504333e2f575ed29e99b1a945daeb07070fe6f36b5",
    "hook_tokens": {
@@ -62392,6 +62424,7 @@
    "mechanics": [
     {
      "add_per_stack": 1,
+     "amount_text": "zero_cost means: played normally -> energy actually spent is 0 (cards made free count); auto-played -> the play's ResourceInfo.EnergyValue is 0 (free auto-play of a card that normally costs energy does not count); no CardPlay -> EnergyCost.GetWithModifiers == 0",
      "filter": {
       "owner_card": true,
       "powered_attack": true,
@@ -62401,12 +62434,10 @@
      "modifier": "damage"
     }
    ],
-   "open_questions": [
-    "Vocabulary: filter 'zero_cost' (energy actually spent is 0, including cards made free this turn), 'owner_card' and 'powered_attack' on a damage modifier are not documented; existing filter 'x_cost' used with false."
-   ],
-   "reviewed_by": "TASK-025 ticket 10 batch powers-4",
+   "open_questions": [],
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "1247f40a77d4cd5023ebfce000d0ee5991254f2c04acf084c7ea8402dd3638b2",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -62574,7 +62605,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review P4b",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read --dump PaleBlueDotPower: get_AttacksPlayedThisTurn counts CardPlaysFinished with HappenedThisTurn && Player == Owner.Player (no type filter); <AfterCardPlayed>d__12 owner's card, !alreadyActivatedThisTurn, InvokeDisplayAmountChanged, AttacksPlayedThisTurn >= 5 -> alreadyActivatedThisTurn = true, Cmd::Wait 0.5, Apply<DrawCardsNextTurnPower>(Owner, Amount); AfterSideTurnEnd resets the flag and refreshes display; new AfterSideTurnStart only InvokeDisplayAmountChanged; new get_DisplayAmount = Max(0, 5 - count). Changes are display only. Fingerprint matches.",
     "verdict": "agree"
    },
    "category": "trigger",
@@ -62589,7 +62621,8 @@
     "get_AttacksPlayedThisTurn counts CombatHistory.CardPlaysFinished entries that HappenedThisTurn and whose CardPlay.Player == Owner.Player; despite the name there is NO card-type filter (all cards count).",
     "AfterCardPlayed 0600275A (<AfterCardPlayed>d__12): owner's card, Data.alreadyActivatedThisTurn false, AttacksPlayedThisTurn >= 5 -> alreadyActivatedThisTurn = true; PowerCmd::Apply<DrawCardsNextTurnPower>(Owner, Amount).",
     "AfterSideTurnEnd 0600275B: owner's side -> alreadyActivatedThisTurn = false -> once per turn.",
-    "Cards played earlier in the turn before the power was applied count toward the 5."
+    "Cards played earlier in the turn before the power was applied count toward the 5.",
+    "v0.113.1 re-review: unchanged behaviour. Display only: new get_DisplayAmount = Max(0, 5 - AttacksPlayedThisTurn) and InvokeDisplayAmountChanged calls in AfterCardPlayed, AfterSideTurnEnd and the new AfterSideTurnStart override (participants contains Owner -> InvokeDisplayAmountChanged). <AfterCardPlayed>d__12 still: owner's card, !alreadyActivatedThisTurn, AttacksPlayedThisTurn (CardPlaysFinished, HappenedThisTurn, Player == Owner.Player, no type filter) >= 5 -> alreadyActivatedThisTurn = true; Cmd::Wait(0.5); PowerCmd::Apply<DrawCardsNextTurnPower>(Owner, Amount)."
    ],
    "fingerprint": "74c21ad19009621835b13605acf04fb10f34ddbb0bbc9d128e11afd1a80f0ac1",
    "hook_tokens": {
@@ -62625,9 +62658,9 @@
    "open_questions": [
     "Recorded as every 5 / counter turn / once_per_turn; the exact rule is 'cards played this turn >= 5' (a 'cards_played_this_turn_at_least' condition is not documented)."
    ],
-   "reviewed_by": "TASK-025 ticket 10 batch powers-4",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "3d0fef8b7ae48e32068518a12fc327daef3822183e5331b3298352f930401edb",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -62747,7 +62780,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review P4b",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read --dump PhantomBladesPower: new TryModifyKeywordsInCombat card.Owner == Owner.Player && tag 5 (Shiv) -> keywords.Add(5 Retain); AfterApplied and new AfterRemoved only call InvokeKeywordsChangedOnShivs (InvokeKeywordsChanged on every Shiv-tagged card in the player's AllCards); no AfterCardEnteredCombat and no CardCmd::ApplyKeyword any more (matches extract diff). ModifyDamageAdditive: IsPoweredAttack, card != null with Shiv tag, dealer == Owner, Count(CardPlaysFinished HappenedThisTurn && Shiv tag && Player == Owner.Player) <= 0 -> +Amount. Retain now exists only while the power is on the owner, as claimed; damage rule unchanged. Fingerprint matches.",
     "verdict": "agree"
    },
    "category": "trigger",
@@ -62759,9 +62793,10 @@
    "entity_key": "powers:PHANTOM_BLADES",
    "evidence": [
     "get_StackType=1 (Counter), get_Type=1 (Buff); CardTag 5 = Shiv (enum read), CardKeyword 5 = Retain.",
-    "AfterApplied 06002778: for every card in Owner.Player.PlayerCombatState.AllCards with tag Shiv -> CardCmd::ApplyKeyword(card, Retain).",
-    "AfterCardEnteredCombat 06002777: card has tag Shiv and card.Owner == Owner.Player -> ApplyKeyword Retain.",
-    "ModifyDamageAdditive 06002779: props.IsPoweredAttack, card has tag Shiv, dealer == Owner, and the count of CardPlaysFinished this turn by Owner.Player with tag Shiv <= 0 -> +Amount; else 0. So only the first Shiv each turn (no Shiv finished yet this turn) gets +Amount damage."
+    "Old (v0.111.0) AfterApplied: for every card in Owner.Player.PlayerCombatState.AllCards with tag Shiv -> CardCmd::ApplyKeyword(card, Retain).",
+    "Old (v0.111.0) AfterCardEnteredCombat: card has tag Shiv and card.Owner == Owner.Player -> ApplyKeyword Retain.",
+    "ModifyDamageAdditive 06002779: props.IsPoweredAttack, card has tag Shiv, dealer == Owner, and the count of CardPlaysFinished this turn by Owner.Player with tag Shiv <= 0 -> +Amount; else 0. So only the first Shiv each turn (no Shiv finished yet this turn) gets +Amount damage.",
+    "v0.113.1 re-review: Retain mechanism changed, damage rule unchanged. New TryModifyKeywordsInCombat(card, keywords): card.Owner == Owner.Player && card has tag 5 (Shiv) -> keywords.Add(5 Retain); AfterApplied and the new AfterRemoved only call InvokeKeywordsChangedOnShivs (CardModel::InvokeKeywordsChanged on every Shiv in AllCards); AfterCardEnteredCombat and CardCmd::ApplyKeyword are gone. Old: Retain was written onto each Shiv permanently for the combat; new: Shivs have Retain only while the power is present, including Shivs created later. ModifyDamageAdditive unchanged (IsPoweredAttack, Shiv tag, dealer == Owner, no Shiv CardPlaysFinished this turn by Owner.Player -> +Amount). The per-stack amount comes from the card (cards:PHANTOM_BLADES, already updated to 8 / 11)."
    ],
    "fingerprint": "a3f61f6b597826ba75b2630089c02d63238b5be0df2f9cee370e78f51f813b2e",
    "hook_tokens": {
@@ -62784,7 +62819,7 @@
      },
      "keyword": "Retain",
      "modifier": "add_keyword",
-     "scope": "all of the owner's Shivs in combat now and later"
+     "scope": "all of the owner's Shivs in combat while the power is on the owner (granted through TryModifyKeywordsInCombat, no longer written onto the cards)"
     },
     {
      "add_per_stack": 1,
@@ -62797,11 +62832,11 @@
     }
    ],
    "open_questions": [
-    "Vocabulary: modifier 'add_keyword' (lasting Retain on Shivs) and damage filter 'first_of_tag_this_turn' are not documented."
+    "Vocabulary: modifier 'add_keyword' (Retain on the owner's Shivs while the power is present) and damage filter 'first_of_tag_this_turn' are not documented."
    ],
-   "reviewed_by": "TASK-025 ticket 10 batch powers-4",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "56b687075402f6459fc24c170cc7b85d7cf79aa2d567ebee2b4935da165dcacd",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -63621,7 +63656,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review P4b",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read --dump SandpitPower: <AfterSideTurnStartLate>d__12 side == 2 -> PowerCmd::Decrement; <AfterRemoved>d__14 oldOwner and Target not dead -> eat anim, then foreach AllAffectedCreatures (Target + Target.Pets) that IsPlayer or is Osty -> CreatureCmd::Kill; other hooks only position creatures. Extract record identical apart from fingerprint. Fingerprint matches.",
     "verdict": "agree"
    },
    "category": "irrelevant",
@@ -63638,7 +63674,8 @@
     "get_StackType=1 (Counter), get_Type=1 (Buff), get_InstanceType=1 (Instanced). Owned by an enemy (The Insatiable; Target = a player). Not applied by player cards; the FRANTIC_ESCAPE status only adds +1 to it.",
     "AfterSideTurnStartLate 06002825: side == 2 (Enemy) -> PowerCmd::Decrement (countdown).",
     "AfterRemoved 06002827: if oldOwner not dead and Target not dead -> eat animation; for each AllAffectedCreatures (Target.Player.Creature + Target.Pets) that is the player or Osty -> CreatureCmd::Kill.",
-    "AfterApplied 06002824, AfterPowerAmountChanged 06002826, AfterCreatureAddedToCombat 06002828, AfterOstyRevived 06002829, BeforeSideTurnEnd 0600282A: UpdateCreaturePositions (visual positioning only)."
+    "AfterApplied 06002824, AfterPowerAmountChanged 06002826, AfterCreatureAddedToCombat 06002828, AfterOstyRevived 06002829, BeforeSideTurnEnd 0600282A: UpdateCreaturePositions (visual positioning only).",
+    "v0.113.1 re-review: unchanged behaviour. The extract record is identical apart from the fingerprint. <AfterSideTurnStartLate>d__12 (side == 2 -> PowerCmd::Decrement), <AfterRemoved>d__14 (oldOwner and Target alive -> TriggerAnim EatPlayerTrigger, Wait 0.5, foreach AllAffectedCreatures that IsPlayer or is Osty -> CreatureCmd::Kill), get_AllAffectedCreatures (Target.Player.Creature + Target.Pets) read; the remaining hooks only call UpdateCreaturePositions (visuals; TestMode branches are test-harness only)."
    ],
    "fingerprint": "166faebd016ae81520ed7c77a5ff698a3f542d0cb4c72ea9d28ef9f06957becf",
    "hook_tokens": {
@@ -63680,9 +63717,9 @@
    "open_questions": [
     "Enemy countdown mechanic (kills the player when it reaches 0 while The Insatiable lives); recorded with undocumented trigger 'power_removed' and effect 'kill_target' for completeness. It matters for card scoring only through FRANTIC_ESCAPE."
    ],
-   "reviewed_by": "TASK-025 ticket 10 batch powers-4",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "58d29572bb84d9b3ac9e804e4032a3bbde179d997a0b307ecb12bc16529733d6",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -63782,7 +63819,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review P4b",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read --dump SerpentFormPower: BeforeCardPlayed owner's card -> amountsForPlayedCards.Add(card, Amount); <AfterCardPlayed>d__13 owner's card, Remove(card, out damage) && damage > 0 -> CustomScaledWait, Rng.CombatTargets.NextItem(HittableEnemies or empty), target != null -> CreatureCmd::Damage(ctx, target, damage, props 4, Owner); AfterApplied/AfterRemoved vfx only. Extract record identical apart from fingerprint. Fingerprint matches.",
     "verdict": "agree"
    },
    "category": "trigger",
@@ -63797,7 +63835,8 @@
     "BeforeCardPlayed 06002843: owner's card -> Data.amountsForPlayedCards.Add(card, Amount) (snapshot).",
     "AfterCardPlayed 06002844 (<AfterCardPlayed>d__13): owner's card and amountsForPlayedCards.Remove(card, out damage) and damage > 0 -> pick Rng.CombatTargets.NextItem(HittableEnemies); if any -> CreatureCmd::Damage(enemy, damage, props 4 Unpowered, dealer Owner).",
     "The Serpent Form card that first applies the power does not trigger it (BeforeCardPlayed already passed).",
-    "AfterApplied 06002841 / AfterRemoved 06002842: visual only."
+    "AfterApplied 06002841 / AfterRemoved 06002842: visual only.",
+    "v0.113.1 re-review: unchanged behaviour. The extract record is identical apart from the fingerprint. BeforeCardPlayed (owner's card -> amountsForPlayedCards.Add(card, Amount)); <AfterCardPlayed>d__13 (Remove(card, out damage), damage > 0 -> Cmd::CustomScaledWait; target = Rng.CombatTargets.NextItem(HittableEnemies or empty); target != null -> CreatureCmd::Damage(ctx, target, damage, props 4 Unpowered, Owner)); AfterApplied / AfterRemoved vfx only."
    ],
    "fingerprint": "7a9756069090e0209c03456ff6527c7f7d871133485efd4e5a7d807ce4fd9b1e",
    "hook_tokens": {
@@ -63835,9 +63874,9 @@
    "open_questions": [
     "Vocabulary: 'unpowered' on damage is not a documented EFFECT field."
    ],
-   "reviewed_by": "TASK-025 ticket 10 batch powers-4",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "3394cbcd49246ae5394b70a02aae985935300d009a765eeaece5cc6a205272f1",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -64084,12 +64123,14 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review P4b",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read --dump SicEmPower: new get_InstanceType returns 2 (InstancedPerApplier; matters only with several applying players); <AfterDamageGiven>d__8 dealer.Monster isinst Osty, PetOwner != null, Applier != null, PetOwner.Creature == Applier, target == Owner -> OstyCmd::Summon(PetOwner, Amount); <AfterSideTurnEnd>d__9 participants contains Owner -> Remove; StackType 1, Type 2. Single-player behaviour unchanged, as claimed (extract diff: only the get_InstanceType override). Fingerprint matches.",
     "verdict": "agree"
    },
    "category": "trigger",
    "class": "SicEmPower",
    "duration": {
+    "instance_type": "InstancedPerApplier",
     "kind": "this_turn",
     "removed_at": "owner (enemy) side turn end",
     "stack_type": "Counter"
@@ -64099,7 +64140,8 @@
     "get_StackType=1 (Counter), get_Type=2 (Debuff). Applied to an enemy by cards:SIC_EM.",
     "AfterDamageGiven 06002870 (<AfterDamageGiven>d__6): dealer.Monster is Osty, dealer.PetOwner != null, Applier != null, dealer.PetOwner.Creature == Applier, and target == Owner (the debuffed enemy) -> OstyCmd::Summon(dealer.PetOwner, Amount).",
     "No damage > 0 or powered-attack check is visible.",
-    "AfterSideTurnEnd 06002871: participants contains Owner (the enemy) -> PowerCmd::Remove -> lasts through the player's turn and the enemy's turn."
+    "AfterSideTurnEnd 06002871: participants contains Owner (the enemy) -> PowerCmd::Remove -> lasts through the player's turn and the enemy's turn.",
+    "v0.113.1 re-review: unchanged behaviour in single player. New get_InstanceType override returns 2 (PowerInstanceType.InstancedPerApplier, read via --enum): in multiplayer each applying player now gets a separate Sic 'Em instance on the enemy, so each player's Osty summons from its own stacks (old: no override, one shared instance with a single Applier). <AfterDamageGiven>d__8 (dealer.Monster is Osty, PetOwner != null, Applier != null, PetOwner.Creature == Applier, target == Owner -> OstyCmd::Summon(PetOwner, Amount)) and <AfterSideTurnEnd>d__9 (participants contains Owner -> PowerCmd::Remove) unchanged."
    ],
    "fingerprint": "06e94f74ca287bc10faf556d1001414522f3be188087d8464159068fc8ccdbef",
    "hook_tokens": {
@@ -64130,9 +64172,9 @@
    "open_questions": [
     "Vocabulary: filter 'dealer': 'applier_osty' and mechanic field 'owner' are not documented."
    ],
-   "reviewed_by": "TASK-025 ticket 10 batch powers-4",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "0ae7d7594cce3c6e1391768e103d968a761bff5b05356f79825195c0f282b201",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -64759,7 +64801,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review P1",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read --dump StampedePower: <AfterAutoPostPlayPhaseEntered>d__4 player == Owner.Player -> for i < Amount: hand cards Where(Type == 1 && !Keywords.Contains(4 Unplayable)) -> Rng.CombatCardSelection.NextItem -> non-null -> CardCmd::AutoPlay(ctx, card, null, 1, false, false). Extract diff is only the RNG stream (Shuffle -> CombatCardSelection). Fingerprint matches.",
     "verdict": "agree"
    },
    "category": "trigger",
@@ -64771,8 +64814,9 @@
    "entity_key": "powers:STAMPEDE",
    "evidence": [
     "get_StackType=1 (Counter), get_Type=1 (Buff); no remove hook -> all combat.",
-    "AfterAutoPostPlayPhaseEntered 060028D9 (<AfterAutoPostPlayPhaseEntered>d__4): player == Owner.Player -> repeat Amount times: hand.Cards.Where(get_Type == 1 Attack && !Keywords.Contains(4 Unplayable)) -> Rng.Shuffle.NextItem -> if not null CardCmd::AutoPlay(card).",
-    "'AutoPostPlayPhase' is entered after the owner finishes playing cards (end of turn, before hand discard); mapped to turn_end."
+    "AfterAutoPostPlayPhaseEntered (<AfterAutoPostPlayPhaseEntered>d__4): player == Owner.Player -> repeat Amount times: hand.Cards.Where(get_Type == 1 Attack && !Keywords.Contains(4 Unplayable)) -> Rng.NextItem -> if not null CardCmd::AutoPlay(ctx, card, null, 1, false, false).",
+    "'AutoPostPlayPhase' is entered after the owner finishes playing cards (end of turn, before hand discard); mapped to turn_end.",
+    "v0.113.1 re-review: unchanged behaviour. Only the RNG stream changed: the random Attack is now picked with RunState.Rng.CombatCardSelection (was Rng.Shuffle). Filter (<AfterAutoPostPlayPhaseEntered>b__4_0: Type == 1 && !Unplayable), Amount repetitions and CardCmd::AutoPlay unchanged."
    ],
    "fingerprint": "6e91b90938739f666c9a050bd22e8a80f74d2415060526fc51aee8ce91a3caeb",
    "hook_tokens": {
@@ -64805,9 +64849,9 @@
     "Vocabulary: effect 'auto_play' is not documented (closest: replay_card).",
     "Exact order of AfterAutoPostPlayPhaseEntered relative to other turn-end hooks (Plating block, Ethereal exhaust) is not visible in this class."
    ],
-   "reviewed_by": "TASK-025 ticket 05 batch P1",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "8878eba660072cebc823314a623412d1922d8a1cfb76c3063d15be90381684cd",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -65408,7 +65452,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review P1",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read --dump TankPower: CanonicalVars DamageIncrease 1.5, DamageDecrease 0.5; ModifyDamageMultiplicative target == Owner && IsPoweredAttack -> DynamicVars[DamageIncrease].BaseValue (1.5); <AfterApplied>d__10 alive player teammates != Owner -> Apply<GuardedPower>(Amount); new <AfterRemoved>d__11 removes teammates' GuardedPower instances whose Applier == oldOwner (multiplayer only). StackType 2, Type 1. Single-player facts unchanged, as claimed. Fingerprint matches.",
     "verdict": "agree"
    },
    "category": "baseline",
@@ -65422,7 +65467,8 @@
     "get_StackType=2 (Single), get_Type=1 (Buff); no remove hook -> all combat.",
     "get_CanonicalVars / .cctor: DamageIncrease = Decimal(15, scale 1) = 1.5, DamageDecrease = 0.5.",
     "ModifyDamageMultiplicative 06002952: target == Owner && IsPoweredAttack -> return DamageIncrease (1.5): the owner takes 50% more attack damage.",
-    "AfterApplied 06002951 (<AfterApplied>d__10): foreach GetTeammatesOf(Owner) alive && IsPlayer && != Owner -> PowerCmd::Apply<GuardedPower>(teammate, Amount). GuardedPower.ModifyDamageMultiplicative returns DamageDecrease 0.5 for its owner. In single player there are no teammates, so only the 1.5x damage taken applies."
+    "AfterApplied 06002951 (<AfterApplied>d__10): foreach GetTeammatesOf(Owner) alive && IsPlayer && != Owner -> PowerCmd::Apply<GuardedPower>(teammate, Amount). GuardedPower.ModifyDamageMultiplicative returns DamageDecrease 0.5 for its owner. In single player there are no teammates, so only the 1.5x damage taken applies.",
+    "v0.113.1 re-review: unchanged behaviour in single player. New AfterRemoved override (<AfterRemoved>d__11): oldOwner.CombatState.GetTeammatesOf(oldOwner).SelectMany(GetPowerInstances<GuardedPower>).Where(Applier == oldOwner) -> PowerCmd::Remove each, so teammates' Guarded from this Tank now ends when Tank is removed (multiplayer only). ModifyDamageMultiplicative (target == Owner && IsPoweredAttack -> DamageIncrease 1.5), CanonicalVars (1.5 / 0.5) and <AfterApplied>d__10 (Apply<GuardedPower>(alive player teammates != Owner, Amount)) unchanged."
    ],
    "fingerprint": "59dce0810978d5e03c13e86017344206cd2e34792b56eb7ec1aafc0964a572c3",
    "hook_tokens": {
@@ -65463,9 +65509,9 @@
    "open_questions": [
     "Vocabulary: 'damage_received' modifier and the multiplayer-only Guarded effect have no documented scoring form; in single player the power is purely a drawback."
    ],
-   "reviewed_by": "TASK-025 ticket 05 batch P1",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "7f651e3c2c2c547a1e0781daee0df99abd2d099727524aa0244f2605954c9f11",
-   "status": "stale",
+   "status": "converted",
    "unknowable": [
     {
      "reason": "Depends on future enemy attack intents.",
@@ -65688,9 +65734,9 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review P5b",
-    "notes": "Auditor: BeforeDamageReceived triggers on a powered attack, or on a non-powered hit when the card is Omnislice; Omnislice is an extra trigger, not an exclusion. Developer resolved per IL: dropped exclude_card, filter powered_attack_or_card OMNISLICE.",
-    "verdict": "resolved"
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read --dump ThornsPower: <BeforeDamageReceived>d__4 target == Owner, dealer != null, props IsPoweredAttack -> Flash; CreatureCmd::Damage(ctx, dealer, Amount, props 20, Owner, null, null). No Omnislice reference left (extract diff: Omnislice type dropped). Filter 'powered_attack' is exactly what the IL shows. The note that Omnislice's splash is now itself a powered attack is a claim about cards:OMNISLICE, not checked in this class. Fingerprint matches.",
+    "verdict": "agree"
    },
    "category": "trigger",
    "class": "ThornsPower",
@@ -65701,8 +65747,9 @@
    "entity_key": "powers:THORNS",
    "evidence": [
     "get_StackType=1 (Counter), get_Type=1 (Buff); no remove hook -> all combat.",
-    "BeforeDamageReceived 060029A7 (<BeforeDamageReceived>d__4): target == Owner && dealer != null && props.IsPoweredAttack() && cardSource not isinst Omnislice -> Flash; CreatureCmd::Damage(choiceContext, dealer, Amount, ValueProp 20 = Unpowered|SkipHurtAnim, Owner, null, null).",
-    "Triggers per hit (each powered attack instance), even if fully blocked. Applied to self by cards:ABRASIVE, CALTROPS and relics:BRONZE_SCALES."
+    "BeforeDamageReceived (<BeforeDamageReceived>d__4): target == Owner && dealer != null && props.IsPoweredAttack() -> Flash; CreatureCmd::Damage(choiceContext, dealer, Amount, ValueProp 20 = Unpowered|SkipHurtAnim, Owner, null, null).",
+    "Triggers per hit (each powered attack instance), even if fully blocked. Applied to self by cards:ABRASIVE, CALTROPS and relics:BRONZE_SCALES.",
+    "v0.113.1 re-review: changed. The Omnislice special case is gone from <BeforeDamageReceived>d__4: no isinst Omnislice on the card source any more; the only checks are target == Owner, dealer != null and IsPoweredAttack. Old filter 'powered_attack_or_card: OMNISLICE' (an Omnislice hit was treated specially) -> new filter 'powered_attack'. Omnislice's second (splash) hit is now itself a powered attack (see cards:OMNISLICE), so it triggers Thorns like any other powered hit. Per hit, before damage, even if blocked, as before."
    ],
    "fingerprint": "a2e8f2bfd89b67e74e96773310a02661f5e26204ae64fd10380b1c4d6cb823e3",
    "hook_tokens": {
@@ -65725,7 +65772,7 @@
      },
      "every": null,
      "filter": {
-      "powered_attack_or_card": "OMNISLICE"
+      "powered_attack": true
      },
      "limit": null,
      "timing": "before the damage is applied (BeforeDamageReceived)",
@@ -65733,12 +65780,11 @@
     }
    ],
    "open_questions": [
-    "Vocabulary: 'attacker' target and 'exclude_card' filter are new.",
-    "Thorns triggers on a powered attack OR any hit from Omnislice (filter powered_attack_or_card); resolved from cross-review."
+    "Vocabulary: 'attacker' target, 'attacker_exists' condition and 'timing' are not documented."
    ],
-   "reviewed_by": "TASK-025 ticket 10 batch powers-5",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "3c1bd9c8926c09facb638a3ab7739889a5ca24e7f7ea52b36a5c2531b03daa93",
-   "status": "stale",
+   "status": "converted",
    "unknowable": [
     {
      "reason": "Depends on future enemy intents.",
@@ -65748,7 +65794,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review P5b",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read --dump ThunderPower: <AfterOrbEvoked>d__6 orb.Owner == Owner.Player && orb isinst LightningOrb -> livingTargets = targets.Where(IsAlive).ToList(); Flash, sfx/vfx, TriggerAnim Attack; CreatureCmd::Damage(ctx, livingTargets, Amount, props 4, Owner, null, null, 14). Extract record identical apart from fingerprint. Fingerprint matches.",
     "verdict": "agree"
    },
    "category": "trigger",
@@ -65761,7 +65808,8 @@
    "evidence": [
     "get_StackType=1 (Counter), get_Type=1 (Buff); no remove hook -> all combat.",
     "AfterOrbEvoked 060029AC (<AfterOrbEvoked>d__6): orb.Owner == Owner.Player && orb isinst LightningOrb -> livingTargets = targets.Where(IsAlive); Flash; attack anim; CreatureCmd::Damage(choiceContext, livingTargets, Amount, ValueProp 4 Unpowered, Owner).",
-    "Extra damage to whatever the evoked Lightning hit (still-living targets)."
+    "Extra damage to whatever the evoked Lightning hit (still-living targets).",
+    "v0.113.1 re-review: unchanged behaviour. The extract record is identical apart from the fingerprint. <AfterOrbEvoked>d__6::MoveNext: orb.Owner == Owner.Player && orb isinst LightningOrb -> livingTargets = targets.Where(IsAlive).ToList(); Flash; sfx/vfx; TriggerAnim Attack; CreatureCmd::Damage(ctx, livingTargets, Amount, props 4 Unpowered, Owner, null, null, ModifyDamageHookType 14)."
    ],
    "fingerprint": "81a864bb0c64733eb2ed2d0613216034b1b28e57b31596252186696bd9502a59",
    "hook_tokens": {
@@ -65791,9 +65839,9 @@
    "open_questions": [
     "Vocabulary: time 'orb_evoked' and target 'evoke_targets' are new (only 'orb_channeled' is documented)."
    ],
-   "reviewed_by": "TASK-025 ticket 10 batch powers-5",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "e9898ba6be3abb07646eb4a6704d2a35a681a423dd135ecf0301f24ff58fc25f",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
