@@ -304,7 +304,7 @@
 |---|---|---|
 | A shot | `damage` + **`"source": "arrow"`**. Meaning: needs an available arrow (none: no damage), the damage carries FromArrow, and the target is impaled after the attack | `source` key (Osty) |
 | Extra arrow slot | effect **`arrow_slots`** `{amount, upgrade}` (this combat) | like `orb_slots` |
-| Loosen an arrow | effect **`dislodge_arrow`** `{count: 1}` + `condition` | — |
+| Loosen arrows | effect **`dislodge_arrow`** `{count: 1 or "all", owner_only}` + `condition` (UPROOT, WREST: `"all"`) | — |
 | Arrow destroyed after impaling | QUIETUS power: modifier on the next shot `{"modifier": "damage", "multiply": 2, "filter": {"from_arrow": true}, "limit": "next_shot"}` + `"destroys_arrow": true` | `damage` modifier |
 | Target impaled | effect condition **`target_impaled`** (`"any"` or `"owner"`, after the helper called) | `condition` |
 | Owner has an arrow | effect condition **`has_arrow`**: true | `condition` |
