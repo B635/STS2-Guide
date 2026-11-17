@@ -31956,7 +31956,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review E1",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read v0.113.1 IL of Adroit: get_CanonicalVars BlockVar(0, ValueProp 8 Move); RecalculateValues Block.BaseValue = Amount; <OnPlay>d__8 CreatureCmd::GainBlock(Card.Owner.Creature, Block, cardPlay, false); new get_GainsBlock => true (a flag only); no CanEnchant override. CardModel.<OnPlayWrapper>d__359 (--dump-any CardModel): playCount from GeneratePlayCount (GetEnchantedReplayCount -> Hook.ModifyCardPlayCount) before the loop; per iteration BeforeCardPlayed -> CardModel.OnPlay -> Enchantment.OnPlay -> Affliction.OnPlay -> CardPlayFinished -> (IsInProgress) Hook.AfterCardPlayed. Block per play iteration equals Amount; mechanics are right. Old/new extract diff: only the get_GainsBlock override added. Fingerprint equals the current extract.",
     "verdict": "agree"
    },
    "category": "baseline",
@@ -31966,7 +31967,9 @@
     "get_CanonicalVars: BlockVar(Decimal.Zero, ValueProp 8 Move); RecalculateValues 060039CE: Block.BaseValue = Amount -> block equals enchantment amount.",
     "OnPlay 060039CD <OnPlay>d__6: CreatureCmd::GainBlock(Card.Owner.Creature, Block, cardPlay, false).",
     "CardModel.OnPlayWrapper <OnPlayWrapper>d__339: per play iteration i < playCount: Hook.BeforeCardPlayed -> CardModel.OnPlay -> Enchantment.OnPlay -> Affliction.OnPlay -> CardPlayFinished -> Hook.AfterCardPlayed; playCount from GetEnchantedReplayCount = Enchantment.EnchantPlayCount(BaseReplayCount) before the loop -> fires once per play iteration, after the card's own effects.",
-    "No CanEnchant/CanEnchantCardType override: any card the base rules allow. Applied by relic Kifuda."
+    "No CanEnchant/CanEnchantCardType override: any card the base rules allow. Applied by relic Kifuda.",
+    "v0.113.1 re-review: unchanged behaviour. Block still equals the enchantment Amount (RecalculateValues: Block.BaseValue = Amount; get_CanonicalVars BlockVar(0, ValueProp 8)); <OnPlay>d__8 (was d__6) CreatureCmd::GainBlock(Card.Owner.Creature, Block, cardPlay, false). New override get_GainsBlock => true (a flag that the enchanted card counts as a block-gaining card; it does not change the block this enchantment gives).",
+    "CardModel.<OnPlayWrapper>d__359 (v0.113.1, --dump-any MegaCrit.Sts2.Core.Models.CardModel): playCount from GeneratePlayCount before the loop; per iteration i < playCount: Hook.BeforeCardPlayed -> CardModel.OnPlay -> Enchantment.OnPlay -> Affliction.OnPlay -> CombatHistory.CardPlayFinished -> (if CombatManager.IsInProgress) Hook.AfterCardPlayed. Same order as before."
    ],
    "fingerprint": "9b5cbd053f15ce24337fc2d115d1b9b6f9f123968c5be150926ab2f8fd8ed2f1",
    "hook_tokens": {
@@ -31991,9 +31994,9 @@
     }
    ],
    "open_questions": [],
-   "reviewed_by": "TASK-025 ticket 10 enchantments",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "74046c7720df25ee0977cbf2def1e70bb859d1fb355da8d3473e8a93bcebc4cb",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -32084,7 +32087,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review E1",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read v0.113.1 IL of Glam: Times = 1; EnchantPlayCount returns original if Status == 1 (Disabled), else original + Times; AfterCardPlayed sets Status = 1 when cardPlay.Card == Card (no flag guard now). CardModel.GetEnchantedReplayCount calls Enchantment.EnchantPlayCount(BaseReplayCount + ExtraReplayThisTurn) inside GeneratePlayCount, before the OnPlayWrapper loop, and Hook.AfterCardPlayed runs inside the loop (CombatState.IterateHookListeners yields card enchantments). So the first play of the card in a combat resolves one extra time and later plays do not. Old/new diff: AssertMutable dropped, get_Status added, as the entry says. Fingerprint equals the current extract.",
     "verdict": "agree"
    },
    "category": "baseline",
@@ -32096,7 +32100,9 @@
     "AfterCardPlayed 060039DD: if !UsedThisCombat && cardPlay.Card == Card -> UsedThisCombat = true; Status = 1 (Disabled).",
     "CardModel.OnPlayWrapper <OnPlayWrapper>d__339: per play iteration i < playCount: Hook.BeforeCardPlayed -> CardModel.OnPlay -> Enchantment.OnPlay -> Affliction.OnPlay -> CardPlayFinished -> Hook.AfterCardPlayed; playCount from GetEnchantedReplayCount = Enchantment.EnchantPlayCount(BaseReplayCount) before the loop -> the first play action of this card in combat resolves 2 times; later plays once.",
     "per-combat state lives on the combat copy of the card; only Goopy writes to Card.DeckVersion, so other Status/flag changes do not carry to the next combat (EnchantmentModel base class is not dumpable; inferred from the DeckVersion pattern, same as GeneticAlgorithm/TheScythe facts)",
-    "Not scaled by Amount; no CanEnchant override. Applied by relics Glitter and SilkenTress."
+    "Not scaled by Amount; no CanEnchant override. Applied by relics Glitter and SilkenTress.",
+    "v0.113.1 re-review: unchanged behaviour. The private UsedThisCombat flag was replaced by EnchantmentModel.Status: EnchantPlayCount = Status == 1 (Disabled) ? original : original + Times.IntValue (Times = 1); AfterCardPlayed: if cardPlay.Card == Card -> Status = 1 (Disabled) (no longer guarded by the flag; setting Disabled twice is the same). First play action of the card in a combat still resolves 2 times, later plays once.",
+    "CardModel.<OnPlayWrapper>d__359 (v0.113.1, --dump-any MegaCrit.Sts2.Core.Models.CardModel): playCount from GeneratePlayCount before the loop; per iteration i < playCount: Hook.BeforeCardPlayed -> CardModel.OnPlay -> Enchantment.OnPlay -> Affliction.OnPlay -> CombatHistory.CardPlayFinished -> (if CombatManager.IsInProgress) Hook.AfterCardPlayed. Same order as before."
    ],
    "fingerprint": "7186d50cb38af308210bd22ee2752755c6612ee0dab203dec5ea0b4e41d5ffcf",
    "hook_tokens": {
@@ -32117,9 +32123,9 @@
     }
    ],
    "open_questions": [],
-   "reviewed_by": "TASK-025 ticket 10 enchantments",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "dd1475629b0af74627cf8e3b33d7cbe2edb323b435fff50fe113bbdad6563242",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -32680,7 +32686,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review E1",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read v0.113.1 IL of Sown: <OnPlay>d__2 returns if Status != 0, else PlayerCmd::GainEnergy(Amount, Card.Owner) with no Status write; new AfterCardPlayed sets Status = 1 (Disabled) when cardPlay.Card == Card. Repeated first play checked in CardModel.<OnPlayWrapper>d__359: the loop i < playCount runs Enchantment.OnPlay and then Hook.AfterCardPlayed in the same iteration (the i++/blt back-edge comes after AfterCardPlayed and the transform step), and Hook.AfterCardPlayed iterates CombatState.IterateHookListeners, which yields card enchantments. So iteration 1 gains Amount energy and disables; iteration 2+ returns early: still once per combat on the first play, even if the play is repeated. Only the IsInProgress guard can skip the disable, which does not matter after combat. Fingerprint equals the current extract.",
     "verdict": "agree"
    },
    "category": "baseline",
@@ -32689,7 +32696,9 @@
    "evidence": [
     "OnPlay 06003A18 <OnPlay>d__2: if Status != 0 (Normal) return; Status = 1 (Disabled); PlayerCmd::GainEnergy(Amount, Card.Owner).",
     "per-combat state lives on the combat copy of the card; only Goopy writes to Card.DeckVersion, so other Status/flag changes do not carry to the next combat (EnchantmentModel base class is not dumpable; inferred from the DeckVersion pattern, same as GeneticAlgorithm/TheScythe facts) -> once per combat.",
-    "No CanEnchant override."
+    "No CanEnchant override.",
+    "v0.113.1 re-review: unchanged behaviour. Old: <OnPlay>d__2 checked Status == 0 (Normal), set Status = 1 (Disabled), then PlayerCmd::GainEnergy(Amount). New: <OnPlay>d__2 checks Status == 0 then GainEnergy(Amount, Card.Owner) without writing Status; new AfterCardPlayed: if cardPlay.Card == Card -> Status = 1 (Disabled). Status now flips after the play iteration instead of inside OnPlay; since Enchantment.OnPlay and Hook.AfterCardPlayed both run once per play iteration in OnPlayWrapper, the energy is still gained once per combat on the first play (a replayed first play still gains it only once).",
+    "CardModel.<OnPlayWrapper>d__359 (v0.113.1, --dump-any MegaCrit.Sts2.Core.Models.CardModel): playCount from GeneratePlayCount before the loop; per iteration i < playCount: Hook.BeforeCardPlayed -> CardModel.OnPlay -> Enchantment.OnPlay -> Affliction.OnPlay -> CombatHistory.CardPlayFinished -> (if CombatManager.IsInProgress) Hook.AfterCardPlayed. Same order as before."
    ],
    "fingerprint": "dd4be205a7345170d510fadbcc9c762fe0969b85208bded8e8fcea0bb9045541",
    "hook_tokens": {
@@ -32715,9 +32724,9 @@
     }
    ],
    "open_questions": [],
-   "reviewed_by": "TASK-025 ticket 10 enchantments",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "2ed6a20d87830ed3e6bcd7f56d7ea4e3a5214502b4075ae1647d1675a43c84b1",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -32789,7 +32798,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review E1",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read v0.113.1 IL of Swift: <OnPlay>d__4 returns if Status != 0, else CardPileCmd::Draw(choiceContext, Amount, Card.Owner, false) with no Status write; new AfterCardPlayed sets Status = 1 when cardPlay.Card == Card. Repeated first play checked in CardModel.<OnPlayWrapper>d__359: Enchantment.OnPlay and Hook.AfterCardPlayed both run inside each loop iteration (i < playCount, playCount fixed before the loop by GeneratePlayCount), and enchantments are hook listeners (CombatState.IterateHookListeners). So iteration 1 draws Amount and disables, later iterations skip: still once per combat on the first play, even when the play is repeated. Old/new diff: only the AfterCardPlayed override and its get_Card call were added. Fingerprint equals the current extract.",
     "verdict": "agree"
    },
    "category": "baseline",
@@ -32798,7 +32808,9 @@
    "evidence": [
     "OnPlay 06003A24 <OnPlay>d__4: if Status != 0 (Normal) return; Status = 1 (Disabled); CardPileCmd::Draw(ctx, Amount, Card.Owner, false).",
     "per-combat state lives on the combat copy of the card; only Goopy writes to Card.DeckVersion, so other Status/flag changes do not carry to the next combat (EnchantmentModel base class is not dumpable; inferred from the DeckVersion pattern, same as GeneticAlgorithm/TheScythe facts) -> once per combat.",
-    "Applied by relics BeautifulBracelet and WingCharm; no CanEnchant override."
+    "Applied by relics BeautifulBracelet and WingCharm; no CanEnchant override.",
+    "v0.113.1 re-review: unchanged behaviour (draw Amount cards once per combat, on the first play). Exact change: old <OnPlay>d__4: if Status != 0 return; Status = 1 (Disabled); CardPileCmd::Draw(ctx, Amount, Card.Owner, false). New <OnPlay>d__4: if Status != 0 return; CardPileCmd::Draw(ctx, Amount, Card.Owner, false) (no Status write). New override AfterCardPlayed(ctx, cardPlay): if cardPlay.Card == Card -> Status = 1 (Disabled). So the enchantment is disabled at the end of the play iteration (after the card's own OnPlay, the Draw, the affliction, CardPlayFinished and the other AfterCardPlayed listeners) instead of just before the Draw. Within one play the order is unchanged: Enchantment.OnPlay and Hook.AfterCardPlayed both run once per play iteration, so a replayed first play still draws only once. Only difference: if combat stops being in progress during the play, AfterCardPlayed is skipped and Status stays Normal, which has no effect after combat. Relevant to relics:WING_CHARM and BEAUTIFUL_BRACELET, which apply Swift.",
+    "CardModel.<OnPlayWrapper>d__359 (v0.113.1, --dump-any MegaCrit.Sts2.Core.Models.CardModel): playCount from GeneratePlayCount before the loop; per iteration i < playCount: Hook.BeforeCardPlayed -> CardModel.OnPlay -> Enchantment.OnPlay -> Affliction.OnPlay -> CombatHistory.CardPlayFinished -> (if CombatManager.IsInProgress) Hook.AfterCardPlayed. Same order as before."
    ],
    "fingerprint": "e450c6c8954f7a36dcba577f39cf9dffb1928bd1a2d49023b914750962b9e9fa",
    "hook_tokens": {
@@ -32824,9 +32836,9 @@
     }
    ],
    "open_questions": [],
-   "reviewed_by": "TASK-025 ticket 10 enchantments",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "c429c902194b0628962f1fadbc001a632563a3a2a6f18fb3f55b8c7652482e97",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -32834,7 +32846,8 @@
     "Eternal"
    ],
    "audit": {
-    "by": "TASK-025 cross-review E1",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read v0.113.1 IL of TezcatarasEmber: get_CanonicalVars DynamicVar(Damage, 3) (was DamageVar(3)); EnchantDamageAdditive returns DynamicVars[Damage].BaseValue when ValuePropExtensions.IsPoweredAttack(props), else 0; OnEnchant EnergyCost.UpgradeBy(-EnergyCost.GetWithModifiers(0)) then AddKeyword(7) (--enum CardKeyword: 7 Eternal). Fixed +3 to powered attacks, base cost to 0 permanently, adds Eternal: the fields match. Old/new diff: only the var type and the indexer read changed. Fingerprint equals the current extract. The X-cost open question remains open.",
     "verdict": "agree"
    },
    "category": "baseline",
@@ -32843,7 +32856,8 @@
    "evidence": [
     "get_CanonicalVars: DamageVar(3, ValueProp 8). EnchantDamageAdditive 06003A29: props.IsPoweredAttack ? Damage.BaseValue (3) : 0 -> fixed +3, not per stack.",
     "OnEnchant 06003A28: Card.EnergyCost.UpgradeBy(-Card.EnergyCost.GetWithModifiers(0)) -> base cost reduced to 0 permanently; Card.AddKeyword(7 Eternal).",
-    "No CanEnchant override (damage bonus only matters for cards that deal powered attack damage). Applied by relic NutritiousSoup."
+    "No CanEnchant override (damage bonus only matters for cards that deal powered attack damage). Applied by relic NutritiousSoup.",
+    "v0.113.1 re-review: unchanged behaviour. get_CanonicalVars DamageVar(3, ValueProp 8) -> plain DynamicVar(\"Damage\", 3); EnchantDamageAdditive reads DynamicVars[\"Damage\"].BaseValue (3) when props.IsPoweredAttack, else 0 (was DynamicVars.Damage.BaseValue). OnEnchant unchanged: EnergyCost.UpgradeBy(-EnergyCost.GetWithModifiers(0)); AddKeyword(7 Eternal)."
    ],
    "fingerprint": "8cb9d12ca838d72f1cc95e98e24d7a9b962d699a62908dc12cdf68e049942b55",
    "hook_tokens": {
@@ -32873,9 +32887,9 @@
    "open_questions": [
     "energy_cost 'set': 0 with duration 'permanent' (base-cost change on enchant) is new; the effect of UpgradeBy on X-cost cards was not checked."
    ],
-   "reviewed_by": "TASK-025 ticket 10 enchantments",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "50f006237708cbf9434c2c1e93fef9dd5d4a71e910ef412f69533e48d0efa264",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
@@ -32928,7 +32942,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review ENC1",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read v0.113.1 IL of AeonglassBoss: GenerateMonsters ModelDb::Monster<Aeonglass>.ToMutable(), slot ldnull, single-element list, no setters or RNG; get_RoomType ldc.i4.3 (Boss); no get_IsWeak override; AllPossibleMonsters Aeonglass. Dominion check (my own scan of every method body for call/callvirt/newobj tokens): EncounterModel.GetDominion is called only by DreadRunModel.ApplyCurrentDominion, NTopBarBossIcon.RefreshBossIcon (UI) and AutoSlay.ActEntryCheck (test harness); RunState.SetDominion and CombatState.SetDominion only by DreadRunModel; both CombatState constructors (CombatRoom, EventCombatSynchronizer) pass runState.Dominion; DreadRunModel is added to RunModels only in RunState.CreateShared when GameMode == 3. So a normal run has no dominion and the fact rightly leaves it out. Old/new diff: only the GetDominion override and its ModelDb::Dominion call. Fingerprint equals the current extract.",
     "verdict": "agree"
    },
    "class": "AeonglassBoss",
@@ -32937,7 +32952,10 @@
     "GenerateMonsters ModelDb::Monster<Aeonglass>: single ToMutable() wrapped in ReadOnlySingleElementList, slot ldnull; no setter calls, no RNG",
     "get_RoomType: ldc.i4.3 = RoomType.Boss (--enum RoomType)",
     "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
-    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+    "catalog cross-check: agrees on room_type, is_weak and monster ids",
+    "v0.113.1 re-review: unchanged behaviour. The only code change is the new GetDominion override, which only matters in Dread runs (see next line). GenerateMonsters, get_RoomType (ldc.i4.3 Boss), get_AllPossibleMonsters re-read and identical; get_IsWeak still not overridden.",
+    "GetDominion (new override) returns ModelDb::Dominion<AeonglassDominion> (namespace Models.Dread.Dominions). Callers, found by scanning every method body in sts2.dll for call/callvirt to GetDominion and SetDominion: DreadRunModel::ApplyCurrentDominion (RunState.SetDominion), DreadRunModel::BeforeRoomEntered and RemoveDominionIfRoomIsBoss (CombatState.SetDominion), NTopBarBossIcon::RefreshBossIcon (UI) and a RunAsync state machine. EncounterModel.GetDominion returns null; RunState.Dominion stays null outside Dread and is only then added to IterateHookListeners. The dominion acts through AfterRoomEntered (e.g. AeonglassDominion applies AeonglassDominionPower). RunManager.IsDread = GameMode == 3. Dread mode is outside the Guide's scope and is not recorded in the fact.",
+    "v0.113.1 read: GenerateMonsters: ModelDb::Monster<Aeonglass>.ToMutable(), slot ldnull, single-element list; no setters, no RNG."
    ],
    "fingerprint": "541db7a3b86a7cb95f7ce021c54d0e5e06756e83fd8782c0b748d7ab36e74d64",
    "hook_tokens": {
@@ -32954,10 +32972,10 @@
    ],
    "is_weak": false,
    "open_questions": [],
-   "reviewed_by": "TASK-025 encounters batch 1",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "4ac6f16781756971a5e83db9dfcb3d29f4e594311d8317ab97cdd237ebd416a7",
    "room_type": "Boss",
-   "status": "stale",
+   "status": "converted",
    "unknowable": [],
    "variants": [
     {
@@ -33498,7 +33516,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review ENC1",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read v0.113.1 IL of CeremonialBeastBoss: GenerateMonsters ModelDb::Monster<CeremonialBeast>.ToMutable(), slot ldnull, single-element list, no setters or RNG; get_RoomType ldc.i4.3 (Boss); no get_IsWeak override; AllPossibleMonsters CeremonialBeast. Dominion check (my own scan of every method body for call/callvirt/newobj tokens): EncounterModel.GetDominion is called only by DreadRunModel.ApplyCurrentDominion, NTopBarBossIcon.RefreshBossIcon (UI) and AutoSlay.ActEntryCheck (test harness); RunState.SetDominion and CombatState.SetDominion only by DreadRunModel; both CombatState constructors (CombatRoom, EventCombatSynchronizer) pass runState.Dominion; DreadRunModel is added to RunModels only in RunState.CreateShared when GameMode == 3. So a normal run has no dominion and the fact rightly leaves it out. Old/new diff: only the GetDominion override and its ModelDb::Dominion call. Fingerprint equals the current extract.",
     "verdict": "agree"
    },
    "class": "CeremonialBeastBoss",
@@ -33507,7 +33526,10 @@
     "GenerateMonsters ModelDb::Monster<CeremonialBeast>: single ToMutable() wrapped in ReadOnlySingleElementList, slot ldnull; no setter calls, no RNG",
     "get_RoomType: ldc.i4.3 = RoomType.Boss (--enum RoomType)",
     "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
-    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+    "catalog cross-check: agrees on room_type, is_weak and monster ids",
+    "v0.113.1 re-review: unchanged behaviour. The only code change is the new GetDominion override, which only matters in Dread runs (see next line). GenerateMonsters, get_RoomType (ldc.i4.3 Boss), get_AllPossibleMonsters re-read and identical; get_IsWeak still not overridden.",
+    "GetDominion (new override) returns ModelDb::Dominion<CeremonialBeastDominion> (namespace Models.Dread.Dominions). Callers, found by scanning every method body in sts2.dll for call/callvirt to GetDominion and SetDominion: DreadRunModel::ApplyCurrentDominion (RunState.SetDominion), DreadRunModel::BeforeRoomEntered and RemoveDominionIfRoomIsBoss (CombatState.SetDominion), NTopBarBossIcon::RefreshBossIcon (UI) and a RunAsync state machine. EncounterModel.GetDominion returns null; RunState.Dominion stays null outside Dread and is only then added to IterateHookListeners. The dominion acts through AfterRoomEntered (e.g. AeonglassDominion applies AeonglassDominionPower). RunManager.IsDread = GameMode == 3. Dread mode is outside the Guide's scope and is not recorded in the fact.",
+    "v0.113.1 read: GenerateMonsters: ModelDb::Monster<CeremonialBeast>.ToMutable(), slot ldnull; no setters, no RNG."
    ],
    "fingerprint": "29bd979a0c1441feb6dda24636b2f1a574d1eedcfa348f3fb29c27b960b52079",
    "hook_tokens": {
@@ -33524,10 +33546,10 @@
    ],
    "is_weak": false,
    "open_questions": [],
-   "reviewed_by": "TASK-025 encounters batch 1",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "d9702c168d834e7f7e8c23b8bfc3ca58307dbd8504c13927e184dea0246dbe61",
    "room_type": "Boss",
-   "status": "stale",
+   "status": "converted",
    "unknowable": [],
    "variants": [
     {
@@ -34909,7 +34931,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review ENC1",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read v0.113.1 IL of KaiserCrabBoss: GenerateMonsters array [Crusher slot crusher, Rocket slot rocket], no setters or RNG; get_Slots [crusher, rocket]; get_RoomType ldc.i4.3 (Boss); no get_IsWeak override; AllPossibleMonsters Crusher, Rocket. Dominion check (my own scan of every method body for call/callvirt/newobj tokens): EncounterModel.GetDominion is called only by DreadRunModel.ApplyCurrentDominion, NTopBarBossIcon.RefreshBossIcon (UI) and AutoSlay.ActEntryCheck (test harness); RunState.SetDominion and CombatState.SetDominion only by DreadRunModel; both CombatState constructors (CombatRoom, EventCombatSynchronizer) pass runState.Dominion; DreadRunModel is added to RunModels only in RunState.CreateShared when GameMode == 3. So a normal run has no dominion and the fact rightly leaves it out. Old/new diff: only the GetDominion override and its ModelDb::Dominion call. Fingerprint equals the current extract.",
     "verdict": "agree"
    },
    "class": "KaiserCrabBoss",
@@ -34918,7 +34941,10 @@
     "GenerateMonsters ModelDb::Monster<Crusher>: array[0], slot \"crusher\"; ModelDb::Monster<Rocket>: array[1], slot \"rocket\"; no setters, no RNG",
     "get_RoomType: ldc.i4.3 = RoomType.Boss (--enum RoomType)",
     "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
-    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+    "catalog cross-check: agrees on room_type, is_weak and monster ids",
+    "v0.113.1 re-review: unchanged behaviour. The only code change is the new GetDominion override, which only matters in Dread runs (see next line). GenerateMonsters, get_RoomType (ldc.i4.3 Boss), get_AllPossibleMonsters re-read and identical; get_IsWeak still not overridden.",
+    "GetDominion (new override) returns ModelDb::Dominion<KaiserCrabDominion> (namespace Models.Dread.Dominions). Callers, found by scanning every method body in sts2.dll for call/callvirt to GetDominion and SetDominion: DreadRunModel::ApplyCurrentDominion (RunState.SetDominion), DreadRunModel::BeforeRoomEntered and RemoveDominionIfRoomIsBoss (CombatState.SetDominion), NTopBarBossIcon::RefreshBossIcon (UI) and a RunAsync state machine. EncounterModel.GetDominion returns null; RunState.Dominion stays null outside Dread and is only then added to IterateHookListeners. The dominion acts through AfterRoomEntered (e.g. AeonglassDominion applies AeonglassDominionPower). RunManager.IsDread = GameMode == 3. Dread mode is outside the Guide's scope and is not recorded in the fact.",
+    "v0.113.1 read: GenerateMonsters: Crusher slot \"crusher\", Rocket slot \"rocket\"; no setters, no RNG."
    ],
    "fingerprint": "9c4502cefda1a649dec770ddeefa71b859a1b661079c1cf40a068895941ea371",
    "hook_tokens": {
@@ -34935,10 +34961,10 @@
    ],
    "is_weak": false,
    "open_questions": [],
-   "reviewed_by": "TASK-025 encounters batch 1",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "bf7ca894991cba8f31635053a5989a892dc7a75af065a448047766d62003df51",
    "room_type": "Boss",
-   "status": "stale",
+   "status": "converted",
    "unknowable": [],
    "variants": [
     {
@@ -35019,7 +35045,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review ENC1",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read v0.113.1 IL of KnowledgeDemonBoss: GenerateMonsters ModelDb::Monster<KnowledgeDemon>.ToMutable(), slot ldnull, single-element list, no setters or RNG; get_RoomType ldc.i4.3 (Boss); no get_IsWeak override; AllPossibleMonsters KnowledgeDemon. Dominion check (my own scan of every method body for call/callvirt/newobj tokens): EncounterModel.GetDominion is called only by DreadRunModel.ApplyCurrentDominion, NTopBarBossIcon.RefreshBossIcon (UI) and AutoSlay.ActEntryCheck (test harness); RunState.SetDominion and CombatState.SetDominion only by DreadRunModel; both CombatState constructors (CombatRoom, EventCombatSynchronizer) pass runState.Dominion; DreadRunModel is added to RunModels only in RunState.CreateShared when GameMode == 3. So a normal run has no dominion and the fact rightly leaves it out. Old/new diff: only the GetDominion override and its ModelDb::Dominion call. Fingerprint equals the current extract.",
     "verdict": "agree"
    },
    "class": "KnowledgeDemonBoss",
@@ -35028,7 +35055,10 @@
     "GenerateMonsters ModelDb::Monster<KnowledgeDemon>: single ToMutable() wrapped in ReadOnlySingleElementList, slot ldnull; no setter calls, no RNG",
     "get_RoomType: ldc.i4.3 = RoomType.Boss (--enum RoomType)",
     "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
-    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+    "catalog cross-check: agrees on room_type, is_weak and monster ids",
+    "v0.113.1 re-review: unchanged behaviour. The only code change is the new GetDominion override, which only matters in Dread runs (see next line). GenerateMonsters, get_RoomType (ldc.i4.3 Boss), get_AllPossibleMonsters re-read and identical; get_IsWeak still not overridden.",
+    "GetDominion (new override) returns ModelDb::Dominion<KnowledgeDemonDominion> (namespace Models.Dread.Dominions). Callers, found by scanning every method body in sts2.dll for call/callvirt to GetDominion and SetDominion: DreadRunModel::ApplyCurrentDominion (RunState.SetDominion), DreadRunModel::BeforeRoomEntered and RemoveDominionIfRoomIsBoss (CombatState.SetDominion), NTopBarBossIcon::RefreshBossIcon (UI) and a RunAsync state machine. EncounterModel.GetDominion returns null; RunState.Dominion stays null outside Dread and is only then added to IterateHookListeners. The dominion acts through AfterRoomEntered (e.g. AeonglassDominion applies AeonglassDominionPower). RunManager.IsDread = GameMode == 3. Dread mode is outside the Guide's scope and is not recorded in the fact.",
+    "v0.113.1 read: GenerateMonsters: ModelDb::Monster<KnowledgeDemon>.ToMutable(), slot ldnull; no setters, no RNG."
    ],
    "fingerprint": "c39b07f502975abcbdfff6bc082805a4704f5e917449edf428821c07792c9ac7",
    "hook_tokens": {
@@ -35045,10 +35075,10 @@
    ],
    "is_weak": false,
    "open_questions": [],
-   "reviewed_by": "TASK-025 encounters batch 1",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "c958eed4bc4e68b2c0eafe1707dcfb70170daee0c3358ba522e23fe7c95b58c3",
    "room_type": "Boss",
-   "status": "stale",
+   "status": "converted",
    "unknowable": [],
    "variants": [
     {
@@ -35066,7 +35096,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review ENC1",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read v0.113.1 IL of LagavulinMatriarchBoss: GenerateMonsters ModelDb::Monster<LagavulinMatriarch>.ToMutable(), slot ldnull, single-element list, no setters or RNG; get_RoomType ldc.i4.3 (Boss); no get_IsWeak override; AllPossibleMonsters LagavulinMatriarch. Dominion check (my own scan of every method body for call/callvirt/newobj tokens): EncounterModel.GetDominion is called only by DreadRunModel.ApplyCurrentDominion, NTopBarBossIcon.RefreshBossIcon (UI) and AutoSlay.ActEntryCheck (test harness); RunState.SetDominion and CombatState.SetDominion only by DreadRunModel; both CombatState constructors (CombatRoom, EventCombatSynchronizer) pass runState.Dominion; DreadRunModel is added to RunModels only in RunState.CreateShared when GameMode == 3. So a normal run has no dominion and the fact rightly leaves it out. Old/new diff: only the GetDominion override and its ModelDb::Dominion call. Fingerprint equals the current extract.",
     "verdict": "agree"
    },
    "class": "LagavulinMatriarchBoss",
@@ -35075,7 +35106,10 @@
     "GenerateMonsters ModelDb::Monster<LagavulinMatriarch>: single ToMutable() wrapped in ReadOnlySingleElementList, slot ldnull; no setter calls, no RNG",
     "get_RoomType: ldc.i4.3 = RoomType.Boss (--enum RoomType)",
     "get_IsWeak: not overridden; EncounterModel::get_IsWeak is `ldc.i4.0; ret` (false)",
-    "catalog cross-check: agrees on room_type, is_weak and monster ids"
+    "catalog cross-check: agrees on room_type, is_weak and monster ids",
+    "v0.113.1 re-review: unchanged behaviour. The only code change is the new GetDominion override, which only matters in Dread runs (see next line). GenerateMonsters, get_RoomType (ldc.i4.3 Boss), get_AllPossibleMonsters re-read and identical; get_IsWeak still not overridden.",
+    "GetDominion (new override) returns ModelDb::Dominion<LagavulinMatriarchDominion> (namespace Models.Dread.Dominions). Callers, found by scanning every method body in sts2.dll for call/callvirt to GetDominion and SetDominion: DreadRunModel::ApplyCurrentDominion (RunState.SetDominion), DreadRunModel::BeforeRoomEntered and RemoveDominionIfRoomIsBoss (CombatState.SetDominion), NTopBarBossIcon::RefreshBossIcon (UI) and a RunAsync state machine. EncounterModel.GetDominion returns null; RunState.Dominion stays null outside Dread and is only then added to IterateHookListeners. The dominion acts through AfterRoomEntered (e.g. AeonglassDominion applies AeonglassDominionPower). RunManager.IsDread = GameMode == 3. Dread mode is outside the Guide's scope and is not recorded in the fact.",
+    "v0.113.1 read: GenerateMonsters: ModelDb::Monster<LagavulinMatriarch>.ToMutable(), slot ldnull; no setters, no RNG."
    ],
    "fingerprint": "0e3c09ae086cf59e578f2c6174d5d5bc7a919d10103237ae00e2076ecf514fe4",
    "hook_tokens": {
@@ -35090,10 +35124,10 @@
    ],
    "is_weak": false,
    "open_questions": [],
-   "reviewed_by": "TASK-025 encounters batch 1",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "cfefff243c908625ab669f7e34dbbc45b7bc9dcf759faabdfcc7e9e4daee2e88",
    "room_type": "Boss",
-   "status": "stale",
+   "status": "converted",
    "unknowable": [],
    "variants": [
     {
@@ -35798,7 +35832,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review ENC2",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read v0.113.1 IL of QueenBoss: GenerateMonsters array [TorchHeadAmalgam slot amalgam, Queen slot queen], no setters or RNG; get_Slots [amalgam, queen]; get_RoomType ldc.i4.3 (Boss); no get_IsWeak override; AllPossibleMonsters Queen, TorchHeadAmalgam. Dominion check (my own scan of every method body for call/callvirt/newobj tokens): EncounterModel.GetDominion is called only by DreadRunModel.ApplyCurrentDominion, NTopBarBossIcon.RefreshBossIcon (UI) and AutoSlay.ActEntryCheck (test harness); RunState.SetDominion and CombatState.SetDominion only by DreadRunModel; both CombatState constructors (CombatRoom, EventCombatSynchronizer) pass runState.Dominion; DreadRunModel is added to RunModels only in RunState.CreateShared when GameMode == 3. So a normal run has no dominion and the fact rightly leaves it out. Old/new diff: only the GetDominion override and its ModelDb::Dominion call. Fingerprint equals the current extract.",
     "verdict": "agree"
    },
    "class": "QueenBoss",
@@ -35808,7 +35843,10 @@
     "get_RoomType: ldc.i4.3 -> RoomType.Boss (--enum RoomType).",
     "get_IsWeak: not overridden; EncounterModel.get_IsWeak returns false.",
     "get_AllPossibleMonsters: QUEEN, TORCH_HEAD_AMALGAM.",
-    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+    "Catalog cross-check: agrees on room_type, is_weak and monster set.",
+    "v0.113.1 re-review: unchanged behaviour. The only code change is the new GetDominion override, which only matters in Dread runs (see next line). GenerateMonsters, get_RoomType (ldc.i4.3 Boss), get_AllPossibleMonsters re-read and identical; get_IsWeak still not overridden.",
+    "GetDominion (new override) returns ModelDb::Dominion<QueenDominion> (namespace Models.Dread.Dominions). Callers, found by scanning every method body in sts2.dll for call/callvirt to GetDominion and SetDominion: DreadRunModel::ApplyCurrentDominion (RunState.SetDominion), DreadRunModel::BeforeRoomEntered and RemoveDominionIfRoomIsBoss (CombatState.SetDominion), NTopBarBossIcon::RefreshBossIcon (UI) and a RunAsync state machine. EncounterModel.GetDominion returns null; RunState.Dominion stays null outside Dread and is only then added to IterateHookListeners. The dominion acts through AfterRoomEntered (e.g. AeonglassDominion applies AeonglassDominionPower). RunManager.IsDread = GameMode == 3. Dread mode is outside the Guide's scope and is not recorded in the fact.",
+    "v0.113.1 read: GenerateMonsters: TorchHeadAmalgam slot \"amalgam\" then Queen slot \"queen\"; no setters, no RNG."
    ],
    "fingerprint": "5222fcacb273a51979822d36429f58c47c29ec9147a9d9a1f64076c79ca7f5ab",
    "hook_tokens": {
@@ -35825,10 +35863,10 @@
    ],
    "is_weak": false,
    "open_questions": [],
-   "reviewed_by": "TASK-025 encounters batch 2",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "bda57cfc7cf42462ad79742d4724abe926af731713904604dafda1a13ec5ebb0",
    "room_type": "Boss",
-   "status": "stale",
+   "status": "converted",
    "unknowable": [],
    "variants": [
     {
@@ -38317,7 +38355,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review ENC2",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read v0.113.1 IL of SoulFyshBoss: GenerateMonsters ModelDb::Monster<SoulFysh>.ToMutable(), slot ldnull, single-element list, no setters or RNG; get_RoomType ldc.i4.3 (Boss); no get_IsWeak override; AllPossibleMonsters SoulFysh. Dominion check (my own scan of every method body for call/callvirt/newobj tokens): EncounterModel.GetDominion is called only by DreadRunModel.ApplyCurrentDominion, NTopBarBossIcon.RefreshBossIcon (UI) and AutoSlay.ActEntryCheck (test harness); RunState.SetDominion and CombatState.SetDominion only by DreadRunModel; both CombatState constructors (CombatRoom, EventCombatSynchronizer) pass runState.Dominion; DreadRunModel is added to RunModels only in RunState.CreateShared when GameMode == 3. So a normal run has no dominion and the fact rightly leaves it out. Old/new diff: only the GetDominion override and its ModelDb::Dominion call. Fingerprint equals the current extract.",
     "verdict": "agree"
    },
    "class": "SoulFyshBoss",
@@ -38327,7 +38366,10 @@
     "get_RoomType: ldc.i4.3 -> RoomType.Boss (--enum RoomType).",
     "get_IsWeak: not overridden; EncounterModel.get_IsWeak returns false.",
     "get_AllPossibleMonsters: SOUL_FYSH.",
-    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+    "Catalog cross-check: agrees on room_type, is_weak and monster set.",
+    "v0.113.1 re-review: unchanged behaviour. The only code change is the new GetDominion override, which only matters in Dread runs (see next line). GenerateMonsters, get_RoomType (ldc.i4.3 Boss), get_AllPossibleMonsters re-read and identical; get_IsWeak still not overridden.",
+    "GetDominion (new override) returns ModelDb::Dominion<SoulFyshDominion> (namespace Models.Dread.Dominions). Callers, found by scanning every method body in sts2.dll for call/callvirt to GetDominion and SetDominion: DreadRunModel::ApplyCurrentDominion (RunState.SetDominion), DreadRunModel::BeforeRoomEntered and RemoveDominionIfRoomIsBoss (CombatState.SetDominion), NTopBarBossIcon::RefreshBossIcon (UI) and a RunAsync state machine. EncounterModel.GetDominion returns null; RunState.Dominion stays null outside Dread and is only then added to IterateHookListeners. The dominion acts through AfterRoomEntered (e.g. AeonglassDominion applies AeonglassDominionPower). RunManager.IsDread = GameMode == 3. Dread mode is outside the Guide's scope and is not recorded in the fact.",
+    "v0.113.1 read: GenerateMonsters: single SoulFysh, slot null; no setters, no RNG."
    ],
    "fingerprint": "f8c76fa5fc00c2d6e1c9b8a5f1c8f43464f6eb92d9a276c6183ef4513c637148",
    "hook_tokens": {
@@ -38340,10 +38382,10 @@
    ],
    "is_weak": false,
    "open_questions": [],
-   "reviewed_by": "TASK-025 encounters batch 2",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "240f58e3882774ada1b9384ae76a0ad3646597499575647b5184d97ba7fece0b",
    "room_type": "Boss",
-   "status": "stale",
+   "status": "converted",
    "unknowable": [],
    "variants": [
     {
@@ -38486,7 +38528,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review ENC2",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read v0.113.1 IL of TestSubjectBoss: GenerateMonsters ModelDb::Monster<TestSubject>.ToMutable(), slot ldnull, single-element list, no setters or RNG; get_RoomType ldc.i4.3 (Boss); no get_IsWeak override; AllPossibleMonsters TestSubject. Dominion check (my own scan of every method body for call/callvirt/newobj tokens): EncounterModel.GetDominion is called only by DreadRunModel.ApplyCurrentDominion, NTopBarBossIcon.RefreshBossIcon (UI) and AutoSlay.ActEntryCheck (test harness); RunState.SetDominion and CombatState.SetDominion only by DreadRunModel; both CombatState constructors (CombatRoom, EventCombatSynchronizer) pass runState.Dominion; DreadRunModel is added to RunModels only in RunState.CreateShared when GameMode == 3. So a normal run has no dominion and the fact rightly leaves it out. Old/new diff: only the GetDominion override and its ModelDb::Dominion call. Fingerprint equals the current extract.",
     "verdict": "agree"
    },
    "class": "TestSubjectBoss",
@@ -38496,7 +38539,10 @@
     "get_RoomType: ldc.i4.3 -> RoomType.Boss (--enum RoomType).",
     "get_IsWeak: not overridden; EncounterModel.get_IsWeak returns false.",
     "get_AllPossibleMonsters: TEST_SUBJECT.",
-    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+    "Catalog cross-check: agrees on room_type, is_weak and monster set.",
+    "v0.113.1 re-review: unchanged behaviour. The only code change is the new GetDominion override, which only matters in Dread runs (see next line). GenerateMonsters, get_RoomType (ldc.i4.3 Boss), get_AllPossibleMonsters re-read and identical; get_IsWeak still not overridden.",
+    "GetDominion (new override) returns ModelDb::Dominion<TestSubjectDominion> (namespace Models.Dread.Dominions). Callers, found by scanning every method body in sts2.dll for call/callvirt to GetDominion and SetDominion: DreadRunModel::ApplyCurrentDominion (RunState.SetDominion), DreadRunModel::BeforeRoomEntered and RemoveDominionIfRoomIsBoss (CombatState.SetDominion), NTopBarBossIcon::RefreshBossIcon (UI) and a RunAsync state machine. EncounterModel.GetDominion returns null; RunState.Dominion stays null outside Dread and is only then added to IterateHookListeners. The dominion acts through AfterRoomEntered (e.g. AeonglassDominion applies AeonglassDominionPower). RunManager.IsDread = GameMode == 3. Dread mode is outside the Guide's scope and is not recorded in the fact.",
+    "v0.113.1 read: GenerateMonsters: single TestSubject, slot null; no setters, no RNG."
    ],
    "fingerprint": "01bcc098dcfcd7c19aede1785b7c0e5556692105989edcb571b45ff3a12aac13",
    "hook_tokens": {
@@ -38509,10 +38555,10 @@
    ],
    "is_weak": false,
    "open_questions": [],
-   "reviewed_by": "TASK-025 encounters batch 2",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "8f7cc2166aae54d88541f3a3b5474e12d94c7b935cd7f13f89d859546e044a0e",
    "room_type": "Boss",
-   "status": "stale",
+   "status": "converted",
    "unknowable": [],
    "variants": [
     {
@@ -38572,7 +38618,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review ENC2",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read v0.113.1 IL of TheInsatiableBoss: GenerateMonsters ModelDb::Monster<TheInsatiable>.ToMutable(), slot ldnull, single-element list, no setters or RNG; get_RoomType ldc.i4.3 (Boss); no get_IsWeak override; AllPossibleMonsters TheInsatiable; GetDominion returns InsatiableDominion. Dominion check (my own scan of every method body for call/callvirt/newobj tokens): EncounterModel.GetDominion is called only by DreadRunModel.ApplyCurrentDominion, NTopBarBossIcon.RefreshBossIcon (UI) and AutoSlay.ActEntryCheck (test harness); RunState.SetDominion and CombatState.SetDominion only by DreadRunModel; both CombatState constructors (CombatRoom, EventCombatSynchronizer) pass runState.Dominion; DreadRunModel is added to RunModels only in RunState.CreateShared when GameMode == 3. So a normal run has no dominion and the fact rightly leaves it out. Old/new diff: only the GetDominion override and its ModelDb::Dominion call. Fingerprint equals the current extract.",
     "verdict": "agree"
    },
    "class": "TheInsatiableBoss",
@@ -38582,7 +38629,10 @@
     "get_RoomType: ldc.i4.3 -> RoomType.Boss (--enum RoomType).",
     "get_IsWeak: not overridden; EncounterModel.get_IsWeak returns false.",
     "get_AllPossibleMonsters: THE_INSATIABLE.",
-    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+    "Catalog cross-check: agrees on room_type, is_weak and monster set.",
+    "v0.113.1 re-review: unchanged behaviour. The only code change is the new GetDominion override, which only matters in Dread runs (see next line). GenerateMonsters, get_RoomType (ldc.i4.3 Boss), get_AllPossibleMonsters re-read and identical; get_IsWeak still not overridden.",
+    "GetDominion (new override) returns ModelDb::Dominion<InsatiableDominion> (namespace Models.Dread.Dominions). Callers, found by scanning every method body in sts2.dll for call/callvirt to GetDominion and SetDominion: DreadRunModel::ApplyCurrentDominion (RunState.SetDominion), DreadRunModel::BeforeRoomEntered and RemoveDominionIfRoomIsBoss (CombatState.SetDominion), NTopBarBossIcon::RefreshBossIcon (UI) and a RunAsync state machine. EncounterModel.GetDominion returns null; RunState.Dominion stays null outside Dread and is only then added to IterateHookListeners. The dominion acts through AfterRoomEntered (e.g. AeonglassDominion applies AeonglassDominionPower). RunManager.IsDread = GameMode == 3. Dread mode is outside the Guide's scope and is not recorded in the fact.",
+    "v0.113.1 read: GenerateMonsters: single TheInsatiable, slot null; no setters, no RNG."
    ],
    "fingerprint": "f81094592abcff517f45203228544af3f504394f84fb1283fc085adac83e1e09",
    "hook_tokens": {
@@ -38597,10 +38647,10 @@
    ],
    "is_weak": false,
    "open_questions": [],
-   "reviewed_by": "TASK-025 encounters batch 2",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "3961a1d5e59737119ee852984e36280bd09d9af6b68d17742e23293960f5aebf",
    "room_type": "Boss",
-   "status": "stale",
+   "status": "converted",
    "unknowable": [],
    "variants": [
     {
@@ -38618,7 +38668,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review ENC2",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read v0.113.1 IL of TheKinBoss. GenerateMonsters: if AscensionHelper.IsDread (= RunManager.IsDread: run in progress and GameMode == 3) three KinFollowers with Index 0/1/2 in slot1/slot2/slot3; else two KinFollowers, set_Index(0) on the slot1 one and set_Index(1) on the slot2 one; then KinPriest in leaderSlot. get_Slots: slot1, slot2, (slot3 only if IsDread), leaderSlot. get_RoomType ldc.i4.3 (Boss); no get_IsWeak override; AllPossibleMonsters KinFollower, KinPriest. The merged monsters:KIN_FOLLOWER fact in data/assembly/facts.json has initial_if Index 0 -> POWER_DANCE_MOVE, Index 1 -> QUICK_SLASH_MOVE, so the spawns set {Index: 0} / POWER_DANCE_MOVE and {Index: 1} / QUICK_SLASH_MOVE agree with it; the normal fight is unchanged. Dread-only parts (third follower, slot3, _dread scene, 0.8 camera, KinDominion) appear only in evidence as not recorded, not in the fields. Dominion check: GetDominion and SetDominion are reached only from DreadRunModel (added only when GameMode == 3), the top-bar icon UI and the AutoSlay harness. Old/new diff: set_StartsWithDance -> set_Index, plus IsDread, GetScenePath, slot3 and the dominion. Fingerprint equals the current extract.",
     "verdict": "agree"
    },
    "class": "TheKinBoss",
@@ -38628,7 +38679,10 @@
     "get_RoomType: ldc.i4.3 -> RoomType.Boss (--enum RoomType).",
     "get_IsWeak: not overridden; EncounterModel.get_IsWeak returns false.",
     "get_AllPossibleMonsters: KIN_FOLLOWER, KIN_PRIEST.",
-    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+    "Catalog cross-check: agrees on room_type, is_weak and monster set.",
+    "v0.113.1 re-review: unchanged behaviour in a normal fight; the spawn fields are rewritten. GenerateMonsters non-Dread branch (AscensionHelper.IsDread false): two KinFollower ToMutable, set_Index(0) on the slot1 follower and set_Index(1) on the slot2 follower (old: set_StartsWithDance(true) on slot1 only), then KinPriest slot \"leaderSlot\". monsters:KIN_FOLLOWER (re-reviewed) picks its opening state by Index: 0 -> POWER_DANCE_MOVE, 1 -> QUICK_SLASH_MOVE, so as before one follower opens with POWER_DANCE and the other with QUICK_SLASH. set changed {\"StartsWithDance\": true} -> {\"Index\": 0} and {} -> {\"Index\": 1}; the second follower's initial_state is now written explicitly as QUICK_SLASH_MOVE (the monster fact's pattern.initial is now POWER_DANCE_MOVE, the Index 0 default).",
+    "Dread-only code, not recorded: the IsDread branch adds a third KinFollower (Index 2, slot \"slot3\", opens with BOOMERANG); get_Slots adds slot3 when IsDread; get_ScenePath appends \"_dread\"; GetCameraScaling 0.8 instead of 0.85; GetDominion -> KinDominion. GetDominion (new override) returns ModelDb::Dominion<KinDominion> (namespace Models.Dread.Dominions). Callers, found by scanning every method body in sts2.dll for call/callvirt to GetDominion and SetDominion: DreadRunModel::ApplyCurrentDominion (RunState.SetDominion), DreadRunModel::BeforeRoomEntered and RemoveDominionIfRoomIsBoss (CombatState.SetDominion), NTopBarBossIcon::RefreshBossIcon (UI) and a RunAsync state machine. EncounterModel.GetDominion returns null; RunState.Dominion stays null outside Dread and is only then added to IterateHookListeners. The dominion acts through AfterRoomEntered (e.g. AeonglassDominion applies AeonglassDominionPower). RunManager.IsDread = GameMode == 3. Dread mode is outside the Guide's scope and is not recorded in the fact.",
+    "v0.113.1 read: get_RoomType ldc.i4.3 Boss; get_IsWeak not overridden; get_AllPossibleMonsters KinFollower, KinPriest."
    ],
    "fingerprint": "e1486c4e5334800efde51a253fcae6bfedbae8580d93e3d79e4794f8bd28f5c4",
    "hook_tokens": {
@@ -38645,10 +38699,10 @@
    ],
    "is_weak": false,
    "open_questions": [],
-   "reviewed_by": "TASK-025 encounters batch 2",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "1f94d2a33aea106e9e97775b16ae2640dd17055379e6eccb5626c5260c0f44f2",
    "room_type": "Boss",
-   "status": "stale",
+   "status": "converted",
    "unknowable": [],
    "variants": [
     {
@@ -38657,14 +38711,16 @@
        "initial_state": "POWER_DANCE_MOVE",
        "monster": "KIN_FOLLOWER",
        "set": {
-        "StartsWithDance": true
+        "Index": 0
        },
        "slot": "slot1"
       },
       {
-       "initial_state": null,
+       "initial_state": "QUICK_SLASH_MOVE",
        "monster": "KIN_FOLLOWER",
-       "set": {},
+       "set": {
+        "Index": 1
+       },
        "slot": "slot2"
       },
       {
@@ -39120,7 +39176,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review ENC2",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read v0.113.1 IL of VantomBoss: GenerateMonsters ModelDb::Monster<Vantom>.ToMutable(), slot ldnull, single-element list, no setters or RNG; get_RoomType ldc.i4.3 (Boss); no get_IsWeak override; AllPossibleMonsters Vantom. Dominion check (my own scan of every method body for call/callvirt/newobj tokens): EncounterModel.GetDominion is called only by DreadRunModel.ApplyCurrentDominion, NTopBarBossIcon.RefreshBossIcon (UI) and AutoSlay.ActEntryCheck (test harness); RunState.SetDominion and CombatState.SetDominion only by DreadRunModel; both CombatState constructors (CombatRoom, EventCombatSynchronizer) pass runState.Dominion; DreadRunModel is added to RunModels only in RunState.CreateShared when GameMode == 3. So a normal run has no dominion and the fact rightly leaves it out. Old/new diff: only the GetDominion override and its ModelDb::Dominion call. Fingerprint equals the current extract.",
     "verdict": "agree"
    },
    "class": "VantomBoss",
@@ -39130,7 +39187,10 @@
     "get_RoomType: ldc.i4.3 -> RoomType.Boss (--enum RoomType).",
     "get_IsWeak: not overridden; EncounterModel.get_IsWeak returns false.",
     "get_AllPossibleMonsters: VANTOM.",
-    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+    "Catalog cross-check: agrees on room_type, is_weak and monster set.",
+    "v0.113.1 re-review: unchanged behaviour. The only code change is the new GetDominion override, which only matters in Dread runs (see next line). GenerateMonsters, get_RoomType (ldc.i4.3 Boss), get_AllPossibleMonsters re-read and identical; get_IsWeak still not overridden.",
+    "GetDominion (new override) returns ModelDb::Dominion<VantomDominion> (namespace Models.Dread.Dominions). Callers, found by scanning every method body in sts2.dll for call/callvirt to GetDominion and SetDominion: DreadRunModel::ApplyCurrentDominion (RunState.SetDominion), DreadRunModel::BeforeRoomEntered and RemoveDominionIfRoomIsBoss (CombatState.SetDominion), NTopBarBossIcon::RefreshBossIcon (UI) and a RunAsync state machine. EncounterModel.GetDominion returns null; RunState.Dominion stays null outside Dread and is only then added to IterateHookListeners. The dominion acts through AfterRoomEntered (e.g. AeonglassDominion applies AeonglassDominionPower). RunManager.IsDread = GameMode == 3. Dread mode is outside the Guide's scope and is not recorded in the fact.",
+    "v0.113.1 read: GenerateMonsters: single Vantom, slot null; no setters, no RNG."
    ],
    "fingerprint": "172ddafd60a73c813a518195db9cdaafe40274693155662c5a1cf1365ce330ef",
    "hook_tokens": {
@@ -39147,10 +39207,10 @@
    ],
    "is_weak": false,
    "open_questions": [],
-   "reviewed_by": "TASK-025 encounters batch 2",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "abf349155f24537ba6f6df966fe84c7c48fc9ef37b9c0f049abd7dee9fd66ba9",
    "room_type": "Boss",
-   "status": "stale",
+   "status": "converted",
    "unknowable": [],
    "variants": [
     {
@@ -39209,7 +39269,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review ENC2",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read v0.113.1 IL of WaterfallGiantBoss: GenerateMonsters ModelDb::Monster<WaterfallGiant>.ToMutable(), slot ldnull, single-element list, no setters or RNG; get_RoomType ldc.i4.3 (Boss); no get_IsWeak override; AllPossibleMonsters WaterfallGiant. Dominion check (my own scan of every method body for call/callvirt/newobj tokens): EncounterModel.GetDominion is called only by DreadRunModel.ApplyCurrentDominion, NTopBarBossIcon.RefreshBossIcon (UI) and AutoSlay.ActEntryCheck (test harness); RunState.SetDominion and CombatState.SetDominion only by DreadRunModel; both CombatState constructors (CombatRoom, EventCombatSynchronizer) pass runState.Dominion; DreadRunModel is added to RunModels only in RunState.CreateShared when GameMode == 3. So a normal run has no dominion and the fact rightly leaves it out. Old/new diff: only the GetDominion override and its ModelDb::Dominion call. Fingerprint equals the current extract.",
     "verdict": "agree"
    },
    "class": "WaterfallGiantBoss",
@@ -39219,7 +39280,10 @@
     "get_RoomType: ldc.i4.3 -> RoomType.Boss (--enum RoomType).",
     "get_IsWeak: not overridden; EncounterModel.get_IsWeak returns false.",
     "get_AllPossibleMonsters: WATERFALL_GIANT.",
-    "Catalog cross-check: agrees on room_type, is_weak and monster set."
+    "Catalog cross-check: agrees on room_type, is_weak and monster set.",
+    "v0.113.1 re-review: unchanged behaviour. The only code change is the new GetDominion override, which only matters in Dread runs (see next line). GenerateMonsters, get_RoomType (ldc.i4.3 Boss), get_AllPossibleMonsters re-read and identical; get_IsWeak still not overridden.",
+    "GetDominion (new override) returns ModelDb::Dominion<WaterfallGiantDominion> (namespace Models.Dread.Dominions). Callers, found by scanning every method body in sts2.dll for call/callvirt to GetDominion and SetDominion: DreadRunModel::ApplyCurrentDominion (RunState.SetDominion), DreadRunModel::BeforeRoomEntered and RemoveDominionIfRoomIsBoss (CombatState.SetDominion), NTopBarBossIcon::RefreshBossIcon (UI) and a RunAsync state machine. EncounterModel.GetDominion returns null; RunState.Dominion stays null outside Dread and is only then added to IterateHookListeners. The dominion acts through AfterRoomEntered (e.g. AeonglassDominion applies AeonglassDominionPower). RunManager.IsDread = GameMode == 3. Dread mode is outside the Guide's scope and is not recorded in the fact.",
+    "v0.113.1 read: GenerateMonsters: single WaterfallGiant, slot null; no setters, no RNG."
    ],
    "fingerprint": "03264665b806fe7fbb3281e358a1e53b8e75b7c3d691ea1437ac448128868435",
    "hook_tokens": {
@@ -39234,10 +39298,10 @@
    ],
    "is_weak": false,
    "open_questions": [],
-   "reviewed_by": "TASK-025 encounters batch 2",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "d0e205633d292fe780052e04f4315ce70f12d45cc95f75bd2ce329fb7828349a",
    "room_type": "Boss",
-   "status": "stale",
+   "status": "converted",
    "unknowable": [],
    "variants": [
     {
@@ -56154,7 +56218,8 @@
   },
   {
    "audit": {
-    "by": "TASK-025 cross-review O1",
+    "by": "TASK-029 step 2 independent review",
+    "notes": "Read v0.113.1 IL of LightningOrb: get_PassiveVal ModifyOrbValue(3); get_EvokeVal ModifyOrbValue(8); <BeforeTurnEndOrbTrigger>d__12 TriggerPassive(ctx, null); <Passive>d__13 ActivatePassive then ApplyLightningDamage(PassiveVal, target, ctx, false); <Evoke>d__14 ApplyLightningDamage(EvokeVal, null, ctx, true); <ApplyLightningDamage>d__15 hittable opponents, none -> empty; target non-null -> [target], else Rng.CombatTargets.NextItem; isEvoke -> ActivateEvoke; CreatureCmd::Damage(ctx, targets, value, 4, Owner.Creature) (--enum ValueProp: 4 Unpowered). Passive 3 at turn end and evoke 8, both to a random enemy, unpowered and Focus-added: the fields match. The old/new extract records differ only in override tokens, so behaviour is unchanged. Fingerprint equals the current extract.",
     "verdict": "agree"
    },
    "class": "LightningOrb",
@@ -56167,7 +56232,8 @@
     "Evoke 06002C91 <Evoke>d__14: ApplyLightningDamage(EvokeVal, null, ctx, isEvoke=true)",
     "<ApplyLightningDamage>d__15: opponents = CombatState.GetOpponentsOf(Owner.Creature).Where(IsHittable).ToList(); none -> no damage; targets = target != null ? [target] : [Rng.CombatTargets.NextItem(opponents)]; isEvoke -> ActivateEvoke(targets); CreatureCmd.Damage(ctx, targets, value, ValueProp 4 (Unpowered), Owner.Creature)",
     "--enum ValueProp: 2 Unblockable, 4 Unpowered, 8 Move, 16 SkipHurtAnim",
-    "OrbModel::ModifyOrbValue (read via orbs-il.ps1 metadata scan; base class not reachable by --dump): Hook.ModifyOrbValue(Owner.Creature.CombatState, this, value) -> chains AbstractModel::ModifyOrbValue over combat hook listeners; no floor in Hook/OrbModel itself (the 0 floor is in FocusPower.ModifyOrbValue: max(value + Amount, 0), reviewed powers:FOCUS)"
+    "OrbModel::ModifyOrbValue (read via orbs-il.ps1 metadata scan; base class not reachable by --dump): Hook.ModifyOrbValue(Owner.Creature.CombatState, this, value) -> chains AbstractModel::ModifyOrbValue over combat hook listeners; no floor in Hook/OrbModel itself (the 0 floor is in FocusPower.ModifyOrbValue: max(value + Amount, 0), reviewed powers:FOCUS)",
+    "v0.113.1 re-review: unchanged behaviour. Only the metadata tokens moved (the extract's calls, strings and overrides are identical). Re-read: get_PassiveVal ModifyOrbValue(3); get_EvokeVal ModifyOrbValue(8); <BeforeTurnEndOrbTrigger>d__12 TriggerPassive(ctx, null); <Passive>d__13 ActivatePassive, ApplyLightningDamage(PassiveVal, target, ctx, false); <Evoke>d__14 ApplyLightningDamage(EvokeVal, null, ctx, true); <ApplyLightningDamage>d__15 opponents.Where(IsHittable), none -> empty; target ?? Rng.CombatTargets.NextItem; CreatureCmd::Damage(..., ValueProp 4 Unpowered, Owner.Creature)."
    ],
    "evoke": {
     "effect": {
@@ -56206,9 +56272,9 @@
     "focus_floor": 0,
     "when": "turn_end"
    },
-   "reviewed_by": "TASK-025 ticket 07 orbs",
+   "reviewed_by": "TASK-029 step 2",
    "reviewed_fingerprint": "b0bdd7fdd3d56a62aa56ab797d944b5e8c86a269c97e70f33f904d9c97ef90ad",
-   "status": "stale",
+   "status": "converted",
    "unknowable": []
   },
   {
