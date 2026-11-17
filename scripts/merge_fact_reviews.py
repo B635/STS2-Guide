@@ -39,6 +39,8 @@ EFFECT_KINDS = SUPPORTED_EFFECTS | {
     "end_turn", "gain_gold", "stun", "lose_max_hp",
     "remove_from_deck", "rest_site_option", "force_event", "kill_owner", "kill_target",
     "enchantment_amount", "set_cost",
+    # the Fool (TASK-029, docs/dev/mechanic-facts.md "愚者")
+    "arrow_slots", "dislodge_arrow",
 }
 WHEN = {
     "combat_start", "turn_start", "turn_end", "card_played", "card_exhausted",
@@ -49,6 +51,7 @@ WHEN = {
     "combat_end", "rest_site", "room_entered", "map_generated", "quest_complete",
     "stars_gained", "damage_dealt", "forge", "osty_hp_lost", "orb_evoked", "energy_spent", "power_removed",
     "orb_passive_or_evoke",
+    "arrow_shot", "arrow_impaled", "arrow_dislodged",
 }
 MODIFIERS = {
     "hand_draw", "max_energy", "damage", "block", "energy_cost", "x_value",

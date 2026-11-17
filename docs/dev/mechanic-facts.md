@@ -292,3 +292,47 @@
 - `spawns` 一只怪一项，同种怪出现几次就写几项；`monster` 用怪物事实的 ID。
 - `set`：遭遇在生成时对怪物设置的字段（如 `ScreamFirst`、`StartsWithDance`）；能由此确定开场状态时写 `initial_state`（怪物事实里的状态 ID）。
 - 阵容由随机数决定时，逐一列出可能的阵容与权重（从 `GenerateMonsters` 的 IL 读出，不要估）。无法穷举时写入 `unknowable`。
+
+## 愚者（TASK-029，游戏 v0.113.1，2026-11-17）
+
+机制说明与完整提案见 `build/fact-reviews/task029-fool-vocabulary.md`（读 IL 得出）。写法：
+
+- 卡牌 `tags` 写 `"Shoot"`、`"Wah"`、`"Cho"`、`"Ki"`；有的牌标签来自 `get_Tags` 覆写而不是 `CanonicalTags`，旋律判断读的是 `card.Tags`，以它为准。
+- 瞄准、拉伸用 `apply_power`（`"Aim"`、`"Stretch"`）。
+
+| Need | Proposal | Reuses |
+|---|---|---|
+| A shot | `damage` + **`"source": "arrow"`**. Meaning: needs an available arrow (none: no damage), the damage carries FromArrow, and the target is impaled after the attack | `source` key (Osty) |
+| Extra arrow slot | effect **`arrow_slots`** `{amount, upgrade}` (this combat) | like `orb_slots` |
+| Loosen an arrow | effect **`dislodge_arrow`** `{count: 1}` + `condition` | — |
+| Arrow destroyed after impaling | QUIETUS power: modifier on the next shot `{"modifier": "damage", "multiply": 2, "filter": {"from_arrow": true}, "limit": "next_shot"}` + `"destroys_arrow": true` | `damage` modifier |
+| Target impaled | effect condition **`target_impaled`** (`"any"` or `"owner"`, after the helper called) | `condition` |
+| Owner has an arrow | effect condition **`has_arrow`**: true | `condition` |
+| Melody held | effect or mechanic condition **`melody_played_this_turn`**: `["Cho", "Ki"]` (any of) | `condition` |
+| All melodies | condition **`melodies_this_turn_at_least`**: 3 | — |
+| Melody count | scale source **`melodies_this_turn`** (0–3, own card excluded) | `scale` / `hits_scale` / `cost_modifier` |
+| Family cards owned | scale source **`melody_cards_in_combat`** (WAH_SYMPHONY) | `scale` |
+| Sadness made | scale source **`sadness_generated_this_combat`** (ANGUISH) | `scale` |
+| Melody gained | `when: "card_played"` + `filter: {"owner_card": true, "tag": "Cho", "first_of_tag_this_turn": true}`. Any melody: `"tag": ["Wah", "Cho", "Ki"]` + `"per_new_tag": true` (MOTIF draws per tag) | `first_of_tag_this_turn` (PHANTOM_BLADES) |
+| Arrow events | `when`: **`arrow_shot`**, **`arrow_impaled`**, **`arrow_dislodged`** (YAH: `limit: once_per_turn`) | MECHANIC |
+| Sadness generated | `when: "card_generated"`, `filter: {"card": "SADNESS"}` | documented `card_generated` |
+| Shot damage bonus | damage-modifier filter key **`from_arrow`**: true. HONING: `{"modifier": "damage", "multiply_percent_per_stack": 1, "filter": {"dealer": "owner", "powered_attack": true, "from_arrow": true}}` | `damage` modifier |
+| Enemy takes more from shots | DISLIKE_YOU power (Debuff, removed at turn end): `{"modifier": "damage_received", "filter": {"from_arrow": true, "powered_attack": true}, "multiply_percent_per_stack": 1}` | `damage_received` |
+| More damage to impaled | SERRATED_ARROWS: `{"modifier": "damage", "filter": {"dealer": "owner", "powered_attack": true, "target_impaled": "any"}, "multiply_percent_per_stack": 1}` | — |
+| Sadness / Joy cards | `add_card` `{card: "SADNESS"/"JOY", count, destination: "hand"}`. Transform: `transform_cards` `{scope: "hand", choice: "random", count: 1, filter: {"card": "SADNESS"}, into: "JOY"}` | existing |
+| Tarot | `add_card` `{"pool": {"source": "tarot", "allowed_in_run": true}, count, destination: "hand", "upgraded": …}` | `pool` |
+| Aim / Stretch facts | `powers:AIM` and `powers:STRETCH` with `duration: {"kind": "until_triggered", "consumed_per": …}` and modifier `damage` / `block` with `add_per_stack: 1`, `"per_hit": true` / `"per_block_instance": true` | existing power-fact shape |
+
+
+`multiply_percent_per_stack: n` 表示倍率 1 + n × 层数 / 100。
+
+起草与复核中补充的约定（批次 f1、f2）：
+
+- 射击有两种写法：`ShootArrowAtTarget` 配攻击命令，或配一个动作（`Func<Task>`）：先射出，有箭才执行动作，最后施加扎穿；没有箭时整张牌无效（能量照扣）。
+- `dislodge_arrow` 写 `count`（数字或 `"all"`）与 `owner_only`；UPROOT、WREST 是一直松脱到目标身上没有本玩家的箭为止（`count: "all"`），目标未被本玩家扎穿时整张牌无效。
+- 整张牌都取决于扎穿的（如 NAIL），在每个效果上写 `condition`。
+- 重射的瞄准算两倍：伤害效果写 `aim_multiplier: 2`。
+- 条件 `arrow_dislodged_by_this_card`（本牌这一击让自己的箭松脱，如 EPIC_RETRIEVAL）。
+- 尚无数值来源、暂写 `amount 0` + `amount_text` + 待查问题：本牌造成的伤害（BLOSSOM_SHOT）、自身拉伸层数（CHO_KI）、本场消耗的射击牌数（FLORESCENCE）。
+- 只在多人模式出现的牌写 `multiplayer_only: true`（COVERING_FIRE、ENSEMBLE、SELF_DEPRECATE）。
+- 引擎暂不计分：箭的供应与回收、扎穿条件、悲伤、塔罗牌（报缺口）；计划先支持拉伸、瞄准、旋律，箭按“每回合最多按箭位数射击”的暂定规则估计（TASK-029 第 3 步之后）。
