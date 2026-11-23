@@ -98,6 +98,26 @@ python scripts/import_run_history.py --all-runs --collected <放 zip 的目录> 
 设计取舍、限制和运行方法见 [`docs/review-coach.md`](docs/review-coach.md)。
 设计与评估由作者完成，代码实现有 AI 协助。
 
+## 程序集 IL 事实提取与对抗复核管线（Fact Pipeline）
+
+实时引擎依赖按类代码指纹锁定的程序集机制事实，不靠描述正则。`fact_pipeline/`（Python）将版本更新时的 IL 事实审核工程化为自动多 Agent 流水线：
+
+```text
+sts2.dll（只读 Sts2FactExtractor）＋ extract / Codex 对照预取
+  → 起草 Agent（受控只读工具，提交时走 merge_fact_reviews 确定性校验，错则自修）
+  → 独立对抗复核 Agent（隔离上下文，思考模式先独立读 IL 再给 verdict）
+  → 分流：agree 进 auto_approved；disagree 返修 1 轮再复核；仍分歧或需新词表进人工裁决队列
+```
+
+| 评估（`deepseek-flash`，思考模式复核） | 结果 |
+|---|---|
+| `dev` 24 条迭代（`p1 → p2 → p3`） | 自动通过 Core 准确率 `25.0% → 59.1% → 68.2%`，拦错率 `5.6% → 33.3%`，0 误杀 |
+| `test` 60 条盲测（仅运行一次，含历史分歧难题） | 过门禁 60/60，自动通过 48/60（80%），Core 准确 43.8%（对比仅起草基线 +10.4pp），复核拦错率 45.9%、0 误杀、人工分流精准率 100%（12/12） |
+| 盲测 60 条总费用 / 缓存命中率 | $0.82（$0.014/条）/ 76.7% |
+| `v0.113.1` 57 条新增遗物/能力实战跑批 | 44/57 自动通过（0 校验报错）、13/57 精准分流人工队列，总费用 $0.83 |
+
+完整架构、四组 `dev` 对照（含 `deepseek-v4-pro` 跨模型复核）、盲测分层拆解与已知限制见 [`docs/fact-pipeline.md`](docs/fact-pipeline.md)。
+
 ## 实现概览
 
 ### 高级本地评分偏好（0.3.9 起）

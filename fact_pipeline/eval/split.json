@@ -1,0 +1,386 @@
+{
+ "seed": 42,
+ "assembly_sha256": "62ecbe91093e1fa862de4329aac865209dcb297804caf0f0520d92d8c0b4a9c3",
+ "strata": {
+  "cards_complex": {
+   "pool": 277,
+   "dev": 4,
+   "test": 12
+  },
+  "cards_fool": {
+   "pool": 172,
+   "dev": 3,
+   "test": 6
+  },
+  "cards_hard": {
+   "pool": 23,
+   "dev": 2,
+   "test": 6
+  },
+  "cards_simple": {
+   "pool": 244,
+   "dev": 4,
+   "test": 10
+  },
+  "powers_all": {
+   "pool": 178,
+   "dev": 5,
+   "test": 12
+  },
+  "relics_combat": {
+   "pool": 175,
+   "dev": 3,
+   "test": 6
+  },
+  "relics_hard": {
+   "pool": 8,
+   "dev": 0,
+   "test": 3
+  },
+  "relics_out_of_combat": {
+   "pool": 115,
+   "dev": 3,
+   "test": 5
+  }
+ },
+ "dev": [
+  {
+   "entity_key": "cards:ALL_FOR_ONE",
+   "stratum": "cards_complex"
+  },
+  {
+   "entity_key": "cards:QUASAR",
+   "stratum": "cards_complex"
+  },
+  {
+   "entity_key": "cards:RELAX",
+   "stratum": "cards_complex"
+  },
+  {
+   "entity_key": "cards:VOID",
+   "stratum": "cards_complex"
+  },
+  {
+   "entity_key": "cards:CHO_BARBS",
+   "stratum": "cards_fool"
+  },
+  {
+   "entity_key": "cards:CHO_LIMBS",
+   "stratum": "cards_fool"
+  },
+  {
+   "entity_key": "cards:MAUL",
+   "stratum": "cards_fool"
+  },
+  {
+   "entity_key": "cards:CHO_CHORUS",
+   "stratum": "cards_hard"
+  },
+  {
+   "entity_key": "cards:MIDNIGHT",
+   "stratum": "cards_hard"
+  },
+  {
+   "entity_key": "cards:CHILD_OF_THE_STARS",
+   "stratum": "cards_simple"
+  },
+  {
+   "entity_key": "cards:DEFEND_SILENT",
+   "stratum": "cards_simple"
+  },
+  {
+   "entity_key": "cards:METAMORPHOSIS",
+   "stratum": "cards_simple"
+  },
+  {
+   "entity_key": "cards:WHITE_NOISE",
+   "stratum": "cards_simple"
+  },
+  {
+   "entity_key": "powers:FEEDING_FRENZY",
+   "stratum": "powers_all"
+  },
+  {
+   "entity_key": "powers:LOOP",
+   "stratum": "powers_all"
+  },
+  {
+   "entity_key": "powers:SIC_EM",
+   "stratum": "powers_all"
+  },
+  {
+   "entity_key": "powers:SOULBOUND",
+   "stratum": "powers_all"
+  },
+  {
+   "entity_key": "powers:TAG_TEAM",
+   "stratum": "powers_all"
+  },
+  {
+   "entity_key": "relics:FUNERARY_MASK",
+   "stratum": "relics_combat"
+  },
+  {
+   "entity_key": "relics:LETTER_OPENER",
+   "stratum": "relics_combat"
+  },
+  {
+   "entity_key": "relics:TOXIC_EGG",
+   "stratum": "relics_combat"
+  },
+  {
+   "entity_key": "relics:CAULDRON",
+   "stratum": "relics_out_of_combat"
+  },
+  {
+   "entity_key": "relics:DUSTY_TOME",
+   "stratum": "relics_out_of_combat"
+  },
+  {
+   "entity_key": "relics:NEOWS_BONES",
+   "stratum": "relics_out_of_combat"
+  }
+ ],
+ "test": [
+  {
+   "entity_key": "cards:ANGER",
+   "stratum": "cards_complex"
+  },
+  {
+   "entity_key": "cards:ASSASSINATE",
+   "stratum": "cards_complex"
+  },
+  {
+   "entity_key": "cards:FEED",
+   "stratum": "cards_complex"
+  },
+  {
+   "entity_key": "cards:GLIMMER",
+   "stratum": "cards_complex"
+  },
+  {
+   "entity_key": "cards:GUILTY",
+   "stratum": "cards_complex"
+  },
+  {
+   "entity_key": "cards:HEMOKINESIS",
+   "stratum": "cards_complex"
+  },
+  {
+   "entity_key": "cards:HIBERNATE",
+   "stratum": "cards_complex"
+  },
+  {
+   "entity_key": "cards:OUTBREAK",
+   "stratum": "cards_complex"
+  },
+  {
+   "entity_key": "cards:REAVE",
+   "stratum": "cards_complex"
+  },
+  {
+   "entity_key": "cards:SPINNER",
+   "stratum": "cards_complex"
+  },
+  {
+   "entity_key": "cards:SUMMON_FORTH",
+   "stratum": "cards_complex"
+  },
+  {
+   "entity_key": "cards:SYNCHRONIZE",
+   "stratum": "cards_complex"
+  },
+  {
+   "entity_key": "cards:MIGHTY_SHIELD",
+   "stratum": "cards_fool"
+  },
+  {
+   "entity_key": "cards:RUMMAGE",
+   "stratum": "cards_fool"
+  },
+  {
+   "entity_key": "cards:SORROWFUL_STRIKE",
+   "stratum": "cards_fool"
+  },
+  {
+   "entity_key": "cards:SOVEREIGN_BLADE",
+   "stratum": "cards_fool"
+  },
+  {
+   "entity_key": "cards:THE_CHARIOT",
+   "stratum": "cards_fool"
+  },
+  {
+   "entity_key": "cards:WAH_TOUCH",
+   "stratum": "cards_fool"
+  },
+  {
+   "entity_key": "cards:ARROW_STAB",
+   "stratum": "cards_hard"
+  },
+  {
+   "entity_key": "cards:HOBBLING_SHOT",
+   "stratum": "cards_hard"
+  },
+  {
+   "entity_key": "cards:OMNISLICE",
+   "stratum": "cards_hard"
+  },
+  {
+   "entity_key": "cards:SELF_DEPRECATE",
+   "stratum": "cards_hard"
+  },
+  {
+   "entity_key": "cards:TRICK_SHOT",
+   "stratum": "cards_hard"
+  },
+  {
+   "entity_key": "cards:WREST",
+   "stratum": "cards_hard"
+  },
+  {
+   "entity_key": "cards:BEACON_OF_HOPE",
+   "stratum": "cards_simple"
+  },
+  {
+   "entity_key": "cards:DARK_SHACKLES",
+   "stratum": "cards_simple"
+  },
+  {
+   "entity_key": "cards:FEEL_NO_PAIN",
+   "stratum": "cards_simple"
+  },
+  {
+   "entity_key": "cards:FLICK_FLACK",
+   "stratum": "cards_simple"
+  },
+  {
+   "entity_key": "cards:HEAVENLY_DRILL",
+   "stratum": "cards_simple"
+  },
+  {
+   "entity_key": "cards:HIDDEN_GEM",
+   "stratum": "cards_simple"
+  },
+  {
+   "entity_key": "cards:ITERATION",
+   "stratum": "cards_simple"
+  },
+  {
+   "entity_key": "cards:ONE_FOR_ALL",
+   "stratum": "cards_simple"
+  },
+  {
+   "entity_key": "cards:REFLEX",
+   "stratum": "cards_simple"
+  },
+  {
+   "entity_key": "cards:UNMOVABLE",
+   "stratum": "cards_simple"
+  },
+  {
+   "entity_key": "powers:ACCELERANT",
+   "stratum": "powers_all"
+  },
+  {
+   "entity_key": "powers:AFTERIMAGE",
+   "stratum": "powers_all"
+  },
+  {
+   "entity_key": "powers:CORROSIVE_WAVE",
+   "stratum": "powers_all"
+  },
+  {
+   "entity_key": "powers:DARK_EMBRACE",
+   "stratum": "powers_all"
+  },
+  {
+   "entity_key": "powers:FURNACE",
+   "stratum": "powers_all"
+  },
+  {
+   "entity_key": "powers:INFINITE_BLADES",
+   "stratum": "powers_all"
+  },
+  {
+   "entity_key": "powers:PILLAR_OF_CREATION",
+   "stratum": "powers_all"
+  },
+  {
+   "entity_key": "powers:RETAIN_HAND",
+   "stratum": "powers_all"
+  },
+  {
+   "entity_key": "powers:SERPENT_FORM",
+   "stratum": "powers_all"
+  },
+  {
+   "entity_key": "powers:STRANGLE",
+   "stratum": "powers_all"
+  },
+  {
+   "entity_key": "powers:VEILPIERCER",
+   "stratum": "powers_all"
+  },
+  {
+   "entity_key": "powers:VICIOUS",
+   "stratum": "powers_all"
+  },
+  {
+   "entity_key": "relics:BLESSED_ANTLER",
+   "stratum": "relics_combat"
+  },
+  {
+   "entity_key": "relics:DIVINE_RIGHT",
+   "stratum": "relics_combat"
+  },
+  {
+   "entity_key": "relics:ECTOPLASM",
+   "stratum": "relics_combat"
+  },
+  {
+   "entity_key": "relics:PARRYING_SHIELD",
+   "stratum": "relics_combat"
+  },
+  {
+   "entity_key": "relics:POCKETWATCH",
+   "stratum": "relics_combat"
+  },
+  {
+   "entity_key": "relics:VENERABLE_TEA_SET",
+   "stratum": "relics_combat"
+  },
+  {
+   "entity_key": "relics:HAPPY_FLOWER",
+   "stratum": "relics_hard"
+  },
+  {
+   "entity_key": "relics:PENDULUM",
+   "stratum": "relics_hard"
+  },
+  {
+   "entity_key": "relics:POLLINOUS_CORE",
+   "stratum": "relics_hard"
+  },
+  {
+   "entity_key": "relics:AMETHYST_AUBERGINE",
+   "stratum": "relics_out_of_combat"
+  },
+  {
+   "entity_key": "relics:CALLING_BELL",
+   "stratum": "relics_out_of_combat"
+  },
+  {
+   "entity_key": "relics:PLANISPHERE",
+   "stratum": "relics_out_of_combat"
+  },
+  {
+   "entity_key": "relics:POTION_BELT",
+   "stratum": "relics_out_of_combat"
+  },
+  {
+   "entity_key": "relics:STONE_HUMIDIFIER",
+   "stratum": "relics_out_of_combat"
+  }
+ ]
+}
