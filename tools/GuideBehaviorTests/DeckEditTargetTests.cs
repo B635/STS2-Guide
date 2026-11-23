@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using STS2Guide.ReadOnlyExporter;
 
@@ -35,8 +36,20 @@ internal static class DeckEditTargetTests
         foreach (var name in new[] { "IsUpgradable", "IsRemovable" })
             if (card.GetProperty(name, flags)?.PropertyType != typeof(bool))
                 throw new Exception("Current game target getter missing: " + name);
-        if (Type("Entities.RestSite.SmithRestSiteOption").GetProperty("SmithCount", flags)?.PropertyType != typeof(int))
-            throw new Exception("Smith count contract changed.");
+        // Verify the one-card limit at the actual call site; checking only that
+        // the selector exists would also pass for multi-card smithing.
+        var prefs = Type("CardSelection.CardSelectorPrefs");
+        var prompt = prefs.GetProperty("UpgradeSelectionPrompt", flags)!.GetMethod!;
+        var ctor = prefs.GetConstructor(new[] { prompt.ReturnType, typeof(int) })!;
+        var onSelect = Type("Entities.RestSite.SmithRestSiteOption").GetMethod("OnSelect", flags)!;
+        var machine = onSelect.GetCustomAttribute<AsyncStateMachineAttribute>()!.StateMachineType;
+        var il = machine.GetMethod("MoveNext", flags)!.GetMethodBody()!.GetILAsByteArray()!;
+        // call get_UpgradeSelectionPrompt; ldc.i4.1; newobj .ctor(LocString, int)
+        byte[] selectOne = [0x28, .. BitConverter.GetBytes(prompt.MetadataToken), 0x17,
+                            0x73, .. BitConverter.GetBytes(ctor.MetadataToken)];
+        if (il.AsSpan().IndexOf(selectOne) < 0)
+            throw new Exception("Recheck the smith upgrade selection count against the game assembly.");
+        Method("Commands.CardSelectCmd", "FromDeckForUpgrade", Type("Entities.Players.Player"), prefs);
         foreach (var name in new[] { "Open", "Close", "OnCardRemovalUsed", "_ExitTree" })
             Method("Nodes.Screens.Shops.NMerchantInventory", name);
         Method("Entities.Merchant.MerchantEntry", "InvokePurchaseCompleted", Type("Entities.Merchant.MerchantEntry"));

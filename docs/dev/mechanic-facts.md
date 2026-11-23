@@ -16,6 +16,7 @@
 5. 记下审核依据的指纹：`fingerprint` 保持为提取结果中的当前值，`reviewed_by` 写票号。
 6. 确认（2026-10-02 用户决定）：每条起草的事实由另一个独立 Agent 对照 IL 逐条复核，结论写入 `audit`
    （`{"by": ..., "verdict": "agree"|"resolved", "notes": ...}`）；分歧由开发者依据 IL 裁决并写明。用户在真机中抽查。
+7. `scripts/merge_fact_reviews.py --check <batch>` 可用于未审草稿；正式合并要求审查结论、审核人和说明齐全。每条输入都是完整复核记录而非字段补丁，不能依赖上一个版本的可选字段。合并输出只提示顶层机制；用 `scripts/report_engine_coverage.py` 检查生产评分路径的实际缺口。
 
 ## 公共结构
 
@@ -332,8 +333,9 @@
 - `dislodge_arrow` 写 `count`（数字或 `"all"`）与 `owner_only`；RECALL、UPROOT、WREST 是一直松脱到目标身上没有本玩家的箭为止（`count: "all"`），目标未被本玩家扎穿时整张牌无效。
 - 整张牌都取决于扎穿的（如 NAIL），在每个效果上写 `condition`。
 - 重射的瞄准算两倍：伤害效果写 `aim_multiplier: 2`。
-- 条件 `arrow_dislodged_by_this_card`（本牌这一击让自己的箭松脱，如 EPIC_RETRIEVAL）。
-- 尚无数值来源、暂写 `amount 0` + `amount_text` + 待查问题：本牌造成的伤害（BLOSSOM_SHOT）、自身拉伸层数（CHO_KI）、本场消耗的射击牌数（FLORESCENCE）。
+- 写清判定时机：`had_arrow_at_play_start` 是出牌前有箭，`shot_succeeded` 是射击成功，`target_impaled_at_play_start` 在松脱之前判定，不要用结算后的箭数替代。
+- EPIC_RETRIEVAL 写作 `when: arrow_dislodged`，触发条件为松脱来源是本牌且扎穿来自持有者；每次匹配分别回能，致死一击松脱的箭也算。
+- 尚不能估值的动态量要报告缺口。FLORESCENCE 的生成牌增伤取这一次快照中的射击牌数（`damage_from: shoot_cards_snapshotted_by_this_florescence`），不是本场累计；不能把未算增伤的生成牌当成完整效果。
 - 只在多人模式出现的牌写 `multiplayer_only: true`（COVERING_FIRE、ENSEMBLE、SELF_DEPRECATE、COMPOST、ENRAPTURE、YOGA）。
 - `cost_modifier` 可带 `condition`（如 CHO_LIMBS：持有哇或叽旋律时减费）；箭矢事件的 `filter` 可用 `dealer: owner`。
 - 尚无写法、暂写 `amount_text`：手牌中的悲伤张数（GROWTH，建议来源名 `sadness_in_hand`）、卡牌自身数值整局成长（SHOW_OFF）。

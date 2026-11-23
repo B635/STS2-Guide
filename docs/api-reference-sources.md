@@ -10,6 +10,8 @@
 
 ## 使用原则
 
+**0.113.1 篝火锻造（2026-11-23）**：本机 `sts2.dll`（`62ecbe91…`）经提取器 `--dump-any SmithRestSiteOption`、`CardSelectorPrefs`、`CardSelectCmd` 核对。`OnSelect` 状态机使用 `CardSelectorPrefs(UpgradeSelectionPrompt, 1)`，构造器将同一数值传给选择上下限，再调用 `FromDeckForUpgrade(owner, prefs)`。可取消不等于可同时选多张。Mod 仅读取牌组和 `IsUpgradable`，不调用任何选择命令。已通过程序集调用点检查和编译，未真机验证。
+
 2026-09-25 STS2MCP 当前后台控制适用性、四处编译不兼容、GET 隐式动作及本机隔离适配
 证据见 [`dev/sts2mcp-background-compatibility.md`](dev/sts2mcp-background-compatibility.md)。
 该工具仅作用户授权的开发期测试驱动，不进入只读产品；旧 `/api/v1/state` 示例不能作为

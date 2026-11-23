@@ -6,9 +6,9 @@ internal static class DeckEditTargetReader
 {
     // Current game: FromDeckForRemoval uses IsRemovable with null merchant filter;
     // FromDeckForUpgrade uses IsUpgradable. No selection/action method is called.
-    internal static DeckEditTargetSet? Read(Player player, string operation, int selectionCount = 1)
+    internal static DeckEditTargetSet? Read(Player player, string operation)
     {
-        if (operation is not ("upgrade" or "remove") || selectionCount != 1)
+        if (operation is not ("upgrade" or "remove"))
             return null;
         try
         {

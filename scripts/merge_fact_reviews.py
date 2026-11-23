@@ -4,7 +4,9 @@ A batch is a JSON array of fact objects written by a reviewer following
 docs/dev/mechanic-facts.md. Every entry must name an existing catalog entity,
 carry the class fingerprint of the current extract, and use the spec's
 vocabulary. Nothing is merged unless the whole batch validates (``--check``
-only reports). Mechanics the scoring engine cannot convert yet are listed.
+allows drafts). A write requires a completed audit on every fact. Each entry
+is a complete review, not a patch. The hook-level hints printed here are not
+scoring coverage; report_engine_coverage.py uses the production profiles.
 """
 
 from __future__ import annotations
@@ -92,6 +94,17 @@ REVIEW_FIELDS = {
     "state", "can_enchant", "adds_keywords", "removes_keywords",
     "hp", "innate", "moves", "pattern", "room_type", "is_weak", "variants",
     "obtain", "between_fights", "obtain_params",
+}
+# For a converted fact, "no effects" is an explicit empty list. An omitted
+# field must not silently erase a prior review when replacing the whole row.
+CORE_FIELDS = {
+    "cards": ("card_type", "cost", "tags", "keywords", "effects"),
+    "powers": ("category", "duration", "mechanics"),
+    "relics": ("category", "mechanics"),
+    "monsters": ("hp", "innate", "moves", "pattern", "mechanics"),
+    "encounters": ("room_type", "is_weak", "variants"),
+    "orbs": ("passive", "evoke", "mechanics"),
+    "enchantments": ("category", "mechanics"),
 }
 
 
@@ -231,6 +244,10 @@ def validate_entry(entry: dict, index: dict, facts_by_key: dict) -> list[str]:
     if extra:
         problems.append(f"{key}: unknown fields {sorted(extra)}")
     entity_type = key.split(":", 1)[0]
+    if entry.get("status") == "converted":
+        for field in CORE_FIELDS.get(entity_type, ()):
+            if field not in entry:
+                problems.append(f"{key}: a complete review requires {field}")
     if entity_type == "relics" and entry.get("category") not in CATEGORIES:
         problems.append(f"{key}: relic category must be one of {sorted(CATEGORIES)}")
     if entity_type == "encounters":
@@ -279,9 +296,19 @@ def main() -> int:
     by_key = {entry["entity_key"]: entry for entry in facts["entities"]}
 
     entries, problems, unsupported, questions, recheck = [], [], [], [], []
+    seen = set()
     for path in args.batches:
         for entry in json.loads(path.read_text(encoding="utf-8")):
             problems.extend(validate_entry(entry, index, by_key))
+            key = entry["entity_key"]
+            if key in seen:
+                problems.append(f"{key}: duplicate entity in input batches")
+            seen.add(key)
+            if not args.check:
+                audit = entry.get("audit")
+                if (not isinstance(audit, dict) or audit.get("verdict") not in ("agree", "resolved")
+                        or not audit.get("by") or not audit.get("notes")):
+                    problems.append(f"{key}: completed independent audit required before merge")
             recheck.extend(codex_conflicts(entry, catalog))
             entries.append(entry)
             for mechanic in entry.get("mechanics") or ():
@@ -306,8 +333,7 @@ def main() -> int:
 
     for entry in entries:
         target = by_key[entry["entity_key"]]
-        for field in ("mechanics", "effects", "unknowable", "open_questions", "category",
-                      "obtain", "between_fights", "obtain_params"):
+        for field in REVIEW_FIELDS | {"reviewed_fingerprint"}:
             target.pop(field, None)
         target.update({k: v for k, v in entry.items() if k != "class"})
     with DEFAULT_FACTS_PATH.open("w", encoding="utf-8", newline="\n") as stream:
