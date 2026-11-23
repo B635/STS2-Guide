@@ -1,0 +1,488 @@
+{
+ "version": 1,
+ "description": "60-case labeled Critic LLM-as-a-Judge benchmark grounded in ask-dev evidence pools.",
+ "dev": [
+  {
+   "id": "D01",
+   "source_q": "Q01",
+   "expected": "supported",
+   "category": "real_supported",
+   "draft": "引擎更看好放血，差距 7.6 分，主要理由是补防御和输出：\n\n- 防御：拿放血后每回合 6.8 → 7.4（需求 11.8），这是差距最大的一项。\n- 前期输出：每回合 28.9 → 34.8（需求 36.0），比跳过更接近需求。\n- 循环：每回合额外抽牌 0.47 → 0.57（需求 1.0），也略有改善。\n\n把当时的牌组改一改再重新计分（加血墙、加坚毅加铁斩波、加祭品加全身撞击、去掉两张打击再加血墙），首选仍是放血，差距 6.0–8.0。引擎的提示是：牌组只有 14 张、防御远低于需求，零费补能量的牌能让手里的防御和输出更顺。这只是引擎的看法，它和你以往的选择大约一半一致。",
+   "note": "Real Q01 passed draft, all numbers and factors match E1."
+  },
+  {
+   "id": "D02",
+   "source_q": "Q03",
+   "expected": "supported",
+   "category": "real_fp_trend_summary",
+   "draft": "从第 1 幕一开始就不够，不是某一层突然掉下来的。\n\n- 第 2 层：每回合 5.4，需求 7.6，已经低于需求。\n- 第 3 层：4.6 对 8.0。\n- 第 6 层：6.9 对 8.5；第 8 层：6.4 对 8.9；第 11 层：6.7 对 9.4；第 12 层：6.7 对 10.3；第 14 层：6.8 对 11.8。\n- 第 17 层：5.9 对 8.3，仍低于需求。\n- 到第 2 幕第 19 层起转为够用：8.3 对 7.9，之后第 20、29、30 层也都在需求之上。\n\n也就是说，第 1 幕全程防御都低于需求，而且需求一路涨到 11.8，牌组的防御值基本停在 4.6–6.9 没跟上；第 2 幕才补上。",
+   "note": "Real Q03 trend summary (with the genuine arithmetic bug '缺口最大' removed so this isolates the b5 trend-summary false positive)."
+  },
+  {
+   "id": "D03",
+   "source_q": "Q04",
+   "expected": "supported",
+   "category": "real_fp_verdict_quote",
+   "draft": "剑柄打击：1 费攻击，造成 9 点伤害，抽 1 张牌；升级后造成 10 点伤害，抽 2 张牌。\n\n第 6 层引擎首选血墙（43.6），剑柄打击 41.9，跳过 40.7，引擎判定为有把握、差距明显。引擎不太喜欢剑柄打击，主要因为防御：拿它后每回合防御 6.9 → 6.4（需求 8.5），而血墙能到 8.9。剑柄打击的抽牌确实更好（每回合额外抽牌 0.25 → 0.46，需求 1.0），前期输出也从 12.5 升到 14.1，但离需求 25.0 仍远。牌组里的完美打击让两者都更有价值，不过这只是说明，不另加分。",
+   "note": "Real Q04 rewrite: b5 quoted E4 verdict then STILL flagged it + flagged defense summary."
+  },
+  {
+   "id": "D04",
+   "source_q": "Q05",
+   "expected": "supported",
+   "category": "real_fp_chinese_grammar",
+   "draft": "引擎回答不了这个问题：它不记录战斗过程，也看不出输掉某场战斗的原因，出牌顺序、药水使用这些都不在它的评分范围里。\n\n它能看的是这局 20 个选牌、商店和休息点决定上的首选与分差，以及每次选牌时牌组每回合的输出、防御等数值和那一幕的需求。比如第 1 幕防御一直低于需求，第 2 幕转为够用。",
+   "note": "Real Q05 draft: b5 misread Chinese compound noun 20个选牌、商店和休息点决定."
+  },
+  {
+   "id": "D05",
+   "source_q": "Q06",
+   "expected": "supported",
+   "category": "real_supported",
+   "draft": "引擎给收割 29.3 分，跳过 35.3 分，差 6 分，是这局里差距比较明显的一处。\n\n- 收割确实抬了前期输出（每回合 17.4 → 20.5），但第 2 幕的需求是 41.6，仍差得远。\n- 代价在防御和群伤：防御 5.5 → 4.6（需求 7.7），群伤 6.5 → 5.2（需求 20.3），循环也略降。\n- 引擎还按第 2 幕的门槛算：候选要比跳过高出 2 分以上才值得拿，收割没到。\n- 另外牌组里有 13 张牌和护喉甲没完整计入评分，所以这个结论只反映已计入的部分，把握中等。\n\n牌组里的鬼火、荒疫打击会让收割更有价值，但没改变排序。",
+   "note": "Real Q06 passed draft."
+  },
+  {
+   "id": "D06",
+   "source_q": "Q10",
+   "expected": "supported",
+   "category": "real_out_of_scope_refusal",
+   "draft": "第 35 层的选牌引擎没有评分：这局第三幕的 Boss 不在现有资料里（旧版本），所以第 35 层及之后的选牌、商店、休息点都没有被计分，引擎给不出首选或分差。\n\n引擎能看的是前两幕里被计分的决定，比如第 7 层跳过而引擎更看好放血、第 14 层选坚毅而引擎更看好与我一战！，以及各次选牌时牌组每回合的输出、防御等数值和那一幕的需求。",
+   "note": "Real Q10 clean out-of-scope refusal."
+  },
+  {
+   "id": "D07",
+   "source_q": "Q11",
+   "expected": "supported",
+   "category": "real_supported",
+   "draft": "引擎在第 7 层更看好放血，比跳过高出 3.7 分，主要理由有三点：\n\n- 防御：拿放血后预计战斗长度从标准的 0.88 倍降到 0.72 倍，挡不住的伤害随之减少，这是差距最大的一项。\n- 前期输出：每回合从 26.6 升到 32.9，需求是 23.5，等于把多余能量换成伤害。\n- 循环：每回合额外抽牌从 0.23 升到 0.29，需求是 1.0，过牌更快。\n\n把当时的牌组改一改再重新计分，比如加铁斩波、加岩石铠甲、加两张剑柄打击、去掉三张打击，首选仍然是放血。不过当时防御每回合只有 4.6，需求是 8.6，如果你更看重格挡，铁斩波这类牌也值得留意。",
+   "note": "Real Q11 passed draft with grounded advice."
+  },
+  {
+   "id": "D08",
+   "source_q": "Q13",
+   "expected": "supported",
+   "category": "real_supported",
+   "draft": "引擎更看好锻造，但差距其实不大，它自己也没把握。\n\n- 休息的分数几乎全来自回血：当时 42/70 生命，按缺失生命和路线压力估出 16.2 分。\n- 锻造只算出 2.25 分，因为能估值的升级只有一张防御，另有 5 张牌的升级没算进去。\n\n所以引擎的偏好建立在“升级收益被低估”上。如果你更担心第 1 幕后续掉血，休息是合理的；可以留意负能量脉冲这类没被估值的升级。",
+   "note": "Real Q13 passed rest-site draft."
+  },
+  {
+   "id": "D09",
+   "source_q": "Q15",
+   "expected": "supported",
+   "category": "real_supported",
+   "draft": "「何人僭越」是 0 费技能：给敌人 1 层虚弱、1 层易伤，带消耗。它本身不造成伤害，但虚弱能降低敌人输出，易伤能放大你后续的伤害。\n\n引擎在第 22 层更看好它，主要因为防御：\n- 拿「何人僭越」后，每回合防御从 9.2 升到 10.3，刚好超过 9.7 的需求；拿「太阳打击」反而降到 8.6。\n- 前期输出两边都远不够 35.5，但「何人僭越」把每回合前期输出从 23.0 提到 26.2，「太阳打击」只到 24.5。\n- 只有后续选牌模拟偏向「太阳打击」，多 0.49，抵不过防御上的差距。\n\n把当时的牌组改一改再重新计分，首选仍是「何人僭越」，差距最小也只缩到 1.9。引擎的建议是：当时 17 张牌里防御牌只有两张，下次选牌优先补防御。",
+   "note": "Real Q15 passed card + decision draft."
+  },
+  {
+   "id": "D10",
+   "source_q": "Q18",
+   "expected": "supported",
+   "category": "real_supported",
+   "draft": "引擎更看好冰之长枪，主要差在防御。\n\n- 防御：拿冰之长枪后每回合防御 5.7 → 9.7，超过需求 7.4；拿火箭飞拳只到 5.0，离需求更远。当时血量 20/75，防御是短板。\n- 前期输出：两边都不够（需求 31.1）。火箭飞拳 27.9 → 28.3，冰之长枪反而降到 24.4。\n- 循环：火箭飞拳的抽牌 0.00 → 0.27，但需求是 1.0，补得有限。\n\n把当时的牌组改一改再重新计分：如果牌组里先有高速脱离，引擎就会改选火箭飞拳，和你一致——说明当时缺的是防御，不是输出。",
+   "note": "Real Q18 passed what_if flip draft."
+  },
+  {
+   "id": "D11",
+   "source_q": "Q02",
+   "expected": "unsupported",
+   "category": "ungrounded_inference",
+   "draft": "会。引擎试过“牌组里先有一张血墙”这一改动，重新计分后首选仍是放血，差距在 6.0–8.0 之间。\n\n原因是血墙补的是防御，而放血补的是能量和循环：拿放血后防御每回合 6.8 → 7.4（需求 11.8），前期输出 28.9 → 34.8（需求 36.0），每回合额外抽牌 0.47 → 0.57（需求 1.0）。先有血墙只是把防御这一项垫高，放血在输出和循环上的优势还在。\n\n引擎也试了加坚毅加铁斩波、加祭品加全身撞击、去掉两张打击再加血墙，首选都是放血。",
+   "note": "Real Q02 draft claims energy factor not present in E1 comparison."
+  },
+  {
+   "id": "D12",
+   "source_q": "Q04",
+   "expected": "unsupported",
+   "category": "contradicts_verdict",
+   "draft": "剑柄打击：1 费攻击，造成 9 点伤害，抽 1 张牌；升级后造成 10 点伤害，抽 2 张牌。\n\n第 6 层引擎首选血墙（43.6），剑柄打击 41.9，跳过 40.7，差距不大。引擎不太喜欢剑柄打击，主要因为防御：拿它后每回合防御 6.9 → 6.4（需求 8.5），而血墙能到 8.9。剑柄打击的抽牌确实更好（每回合额外抽牌 0.25 → 0.46，需求 1.0），前期输出也从 12.5 升到 14.1，但离需求 25.0 仍远。牌组里的完美打击让两者都更有价值，不过这只是说明，不另加分。",
+   "note": "Real Q04 draft says 差距不大 contradicting E0/E4 有把握且差距明显."
+  },
+  {
+   "id": "D13",
+   "source_q": "Q07",
+   "expected": "unsupported",
+   "category": "contradicts_verdict",
+   "draft": "这局 14 次选牌里你跳过了 4 次，引擎自己会跳过的有 5 次，次数上差不多。\n\n- 第 21 层：你和引擎都选跳过，一致。\n- 第 27 层：引擎更看好拖延，高 4.5 分，主要因为防御每回合 5.8 → 6.6（需求 8.2）；但它也承认输出缺口更大（需求 47.6）。\n- 第 28、30 层：引擎更看好负能量脉冲，分别高 3.4 和 3.6 分，理由都是格挡小幅提升，而它自己也说把握不大，灾厄部分只算了一部分。\n\n整体看，引擎觉得这几处跳过略亏，但差距都不大，它也没有很强的把握。",
+   "note": "Real Q07 draft lumps F27 into 差距都不大 contradicting E3."
+  },
+  {
+   "id": "D14",
+   "source_q": "Q08",
+   "expected": "unsupported",
+   "category": "ungrounded_inference",
+   "draft": "是的，引擎也选了引导之星，和你的选择一致，差距为 0。\n\n理由：\n- 拿它后循环从每回合额外抽牌 0.00 升到 0.23（需求 1.0），是四个选项里唯一明显改善循环的。\n- 前期输出从 19.1 升到 20.2，防御从 6.4 略降到 6.1，仍高于需求 4.8。\n- 跳过只有 62.5 分，第 1 幕的门槛要求候选比跳过高出 1 分以上，引导之星 65 分过了线。\n\n不过引擎把握只是中等：牌组里有 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）的部分效果没计入评分，分数只反映已计入的部分。",
+   "note": "Real Q08 draft claims 唯一明显改善循环 without other options cycle values."
+  },
+  {
+   "id": "D15",
+   "source_q": "Q17",
+   "expected": "unsupported",
+   "category": "contradicts_factors",
+   "draft": "引擎回答不了这个问题。战斗过程不在它的评分范围内，包括出牌顺序、先打哪个敌人、为什么输掉某场战斗，它都看不到。\n\n它能看的是这局每个选牌、商店（只比较买或离开）、休息点决定上，引擎的首选和你的选择、分差和原因，以及每次选牌时牌组的每回合输出、防御等数值和那一幕的需求。比如第二幕那几次跳过选牌，引擎更看好折射、寒流、刮削，理由都集中在群伤和防御上。",
+   "note": "Real Q17 draft says all 3 Act 2 skips were about AoE+defense."
+  },
+  {
+   "id": "D16",
+   "source_q": "Q01",
+   "expected": "unsupported",
+   "category": "swapped_pick",
+   "draft": "第 14 层你选了放血，而引擎更看好跳过，差距 7.6 分。拿放血后防御每回合 6.8 → 7.4（需求 11.8），前期输出 28.9 → 34.8（需求 36.0）。",
+   "note": "Swapped player pick and engine top using real numbers."
+  },
+  {
+   "id": "D17",
+   "source_q": "Q03",
+   "expected": "unsupported",
+   "category": "cross_floor_swap",
+   "draft": "这局防御是从第 2 层开始不够的：第 2 层每回合防御 6.8，需求 11.8；第 14 层则是 5.4 对 7.6。到第 2 幕第 19 层才转为够用（8.3 对 7.9）。",
+   "note": "Swapped Floor 2 and Floor 14 numbers (all real numbers in E2!)."
+  },
+  {
+   "id": "D18",
+   "source_q": "Q05",
+   "expected": "unsupported",
+   "category": "combat_causality",
+   "draft": "你输给知识恶魔主要是因为第 1 幕防御一直低于需求（需求一路涨到 11.8），导致后期战斗掉血太多扛不住 Boss 的攻击。",
+   "note": "Fabricated combat cause of death not modeled by engine."
+  },
+  {
+   "id": "D19",
+   "source_q": "Q14",
+   "expected": "unsupported",
+   "category": "chinese_numeral_count",
+   "draft": "这局有五处决定值得再想想，分歧最大的是第 17 层：你拿了狩猎，引擎更看好跳过，差距 0.9 分，主要因为防御从 8.2 降到 7.8（需求 8.4）。",
+   "note": "Chinese numeral count hallucination: E0 shows only 1 disagreement (0 strict)."
+  },
+  {
+   "id": "D20",
+   "source_q": "Q18",
+   "expected": "unsupported",
+   "category": "overclaim_certainty",
+   "draft": "第 7 层你选火箭飞拳是明显失误，引擎非常确定必须拿冰之长枪：拿冰之长枪后防御 5.7 → 9.7（需求 7.4），拿火箭飞拳只到 5.0。",
+   "note": "Overclaims engine certainty and calls pick 明显失误."
+  }
+ ],
+ "test": [
+  {
+   "id": "T01",
+   "source_q": "Q03",
+   "expected": "supported",
+   "category": "real_supported",
+   "draft": "第 1 幕各次选牌时，防御都低于需求：\n\n- 第 2 层：每回合 5.4，需求 7.6。\n- 第 3 层：4.6 对 8.0。\n- 第 6 层：6.9 对 8.5；第 8 层：6.4 对 8.9；第 11 层：6.7 对 9.4；第 12 层：6.7 对 10.3；第 14 层：6.8 对 11.8。\n- 第 17 层：5.9 对 8.3，仍低于需求。\n- 第 2 幕第 19 层起转为够用：8.3 对 7.9，第 20、29、30 层也都在需求之上。\n\n需求从 7.6 一路涨到 11.8，牌组的防御值则在 4.6 到 6.9 之间。",
+   "note": "Real Q03 clean rewrite."
+  },
+  {
+   "id": "T02",
+   "source_q": "Q05",
+   "expected": "supported",
+   "category": "real_out_of_scope_refusal",
+   "draft": "引擎回答不了这个问题：它不记录战斗过程，也看不出输掉某场战斗的原因，出牌顺序、药水使用这些都不在它的评分范围里。\n\n它能看的是这局 20 个决定（12 次选牌、3 次商店、5 次休息点）上的首选与分差，以及每次选牌时牌组每回合的输出、防御等数值和那一幕的需求。比如第 1 幕防御一直低于需求，第 2 幕转为够用。",
+   "note": "Real Q05 clean rewrite."
+  },
+  {
+   "id": "T03",
+   "source_q": "Q07",
+   "expected": "supported",
+   "category": "real_supported",
+   "draft": "这局 14 次选牌里你跳过了 4 次，引擎自己会跳过的有 5 次，次数上差不多。\n\n- 第 21 层：你和引擎都选跳过，一致。\n- 第 27 层：引擎更看好拖延，高 4.5 分，这是它比较有把握的一处，主要因为防御每回合 5.8 → 6.6（需求 8.2）；但它也承认输出缺口更大（需求 47.6）。\n- 第 28、30 层：引擎更看好负能量脉冲，分别高 3.4 和 3.6 分，理由都是格挡小幅提升，这两处它把握不大，灾厄部分只算了一部分。\n\n所以引擎对第 27 层的跳过比较有看法，第 28、30 层只是略偏一点。",
+   "note": "Real Q07 clean rewrite."
+  },
+  {
+   "id": "T04",
+   "source_q": "Q08",
+   "expected": "supported",
+   "category": "real_supported",
+   "draft": "是的，引擎也选了引导之星，和你的选择一致，差距为 0。\n\n理由：\n- 拿它后循环从每回合额外抽牌 0.00 升到 0.23（需求 1.0）。\n- 前期输出从 19.1 升到 20.2，防御从 6.4 略降到 6.1，仍高于需求 4.8。\n- 跳过只有 62.5 分，第 1 幕的门槛要求候选比跳过高出 1 分以上，引导之星 65 分过了线。\n\n不过引擎把握只是中等：牌组里有 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）的部分效果没计入评分，分数只反映已计入的部分。",
+   "note": "Real Q08 clean rewrite."
+  },
+  {
+   "id": "T05",
+   "source_q": "Q09",
+   "expected": "supported",
+   "category": "real_supported",
+   "draft": "分歧最大的是这四处：\n\n- 第 13 层：你拿黑洞，引擎更看好预言，差 6.7。引擎最看重循环：拿预言后每回合额外抽牌从 0.00 升到 0.81（需求 1.0），黑洞这一项没有变化。不过引擎没把黑洞“花费或获得时造成 3 点伤害”计入评分，所以它把握不大。\n- 第 17 层：你拿锻打成型，引擎更看好护驾！！！，差 5.8。拿护驾！！！后防御从 7.0 升到 8.1，拿锻打成型则降到 6.1，需求 8.3；当时血量 20/79。\n- 第 29 层：你跳过，引擎更看好收集光辉，差 4。拿收集光辉后防御从 7.1 升到 7.9，需求 9.0。\n- 第 30 层：你拿战火铸就，引擎更看好跳过，差 5.3。拿战火铸就后防御从 7.0 降到 6.3，需求 9.8，而输出只从 22.5 升到 22.9；当时血量 10。\n\n共同点是引擎一直在意防御缺口。",
+   "note": "Real Q09 passed multi-decision draft."
+  },
+  {
+   "id": "T06",
+   "source_q": "Q12",
+   "expected": "supported",
+   "category": "real_supported",
+   "draft": "差距不算大：引擎给苦难高 4.2 分，但它自己也没把握，因为苦难的传播减益和死神形态的触发条件都没算全。\n\n- 主要差在前期输出：拿苦难每回合 13.0 → 15.5，拿死神形态反而降到 11.3（需求 35.7）。\n- 循环也略降：拿死神形态后每回合额外抽牌 0.83 → 0.74（需求 1.0）。\n- 防御 9.8 → 8.7（需求 7.8），苦难这两项都没有损失。\n\n把当时的牌组改一改再重新计分，首选仍是苦难，差距 4.4–4.9。所以引擎只是略偏苦难，你按自己的判断走也说得通。",
+   "note": "Real Q12 passed low-confidence draft."
+  },
+  {
+   "id": "T07",
+   "source_q": "Q14",
+   "expected": "supported",
+   "category": "real_supported",
+   "draft": "这局唯一和引擎看法不同的是第 17 层的选牌：你拿了狩猎，引擎更看好跳过，但差距只有 0.9 分，引擎把握不大。\n\n- 引擎反对的主要理由是防御：拿狩猎后每回合防御从 8.2 降到 7.8，而这一幕需求是 8.4，本来就差一点。\n- 前期输出几乎没变（30.2 → 30.0，需求 38.3），狩猎补不上输出缺口；它的额外奖励要斩杀才触发。\n- 往后看三次选牌，狩猎反而略加分（+0.63），所以这不是明显的坏选择。\n- 把当时的牌组改一改再重新计分，加扫腿和闪躲翻滚后差距缩到 0.3，最接近翻转；补灵动步法、去掉两张打击时，首选仍是跳过。\n\n其余 5 个决定（两次商店、三个休息点）都和引擎一致。",
+   "note": "Real Q14 passed draft."
+  },
+  {
+   "id": "T08",
+   "source_q": "Q16",
+   "expected": "supported",
+   "category": "real_supported",
+   "draft": "第二幕你跳过选牌时，引擎大多不反对，只有三次它更看好别的牌：\n\n- 第 21 层：引擎更看好折射，比你选的跳过高出 4.6 分。它最看重群伤：拿折射后每回合群伤从 0.0 升到 4.7，而需求是 9.1；前期输出也从 29.7 升到 36.1，刚好越过 34.9 的需求。代价是防御从 7.2 降到 5.8，离 9.1 更远，所以引擎只给中等信心。\n- 第 22 层：引擎更看好寒流，比你选的跳过高出 2.6 分。它最看重防御：拿寒流后每回合防御从 7.2 升到 9.8，刚好越过 9.4 的需求；但前期输出从 29.8 降到 27.6，离 35.2 更远。如果牌组里已有一张飞跃这类防御牌，引擎也会选跳过。\n- 第 30 层：引擎更看好刮削，比你选的跳过高出 2.5 分，但把握不大。拿刮削后前期输出从 30.4 升到 35.4，仍低于 42.3 的需求；每回合额外抽牌从 1.60 升到 3.19，远超需求 1.0。如果牌组里已有折射或寒流，引擎也会选跳过。\n\n其余几次跳过，引擎都和你一致。",
+   "note": "Real Q16 passed multi-skip draft."
+  },
+  {
+   "id": "T09",
+   "source_q": "Q17",
+   "expected": "supported",
+   "category": "real_out_of_scope_refusal",
+   "draft": "引擎回答不了这个问题。战斗过程不在它的评分范围内，包括出牌顺序、先打哪个敌人、为什么输掉某场战斗，它都看不到。\n\n它能看的是这局每个选牌、商店（只比较买或离开）、休息点决定上，引擎的首选和你的选择、分差和原因，以及每次选牌时牌组的每回合输出、防御等数值和那一幕的需求。比如第二幕那几次跳过选牌，引擎更看好折射、寒流、刮削，理由分别落在群伤和前期输出、防御、前期输出和循环上。",
+   "note": "Real Q17 clean rewrite."
+  },
+  {
+   "id": "T10",
+   "source_q": "Q19",
+   "expected": "supported",
+   "category": "real_supported",
+   "draft": "不完全一样，但有一条主线贯穿。\n\n这局引擎和你的分歧集中在“跳过攻击牌”：第 17 层跳过而引擎看好回响斩击（群伤 2.6→3.9、前期输出 11.9→13.4，需求分别是 12.2 和 35.5），第 20 层跳过而引擎看好蛇咬（前期输出 11.3→23.0，需求 41.3），第 13 层跳过而引擎看好切割，第 37 层选计算下注而引擎看好毒性爆发（群伤 1.5→3.9，需求 8.7）。整局看，前期输出和群伤几乎每次选牌都低于需求，防御则一直够用。\n\n以往几局笔记里的分歧也多是“你跳过、引擎想补输出或群伤”（如第 1 幕第 3 层、第 12 层、第 14 层），但另有一批是引擎想补防御而你跳过。所以这局更偏向输出和群伤不足，防御那条线这局没出现。\n\n引擎的看法只是一种意见，这局 27 个决定里一致 14 个。",
+   "note": "Real Q19 passed notes comparison."
+  },
+  {
+   "id": "T11",
+   "source_q": "Q20",
+   "expected": "supported",
+   "category": "real_out_of_scope_refusal",
+   "draft": "引擎没法给铜钹打分，所以这个决定在引擎结果里是“你的选择没法评分”，它只比较了买牌、删牌和离开。\n\n- 引擎首选离开商店（保留金币），其次是先制打击、删牌（会删触不可及）、心灵震慑、精密瞄准，彼此差距很小，引擎把握不大。\n- 你买铜钹后金币从 199 降到 7，之后商店的购买力基本没了。\n- 铜钹本身：每回合丢弃一张牌，就对随机敌人造成 3 点伤害。你的牌组里有杂技、计算下注、生存者、速行者这类弃牌手段，配合是有的；但引擎的评分体系里没有这件遗物，所以它值不值，引擎的结果里看不出来。\n\n顺带一提，这局引擎反复觉得群伤和前期输出偏低，铜钹的随机伤害算是往这个方向补了一点。",
+   "note": "Real Q20 passed unscored relic shop answer."
+  },
+  {
+   "id": "T12",
+   "source_q": "Q01",
+   "expected": "supported",
+   "category": "hard_valid_paraphrase",
+   "draft": "第 14 层引擎更推荐拿放血而不是跳过，差距 7.6 分。三项主要差在防御（6.8 → 7.4，需求 11.8）、前期输出（28.9 → 34.8，需求 36.0）和循环（0.47 → 0.57，需求 1.0）。把牌组改一改重算后，放血依然排在前面（差距 6.0–8.0）。",
+   "note": "Clean faithful paraphrase of E1."
+  },
+  {
+   "id": "T13",
+   "source_q": "Q02",
+   "expected": "supported",
+   "category": "hard_valid_what_if",
+   "draft": "会。引擎在牌组里先加一张血墙后重新计分，首选依然是放血，差距保持在 6.0–8.0 之间。这说明即使先补进血墙，放血在这一层的评分优势也没有翻转。",
+   "note": "Valid grounded what_if takeaway without fabricating reasons."
+  },
+  {
+   "id": "T14",
+   "source_q": "Q04",
+   "expected": "supported",
+   "category": "hard_valid_verdict",
+   "draft": "剑柄打击是 1 费攻击，打 9 抽 1（升级后打 10 抽 2）。第 6 层引擎给血墙 43.6、剑柄打击 41.9、跳过 40.7，属于有把握且差距明显的分歧。两者的关键差别在防御：血墙能把防御从 6.9 提到 8.9（需求 8.5），而剑柄打击反而降到 6.4。",
+   "note": "Valid summary quoting exact verdict and main defense contrast."
+  },
+  {
+   "id": "T15",
+   "source_q": "Q06",
+   "expected": "supported",
+   "category": "hard_valid_caveat",
+   "draft": "第 20 层引擎给跳过 35.3 分、收割 29.3 分，差 6 分。拿收割虽然把前期输出从 17.4 提到 20.5（需求 41.6），但防御从 5.5 降到 4.6（需求 7.7），群伤也从 6.5 降到 5.2（需求 20.3）。不过牌组里有 13 张牌和护喉甲未完整计入，引擎把握为中等。",
+   "note": "Valid paraphrase with partial-scoring caveat."
+  },
+  {
+   "id": "T16",
+   "source_q": "Q09",
+   "expected": "supported",
+   "category": "hard_valid_trend",
+   "draft": "这局分歧最大的四次都在防御或循环上：第 13 层预言比黑洞高 6.7 分（但黑洞部分效果未计入、把握不大），第 17 层护驾！！！比锻打成型高 5.8 分，第 30 层跳过比战火铸就高 5.3 分，第 29 层收集光辉比跳过高 4 分。后三次引擎都在意防御低于需求。",
+   "note": "Valid concise synthesis of E2-E5."
+  },
+  {
+   "id": "T17",
+   "source_q": "Q11",
+   "expected": "supported",
+   "category": "hard_valid_advice",
+   "draft": "第 7 层引擎认为放血比跳过高 3.7 分：放血让预计战斗长度从标准的 0.88 倍缩到 0.72 倍，前期输出从 26.6 升到 32.9（需求 23.5），循环从 0.23 升到 0.29。即便在牌组里试着补铁斩波或岩石铠甲，首选仍是放血；不过当时防御仅 4.6 对需求 8.6，后续可以留意格挡牌。",
+   "note": "Valid grounded explanation + directional advice."
+  },
+  {
+   "id": "T18",
+   "source_q": "Q13",
+   "expected": "supported",
+   "category": "hard_valid_caveat",
+   "draft": "第 13 层休息点上引擎表面更偏锻造，但它自己也标注了把握很低：当时 42/70 血量，休息主要按回血估到 16.2 分，而锻造只算了 1 张可估值防御升级（2.25 分），还有 5 张牌的升级没有计入。引擎结果并不能说明休息不好。",
+   "note": "Valid rest-site low-confidence summary."
+  },
+  {
+   "id": "T19",
+   "source_q": "Q18",
+   "expected": "supported",
+   "category": "hard_valid_what_if",
+   "draft": "第 7 层引擎更看好冰之长枪，主要是为了补防御：当时血量 20/75，拿冰之长枪防御从 5.7 升到 9.7（越过需求 7.4），拿火箭飞拳则降到 5.0。把当时牌组先加入高速脱离后重算，引擎就会改选火箭飞拳，和你一致。",
+   "note": "Valid concise flip-point explanation."
+  },
+  {
+   "id": "T20",
+   "source_q": "Q19",
+   "expected": "supported",
+   "category": "hard_valid_compound_count",
+   "draft": "这局 27 个选牌、商店和休息点决定里有 14 个和引擎一致。不同点主要集中在你跳过攻击牌（如第 17 层回响斩击、第 20 层蛇咬）以及第 37 层毒性爆发，整局前期输出和群伤长期低于需求、防御一直够用；和以往笔记里偏补防御的那批分歧不太一样。",
+   "note": "Valid compound noun count + notes comparison."
+  },
+  {
+   "id": "T21",
+   "source_q": "Q06",
+   "expected": "unsupported",
+   "category": "swapped_pick",
+   "draft": "第 20 层你选择了跳过，但引擎更看好收割（35.3 分对 29.3 分，差 6 分），因为拿收割后前期输出从 17.4 升到 20.5。",
+   "note": "Swapped player pick and engine top + swapped scores."
+  },
+  {
+   "id": "T22",
+   "source_q": "Q15",
+   "expected": "unsupported",
+   "category": "swapped_pick",
+   "draft": "「何人僭越」是 0 费技能，给敌人 1 层虚弱和 1 层易伤。第 22 层引擎更看好太阳打击而不是何人僭越，因为太阳打击把防御从 9.2 提到 10.3（需求 9.7）。",
+   "note": "Swapped engine top and attributed defense gain to Solar Strike."
+  },
+  {
+   "id": "T23",
+   "source_q": "Q12",
+   "expected": "unsupported",
+   "category": "swapped_pick",
+   "draft": "第 17 层你拿了苦难，而引擎更偏死神形态（高 4.2 分），主要因为死神形态让前期输出从 13.0 升到 15.5。",
+   "note": "Swapped player pick and engine top."
+  },
+  {
+   "id": "T24",
+   "source_q": "Q09",
+   "expected": "unsupported",
+   "category": "cross_floor_swap",
+   "draft": "这局分歧最大的是第 13 层和第 17 层：第 13 层引擎更看好护驾！！！（差 6.7），第 17 层引擎更看好预言（差 5.8，循环从 0.00 升到 0.81）。",
+   "note": "Cross-floor swap between F13 and F17."
+  },
+  {
+   "id": "T25",
+   "source_q": "Q16",
+   "expected": "unsupported",
+   "category": "cross_floor_swap",
+   "draft": "第二幕有三次跳过引擎有不同看法：第 21 层引擎更看好寒流（高 4.6 分，防御从 7.2 升到 9.8），第 22 层引擎更看好折射（高 2.6 分，群伤从 0.0 升到 4.7）。",
+   "note": "Cross-floor swap between F21 and F22."
+  },
+  {
+   "id": "T26",
+   "source_q": "Q03",
+   "expected": "unsupported",
+   "category": "cross_floor_swap",
+   "draft": "第 1 幕第 2 层防御就已经够用（8.3 对 7.9），真正掉到需求以下是在第 2 幕第 19 层（5.4 对 7.6）。",
+   "note": "Swapped Act 1 F02 and Act 2 F19 values."
+  },
+  {
+   "id": "T27",
+   "source_q": "Q10",
+   "expected": "unsupported",
+   "category": "out_of_scope_answer",
+   "draft": "第 35 层你应该优先拿防御牌而不是攻击牌，因为第三幕 Boss 攻击压力很高，前面两幕你的防御一直偏低，继续补防御更稳。",
+   "note": "Answered unscored Act 3 decision instead of declining."
+  },
+  {
+   "id": "T28",
+   "source_q": "Q17",
+   "expected": "unsupported",
+   "category": "out_of_scope_answer",
+   "draft": "打女王那场战斗建议先集火清掉小怪再打女王，因为你这局群伤长期低于需求（需求 9.1），拖久了容易扛不住伤害。",
+   "note": "Answered out-of-scope combat target priority question."
+  },
+  {
+   "id": "T29",
+   "source_q": "Q20",
+   "expected": "unsupported",
+   "category": "out_of_scope_answer",
+   "draft": "第 21 层花 192 金币买铜钹非常划算，因为你牌组里有杂技、计算下注等弃牌手段，每回合白嫖 3 点随机伤害远比离开商店强。",
+   "note": "Judged unscored relic purchase as very worthwhile instead of declining."
+  },
+  {
+   "id": "T30",
+   "source_q": "Q05",
+   "expected": "unsupported",
+   "category": "combat_causality",
+   "draft": "引擎不记录出牌顺序，但从第 1 幕防御长期低于需求（6–7 对需求 11.8）来看，你在打知识恶魔时肯定是关键回合抽不到格挡牌导致暴毙的。",
+   "note": "Fabricated combat draw/loss causality after nominal disclaimer."
+  },
+  {
+   "id": "T31",
+   "source_q": "Q11",
+   "expected": "unsupported",
+   "category": "combat_causality",
+   "draft": "第 7 层引擎更看好放血（高 3.7 分），因为拿到放血后你能在第一回合就打出全套输出秒掉普通怪，整幕少掉 20 点血。",
+   "note": "Fabricated turn-1 kill and exact HP saved not in engine evidence."
+  },
+  {
+   "id": "T32",
+   "source_q": "Q18",
+   "expected": "unsupported",
+   "category": "combat_causality",
+   "draft": "第 7 层引擎更看好冰之长枪（防御 5.7 → 9.7，需求 7.4），因为当时只剩 20/75 血，下一层精英战如果不拿冰之长枪就会直接阵亡。",
+   "note": "Fabricated combat death prediction on next elite."
+  },
+  {
+   "id": "T33",
+   "source_q": "Q01",
+   "expected": "unsupported",
+   "category": "ungrounded_inference",
+   "draft": "第 14 层引擎更看好放血（差 7.6 分），主要因为放血能和牌组里的黑暗之拥形成抽牌爆发，让防御（6.8 → 7.4）和输出（28.9 → 34.8）一起翻倍。",
+   "note": "Fabricated Dark Embrace combo and doubling claim not in E1."
+  },
+  {
+   "id": "T34",
+   "source_q": "Q14",
+   "expected": "unsupported",
+   "category": "ungrounded_inference",
+   "draft": "这局唯一分歧是第 17 层你拿了狩猎而引擎偏跳过（差 0.9 分）。如果当时牌组里先补灵动步法或去掉两张打击，引擎就会改选狩猎。",
+   "note": "Inverted what_if result: E1 says with those changes engine STILL picks skip!"
+  },
+  {
+   "id": "T35",
+   "source_q": "Q16",
+   "expected": "unsupported",
+   "category": "ungrounded_inference",
+   "draft": "第二幕第 22 层引擎更看好寒流（高 2.6 分），即使牌组里已经有了飞跃这类防御牌，引擎依然坚持要拿寒流。",
+   "note": "Inverted what_if result: E2 says with Leap engine flips to skip!"
+  },
+  {
+   "id": "T36",
+   "source_q": "Q08",
+   "expected": "unsupported",
+   "category": "overclaim_certainty",
+   "draft": "第 15 层引擎和你完全一致都选了引导之星（65 分对跳过 62.5 分），而且引擎对这个结论把握非常高，牌组里所有牌的效果都已完整算清。",
+   "note": "Contradicts E1 medium confidence and 5 partially modeled cards."
+  },
+  {
+   "id": "T37",
+   "source_q": "Q12",
+   "expected": "unsupported",
+   "category": "overclaim_certainty",
+   "draft": "第 17 层你拿死神形态是严重失误，引擎非常有把握地认为必须拿苦难（高 4.2 分），两张牌的效果都已经完整计入评分。",
+   "note": "Contradicts low confidence and unmodeled parts of both cards."
+  },
+  {
+   "id": "T38",
+   "source_q": "Q07",
+   "expected": "unsupported",
+   "category": "chinese_numeral_count",
+   "draft": "这局十四次选牌里你一共跳过了八次，远多于引擎自己会跳过的两次；其中第 27 层引擎更看好拖延（高 4.5 分）。",
+   "note": "Chinese numeral count hallucination: E0 says player skipped 4 times, engine 5 times."
+  },
+  {
+   "id": "T39",
+   "source_q": "Q19",
+   "expected": "unsupported",
+   "category": "chinese_numeral_count",
+   "draft": "这局二十七个决定里你和引擎只有三次一致，其余二十四次全部分歧，而且全都是因为你跳过了防御牌。",
+   "note": "Chinese numeral count hallucination (E0: 14/27 agreed) + wrong pattern (offense, not defense)."
+  },
+  {
+   "id": "T40",
+   "source_q": "Q13",
+   "expected": "unsupported",
+   "category": "chinese_numeral_count",
+   "draft": "第 13 层引擎更看好锻造，因为牌组里全部六张牌的升级都已经算完，休息只估到 16.2 分远不如锻造。",
+   "note": "Chinese numeral & factual contradiction: 5 upgrades unmodeled, forge scored 2.25 < 16.2."
+  }
+ ]
+}

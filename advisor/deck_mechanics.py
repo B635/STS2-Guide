@@ -1626,13 +1626,32 @@ class _Engine:
                 else:
                     held = created * elapsed * per_turn
                     rates[id(g.profile)] += min(created, held) if g.profile.once_per_fight else held
-            demand = sum(n * rates[id(c)] * cost for c, n in self.copies if (cost := self._cost(c)) is not None)
+            # A card costing more than the turn's permanent energy pool can only
+            # be played on turns that generate the extra energy (Markov upper
+            # bound: extra_energy / (cost - base_energy); 0 without extra energy).
+            # Its unplayable share does not consume playable energy, though it
+            # still dilutes draws and counts toward raw energy demand.
+            afford = {
+                id(c): (
+                    1.0 if (cost := self._cost(c)) is None or cost <= base_energy
+                    else (0.0 if extra_energy <= 0.0 else min(1.0, extra_energy / (cost - base_energy)))
+                )
+                for c, _ in self.copies
+            }
+            raw_demand = sum(
+                n * rates[id(c)] * cost
+                for c, n in self.copies if (cost := self._cost(c)) is not None
+            )
+            demand = sum(
+                n * rates[id(c)] * afford[id(c)] * cost
+                for c, n in self.copies if (cost := self._cost(c)) is not None
+            )
             self.energy_spent = min(supply, demand)
             playable = min(1.0, supply / demand) if demand > 0 else 1.0
             # A retained card waits in hand until it can be paid for, so it is
             # paid first; the other cards share what is left.
             kept_demand = sum(
-                n * rates[id(c)] * cost for c, n in self.copies
+                n * rates[id(c)] * afford[id(c)] * cost for c, n in self.copies
                 if c.retain and (cost := self._cost(c)) is not None
             )
             kept_share = min(1.0, supply / kept_demand) if kept_demand > 0 else 1.0
@@ -1647,7 +1666,7 @@ class _Engine:
                 id(c): (
                     rates[id(c)] * (
                         1.0 if c.x_cost or self._cost(c) == 0
-                        else kept_share if c.retain else playable
+                        else afford[id(c)] * (kept_share if c.retain else playable)
                     )
                     if c.x_cost or self._cost(c) is not None else 0.0
                 )
@@ -1713,7 +1732,7 @@ class _Engine:
             self.last_plays = plays
             self._activate(plays, drawn)
         return (
-            self._capabilities(totals, drawn, size, supply, demand, plays),
+            self._capabilities(totals, drawn, size, supply, raw_demand, plays),
             tuple(dict.fromkeys(totals.gaps)),
         )
 

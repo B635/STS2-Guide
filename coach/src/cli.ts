@@ -15,6 +15,8 @@ import { parseArgs } from "node:util";
 import { openSession } from "./ask.js";
 import { askMetrics, loadAskRecorded, recordAsk, renderAskSheet } from "./askeval.js";
 import { askAll, chat, parseQuestions } from "./chat.js";
+import { runCriticBench } from "./criticeval.js";
+import type { CriticVariant } from "./criticeval.js";
 import { Engine } from "./engine.js";
 import { EVAL_DIR, importRatings, loadRecorded, metrics, record } from "./evaluate.js";
 import type { EvalSet } from "./evaluate.js";
@@ -33,6 +35,7 @@ const USAGE = [
   "       coach ratings import <file>",
   "       coach ask <file.run> [--question Q]... [--questions FILE] [--json] [--no-notes] [--out DIR]",
   "       coach eval ask run|metrics|sheet dev [--only RUN_OR_ID,...]",
+  "       coach eval critic <dev|test> [--variant b5|c1|c2] [--repeats N] [--model M]",
 ].join("\n");
 
 async function askCommand(runFile: string, options: { model: string; out: string; json: boolean; notes: boolean; questions: string[] }): Promise<number> {
@@ -106,9 +109,25 @@ async function main(argv: string[]): Promise<number> {
       question: { type: "string", multiple: true, default: [] },
       questions: { type: "string" },
       only: { type: "string" },
+      variant: { type: "string", default: "c1" },
+      repeats: { type: "string", default: "3" },
     },
   });
   const [command, runFile] = positionals;
+  if (command === "eval" && runFile === "critic") {
+    const set = positionals[2];
+    const variant = values.variant as CriticVariant;
+    if ((set !== "dev" && set !== "test") || !["b5", "c1", "c2"].includes(variant)) {
+      console.error(USAGE);
+      return 2;
+    }
+    const { metrics: m } = await runCriticBench(set, variant, {
+      model: values.model,
+      repeats: Math.max(1, Number.parseInt(values.repeats, 10) || 3),
+    });
+    console.log(JSON.stringify(m, null, 1));
+    return 0;
+  }
   if (command === "eval" && runFile === "ask") {
     // Part B is evaluated on the development runs only.
     if (positionals[3] !== "dev") {

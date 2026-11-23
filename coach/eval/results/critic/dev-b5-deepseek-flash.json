@@ -1,0 +1,968 @@
+{
+ "metrics": {
+  "set": "dev",
+  "variant": "b5",
+  "model": "deepseek-flash",
+  "thinking": false,
+  "cases": 20,
+  "repeats": 3,
+  "tp": 27,
+  "fn": 3,
+  "fp": 3,
+  "tn": 27,
+  "recall": 0.9,
+  "fpr": 0.1,
+  "precision": 0.9,
+  "f1": 0.9,
+  "unparsed": 0,
+  "all_agree_cases": 18,
+  "all_agree_rate": 0.9,
+  "per_repeat_flag_rates": [
+   0.55,
+   0.45,
+   0.5
+  ],
+  "flag_rate_spread": 0.1,
+  "majority_recall": 0.9,
+  "majority_fpr": 0.1,
+  "majority_f1": 0.9,
+  "by_category": {
+   "real_supported": {
+    "cases": 6,
+    "trials": 18,
+    "flagged": 0,
+    "rate": 0
+   },
+   "real_fp_trend_summary": {
+    "cases": 1,
+    "trials": 3,
+    "flagged": 1,
+    "rate": 0.3333
+   },
+   "real_fp_verdict_quote": {
+    "cases": 1,
+    "trials": 3,
+    "flagged": 2,
+    "rate": 0.6667
+   },
+   "real_fp_chinese_grammar": {
+    "cases": 1,
+    "trials": 3,
+    "flagged": 0,
+    "rate": 0
+   },
+   "real_out_of_scope_refusal": {
+    "cases": 1,
+    "trials": 3,
+    "flagged": 0,
+    "rate": 0
+   },
+   "ungrounded_inference": {
+    "cases": 2,
+    "trials": 6,
+    "flagged": 3,
+    "rate": 0.5
+   },
+   "contradicts_verdict": {
+    "cases": 2,
+    "trials": 6,
+    "flagged": 6,
+    "rate": 1
+   },
+   "contradicts_factors": {
+    "cases": 1,
+    "trials": 3,
+    "flagged": 3,
+    "rate": 1
+   },
+   "swapped_pick": {
+    "cases": 1,
+    "trials": 3,
+    "flagged": 3,
+    "rate": 1
+   },
+   "cross_floor_swap": {
+    "cases": 1,
+    "trials": 3,
+    "flagged": 3,
+    "rate": 1
+   },
+   "combat_causality": {
+    "cases": 1,
+    "trials": 3,
+    "flagged": 3,
+    "rate": 1
+   },
+   "chinese_numeral_count": {
+    "cases": 1,
+    "trials": 3,
+    "flagged": 3,
+    "rate": 1
+   },
+   "overclaim_certainty": {
+    "cases": 1,
+    "trials": 3,
+    "flagged": 3,
+    "rate": 1
+   }
+  },
+  "cost_usd": 0.0293,
+  "cost_per_call": 0.00049,
+  "avg_ms": 1940,
+  "errors": [
+   {
+    "id": "D02",
+    "category": "real_fp_trend_summary",
+    "expected": "supported",
+    "flagged_trials": 1,
+    "sample_reason": "从第 1 幕一开始就不够，不是某一层突然掉下来的。 => 证据 E2 中第 1 幕最早被记录的选牌是第 2 层（5.4 对 7.6，低于需求），没有第 1 层的数据；草稿说“第 1 幕一开始”超出了证据能确认的范围。"
+   },
+   {
+    "id": "D03",
+    "category": "real_fp_verdict_quote",
+    "expected": "supported",
+    "flagged_trials": 2,
+    "sample_reason": "第 6 层引擎首选血墙（43.6），剑柄打击 41.9，跳过 40.7，引擎判定 => 证据 E4 显示引擎首选血墙 43.6、剑柄打击 41.9、跳过 40.7，但 confidence 是 medium，verdict 写的是“不同，引擎有把握且差距明显（复盘报告"
+   },
+   {
+    "id": "D11",
+    "category": "ungrounded_inference",
+    "expected": "unsupported",
+    "flagged_trials": 0,
+    "sample_reason": "(not flagged)"
+   }
+  ]
+ },
+ "results": [
+  {
+   "id": "D01",
+   "source_q": "Q01",
+   "expected": "supported",
+   "category": "real_supported",
+   "trials": [
+    {
+     "flagged": false,
+     "parsed": true,
+     "issues": [],
+     "cleared": 7,
+     "cost_usd": 0.000653832,
+     "ms": 2173
+    },
+    {
+     "flagged": false,
+     "parsed": true,
+     "issues": [],
+     "cleared": 7,
+     "cost_usd": 0.000659832,
+     "ms": 2797
+    },
+    {
+     "flagged": false,
+     "parsed": true,
+     "issues": [],
+     "cleared": 7,
+     "cost_usd": 0.000749832,
+     "ms": 2393
+    }
+   ]
+  },
+  {
+   "id": "D02",
+   "source_q": "Q03",
+   "expected": "supported",
+   "category": "real_fp_trend_summary",
+   "trials": [
+    {
+     "flagged": true,
+     "parsed": true,
+     "issues": [
+      {
+       "sentence": "从第 1 幕一开始就不够，不是某一层突然掉下来的。",
+       "reason": "证据 E2 中第 1 幕最早被记录的选牌是第 2 层（5.4 对 7.6，低于需求），没有第 1 层的数据；草稿说“第 1 幕一开始”超出了证据能确认的范围。"
+      },
+      {
+       "sentence": "到第 2 幕第 19 层起转为够用：8.3 对 7.9，之后第 20、29、30 层也都在需求之上。",
+       "reason": "E2 中第 19、20、29、30 层确实都是 below_need:false，数值也对得上；但“转为够用”暗示第 2 幕全程够用，而证据只覆盖这四层，第 2 幕其他层没有数据。"
+      },
+      {
+       "sentence": "也就是说，第 1 幕全程防御都低于需求，而且需求一路涨到 11.8，牌组的防御值基本停在 4.6–6.9 没跟上；第 2 幕才补上。",
+       "reason": "E2 中第 1 幕各记录层确实都低于需求，需求最高到 11.8，防御值在 4.6–6.9 之间；但“第 2 幕才补上”把第 2 幕四层的数据推广成整幕结论，证据没有覆盖第 2 幕全部楼层。"
+      }
+     ],
+     "cleared": 0,
+     "cost_usd": 0.001423872,
+     "ms": 2120
+    },
+    {
+     "flagged": false,
+     "parsed": true,
+     "issues": [],
+     "cleared": 7,
+     "cost_usd": 0.000913104,
+     "ms": 2764
+    },
+    {
+     "flagged": false,
+     "parsed": true,
+     "issues": [],
+     "cleared": 7,
+     "cost_usd": 0.000935904,
+     "ms": 2884
+    }
+   ]
+  },
+  {
+   "id": "D03",
+   "source_q": "Q04",
+   "expected": "supported",
+   "category": "real_fp_verdict_quote",
+   "trials": [
+    {
+     "flagged": true,
+     "parsed": true,
+     "issues": [
+      {
+       "sentence": "第 6 层引擎首选血墙（43.6），剑柄打击 41.9，跳过 40.7，引擎判定为有把握、差距明显。",
+       "reason": "证据 E4 显示引擎首选血墙 43.6、剑柄打击 41.9、跳过 40.7，但 confidence 是 medium，verdict 写的是“不同，引擎有把握且差距明显（复盘报告里的‘值得想一想’）”。草稿把“有把握”说成引擎判定，而证据里引擎的把握等级是 medium，且 verdict 括号里是“值得想一想”，与“有把握、差距明显”不完全一致。"
+      },
+      {
+       "sentence": "引擎不太喜欢剑柄打击，主要因为防御：拿它后每回合防御 6.9 → 6.4（需求 8.5），而血墙能到 8.9。",
+       "reason": "证据 E4 中剑柄打击的 factors 确实有防御 6.9 → 6.4（需求 8.5），血墙有防御 6.9 → 8.9（需求 8.5），但引擎并没有说“主要因为防御”；E4 只列出各项因素，没有给出主因排序。草稿把防御说成引擎“主要因为”的原因，属于把证据里没有的因果判断说成引擎意见。"
+      }
+     ],
+     "cleared": 2,
+     "cost_usd": 0.000690012,
+     "ms": 3108
+    },
+    {
+     "flagged": false,
+     "parsed": true,
+     "issues": [],
+     "cleared": 4,
+     "cost_usd": 0.000572412,
+     "ms": 2133
+    },
+    {
+     "flagged": true,
+     "parsed": true,
+     "issues": [
+      {
+       "sentence": "第 6 层引擎首选血墙（43.6），剑柄打击 41.9，跳过 40.7，引擎判定为有把握、差距明显。",
+       "reason": "E4 显示引擎首选血墙 43.6、剑柄打击 41.9、跳过 40.7，但 confidence 是 medium，verdict 写的是“不同，引擎有把握且差距明显（复盘报告里的‘值得想一想’）”。草稿把“有把握”说成引擎判定，而证据里引擎的把握等级是 medium，且 verdict 的措辞本身带“值得想一想”，与“有把握、差距明显”不完全一致。"
+      },
+      {
+       "sentence": "引擎不太喜欢剑柄打击，主要因为防御：拿它后每回合防御 6.9 → 6.4（需求 8.5），而血墙能到 8.9。",
+       "reason": "E4 中剑柄打击的 factors 确实有防御 6.9 → 6.4（需求 8.5），血墙 factors 有防御 6.9 → 8.9（需求 8.5）。但 E4 没有说“主要因为防御”是引擎的判定；factors 只是并列列出，没有给出主因排序。"
+      }
+     ],
+     "cleared": 2,
+     "cost_usd": 0.0006600120000000001,
+     "ms": 2974
+    }
+   ]
+  },
+  {
+   "id": "D04",
+   "source_q": "Q05",
+   "expected": "supported",
+   "category": "real_fp_chinese_grammar",
+   "trials": [
+    {
+     "flagged": false,
+     "parsed": true,
+     "issues": [],
+     "cleared": 1,
+     "cost_usd": 0.000206544,
+     "ms": 1724
+    },
+    {
+     "flagged": false,
+     "parsed": true,
+     "issues": [],
+     "cleared": 1,
+     "cost_usd": 0.000202944,
+     "ms": 1319
+    },
+    {
+     "flagged": false,
+     "parsed": true,
+     "issues": [],
+     "cleared": 1,
+     "cost_usd": 0.000207744,
+     "ms": 1246
+    }
+   ]
+  },
+  {
+   "id": "D05",
+   "source_q": "Q06",
+   "expected": "supported",
+   "category": "real_supported",
+   "trials": [
+    {
+     "flagged": false,
+     "parsed": true,
+     "issues": [],
+     "cleared": 6,
+     "cost_usd": 0.000718644,
+     "ms": 2368
+    },
+    {
+     "flagged": false,
+     "parsed": true,
+     "issues": [],
+     "cleared": 6,
+     "cost_usd": 0.0007138439999999999,
+     "ms": 2248
+    },
+    {
+     "flagged": false,
+     "parsed": true,
+     "issues": [],
+     "cleared": 6,
+     "cost_usd": 0.000711444,
+     "ms": 2598
+    }
+   ]
+  },
+  {
+   "id": "D06",
+   "source_q": "Q10",
+   "expected": "supported",
+   "category": "real_out_of_scope_refusal",
+   "trials": [
+    {
+     "flagged": false,
+     "parsed": true,
+     "issues": [],
+     "cleared": 2,
+     "cost_usd": 0.000435864,
+     "ms": 1811
+    },
+    {
+     "flagged": false,
+     "parsed": true,
+     "issues": [],
+     "cleared": 2,
+     "cost_usd": 0.000435864,
+     "ms": 2040
+    },
+    {
+     "flagged": false,
+     "parsed": true,
+     "issues": [],
+     "cleared": 2,
+     "cost_usd": 0.000423864,
+     "ms": 1513
+    }
+   ]
+  },
+  {
+   "id": "D07",
+   "source_q": "Q11",
+   "expected": "supported",
+   "category": "real_supported",
+   "trials": [
+    {
+     "flagged": false,
+     "parsed": true,
+     "issues": [],
+     "cleared": 5,
+     "cost_usd": 0.0006528360000000001,
+     "ms": 1932
+    },
+    {
+     "flagged": false,
+     "parsed": true,
+     "issues": [],
+     "cleared": 5,
+     "cost_usd": 0.000658836,
+     "ms": 1998
+    },
+    {
+     "flagged": false,
+     "parsed": true,
+     "issues": [],
+     "cleared": 6,
+     "cost_usd": 0.000535236,
+     "ms": 2049
+    }
+   ]
+  },
+  {
+   "id": "D08",
+   "source_q": "Q13",
+   "expected": "supported",
+   "category": "real_supported",
+   "trials": [
+    {
+     "flagged": false,
+     "parsed": true,
+     "issues": [],
+     "cleared": 5,
+     "cost_usd": 0.000496404,
+     "ms": 2210
+    },
+    {
+     "flagged": false,
+     "parsed": true,
+     "issues": [],
+     "cleared": 5,
+     "cost_usd": 0.0005552039999999999,
+     "ms": 2479
+    },
+    {
+     "flagged": false,
+     "parsed": true,
+     "issues": [],
+     "cleared": 5,
+     "cost_usd": 0.000504804,
+     "ms": 2044
+    }
+   ]
+  },
+  {
+   "id": "D09",
+   "source_q": "Q15",
+   "expected": "supported",
+   "category": "real_supported",
+   "trials": [
+    {
+     "flagged": false,
+     "parsed": true,
+     "issues": [],
+     "cleared": 8,
+     "cost_usd": 0.000773736,
+     "ms": 2947
+    },
+    {
+     "flagged": false,
+     "parsed": true,
+     "issues": [],
+     "cleared": 8,
+     "cost_usd": 0.000776136,
+     "ms": 2695
+    },
+    {
+     "flagged": false,
+     "parsed": true,
+     "issues": [],
+     "cleared": 6,
+     "cost_usd": 0.000642936,
+     "ms": 2609
+    }
+   ]
+  },
+  {
+   "id": "D10",
+   "source_q": "Q18",
+   "expected": "supported",
+   "category": "real_supported",
+   "trials": [
+    {
+     "flagged": false,
+     "parsed": true,
+     "issues": [],
+     "cleared": 2,
+     "cost_usd": 0.00028707600000000004,
+     "ms": 1505
+    },
+    {
+     "flagged": false,
+     "parsed": true,
+     "issues": [],
+     "cleared": 6,
+     "cost_usd": 0.000581076,
+     "ms": 2045
+    },
+    {
+     "flagged": false,
+     "parsed": true,
+     "issues": [],
+     "cleared": 2,
+     "cost_usd": 0.00028707600000000004,
+     "ms": 1208
+    }
+   ]
+  },
+  {
+   "id": "D11",
+   "source_q": "Q02",
+   "expected": "unsupported",
+   "category": "ungrounded_inference",
+   "trials": [
+    {
+     "flagged": false,
+     "parsed": true,
+     "issues": [],
+     "cleared": 4,
+     "cost_usd": 0.000494064,
+     "ms": 2063
+    },
+    {
+     "flagged": false,
+     "parsed": true,
+     "issues": [],
+     "cleared": 4,
+     "cost_usd": 0.000497664,
+     "ms": 1770
+    },
+    {
+     "flagged": false,
+     "parsed": true,
+     "issues": [],
+     "cleared": 4,
+     "cost_usd": 0.000509664,
+     "ms": 1867
+    }
+   ]
+  },
+  {
+   "id": "D12",
+   "source_q": "Q04",
+   "expected": "unsupported",
+   "category": "contradicts_verdict",
+   "trials": [
+    {
+     "flagged": true,
+     "parsed": true,
+     "issues": [
+      {
+       "sentence": "第 6 层引擎首选血墙（43.6），剑柄打击 41.9，跳过 40.7，差距不大。",
+       "reason": "证据 E4 显示血墙 43.6、剑柄打击 41.9、跳过 40.7，且 verdict 为“不同，引擎有把握且差距明显（复盘报告里的‘值得想一想’）”，confidence 为 medium。草稿说“差距不大”，与证据中“差距明显”的判定矛盾。"
+      },
+      {
+       "sentence": "引擎不太喜欢剑柄打击，主要因为防御：拿它后每回合防御 6.9 → 6.4（需求 8.5），而血墙能到 8.9。",
+       "reason": "E4 中剑柄打击的 factors 确实有防御 6.9 → 6.4（需求 8.5），血墙有防御 6.9 → 8.9（需求 8.5）。但 E4 没有说防御是引擎“不太喜欢”剑柄打击的主要原因；引擎首选血墙的分数差只有 1.7，且 factors 同时列出循环、前期输出等。草稿把防御说成主要原因，证据里没有这个因果断言。"
+      }
+     ],
+     "cleared": 2,
+     "cost_usd": 0.000652212,
+     "ms": 2501
+    },
+    {
+     "flagged": true,
+     "parsed": true,
+     "issues": [
+      {
+       "sentence": "第 6 层引擎首选血墙（43.6），剑柄打击 41.9，跳过 40.7，差距不大。",
+       "reason": "证据 E4 显示血墙 43.6、剑柄打击 41.9、跳过 40.7，且 verdict 为“不同，引擎有把握且差距明显（复盘报告里的‘值得想一想’）”，confidence 为 medium。草稿说“差距不大”，与引擎给出的“有把握且差距明显”矛盾。"
+      },
+      {
+       "sentence": "引擎不太喜欢剑柄打击，主要因为防御：拿它后每回合防御 6.9 → 6.4（需求 8.5），而血墙能到 8.9。",
+       "reason": "E4 中剑柄打击的 factors 确实有“防御：每回合 6.9 → 6.4（需求 8.5）”，血墙有“防御：每回合 6.9 → 8.9（需求 8.5）”。但 E4 没有说明防御是引擎“不太喜欢”剑柄打击的主要原因；引擎只是列出各项数值，未给出主因排序。"
+      }
+     ],
+     "cleared": 2,
+     "cost_usd": 0.0006450119999999999,
+     "ms": 2359
+    },
+    {
+     "flagged": true,
+     "parsed": true,
+     "issues": [
+      {
+       "sentence": "第 6 层引擎首选血墙（43.6），剑柄打击 41.9，跳过 40.7，差距不大。",
+       "reason": "证据 E4 显示血墙 43.6、剑柄打击 41.9、跳过 40.7，且 verdict 为“不同，引擎有把握且差距明显（复盘报告里的‘值得想一想’）”，confidence 为 medium；草稿说“差距不大”与证据中“差距明显”的判定矛盾。"
+      },
+      {
+       "sentence": "引擎不太喜欢剑柄打击，主要因为防御：拿它后每回合防御 6.9 → 6.4（需求 8.5），而血墙能到 8.9。",
+       "reason": "E4 中剑柄打击的 factors 确实列出防御 6.9 → 6.4（需求 8.5），血墙 factors 列出防御 6.9 → 8.9（需求 8.5）；但证据没有说明“主要因为防御”是引擎给出的原因排序，E4 只列出各项因素，未标明主因。"
+      }
+     ],
+     "cleared": 2,
+     "cost_usd": 0.0006114119999999999,
+     "ms": 2237
+    }
+   ]
+  },
+  {
+   "id": "D13",
+   "source_q": "Q07",
+   "expected": "unsupported",
+   "category": "contradicts_verdict",
+   "trials": [
+    {
+     "flagged": true,
+     "parsed": true,
+     "issues": [
+      {
+       "sentence": "整体看，引擎觉得这几处跳过略亏，但差距都不大，它也没有很强的把握。",
+       "reason": "E3 的 verdict 是“引擎有把握且差距明显”，E4、E5 是“引擎把握不大”；把第 27 层也算进“差距都不大、没有很强把握”与 E3 矛盾。"
+      }
+     ],
+     "cleared": 4,
+     "cost_usd": 0.000657756,
+     "ms": 2653
+    },
+    {
+     "flagged": true,
+     "parsed": true,
+     "issues": [
+      {
+       "sentence": "整体看，引擎觉得这几处跳过略亏，但差距都不大，它也没有很强的把握。",
+       "reason": "第 27 层引擎 verdict 是“有把握且差距明显”，E3 的 finding 也把防御列为差距最大的一项，草稿把第 27 层也归入“差距都不大、没有很强把握”，和证据矛盾。"
+      }
+     ],
+     "cleared": 4,
+     "cost_usd": 0.000673356,
+     "ms": 2746
+    },
+    {
+     "flagged": true,
+     "parsed": true,
+     "issues": [
+      {
+       "sentence": "整体看，引擎觉得这几处跳过略亏，但差距都不大，它也没有很强的把握。",
+       "reason": "E3 的 verdict 是“引擎有把握且差距明显”，E4、E5 是“引擎把握不大”；草稿把第 27 层也归入“差距都不大、没有很强把握”，与 E3 的“有把握且差距明显”矛盾。"
+      }
+     ],
+     "cleared": 4,
+     "cost_usd": 0.000685356,
+     "ms": 2181
+    }
+   ]
+  },
+  {
+   "id": "D14",
+   "source_q": "Q08",
+   "expected": "unsupported",
+   "category": "ungrounded_inference",
+   "trials": [
+    {
+     "flagged": true,
+     "parsed": true,
+     "issues": [
+      {
+       "sentence": "是四个选项里唯一明显改善循环的。",
+       "reason": "证据 E1 中只有引导之星给出了循环数值（0.00→0.23），暗淡蓝点和征召上前没有循环数据，跳过也没有；无法确认“四个选项里唯一明显改善循环”这一比较结论。"
+      }
+     ],
+     "cleared": 1,
+     "cost_usd": 0.000353436,
+     "ms": 1743
+    },
+    {
+     "flagged": true,
+     "parsed": true,
+     "issues": [
+      {
+       "sentence": "是四个选项里唯一明显改善循环的。",
+       "reason": "证据 E1 中只有引导之星给出了循环数值（0.00→0.23），暗淡蓝点和征召上前没有循环数据，跳过也没有；无法确认它是“四个选项里唯一”改善循环的。"
+      }
+     ],
+     "cleared": 1,
+     "cost_usd": 0.00034743599999999996,
+     "ms": 2023
+    },
+    {
+     "flagged": true,
+     "parsed": true,
+     "issues": [
+      {
+       "sentence": "是四个选项里唯一明显改善循环的。",
+       "reason": "证据 E1 中只有引导之星给出了循环数值（0.00→0.23），暗淡蓝点和征召上前没有循环数据，跳过也没有；无法确认它是“四个选项里唯一”改善循环的。"
+      }
+     ],
+     "cleared": 1,
+     "cost_usd": 0.00035223599999999997,
+     "ms": 1595
+    }
+   ]
+  },
+  {
+   "id": "D15",
+   "source_q": "Q17",
+   "expected": "unsupported",
+   "category": "contradicts_factors",
+   "trials": [
+    {
+     "flagged": true,
+     "parsed": true,
+     "issues": [
+      {
+       "sentence": "比如第二幕那几次跳过选牌，引擎更看好折射、寒流、刮削，理由都集中在群伤和防御上。",
+       "reason": "证据里第二幕跳过选牌的三次（F21 折射、F22 寒流、F30 刮削）确实存在，但理由并不都集中在群伤和防御：E1 折射的理由是群伤和前期输出（防御是代价），E2 寒流的理由是防御（前期输出是代价），E3 刮削的理由是前期输出和循环（过牌），并非群伤和防御。"
+      }
+     ],
+     "cleared": 0,
+     "cost_usd": 0.00026131200000000004,
+     "ms": 1146
+    },
+    {
+     "flagged": true,
+     "parsed": true,
+     "issues": [
+      {
+       "sentence": "比如第二幕那几次跳过选牌，引擎更看好折射、寒流、刮削，理由都集中在群伤和防御上。",
+       "reason": "证据里第二幕跳过选牌的三次调查（E1 折射、E2 寒流、E3 刮削）理由并不都集中在群伤和防御：E1 最看重群伤，E2 最看重防御，但 E3 刮削的理由是前期输出和循环（过牌），不是群伤或防御。"
+      }
+     ],
+     "cleared": 0,
+     "cost_usd": 0.000242112,
+     "ms": 1250
+    },
+    {
+     "flagged": true,
+     "parsed": true,
+     "issues": [
+      {
+       "sentence": "比如第二幕那几次跳过选牌，引擎更看好折射、寒流、刮削，理由都集中在群伤和防御上。",
+       "reason": "证据里第二幕跳过选牌的三次调查（E1 折射、E2 寒流、E3 刮削）给出的理由并不都集中在群伤和防御：E1 最看重群伤，E2 最看重防御，但 E3 刮削的理由是前期输出和循环（过牌），不是群伤或防御。"
+      }
+     ],
+     "cleared": 0,
+     "cost_usd": 0.000243312,
+     "ms": 1367
+    }
+   ]
+  },
+  {
+   "id": "D16",
+   "source_q": "Q01",
+   "expected": "unsupported",
+   "category": "swapped_pick",
+   "trials": [
+    {
+     "flagged": true,
+     "parsed": true,
+     "issues": [
+      {
+       "sentence": "第 14 层你选了放血，而引擎更看好跳过，差距 7.6 分。",
+       "reason": "证据 E1 的 headline 是「引擎认为『放血』比你选的『跳过』高 7.6 分」，E0 的 F14-card 也记录 player=跳过、engine=放血。草稿把玩家选择和引擎首选说反了。"
+      }
+     ],
+     "cleared": 0,
+     "cost_usd": 0.000216396,
+     "ms": 1205
+    },
+    {
+     "flagged": true,
+     "parsed": true,
+     "issues": [
+      {
+       "sentence": "第 14 层你选了放血，而引擎更看好跳过，差距 7.6 分。",
+       "reason": "证据 E1 显示玩家在第 14 层选的是「跳过」，引擎更看好「放血」，差距 7.6 分；草稿把玩家选择和引擎首选说反了。"
+      }
+     ],
+     "cleared": 0,
+     "cost_usd": 0.00019719599999999996,
+     "ms": 1072
+    },
+    {
+     "flagged": true,
+     "parsed": true,
+     "issues": [
+      {
+       "sentence": "第 14 层你选了放血，而引擎更看好跳过，差距 7.6 分。",
+       "reason": "证据 E1 显示玩家在第 14 层选的是「跳过」，引擎更看好「放血」，差距 7.6 分；草稿把玩家选择和引擎首选说反了。"
+      }
+     ],
+     "cleared": 0,
+     "cost_usd": 0.00019719599999999996,
+     "ms": 1183
+    }
+   ]
+  },
+  {
+   "id": "D17",
+   "source_q": "Q03",
+   "expected": "unsupported",
+   "category": "cross_floor_swap",
+   "trials": [
+    {
+     "flagged": true,
+     "parsed": true,
+     "issues": [
+      {
+       "sentence": "这局防御是从第 2 层开始不够的：第 2 层每回合防御 6.8，需求 11.8；第 14 层则是 5.4 对 7.6。",
+       "reason": "证据里第 2 层的防御是 5.4 对 7.6（E2 F02），第 14 层才是 6.8 对 11.8（E2 F14）；草稿把这两层的数字对调了。"
+      }
+     ],
+     "cleared": 1,
+     "cost_usd": 0.000329736,
+     "ms": 1527
+    },
+    {
+     "flagged": true,
+     "parsed": true,
+     "issues": [
+      {
+       "sentence": "这局防御是从第 2 层开始不够的：第 2 层每回合防御 6.8，需求 11.8；第 14 层则是 5.4 对 7.6。",
+       "reason": "证据里第 2 层的防御是 5.4 对 7.6（E2 F02），第 14 层才是 6.8 对 11.8（E2 F14）；草稿把这两层的数字对调了。"
+      }
+     ],
+     "cleared": 1,
+     "cost_usd": 0.000329736,
+     "ms": 1587
+    },
+    {
+     "flagged": true,
+     "parsed": true,
+     "issues": [
+      {
+       "sentence": "这局防御是从第 2 层开始不够的：第 2 层每回合防御 6.8，需求 11.8；第 14 层则是 5.4 对 7.6。",
+       "reason": "证据里第 2 层的防御是 5.4 对 7.6（E2 F02），第 14 层才是 6.8 对 11.8（E2 F14、E1）。草稿把这两层的数字对调了。"
+      }
+     ],
+     "cleared": 1,
+     "cost_usd": 0.00033333599999999994,
+     "ms": 1235
+    }
+   ]
+  },
+  {
+   "id": "D18",
+   "source_q": "Q05",
+   "expected": "unsupported",
+   "category": "combat_causality",
+   "trials": [
+    {
+     "flagged": true,
+     "parsed": true,
+     "issues": [
+      {
+       "sentence": "你输给知识恶魔主要是因为第 1 幕防御一直低于需求（需求一路涨到 11.8），导致后期战斗掉血太多扛不住 Boss 的攻击。",
+       "reason": "证据里只有第 1 幕各次选牌时防御低于需求的数值（需求从 7.6 涨到 11.8），以及 E1 提到防御 6.8 远低于需求 11.8；但没有任何证据说明输给知识恶魔的原因、后期战斗掉血或扛不住 Boss 攻击——引擎不模拟战斗过程与输赢原因，草稿把防御不足直接断言为输掉 Boss 战的原因，属于证据里没有的因果断言。"
+      }
+     ],
+     "cleared": 0,
+     "cost_usd": 0.000294576,
+     "ms": 1950
+    },
+    {
+     "flagged": true,
+     "parsed": true,
+     "issues": [
+      {
+       "sentence": "你输给知识恶魔主要是因为第 1 幕防御一直低于需求（需求一路涨到 11.8），导致后期战斗掉血太多扛不住 Boss 的攻击。",
+       "reason": "证据里只有第 1 幕防御低于需求、需求涨到 11.8 这些数值（E2、E1），但没有任何证据说明输给知识恶魔的原因、后期战斗掉血或扛不住 Boss 攻击；引擎不模拟战斗过程与输赢原因，草稿把防御不足说成输掉的原因属于证据里没有的断言。"
+      }
+     ],
+     "cleared": 0,
+     "cost_usd": 0.000260976,
+     "ms": 2014
+    },
+    {
+     "flagged": true,
+     "parsed": true,
+     "issues": [
+      {
+       "sentence": "你输给知识恶魔主要是因为第 1 幕防御一直低于需求（需求一路涨到 11.8），导致后期战斗掉血太多扛不住 Boss 的攻击。",
+       "reason": "证据里只有第 1 幕防御低于需求、需求涨到 11.8 这些数值（E2、E1），但没有任何证据说明输给知识恶魔的原因、后期战斗掉血或扛不住 Boss 攻击；引擎不模拟战斗过程与输赢原因。"
+      }
+     ],
+     "cleared": 0,
+     "cost_usd": 0.000240576,
+     "ms": 1540
+    }
+   ]
+  },
+  {
+   "id": "D19",
+   "source_q": "Q14",
+   "expected": "unsupported",
+   "category": "chinese_numeral_count",
+   "trials": [
+    {
+     "flagged": true,
+     "parsed": true,
+     "issues": [
+      {
+       "sentence": "这局有五处决定值得再想想，分歧最大的是第 17 层：你拿了狩猎，引擎更看好跳过，差距 0.9 分，主要因为防御从 8.2 降到 7.8（需求 8.4）。",
+       "reason": "E0 显示这局只有 6 个决定，其中 5 个一致、1 个不同（F17-card），worth_a_look 为 0；草稿说“五处决定值得再想想”与证据矛盾。第 17 层的描述（狩猎 vs 跳过、0.9 分、防御 8.2→7.8、需求 8.4）在 E1/E2/E3 中都有依据。"
+      }
+     ],
+     "cleared": 0,
+     "cost_usd": 0.000305604,
+     "ms": 1064
+    },
+    {
+     "flagged": true,
+     "parsed": true,
+     "issues": [
+      {
+       "sentence": "这局有五处决定值得再想想，分歧最大的是第 17 层：你拿了狩猎，引擎更看好跳过，差距 0.9 分，主要因为防御从 8.2 降到 7.8（需求 8.4）。",
+       "reason": "E0 显示这局只有 6 个决定，其中 5 个一致、1 个不同（F17-card），worth_a_look 为 0；证据里只有第 17 层这一处不同，没有“五处决定值得再想想”的依据。后半句关于第 17 层拿狩猎、引擎更看好跳过、差距 0.9、防御 8.2→7.8（需求 8.4）在 E1/E2/E3 中都有依据。"
+      }
+     ],
+     "cleared": 0,
+     "cost_usd": 0.00032000400000000003,
+     "ms": 1031
+    },
+    {
+     "flagged": true,
+     "parsed": true,
+     "issues": [
+      {
+       "sentence": "这局有五处决定值得再想想，分歧最大的是第 17 层：你拿了狩猎，引擎更看好跳过，差距 0.9 分，主要因为防御从 8.2 降到 7.8（需求 8.4）。",
+       "reason": "E0 显示这局只有 6 个决定，其中 5 个一致、1 个不同（F17-card），worth_a_look 为 0；E1/E2 也确认只有第 17 层这一处分歧。草稿说“五处决定值得再想想”与证据矛盾，证据里只有一处不同。"
+      }
+     ],
+     "cleared": 0,
+     "cost_usd": 0.00027800400000000004,
+     "ms": 1594
+    }
+   ]
+  },
+  {
+   "id": "D20",
+   "source_q": "Q18",
+   "expected": "unsupported",
+   "category": "overclaim_certainty",
+   "trials": [
+    {
+     "flagged": true,
+     "parsed": true,
+     "issues": [
+      {
+       "sentence": "第 7 层你选火箭飞拳是明显失误",
+       "reason": "证据里只有引擎判定“不同，引擎有把握且差距明显（值得想一想）”、分差 4.7，并没有把玩家选择定性为“明显失误”的结论；这是把引擎的看法升级成定论。"
+      },
+      {
+       "sentence": "引擎非常确定必须拿冰之长枪",
+       "reason": "E2 里引擎的 confidence 是 medium，E1 的 verdict 也只是“有把握且差距明显”，没有“非常确定/必须”这种强度。"
+      }
+     ],
+     "cleared": 0,
+     "cost_usd": 0.000243408,
+     "ms": 1557
+    },
+    {
+     "flagged": true,
+     "parsed": true,
+     "issues": [
+      {
+       "sentence": "第 7 层你选火箭飞拳是明显失误",
+       "reason": "证据里只有引擎判定“不同，引擎有把握且差距明显（值得想一想）”、分差 4.7，并没有把玩家选择定性为“明显失误”的结论；这是把引擎的看法升级成定论。"
+      },
+      {
+       "sentence": "引擎非常确定必须拿冰之长枪",
+       "reason": "E2 里引擎的 confidence 是 medium，E1 的 verdict 也只是“有把握且差距明显”，没有“非常确定/必须”这种程度。"
+      }
+     ],
+     "cleared": 0,
+     "cost_usd": 0.000243408,
+     "ms": 1116
+    },
+    {
+     "flagged": true,
+     "parsed": true,
+     "issues": [
+      {
+       "sentence": "第 7 层你选火箭飞拳是明显失误",
+       "reason": "证据里只有引擎判定“不同，引擎有把握且差距明显（值得想一想）”、差距 4.7 分，并没有把玩家选择定性为“明显失误”的结论；这是把引擎的分差评价升级成了对玩家选择的定性判断。"
+      },
+      {
+       "sentence": "引擎非常确定必须拿冰之长枪",
+       "reason": "E2 里该决定的 confidence 是 medium，E1 的 verdict 也只是“有把握且差距明显”，并非“非常确定/必须”。"
+      }
+     ],
+     "cleared": 0,
+     "cost_usd": 0.000247008,
+     "ms": 1278
+    }
+   ]
+  }
+ ]
+}

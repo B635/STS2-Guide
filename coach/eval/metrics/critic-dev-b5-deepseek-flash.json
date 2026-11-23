@@ -1,0 +1,134 @@
+{
+ "set": "dev",
+ "variant": "b5",
+ "model": "deepseek-flash",
+ "thinking": false,
+ "cases": 20,
+ "repeats": 3,
+ "tp": 27,
+ "fn": 3,
+ "fp": 3,
+ "tn": 27,
+ "recall": 0.9,
+ "fpr": 0.1,
+ "precision": 0.9,
+ "f1": 0.9,
+ "unparsed": 0,
+ "all_agree_cases": 18,
+ "all_agree_rate": 0.9,
+ "per_repeat_flag_rates": [
+  0.55,
+  0.45,
+  0.5
+ ],
+ "flag_rate_spread": 0.1,
+ "majority_recall": 0.9,
+ "majority_fpr": 0.1,
+ "majority_f1": 0.9,
+ "by_category": {
+  "real_supported": {
+   "cases": 6,
+   "trials": 18,
+   "flagged": 0,
+   "rate": 0
+  },
+  "real_fp_trend_summary": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 1,
+   "rate": 0.3333
+  },
+  "real_fp_verdict_quote": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 2,
+   "rate": 0.6667
+  },
+  "real_fp_chinese_grammar": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 0,
+   "rate": 0
+  },
+  "real_out_of_scope_refusal": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 0,
+   "rate": 0
+  },
+  "ungrounded_inference": {
+   "cases": 2,
+   "trials": 6,
+   "flagged": 3,
+   "rate": 0.5
+  },
+  "contradicts_verdict": {
+   "cases": 2,
+   "trials": 6,
+   "flagged": 6,
+   "rate": 1
+  },
+  "contradicts_factors": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 3,
+   "rate": 1
+  },
+  "swapped_pick": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 3,
+   "rate": 1
+  },
+  "cross_floor_swap": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 3,
+   "rate": 1
+  },
+  "combat_causality": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 3,
+   "rate": 1
+  },
+  "chinese_numeral_count": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 3,
+   "rate": 1
+  },
+  "overclaim_certainty": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 3,
+   "rate": 1
+  }
+ },
+ "cost_usd": 0.0293,
+ "cost_per_call": 0.00049,
+ "avg_ms": 1940,
+ "errors": [
+  {
+   "id": "D02",
+   "category": "real_fp_trend_summary",
+   "expected": "supported",
+   "flagged_trials": 1,
+   "sample_reason": "从第 1 幕一开始就不够，不是某一层突然掉下来的。 => 证据 E2 中第 1 幕最早被记录的选牌是第 2 层（5.4 对 7.6，低于需求），没有第 1 层的数据；草稿说“第 1 幕一开始”超出了证据能确认的范围。"
+  },
+  {
+   "id": "D03",
+   "category": "real_fp_verdict_quote",
+   "expected": "supported",
+   "flagged_trials": 2,
+   "sample_reason": "第 6 层引擎首选血墙（43.6），剑柄打击 41.9，跳过 40.7，引擎判定 => 证据 E4 显示引擎首选血墙 43.6、剑柄打击 41.9、跳过 40.7，但 confidence 是 medium，verdict 写的是“不同，引擎有把握且差距明显（复盘报告"
+  },
+  {
+   "id": "D11",
+   "category": "ungrounded_inference",
+   "expected": "unsupported",
+   "flagged_trials": 0,
+   "sample_reason": "(not flagged)"
+  }
+ ]
+}

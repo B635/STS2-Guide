@@ -1,0 +1,743 @@
+{
+ "fix": "high_cost_affordability_cap (cost > base_energy bounded by Markov extra_energy / (cost - base_energy); unplayable share excluded from playable energy allocation while retained in draw dilution and raw energy demand)",
+ "golden_set": {
+  "before": {
+   "situations": 79,
+   "hits": 34,
+   "hit_rate": 0.4304,
+   "obvious_errors_first": 0
+  },
+  "after": {
+   "situations": 79,
+   "hits": 34,
+   "hit_rate": 0.4304,
+   "obvious_errors_first": 0
+  },
+  "changed_scenarios": [
+   {
+    "id": "necrobinder-f25-pagestorm",
+    "before_first": "skip",
+    "after_first": "skip",
+    "before_hit": false,
+    "after_hit": false,
+    "score_diffs": {
+     "2:BURY": 1.3
+    }
+   },
+   {
+    "id": "necrobinder-6052-f11-hang",
+    "before_first": "skip",
+    "after_first": "skip",
+    "before_hit": false,
+    "after_hit": false,
+    "score_diffs": {
+     "0:HANG": 0.1
+    }
+   }
+  ]
+ },
+ "dev_runs": {
+  "before": {
+   "all_agree": 132,
+   "all_total": 221,
+   "all_rate": 0.5973,
+   "card_agree": 59,
+   "card_total": 135,
+   "card_rate": 0.437,
+   "tier1_count": 24
+  },
+  "after": {
+   "all_agree": 132,
+   "all_total": 221,
+   "all_rate": 0.5973,
+   "card_agree": 59,
+   "card_total": 135,
+   "card_rate": 0.437,
+   "tier1_count": 24
+  }
+ },
+ "test_runs": {
+  "before": {
+   "all_agree": 178,
+   "all_total": 289,
+   "all_rate": 0.6159,
+   "card_agree": 79,
+   "card_total": 174,
+   "card_rate": 0.454,
+   "tier1_count": 31
+  },
+  "after": {
+   "all_agree": 178,
+   "all_total": 289,
+   "all_rate": 0.6159,
+   "card_agree": 79,
+   "card_total": 174,
+   "card_rate": 0.454,
+   "tier1_count": 30
+  },
+  "changed_decisions": [
+   {
+    "run_id": "1772819860",
+    "decision_id": "F05-card",
+    "before": {
+     "kind": "card_reward",
+     "floor": 5,
+     "chosen": "skip",
+     "engine_top": "skip",
+     "tier": 0,
+     "gap": 0.0,
+     "confidence": "low",
+     "options": [
+      {
+       "id": "skip",
+       "name": "跳过",
+       "score": 48.5,
+       "deck_score": 47.5
+      },
+      {
+       "id": "1:ASTRAL_PULSE",
+       "name": "星界脉冲",
+       "score": 48.4,
+       "deck_score": 48.4
+      },
+      {
+       "id": "2:CELESTIAL_MIGHT",
+       "name": "天穹之力",
+       "score": 46.3,
+       "deck_score": 46.3
+      },
+      {
+       "id": "0:CRESCENT_SPEAR",
+       "name": "新月长矛",
+       "score": 46.2,
+       "deck_score": 46.2
+      }
+     ]
+    },
+    "after": {
+     "kind": "card_reward",
+     "floor": 5,
+     "chosen": "skip",
+     "engine_top": "1:ASTRAL_PULSE",
+     "tier": 2,
+     "gap": 1.1,
+     "confidence": "low",
+     "options": [
+      {
+       "id": "1:ASTRAL_PULSE",
+       "name": "星界脉冲",
+       "score": 48.6,
+       "deck_score": 48.6
+      },
+      {
+       "id": "skip",
+       "name": "跳过",
+       "score": 48.5,
+       "deck_score": 47.5
+      },
+      {
+       "id": "2:CELESTIAL_MIGHT",
+       "name": "天穹之力",
+       "score": 46.3,
+       "deck_score": 46.3
+      },
+      {
+       "id": "0:CRESCENT_SPEAR",
+       "name": "新月长矛",
+       "score": 46.2,
+       "deck_score": 46.2
+      }
+     ]
+    }
+   },
+   {
+    "run_id": "1773853598",
+    "decision_id": "F15-card",
+    "before": {
+     "kind": "card_reward",
+     "floor": 15,
+     "chosen": "0:DEFILE",
+     "engine_top": "2:BURY",
+     "tier": 1,
+     "gap": 2.5,
+     "confidence": "medium",
+     "options": [
+      {
+       "id": "2:BURY",
+       "name": "埋葬",
+       "score": 63.3,
+       "deck_score": 63.3
+      },
+      {
+       "id": "0:DEFILE",
+       "name": "玷污",
+       "score": 60.8,
+       "deck_score": 60.8
+      },
+      {
+       "id": "skip",
+       "name": "跳过",
+       "score": 60.0,
+       "deck_score": 59.0
+      },
+      {
+       "id": "1:DEFY",
+       "name": "违逆",
+       "score": 59.0,
+       "deck_score": 59.0
+      }
+     ]
+    },
+    "after": {
+     "kind": "card_reward",
+     "floor": 15,
+     "chosen": "0:DEFILE",
+     "engine_top": "0:DEFILE",
+     "tier": 0,
+     "gap": 0.0,
+     "confidence": "medium",
+     "options": [
+      {
+       "id": "0:DEFILE",
+       "name": "玷污",
+       "score": 60.8,
+       "deck_score": 60.8
+      },
+      {
+       "id": "skip",
+       "name": "跳过",
+       "score": 60.0,
+       "deck_score": 59.0
+      },
+      {
+       "id": "2:BURY",
+       "name": "埋葬",
+       "score": 60.0,
+       "deck_score": 60.0
+      },
+      {
+       "id": "1:DEFY",
+       "name": "违逆",
+       "score": 59.0,
+       "deck_score": 59.0
+      }
+     ]
+    }
+   },
+   {
+    "run_id": "1791823702",
+    "decision_id": "F04-card",
+    "before": {
+     "kind": "card_reward",
+     "floor": 4,
+     "chosen": "0:SLEIGHT_OF_FLESH",
+     "engine_top": "2:SOW",
+     "tier": 2,
+     "gap": 5.5,
+     "confidence": "medium",
+     "options": [
+      {
+       "id": "2:SOW",
+       "name": "播种",
+       "score": 59.8,
+       "deck_score": 59.8
+      },
+      {
+       "id": "skip",
+       "name": "跳过",
+       "score": 57.2,
+       "deck_score": 56.2
+      },
+      {
+       "id": "1:INVOKE",
+       "name": "唤起",
+       "score": 56.7,
+       "deck_score": 56.7
+      },
+      {
+       "id": "0:SLEIGHT_OF_FLESH",
+       "name": "血肉戏法",
+       "score": 54.3,
+       "deck_score": 54.3
+      }
+     ]
+    },
+    "after": {
+     "kind": "card_reward",
+     "floor": 4,
+     "chosen": "0:SLEIGHT_OF_FLESH",
+     "engine_top": "2:SOW",
+     "tier": 2,
+     "gap": 5.9,
+     "confidence": "medium",
+     "options": [
+      {
+       "id": "2:SOW",
+       "name": "播种",
+       "score": 59.8,
+       "deck_score": 59.8
+      },
+      {
+       "id": "skip",
+       "name": "跳过",
+       "score": 57.1,
+       "deck_score": 56.1
+      },
+      {
+       "id": "1:INVOKE",
+       "name": "唤起",
+       "score": 57.1,
+       "deck_score": 57.1
+      },
+      {
+       "id": "0:SLEIGHT_OF_FLESH",
+       "name": "血肉戏法",
+       "score": 53.9,
+       "deck_score": 53.9
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "rated_test_findings_29": {
+  "summary": {
+   "useful": {
+    "total": 9,
+    "unchanged_tier1": 9,
+    "changed": []
+   },
+   "not_useful": {
+    "total": 6,
+    "changed": [
+     {
+      "run_id": "1773853598",
+      "decision_id": "F15-card",
+      "rating": "not_useful",
+      "note": "四费不一定可以打得出来啊",
+      "chosen": "0:DEFILE",
+      "before_top": "2:BURY",
+      "after_top": "0:DEFILE",
+      "before_tier": 1,
+      "after_tier": 0,
+      "before_gap": 2.5,
+      "after_gap": 0.0,
+      "changed": true
+     }
+    ]
+   },
+   "engine_wrong": {
+    "total": 14,
+    "changed": []
+   }
+  },
+  "rows": [
+   {
+    "run_id": "1772819860",
+    "decision_id": "F02-card",
+    "rating": "useful",
+    "note": "",
+    "chosen": "0:WROUGHT_IN_WAR",
+    "before_top": "2:GUIDING_STAR",
+    "after_top": "2:GUIDING_STAR",
+    "before_tier": 1,
+    "after_tier": 1,
+    "before_gap": 6.0,
+    "after_gap": 6.0,
+    "changed": false
+   },
+   {
+    "run_id": "1772819860",
+    "decision_id": "F17-card",
+    "rating": "engine_wrong",
+    "note": "选择剑圣说明是玩大剑流派，所以是可以选择的",
+    "chosen": "0:SWORD_SAGE",
+    "before_top": "1:COMET",
+    "after_top": "1:COMET",
+    "before_tier": 1,
+    "after_tier": 1,
+    "before_gap": 5.4,
+    "after_gap": 5.4,
+    "changed": false
+   },
+   {
+    "run_id": "1772895979",
+    "decision_id": "F11-card",
+    "rating": "useful",
+    "note": "",
+    "chosen": "0:WROUGHT_IN_WAR",
+    "before_top": "2:GLOW",
+    "after_top": "2:GLOW",
+    "before_tier": 1,
+    "after_tier": 1,
+    "before_gap": 2.8,
+    "after_gap": 2.8,
+    "changed": false
+   },
+   {
+    "run_id": "1772895979",
+    "decision_id": "F30-card",
+    "rating": "engine_wrong",
+    "note": "感觉不一定，这个效果不是很强，反而会增加卡组厚度",
+    "chosen": "skip",
+    "before_top": "0:KNOW_THY_PLACE",
+    "after_top": "0:KNOW_THY_PLACE",
+    "before_tier": 1,
+    "after_tier": 1,
+    "before_gap": 2.7,
+    "after_gap": 2.7,
+    "changed": false
+   },
+   {
+    "run_id": "1772895979",
+    "decision_id": "F04-card",
+    "rating": "useful",
+    "note": "",
+    "chosen": "0:WROUGHT_IN_WAR",
+    "before_top": "skip",
+    "after_top": "skip",
+    "before_tier": 1,
+    "after_tier": 1,
+    "before_gap": 2.0,
+    "after_gap": 2.0,
+    "changed": false
+   },
+   {
+    "run_id": "1772898707",
+    "decision_id": "F06-card",
+    "rating": "not_useful",
+    "note": "这个群伤，感觉不一定好用",
+    "chosen": "skip",
+    "before_top": "2:SOW",
+    "after_top": "2:SOW",
+    "before_tier": 1,
+    "after_tier": 1,
+    "before_gap": 3.2,
+    "after_gap": 3.2,
+    "changed": false
+   },
+   {
+    "run_id": "1773037084",
+    "decision_id": "F14-card",
+    "rating": "useful",
+    "note": "但是也要注意血量，要根据之后的血量，但是祭品确实是一张强力卡牌",
+    "chosen": "skip",
+    "before_top": "0:OFFERING",
+    "after_top": "0:OFFERING",
+    "before_tier": 1,
+    "after_tier": 1,
+    "before_gap": 5.6,
+    "after_gap": 5.6,
+    "changed": false
+   },
+   {
+    "run_id": "1773037084",
+    "decision_id": "F02-card",
+    "rating": "useful",
+    "note": "",
+    "chosen": "0:BLUDGEON",
+    "before_top": "2:SHRUG_IT_OFF",
+    "after_top": "2:SHRUG_IT_OFF",
+    "before_tier": 1,
+    "after_tier": 1,
+    "before_gap": 3.9,
+    "after_gap": 3.9,
+    "changed": false
+   },
+   {
+    "run_id": "1773037084",
+    "decision_id": "F17-card",
+    "rating": "engine_wrong",
+    "note": "痛殴如果循环很厉害啊",
+    "chosen": "0:THRASH",
+    "before_top": "1:DEMON_FORM",
+    "after_top": "1:DEMON_FORM",
+    "before_tier": 1,
+    "after_tier": 1,
+    "before_gap": 3.9,
+    "after_gap": 3.9,
+    "changed": false
+   },
+   {
+    "run_id": "1773037084",
+    "decision_id": "F08-card",
+    "rating": "not_useful",
+    "note": "狂怒不一定好用",
+    "chosen": "skip",
+    "before_top": "0:RAGE",
+    "after_top": "0:RAGE",
+    "before_tier": 1,
+    "after_tier": 1,
+    "before_gap": 3.7,
+    "after_gap": 3.7,
+    "changed": false
+   },
+   {
+    "run_id": "1773057317",
+    "decision_id": "F12-card",
+    "rating": "useful",
+    "note": "",
+    "chosen": "0:TEMPEST",
+    "before_top": "1:GLACIER",
+    "after_top": "1:GLACIER",
+    "before_tier": 1,
+    "after_tier": 1,
+    "before_gap": 6.1,
+    "after_gap": 6.1,
+    "changed": false
+   },
+   {
+    "run_id": "1773057317",
+    "decision_id": "F09-card",
+    "rating": "engine_wrong",
+    "note": "但是引雷针有防御，当时可能是想补充防御",
+    "chosen": "0:LIGHTNING_ROD",
+    "before_top": "1:COMPILE_DRIVER",
+    "after_top": "1:COMPILE_DRIVER",
+    "before_tier": 1,
+    "after_tier": 1,
+    "before_gap": 2.2,
+    "after_gap": 2.2,
+    "changed": false
+   },
+   {
+    "run_id": "1773057317",
+    "decision_id": "F17-card",
+    "rating": "engine_wrong",
+    "note": "缓冲是一张后期牌",
+    "chosen": "0:BUFFER",
+    "before_top": "skip",
+    "after_top": "skip",
+    "before_tier": 1,
+    "after_tier": 1,
+    "before_gap": 1.5,
+    "after_gap": 1.5,
+    "changed": false
+   },
+   {
+    "run_id": "1773853598",
+    "decision_id": "F15-card",
+    "rating": "not_useful",
+    "note": "四费不一定可以打得出来啊",
+    "chosen": "0:DEFILE",
+    "before_top": "2:BURY",
+    "after_top": "0:DEFILE",
+    "before_tier": 1,
+    "after_tier": 0,
+    "before_gap": 2.5,
+    "after_gap": 0.0,
+    "changed": true
+   },
+   {
+    "run_id": "1773983149",
+    "decision_id": "F24-card",
+    "rating": "engine_wrong",
+    "note": "费用太高",
+    "chosen": "skip",
+    "before_top": "1:REFRACT",
+    "after_top": "1:REFRACT",
+    "before_tier": 1,
+    "after_tier": 1,
+    "before_gap": 4.5,
+    "after_gap": 4.5,
+    "changed": false
+   },
+   {
+    "run_id": "1773983149",
+    "decision_id": "F28-card",
+    "rating": "engine_wrong",
+    "note": "这个不好说，都可以的",
+    "chosen": "skip",
+    "before_top": "2:GLASSWORK",
+    "after_top": "2:GLASSWORK",
+    "before_tier": 1,
+    "after_tier": 1,
+    "before_gap": 3.0,
+    "after_gap": 3.0,
+    "changed": false
+   },
+   {
+    "run_id": "1773983149",
+    "decision_id": "F04-card",
+    "rating": "engine_wrong",
+    "note": "这个是为了打出循环卡组",
+    "chosen": "0:GUNK_UP",
+    "before_top": "1:FUSION",
+    "after_top": "1:FUSION",
+    "before_tier": 1,
+    "after_tier": 1,
+    "before_gap": 1.8,
+    "after_gap": 1.8,
+    "changed": false
+   },
+   {
+    "run_id": "1774199215",
+    "decision_id": "F33-card",
+    "rating": "engine_wrong",
+    "note": "眩晕可能影响",
+    "chosen": "skip",
+    "before_top": "0:BOOST_AWAY",
+    "after_top": "0:BOOST_AWAY",
+    "before_tier": 1,
+    "after_tier": 1,
+    "before_gap": 8.3,
+    "after_gap": 8.3,
+    "changed": false
+   },
+   {
+    "run_id": "1774199215",
+    "decision_id": "F19-card",
+    "rating": "engine_wrong",
+    "note": "和上面一样",
+    "chosen": "skip",
+    "before_top": "1:REFRACT",
+    "after_top": "1:REFRACT",
+    "before_tier": 1,
+    "after_tier": 1,
+    "before_gap": 5.3,
+    "after_gap": 5.3,
+    "changed": false
+   },
+   {
+    "run_id": "1774199215",
+    "decision_id": "F04-card",
+    "rating": "engine_wrong",
+    "note": "和上面一样",
+    "chosen": "0:GUNK_UP",
+    "before_top": "1:FUSION",
+    "after_top": "1:FUSION",
+    "before_tier": 1,
+    "after_tier": 1,
+    "before_gap": 3.3,
+    "after_gap": 3.3,
+    "changed": false
+   },
+   {
+    "run_id": "1774202131",
+    "decision_id": "F17-card",
+    "rating": "engine_wrong",
+    "note": "恶魔形态太长了，如果可以早结束那为什么不早结束呢",
+    "chosen": "0:PACTS_END",
+    "before_top": "1:DEMON_FORM",
+    "after_top": "1:DEMON_FORM",
+    "before_tier": 1,
+    "after_tier": 1,
+    "before_gap": 2.4,
+    "after_gap": 2.4,
+    "changed": false
+   },
+   {
+    "run_id": "1775753122",
+    "decision_id": "F17-card",
+    "rating": "engine_wrong",
+    "note": "我只是跟喜欢痛殴",
+    "chosen": "0:THRASH",
+    "before_top": "1:PYRE",
+    "after_top": "1:PYRE",
+    "before_tier": 1,
+    "after_tier": 1,
+    "before_gap": 1.4,
+    "after_gap": 1.4,
+    "changed": false
+   },
+   {
+    "run_id": "1782142555",
+    "decision_id": "F07-card",
+    "rating": "useful",
+    "note": "",
+    "chosen": "skip",
+    "before_top": "1:FLICK_FLACK",
+    "after_top": "1:FLICK_FLACK",
+    "before_tier": 1,
+    "after_tier": 1,
+    "before_gap": 3.6,
+    "after_gap": 3.6,
+    "changed": false
+   },
+   {
+    "run_id": "1782142555",
+    "decision_id": "F12-card",
+    "rating": "useful",
+    "note": "",
+    "chosen": "skip",
+    "before_top": "2:RICOCHET",
+    "after_top": "2:RICOCHET",
+    "before_tier": 1,
+    "after_tier": 1,
+    "before_gap": 1.9,
+    "after_gap": 1.9,
+    "changed": false
+   },
+   {
+    "run_id": "1791474137",
+    "decision_id": "F15-card",
+    "rating": "engine_wrong",
+    "note": "两费11甲不一定后期用得上",
+    "chosen": "skip",
+    "before_top": "0:DELAY",
+    "after_top": "0:DELAY",
+    "before_tier": 1,
+    "after_tier": 1,
+    "before_gap": 6.3,
+    "after_gap": 6.3,
+    "changed": false
+   },
+   {
+    "run_id": "1791474137",
+    "decision_id": "F09-card",
+    "rating": "useful",
+    "note": "这个效果更新了，之前的御姐时间很强",
+    "chosen": "0:BORROWED_TIME",
+    "before_top": "skip",
+    "after_top": "skip",
+    "before_tier": 1,
+    "after_tier": 1,
+    "before_gap": 5.4,
+    "after_gap": 5.4,
+    "changed": false
+   },
+   {
+    "run_id": "1791474137",
+    "decision_id": "F02-card",
+    "rating": "not_useful",
+    "note": "",
+    "chosen": "0:FLATTEN",
+    "before_top": "skip",
+    "after_top": "skip",
+    "before_tier": 1,
+    "after_tier": 1,
+    "before_gap": 2.9,
+    "after_gap": 2.9,
+    "changed": false
+   },
+   {
+    "run_id": "1791820890",
+    "decision_id": "F02-card",
+    "rating": "not_useful",
+    "note": "蛇咬没用",
+    "chosen": "skip",
+    "before_top": "1:SNAKEBITE",
+    "after_top": "1:SNAKEBITE",
+    "before_tier": 1,
+    "after_tier": 1,
+    "before_gap": 3.6,
+    "after_gap": 3.6,
+    "changed": false
+   },
+   {
+    "run_id": "1791820890",
+    "decision_id": "F07-card",
+    "rating": "not_useful",
+    "note": "没用过这张",
+    "chosen": "skip",
+    "before_top": "2:PRECISE_CUT",
+    "after_top": "2:PRECISE_CUT",
+    "before_tier": 1,
+    "after_tier": 1,
+    "before_gap": 1.6,
+    "after_gap": 1.6,
+    "changed": false
+   }
+  ]
+ }
+}
