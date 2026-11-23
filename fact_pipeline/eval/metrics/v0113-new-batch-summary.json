@@ -1,0 +1,18 @@
+{
+ "pipeline_version": "fact-pipeline-v1",
+ "drafter_model": "deepseek-flash",
+ "auditor_model": "deepseek-flash",
+ "skip_audit": false,
+ "total": 57,
+ "auto_approved": 44,
+ "needs_human": 13,
+ "revised": 13,
+ "needs_new_vocabulary": 12,
+ "usage": {
+  "prompt_tokens": 5543511,
+  "completion_tokens": 369890,
+  "prompt_cache_hit_tokens": 4340224,
+  "cost_usd": 0.830896
+ },
+ "avg_cost_usd": 0.014577
+}

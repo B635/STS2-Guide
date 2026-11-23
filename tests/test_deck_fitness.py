@@ -1803,3 +1803,93 @@ class FilteredExhaustAndUpgradeTests(IndependentReviewFixTests):
                          "upgrade_cards:scope:played_card")
         self.assertTrue(self.relic("RAZOR_TOOTH")[1])
         self.assertEqual(self.relic("BONE_TEA")[1], ("relic_mechanic_unsupported:BONE_TEA:key:uses",))
+
+
+class HighCostAffordabilityTests(unittest.TestCase):
+    """Cards costing more than permanent turn energy need extra energy to play."""
+
+    @classmethod
+    def setUpClass(cls):
+        DeckFitnessPolicyTests.setUpClass()
+        cls.repository = DeckFitnessPolicyTests.repository
+
+    @classmethod
+    def tearDownClass(cls):
+        DeckFitnessPolicyTests.tearDownClass()
+
+    def profile(self, card_id, upgrades=0):
+        from advisor.deck_mechanics import card_profile
+
+        return card_profile(self.repository, card_id, upgrades)
+
+    def relic(self, relic_id):
+        from advisor.deck_mechanics import relic_profile
+
+        return relic_profile(self.repository, relic_id)
+
+    def starter(self, character):
+        from advisor.history_requests import starting_decks
+        from review.engine import KNOWLEDGE_PATH
+
+        decks = starting_decks(KNOWLEDGE_PATH)
+        return [self.profile(cid)[0] for cid in decks[character]]
+
+    def fight(self, cards, relics=(), turns=6.0):
+        from advisor.deck_fitness import PARAMETERS_KEY
+        from advisor.deck_mechanics import Situation, deck_capabilities
+
+        params = self.repository.mechanic_constant(PARAMETERS_KEY)
+        situation = Situation(turns, 0.0, 10.0, {"MONSTER": 1.0}, 1.0, 0)
+        return deck_capabilities(list(cards), list(relics), situation, params)[0]
+
+    def test_four_cost_card_cannot_be_played_on_three_energy_without_extra_energy(self):
+        deck = self.starter("NECROBINDER")
+        bury, gaps = self.profile("BURY")
+        wound = self.profile("WOUND")[0]
+        self.assertEqual(gaps, ())
+        base = self.fight(deck)
+        with_bury = self.fight(deck + [bury])
+        with_wound = self.fight(deck + [wound])
+        # Unplayable brick: adds 0 damage (same frontload as an unplayable Wound)
+        # and strictly increases raw energy demand.
+        self.assertAlmostEqual(with_bury["frontload"], with_wound["frontload"], places=9)
+        self.assertLessEqual(with_bury["frontload"], base["frontload"])
+        self.assertLess(with_bury["energy"], base["energy"])
+        # When energy is not saturated (0-cost cards in deck), draw dilution lowers frontload.
+        light_deck = [self.profile("STRIKE_NECROBINDER")[0] for _ in range(2)] + [
+            self.profile("SOUL")[0] for _ in range(5)
+        ]
+        self.assertLess(self.fight(light_deck + [bury])["frontload"], self.fight(light_deck)["frontload"])
+
+    def test_four_cost_card_becomes_playable_with_energy_relic_or_partial_energy_gain(self):
+        deck = self.starter("NECROBINDER")
+        bury = self.profile("BURY")[0]
+        wisp = self.profile("WISP")[0]
+        sozu = self.relic("SOZU")[0]
+
+        gain_none = self.fight(deck + [bury])["frontload"] - self.fight(deck)["frontload"]
+        gain_partial = self.fight(deck + [wisp, bury])["frontload"] - self.fight(deck + [wisp])["frontload"]
+        gain_four_energy = (
+            self.fight(deck + [bury], [sozu])["frontload"] - self.fight(deck, [sozu])["frontload"]
+        )
+        self.assertAlmostEqual(gain_none, 0.0, places=9)
+        self.assertGreater(gain_partial, gain_none)
+        self.assertGreater(gain_four_energy, gain_partial)
+
+    def test_meteor_strike_cannot_self_bootstrap_on_three_energy_without_kickstart(self):
+        deck = self.starter("DEFECT")
+        meteor, gaps = self.profile("METEOR_STRIKE")
+        wound = self.profile("WOUND")[0]
+        self.assertEqual(gaps, ())
+        turbo = self.profile("TURBO")[0]
+        alone = self.fight(deck + [meteor])
+        with_wound = self.fight(deck + [wound])
+        # 5-cost card on 3 base energy with no other energy source stays unplayable
+        # and does not self-bootstrap its own Plasma energy.
+        self.assertAlmostEqual(alone["frontload"], with_wound["frontload"], places=9)
+        self.assertLess(alone["energy"], self.fight(deck)["energy"])
+        # With an external energy source (Turbo), it can be played and generates Plasma feedback.
+        with_turbo_base = self.fight(deck + [turbo])
+        with_turbo_meteor = self.fight(deck + [turbo, meteor])
+        self.assertGreater(with_turbo_meteor["frontload"], with_turbo_base["frontload"])
+

@@ -1,0 +1,141 @@
+{
+ "set": "dev",
+ "variant": "c2",
+ "model": "deepseek-flash",
+ "thinking": true,
+ "cases": 20,
+ "repeats": 3,
+ "tp": 29,
+ "fn": 1,
+ "fp": 5,
+ "tn": 25,
+ "recall": 0.9667,
+ "fpr": 0.1667,
+ "precision": 0.8529,
+ "f1": 0.9062,
+ "unparsed": 0,
+ "all_agree_cases": 17,
+ "all_agree_rate": 0.85,
+ "per_repeat_flag_rates": [
+  0.6,
+  0.55,
+  0.55
+ ],
+ "flag_rate_spread": 0.05,
+ "majority_recall": 1,
+ "majority_fpr": 0.1,
+ "majority_f1": 0.9524,
+ "by_category": {
+  "real_supported": {
+   "cases": 6,
+   "trials": 18,
+   "flagged": 2,
+   "rate": 0.1111
+  },
+  "real_fp_trend_summary": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 3,
+   "rate": 1
+  },
+  "real_fp_verdict_quote": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 0,
+   "rate": 0
+  },
+  "real_fp_chinese_grammar": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 0,
+   "rate": 0
+  },
+  "real_out_of_scope_refusal": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 0,
+   "rate": 0
+  },
+  "ungrounded_inference": {
+   "cases": 2,
+   "trials": 6,
+   "flagged": 5,
+   "rate": 0.8333
+  },
+  "contradicts_verdict": {
+   "cases": 2,
+   "trials": 6,
+   "flagged": 6,
+   "rate": 1
+  },
+  "contradicts_factors": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 3,
+   "rate": 1
+  },
+  "swapped_pick": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 3,
+   "rate": 1
+  },
+  "cross_floor_swap": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 3,
+   "rate": 1
+  },
+  "combat_causality": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 3,
+   "rate": 1
+  },
+  "chinese_numeral_count": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 3,
+   "rate": 1
+  },
+  "overclaim_certainty": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 3,
+   "rate": 1
+  }
+ },
+ "cost_usd": 0.1575,
+ "cost_per_call": 0.00263,
+ "avg_ms": 10436,
+ "errors": [
+  {
+   "id": "D02",
+   "category": "real_fp_trend_summary",
+   "expected": "supported",
+   "flagged_trials": 3,
+   "sample_reason": "第 3 层：4.6 对 8.0，缺口最大。 => E2 里第 3 层确实是 4.6 对 8.0，但按需求减现有的绝对缺口算，第 14 层是 11.8-6.8=5.0，第 12 层是 10.3-6.7=3.6，都大于第 3 层的 3"
+  },
+  {
+   "id": "D08",
+   "category": "real_supported",
+   "expected": "supported",
+   "flagged_trials": 1,
+   "sample_reason": "所以引擎的偏好建立在“升级收益被低估”上。 => E2 的 headline 说引擎首选来自它的取舍倾向（例如跳过门槛），advice 只说引擎只算了一半升级收益、把握不大；并没有说引擎偏好是建立在“升级收益被低估”上，而且若升级"
+  },
+  {
+   "id": "D09",
+   "category": "real_supported",
+   "expected": "supported",
+   "flagged_trials": 1,
+   "sample_reason": "它本身不造成伤害，但虚弱能降低敌人输出，易伤能放大你后续的伤害。 => E1 只给出牌面：0 费技能、给予 1 层虚弱、1 层易伤、带消耗，没有提供虚弱/易伤的具体结算效果；草稿额外补出了“降低输出/放大伤害”的机制。"
+  },
+  {
+   "id": "D14",
+   "category": "ungrounded_inference",
+   "expected": "unsupported",
+   "flagged_trials": 2,
+   "sample_reason": "拿它后循环从每回合额外抽牌 0.00 升到 0.23（需求 1.0），是四个选项 => E1 只给出「引导之星」的循环变化（0.00 → 0.23，需求 1.0），没有给出另外三个选项的循环数值；而且暗淡蓝点、征召上前还标注了部分效果未计入。因此无法据此断定它是四个选"
+  }
+ ]
+}

@@ -1,0 +1,112 @@
+{
+ "set": "dev",
+ "variant": "c1",
+ "model": "deepseek-flash",
+ "thinking": false,
+ "cases": 20,
+ "repeats": 3,
+ "tp": 30,
+ "fn": 0,
+ "fp": 0,
+ "tn": 30,
+ "recall": 1,
+ "fpr": 0,
+ "precision": 1,
+ "f1": 1,
+ "unparsed": 0,
+ "all_agree_cases": 20,
+ "all_agree_rate": 1,
+ "per_repeat_flag_rates": [
+  0.5,
+  0.5,
+  0.5
+ ],
+ "flag_rate_spread": 0,
+ "majority_recall": 1,
+ "majority_fpr": 0,
+ "majority_f1": 1,
+ "by_category": {
+  "real_supported": {
+   "cases": 6,
+   "trials": 18,
+   "flagged": 0,
+   "rate": 0
+  },
+  "real_fp_trend_summary": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 0,
+   "rate": 0
+  },
+  "real_fp_verdict_quote": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 0,
+   "rate": 0
+  },
+  "real_fp_chinese_grammar": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 0,
+   "rate": 0
+  },
+  "real_out_of_scope_refusal": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 0,
+   "rate": 0
+  },
+  "ungrounded_inference": {
+   "cases": 2,
+   "trials": 6,
+   "flagged": 6,
+   "rate": 1
+  },
+  "contradicts_verdict": {
+   "cases": 2,
+   "trials": 6,
+   "flagged": 6,
+   "rate": 1
+  },
+  "contradicts_factors": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 3,
+   "rate": 1
+  },
+  "swapped_pick": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 3,
+   "rate": 1
+  },
+  "cross_floor_swap": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 3,
+   "rate": 1
+  },
+  "combat_causality": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 3,
+   "rate": 1
+  },
+  "chinese_numeral_count": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 3,
+   "rate": 1
+  },
+  "overclaim_certainty": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 3,
+   "rate": 1
+  }
+ },
+ "cost_usd": 0.0505,
+ "cost_per_call": 0.00084,
+ "avg_ms": 2035,
+ "errors": []
+}

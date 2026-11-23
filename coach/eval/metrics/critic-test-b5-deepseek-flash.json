@@ -1,0 +1,187 @@
+{
+ "set": "test",
+ "variant": "b5",
+ "model": "deepseek-flash",
+ "thinking": false,
+ "cases": 40,
+ "repeats": 3,
+ "tp": 60,
+ "fn": 0,
+ "fp": 17,
+ "tn": 43,
+ "recall": 1,
+ "fpr": 0.2833,
+ "precision": 0.7792,
+ "f1": 0.8759,
+ "unparsed": 0,
+ "all_agree_cases": 36,
+ "all_agree_rate": 0.9,
+ "per_repeat_flag_rates": [
+  0.65,
+  0.65,
+  0.625
+ ],
+ "flag_rate_spread": 0.025,
+ "majority_recall": 1,
+ "majority_fpr": 0.25,
+ "majority_f1": 0.8889,
+ "by_category": {
+  "real_supported": {
+   "cases": 8,
+   "trials": 24,
+   "flagged": 2,
+   "rate": 0.0833
+  },
+  "real_out_of_scope_refusal": {
+   "cases": 3,
+   "trials": 9,
+   "flagged": 3,
+   "rate": 0.3333
+  },
+  "hard_valid_paraphrase": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 3,
+   "rate": 1
+  },
+  "hard_valid_what_if": {
+   "cases": 2,
+   "trials": 6,
+   "flagged": 3,
+   "rate": 0.5
+  },
+  "hard_valid_verdict": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 3,
+   "rate": 1
+  },
+  "hard_valid_caveat": {
+   "cases": 2,
+   "trials": 6,
+   "flagged": 0,
+   "rate": 0
+  },
+  "hard_valid_trend": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 3,
+   "rate": 1
+  },
+  "hard_valid_advice": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 0,
+   "rate": 0
+  },
+  "hard_valid_compound_count": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 0,
+   "rate": 0
+  },
+  "swapped_pick": {
+   "cases": 3,
+   "trials": 9,
+   "flagged": 9,
+   "rate": 1
+  },
+  "cross_floor_swap": {
+   "cases": 3,
+   "trials": 9,
+   "flagged": 9,
+   "rate": 1
+  },
+  "out_of_scope_answer": {
+   "cases": 3,
+   "trials": 9,
+   "flagged": 9,
+   "rate": 1
+  },
+  "combat_causality": {
+   "cases": 3,
+   "trials": 9,
+   "flagged": 9,
+   "rate": 1
+  },
+  "ungrounded_inference": {
+   "cases": 3,
+   "trials": 9,
+   "flagged": 9,
+   "rate": 1
+  },
+  "overclaim_certainty": {
+   "cases": 2,
+   "trials": 6,
+   "flagged": 6,
+   "rate": 1
+  },
+  "chinese_numeral_count": {
+   "cases": 3,
+   "trials": 9,
+   "flagged": 9,
+   "rate": 1
+  }
+ },
+ "cost_usd": 0.0963,
+ "cost_per_call": 0.0008,
+ "avg_ms": 1963,
+ "errors": [
+  {
+   "id": "T04",
+   "category": "real_supported",
+   "expected": "supported",
+   "flagged_trials": 1,
+   "sample_reason": "前期输出从 19.1 升到 20.2，防御从 6.4 略降到 6.1，仍高于需求 => 证据 E1 中引导之星的 factors 确实写了前期输出 19.1 → 20.2、防御 6.4 → 6.1、需求 4.8，数字都有依据；但草稿把“防御 6.1 仍高于需求 4.8"
+  },
+  {
+   "id": "T09",
+   "category": "real_out_of_scope_refusal",
+   "expected": "supported",
+   "flagged_trials": 1,
+   "sample_reason": "比如第二幕那几次跳过选牌，引擎更看好折射、寒流、刮削，理由分别落在群伤和前期输出 => 证据里 F21 折射的理由是群伤和前期输出（E1），F22 寒流的理由是防御（E2），F30 刮削的理由是前期输出和循环（E3），三处都能对上；但草稿把这三张牌统称为“第二幕那几次"
+  },
+  {
+   "id": "T10",
+   "category": "real_supported",
+   "expected": "supported",
+   "flagged_trials": 1,
+   "sample_reason": "整局看，前期输出和群伤几乎每次选牌都低于需求，防御则一直够用。 => deck_trend 里 F31 的群伤 have 0、need 0，below_need 为 false，并非“几乎每次”都低于需求；其余选牌的前期输出和群伤确实都低于需求，防御"
+  },
+  {
+   "id": "T11",
+   "category": "real_out_of_scope_refusal",
+   "expected": "supported",
+   "flagged_trials": 2,
+   "sample_reason": "顺带一提，这局引擎反复觉得群伤和前期输出偏低，铜钹的随机伤害算是往这个方向补了一 => E5 的 deck_trend 里 aoe 和 frontload 在多数决策点 below_need 为 true，方向有依据；但“铜钹的随机伤害补了一点”是引擎没有评估的（E6"
+  },
+  {
+   "id": "T12",
+   "category": "hard_valid_paraphrase",
+   "expected": "supported",
+   "flagged_trials": 3,
+   "sample_reason": "三项主要差在防御（6.8 → 7.4，需求 11.8）、前期输出（28.9 →  => 证据 E1 的 comparison 和 finding.reasons 里确实有这三项数值，但 finding.reasons 明确说防御是“两者差距最大的一项”，草稿却把三项并"
+  },
+  {
+   "id": "T13",
+   "category": "hard_valid_what_if",
+   "expected": "supported",
+   "flagged_trials": 3,
+   "sample_reason": "会。引擎在牌组里先加一张血墙后重新计分，首选依然是放血，差距保持在 6.0–8. => 证据 E1 的 what_if 说：试了加血墙、加坚毅加铁斩波、加祭品加全身撞击、去掉两张打击再加血墙，首选都仍是放血，差距 6.0–8.0。草稿把“加血墙”这一种改动和 6.0–"
+  },
+  {
+   "id": "T14",
+   "category": "hard_valid_verdict",
+   "expected": "supported",
+   "flagged_trials": 3,
+   "sample_reason": "第 6 层引擎给血墙 43.6、剑柄打击 41.9、跳过 40.7，属于有把握且 => E4 中 F06-card 的 confidence 是 medium，verdict 写的是“不同，引擎有把握且差距明显（复盘报告里的“值得想一想”）”，但 E0 的 F06-c"
+  },
+  {
+   "id": "T16",
+   "category": "hard_valid_trend",
+   "expected": "supported",
+   "flagged_trials": 3,
+   "sample_reason": "这局分歧最大的四次都在防御或循环上：第 13 层预言比黑洞高 6.7 分（但黑洞 => 证据里能找到这四次决定的分差和方向（E2 的 6.7、E3 的 5.8、E5 的 5.3、E4 的 4），但“分歧最大的四次”这个排序在证据里没有依据：E0 里 F03（3.1）、"
+  }
+ ]
+}

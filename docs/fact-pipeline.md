@@ -1,0 +1,140 @@
+# 自动化程序集 IL 事实提取与对抗复核管线（Fact Pipeline）
+
+> 说明：对应 [`TASK-030`](tasks/TASK-030-fact-pipeline/README.md)，所有评测指标保存在 [`fact_pipeline/eval/metrics/`](../fact_pipeline/eval/metrics/)，可脱离 API Key 复现核对。完整反编译 IL 仅缓存在被 Git 忽略的 `build/` 目录，不入库。
+
+## 1. 解决什么问题
+
+实时评分引擎（`advisor/deck_fitness.py`）依赖按类代码指纹锁定的程序集机制事实（`data/assembly/facts.json`），不信任自然语言描述正则。每次游戏版本更新（如 `0.111.0 → 0.113.1`），代码变动的条目会自动标为 `stale`，新增角色还会带来上百条未审实体。
+
+过去这些事实需要开发者在对话中手工分批起草、另开会话复核、再人工裁决。`fact_pipeline` 将这一流程工程化为**可重复运行的自动化 Code-to-Fact 多 Agent 管线**，覆盖卡牌（`cards:`）、能力（`powers:`）与遗物（`relics:`）三类实体，自动完成绝大多数条目的起草、确定性门禁校验与独立对抗复核，仅把存在分歧或触发新词表的少数条目交给人裁决。
+
+## 2. 架构
+
+```text
+输入（entity_keys + sts2-extract.json + facts.json + knowledge.json + sts2.dll / IL 缓存）
+  │
+  ▼
+程序预取（零工具调用开销）
+  ├─ extract 结构化元数据（overrides / calls / canonical_vars / card_ctor / upgrade_deltas / fingerprint）
+  ├─ 目标类完整 .NET IL（Sts2FactExtractor --dump，按程序集哈希落盘缓存）
+  └─ Spire Codex 目录条目（仅作交叉核对，冲突时以程序集为准）
+  │
+  ▼
+Stage 1：起草 Agent（Drafter，最多 6 次只读工具调用）
+  ├─ 按需只读工具：dump_class / read_enum / lookup_fact（禁止自查目标实体防泄露）
+  └─ submit_fact → 确定性校验门禁（复用 merge_fact_reviews 词表与结构硬规则）
+       └─ 校验不通过：精确错误清单退回自修（最多 2 次）
+  │
+  ▼
+Stage 2：独立对抗复核 Agent（Auditor，全新隔离上下文，最多 4 次只读工具调用）
+  ├─ 不接收 Drafter 对话历史；强制先输出独立 il_reading 再给 verdict
+  └─ submit_audit(il_reading, issues, verdict, needs_new_vocabulary, notes)
+  │
+  ▼
+Stage 3：分流与受控返修
+  ├─ agree 且无新词表需求 → auto_approved（可直接对接 merge_fact_reviews.py）
+  ├─ disagree 且无新词表需求 → 带具体意见返修 1 轮（重新过门禁）→ 全新 Auditor 复审
+  │    ├─ 复审 agree → auto_approved（标记 revised=true）
+  │    └─ 仍 disagree → needs_human
+  └─ 触发 needs_new_vocabulary / 校验耗尽 / 超预算 → needs_human（输出 review-queue.md）
+```
+
+### 核心模块
+
+| 模块 | 职责 |
+|---|---|
+| [`fact_pipeline/extractor.py`](../fact_pipeline/extractor.py) | 只读封装 `Sts2FactExtractor`（`--dump` / `--dump-any` / `--enum`）与磁盘缓存，支持测试夹具注入 |
+| [`fact_pipeline/validator.py`](../fact_pipeline/validator.py) | 复用 `merge_fact_reviews` 词表并收紧结构规则（禁止 `effects` 混入 `when`、禁用 `generate`、强制 `target`/`destination`/`offer_rewards`/trigger 键） |
+| [`fact_pipeline/llm.py`](../fact_pipeline/llm.py) | OpenAI 兼容客户端（默认 DeepSeek），精确统计含缓存命中的费用，支持独立切换 Auditor 思考模式与跨模型 |
+| [`fact_pipeline/prompts.py`](../fact_pipeline/prompts.py) | 固定可缓存系统规范前缀 + 预取上下文 + 强制先独立读 IL 再给裁决的 Auditor 提示 |
+| [`fact_pipeline/pipeline.py`](../fact_pipeline/pipeline.py) | 实体状态机、严格上下文隔离、保留 `initial_draft` 供配对消融、并发执行与按指纹断点续跑 |
+| [`fact_pipeline/compare.py`](../fact_pipeline/compare.py) | 语义事实比较器（区分 `strict_match` 与无损归一化的 `core_match`，输出字段级 `field_diffs`） |
+| [`fact_pipeline/evaluate.py`](../fact_pipeline/evaluate.py) | 固定种子分层切分 `dev`/`test`、防泄露脱敏、离线重算全部指标 |
+
+## 3. 关键设计取舍
+
+1. **程序预取 + 固定前缀缓存**：目标类的 `extract`、完整 IL 与 Codex 对照由程序一次性注入，Agent 仅在遇到辅助类、父类或未知枚举时才调工具；跨实体共享同一份系统规范前缀，实测盲测集 prompt cache 命中率达 **76.7%**，单条全流程均价降至 **$0.0137**。
+2. **确定性校验门禁前置于模型复核**：在 `dev-p1` 中发现大量错误属于约定与结构违规（例如把抽牌触发塞进 `effects`、使用旧别名 `generate`、把 `damage.target` 写成 `enemy`）。将这些硬规则沉淀到 `validator.py` 后，`dev` 首次过门禁升至 **100%**，`auto_core_prec` 直接跃升 **+34.1pp**。
+3. **解决 Auditor 橡皮图章问题**：`dev-p1` 中同模型非思考 Auditor 几乎全票放行（拦错率仅 **5.6%**，连 `VOID` 正负号写反都未拦住）。通过“完全隔离上下文 + 强制先写 `il_reading` 再给 `verdict` + 仅对 Auditor 开启思考模式”，`dev` 拦错率升至 **33.3%**（盲测集 **45.9%**），同时保持 **0% 误杀率**。
+4. **严格防泄露评测**：`lookup_fact` 强制禁止查询目标实体本身；`eval run` 模式会对整个 `dev` + `test` 切分集的所有条目剥离已审字段，确保模型无法从历史事实库偷看答案。
+5. **不回头用测试集调参**：所有 prompt、门禁与比较器迭代只在 `dev`（24 条）完成；60 条 `test` 盲测集（含 9 条历史上连人工双审都有分歧的 `resolved` 难题）冻结后只跑一次，真实暴露长尾短板。
+
+## 4. 评估结果
+
+数据切分见 [`fact_pipeline/eval/split.json`](../fact_pipeline/eval/split.json)（基于 `v0.113.1` 人工交叉复核后的已审事实，种子 42，无重叠分层抽样：`dev` 24 条、`test` 60 条）。
+
+### 4.1 开发集迭代对比（`dev`，24 条，同口径冻结比较器）
+
+| 配置 | 首次过门禁 | 自动通过 | 自动通过 Core 准确 | 复核拦错率 | 误杀率 | 返修修对/改坏 | 费用（均价） | 缓存命中 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| `p1` 基线（松门禁 + 非思考 Flash） | 23/24 | 24/24 (100%) | 25.0% (6/24) | 5.6% (1/18) | 0/6 (0%) | 0 / 0 | $0.24 ($0.010) | 57.8% |
+| `p2` 强门禁 + 完整规范 + 清单复核 | 24/24 | 22/24 (91.7%) | 59.1% (13/22) | 18.2% (2/11) | 0/13 (0%) | 0 / 0 | $0.31 ($0.013) | 63.1% |
+| **`p3` + Flash 思考模式 Auditor（定稿）** | **24/24** | **22/24 (91.7%)** | **68.2% (15/22)** | **33.3% (3/9)** | **0/14 (0%)** | **1 / 0** | **$0.39 ($0.016)** | **74.6%** |
+| `p4` + `deepseek-v4-pro` 跨模型 Auditor | 24/24 | 21/24 (87.5%) | 66.7% (14/21) | 50.0% (5/10) | 0/14 (0%) | 0 / 0 | $0.93 ($0.039) | 73.3% |
+
+- `p1 → p2`（强门禁 + 规范）贡献了最大单次跃升（**+34.1pp**）；
+- `p2 → p3`（思考模式 Auditor）拦错率近乎翻倍，最终准确率最高且成本仅为 `v4-pro` 的 42%；
+- `p4`（`v4-pro` 跨模型复核）拦错率最高（50.0%、0 误杀），但贵 2.4 倍，且非思考起草端在返修轮未能把 Pro 挑出的复杂差异全部修对。
+
+### 4.2 盲测集正式评估与配对消融（`test`，60 条，配置 `p3`，仅运行一次）
+
+| 方案（同一批 60 条初稿配对对比） | 过门禁 | 自动通过 | 自动通过 Core 准确 | 自动通过 Strict 准确 | 复核拦错率 | 误杀率 | 人工队列精准率 | 费用（均价） |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| 消融基线：仅起草端 + 确定性门禁 | 60/60 | 60/60 (100%) | 33.3% (20/60) | — | — | — | — | — |
+| **全链路：起草 + 思考 Auditor + 1 轮返修** | **60/60 (首次 57)** | **48/60 (80.0%)** | **43.8% (21/48)** | **35.4% (17/48)** | **45.9% (17/37)** | **0/20 (0%)** | **100% (12/12)** | **$0.82 ($0.014)** |
+
+按难度分层拆解（`test-p3`）：
+
+| 分层 | 总数 | 自动通过 | 自动通过 Core 准确 | 说明 |
+|---|---:|---:|---:|---|
+| `relics_combat` | 6 | 3 | **100.0% (3/3)** | 3 条复杂遗物（`POCKETWATCH` 等）准确分流人工 |
+| `cards_fool` | 6 | 5 | **80.0% (4/5)** | 第 5 条 `RUMMAGE` 仅差 `count_upgrade: 0` 冗余键 |
+| `cards_simple` | 10 | 7 | **71.4% (5/7)** | 3 条特殊机制卡准确分流人工 |
+| `cards_complex` | 12 | 10 | **50.0% (5/10)** | 含 `SPINNER`/`ANGER`/`SUMMON_FORTH` 等写法差异；`FEED` 甚至补出了人工漏标的 `can_be_generated_in_combat: false` |
+| `powers_all` | 12 | 11 | **27.3% (3/11)** | 复杂多钩子能力仍需更严格字段规范与人工复核 |
+| `relics_out_of_combat` | 5 | 5 | **20.0% (1/5)** | `between_fights` 细节字段表达自由度过高 |
+| `cards_hard` / `relics_hard` | 9 | 7 | **0.0% (0/7)** | 历史上人工双审即存在分歧的极难条目，包含 `SELF_DEPRECATE` 升级增量误写、条件漏标等真实错误 |
+
+## 5. `v0.113.1` 实战跑批（M4）
+
+使用定稿配置 `p3`（`deepseek-flash` 起草 + `--auditor-thinking` 独立复核）对 `v0.113.1` 全部 **57 条新增未审实体**（17 件新遗物 + 40 个新增能力）执行一次真实批处理（结果目录 `build/fact-pipeline/v0113-new-batch/`，汇总留档见 [`fact_pipeline/eval/metrics/v0113-new-batch-summary.json`](../fact_pipeline/eval/metrics/v0113-new-batch-summary.json)）：
+
+| 指标 | 结果 |
+|---|---|
+| 批次规模 | 57 条（17 新遗物 + 40 新能力，覆盖全部愚者核心机制能力） |
+| 确定性门禁通过 | 44/44 自动通过条目 `validate_fact` 0 报错 |
+| 自动通过（`auto_approved`） | **44/57（77.2%）**（遗物 13/17、能力 31/40；其中 13 条经 Auditor 挑刺后返修收敛） |
+| 分流人工队列（`needs_human`） | **13/57（22.8%）**（12 条识别出需要新增词表，1 条返修后仍有分歧，已输出 `review-queue.md`） |
+| 成本与缓存 | 总费用 **$0.831**（均价 **$0.0146/条**），prompt cache 命中率 **78.3%** |
+
+关键愚者新能力与新遗物抽查结果（均与 `docs/dev/mechanic-facts.md` 愚者词表约定一致）：
+- `powers:AIM`：`trigger`、`duration: until_triggered`，`modifier: damage (+1/stack, from_arrow & powered_attack)`；
+- `powers:STRETCH`：`trigger`、`duration: until_triggered`，`modifier: block (+1/stack)`；
+- `powers:HONING`：`trigger`、`duration: combat`，`modifier: damage (multiply_percent_per_stack: 1, from_arrow & powered_attack)`；
+- `powers:YAH`：`trigger`、`duration: combat`，`when: arrow_dislodged (once_per_turn) -> energy (+1/stack)`；
+- `relics:WHITTLING_KNIFE`：`trigger`，`when: shuffle -> apply_power Aim 5`。
+
+> 注：本批次产物位于本地 `build/fact-pipeline/v0113-new-batch/`（`auto_approved.json` 与 `review-queue.md`），尚未自动合入 `feature/v0113` 的 `facts.json`，待人工抽查与裁决 13 条队列后再按 `merge_fact_reviews.py` 合入。
+
+## 6. 已知限制
+
+- **复杂能力与局外遗物（`powers` / `between_fights`）仍不可全自动直合**：在严格自动比较下，复杂能力与历史分歧难题的自动放行准确率尚不足以无人值守直接入库，当前定位是**高召回初筛与人机协作加速器**（先把约 20% 高难/缺词表条目精准挑出，并对常规卡牌/战斗遗物给出高质量初稿与 IL 证据，缩短人工审核耗时）。
+- **返修轮转化率偏低（盲测 11 次返修仅 1 次完全转正）**：当思考模式 Auditor 发现深层 IL 误读时，非思考模式的起草端在返修轮往往难以彻底重构复杂结构；后续若给返修轮也开启思考模式或交由 `v4-pro` 返修，有望显著提高挽回率。
+- **语义比较器对部分低频写法仍偏严**：如 `note_text`、`count_upgrade: 0`、`to` vs `destination` 会拉低自动指标；坚持不在测试集上回头改比较器以保评测诚实。
+
+## 7. 运行命令
+
+```powershell
+# 离线单测（无需 API Key 或 sts2.dll）
+python -m unittest tests/test_fact_pipeline.py -v
+
+# 导出某分支数据并生成分层切分
+python -m fact_pipeline eval export-branch --branch feature/v0113
+python -m fact_pipeline eval split --extract build/fact-pipeline/v0113-inputs/sts2-extract.json --facts build/fact-pipeline/v0113-inputs/facts.json
+
+# 运行离线评测（需要 DEEPSEEK_API_KEY）
+python -m fact_pipeline eval run dev --extract build/fact-pipeline/v0113-inputs/sts2-extract.json --facts build/fact-pipeline/v0113-inputs/facts.json --knowledge build/fact-pipeline/v0113-inputs/knowledge.json --auditor-thinking --out build/fact-pipeline/eval/dev-p3
+
+# 对未审实体实战跑批（输出 auto_approved.json 与 review-queue.md）
+python -m fact_pipeline run --extract build/fact-pipeline/v0113-inputs/sts2-extract.json --facts build/fact-pipeline/v0113-inputs/facts.json --knowledge build/fact-pipeline/v0113-inputs/knowledge.json --states unreviewed stale --types relics powers --auditor-thinking --out build/fact-pipeline/v0113-run
+```

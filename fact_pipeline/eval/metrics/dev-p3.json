@@ -1,0 +1,894 @@
+{
+ "total": 24,
+ "schema_first_pass": 24,
+ "schema_first_pass_rate": 1.0,
+ "schema_final_pass": 24,
+ "schema_final_pass_rate": 1.0,
+ "auto_approved": 22,
+ "auto_approved_rate": 0.9167,
+ "needs_human": 2,
+ "needs_human_rate": 0.0833,
+ "needs_new_vocabulary": 1,
+ "auto_approved_core_ok": 15,
+ "auto_approved_core_precision": 0.6818,
+ "auto_approved_strict_ok": 5,
+ "auto_approved_strict_precision": 0.2273,
+ "initial_draft_core_ok": 14,
+ "initial_draft_core_accuracy": 0.5833,
+ "initial_draft_strict_ok": 5,
+ "overall_core_ok": 15,
+ "overall_core_accuracy": 0.625,
+ "overall_strict_ok": 5,
+ "overall_strict_accuracy": 0.2083,
+ "auditor": {
+  "audited_total": 23,
+  "buggy_initial": 9,
+  "caught_bugs": 3,
+  "bug_recall": 0.3333,
+  "good_initial": 14,
+  "false_alarms": 0,
+  "false_alarm_rate": 0.0
+ },
+ "revision": {
+  "attempted": 3,
+  "fixed_bug": 1,
+  "broke_good": 0,
+  "still_buggy": 2,
+  "kept_good": 0
+ },
+ "reasons": {
+  "auditor_agreed": 20,
+  "auditor_disagreed_after_revision": 1,
+  "needs_new_vocabulary": 1,
+  "revised_auditor_agreed": 2
+ },
+ "mismatch_fields": {
+  "mechanics": 7,
+  "effects": 2,
+  "has_unknowable": 1,
+  "obtain": 1
+ },
+ "by_type": {
+  "cards": {
+   "total": 13,
+   "auto_approved": 12,
+   "auto_core_ok": 10,
+   "auto_strict_ok": 4,
+   "overall_core_ok": 10,
+   "overall_strict_ok": 4,
+   "auto_approved_rate": 0.9231,
+   "auto_core_precision": 0.8333,
+   "overall_core_accuracy": 0.7692
+  },
+  "powers": {
+   "total": 5,
+   "auto_approved": 4,
+   "auto_core_ok": 1,
+   "auto_strict_ok": 0,
+   "overall_core_ok": 1,
+   "overall_strict_ok": 0,
+   "auto_approved_rate": 0.8,
+   "auto_core_precision": 0.25,
+   "overall_core_accuracy": 0.2
+  },
+  "relics": {
+   "total": 6,
+   "auto_approved": 6,
+   "auto_core_ok": 4,
+   "auto_strict_ok": 1,
+   "overall_core_ok": 4,
+   "overall_strict_ok": 1,
+   "auto_approved_rate": 1.0,
+   "auto_core_precision": 0.6667,
+   "overall_core_accuracy": 0.6667
+  }
+ },
+ "by_stratum": {
+  "cards_complex": {
+   "total": 4,
+   "auto_approved": 4,
+   "auto_core_ok": 4,
+   "overall_core_ok": 4,
+   "auto_approved_rate": 1.0,
+   "auto_core_precision": 1.0,
+   "overall_core_accuracy": 1.0
+  },
+  "cards_fool": {
+   "total": 3,
+   "auto_approved": 2,
+   "auto_core_ok": 2,
+   "overall_core_ok": 2,
+   "auto_approved_rate": 0.6667,
+   "auto_core_precision": 1.0,
+   "overall_core_accuracy": 0.6667
+  },
+  "cards_hard": {
+   "total": 2,
+   "auto_approved": 2,
+   "auto_core_ok": 0,
+   "overall_core_ok": 0,
+   "auto_approved_rate": 1.0,
+   "auto_core_precision": 0.0,
+   "overall_core_accuracy": 0.0
+  },
+  "cards_simple": {
+   "total": 4,
+   "auto_approved": 4,
+   "auto_core_ok": 4,
+   "overall_core_ok": 4,
+   "auto_approved_rate": 1.0,
+   "auto_core_precision": 1.0,
+   "overall_core_accuracy": 1.0
+  },
+  "powers_all": {
+   "total": 5,
+   "auto_approved": 4,
+   "auto_core_ok": 1,
+   "overall_core_ok": 1,
+   "auto_approved_rate": 0.8,
+   "auto_core_precision": 0.25,
+   "overall_core_accuracy": 0.2
+  },
+  "relics_combat": {
+   "total": 3,
+   "auto_approved": 3,
+   "auto_core_ok": 2,
+   "overall_core_ok": 2,
+   "auto_approved_rate": 1.0,
+   "auto_core_precision": 0.6667,
+   "overall_core_accuracy": 0.6667
+  },
+  "relics_out_of_combat": {
+   "total": 3,
+   "auto_approved": 3,
+   "auto_core_ok": 2,
+   "overall_core_ok": 2,
+   "auto_approved_rate": 1.0,
+   "auto_core_precision": 0.6667,
+   "overall_core_accuracy": 0.6667
+  }
+ },
+ "usage": {
+  "prompt_tokens": 2622749,
+  "completion_tokens": 147821,
+  "prompt_cache_hit_tokens": 1957120,
+  "cache_hit_rate": 0.7462,
+  "total_cost_usd": 0.388816,
+  "avg_cost_usd": 0.016201,
+  "avg_latency_ms": 34939
+ },
+ "per_entity": [
+  {
+   "entity_key": "cards:ALL_FOR_ONE",
+   "stratum": "cards_complex",
+   "outcome": "auto_approved",
+   "reason": "revised_auditor_agreed",
+   "revised": true,
+   "initial_core_match": false,
+   "final_core_match": true,
+   "final_strict_match": false,
+   "initial_audit_verdict": "disagree",
+   "final_audit_verdict": "agree",
+   "diff_fields": [
+    "effects"
+   ],
+   "field_diffs": {},
+   "cost_usd": 0.048093,
+   "latency_ms": 90635
+  },
+  {
+   "entity_key": "cards:QUASAR",
+   "stratum": "cards_complex",
+   "outcome": "auto_approved",
+   "reason": "auditor_agreed",
+   "revised": false,
+   "initial_core_match": true,
+   "final_core_match": true,
+   "final_strict_match": false,
+   "initial_audit_verdict": "agree",
+   "final_audit_verdict": "agree",
+   "diff_fields": [
+    "effects"
+   ],
+   "field_diffs": {},
+   "cost_usd": 0.01987,
+   "latency_ms": 26107
+  },
+  {
+   "entity_key": "cards:RELAX",
+   "stratum": "cards_complex",
+   "outcome": "auto_approved",
+   "reason": "auditor_agreed",
+   "revised": false,
+   "initial_core_match": true,
+   "final_core_match": true,
+   "final_strict_match": true,
+   "initial_audit_verdict": "agree",
+   "final_audit_verdict": "agree",
+   "diff_fields": [],
+   "field_diffs": {},
+   "cost_usd": 0.009467,
+   "latency_ms": 14014
+  },
+  {
+   "entity_key": "cards:VOID",
+   "stratum": "cards_complex",
+   "outcome": "auto_approved",
+   "reason": "auditor_agreed",
+   "revised": false,
+   "initial_core_match": true,
+   "final_core_match": true,
+   "final_strict_match": false,
+   "initial_audit_verdict": "agree",
+   "final_audit_verdict": "agree",
+   "diff_fields": [
+    "mechanics"
+   ],
+   "field_diffs": {},
+   "cost_usd": 0.008795,
+   "latency_ms": 13671
+  },
+  {
+   "entity_key": "cards:CHO_BARBS",
+   "stratum": "cards_fool",
+   "outcome": "auto_approved",
+   "reason": "auditor_agreed",
+   "revised": false,
+   "initial_core_match": true,
+   "final_core_match": true,
+   "final_strict_match": true,
+   "initial_audit_verdict": "agree",
+   "final_audit_verdict": "agree",
+   "diff_fields": [],
+   "field_diffs": {},
+   "cost_usd": 0.010347,
+   "latency_ms": 16215
+  },
+  {
+   "entity_key": "cards:CHO_LIMBS",
+   "stratum": "cards_fool",
+   "outcome": "auto_approved",
+   "reason": "auditor_agreed",
+   "revised": false,
+   "initial_core_match": true,
+   "final_core_match": true,
+   "final_strict_match": false,
+   "initial_audit_verdict": "agree",
+   "final_audit_verdict": "agree",
+   "diff_fields": [
+    "cost_modifier"
+   ],
+   "field_diffs": {},
+   "cost_usd": 0.011644,
+   "latency_ms": 24763
+  },
+  {
+   "entity_key": "cards:MAUL",
+   "stratum": "cards_fool",
+   "outcome": "needs_human",
+   "reason": "needs_new_vocabulary",
+   "revised": false,
+   "initial_core_match": false,
+   "final_core_match": false,
+   "final_strict_match": false,
+   "initial_audit_verdict": null,
+   "final_audit_verdict": null,
+   "diff_fields": [
+    "effects",
+    "mechanics"
+   ],
+   "field_diffs": {
+    "effects": {
+     "expected": [
+      {
+       "amount": 5,
+       "hits": 2,
+       "kind": "damage",
+       "scale": {
+        "factor": 2,
+        "factor_upgrade": 1,
+        "min": 0,
+        "per": "own_previous_plays"
+       },
+       "target": "single",
+       "upgrade": 1
+      }
+     ],
+     "actual": [
+      {
+       "amount": 5,
+       "hits": 2,
+       "kind": "damage",
+       "target": "single",
+       "upgrade": 1
+      }
+     ]
+    },
+    "mechanics": {
+     "expected": [],
+     "actual": [
+      {
+       "effect": {
+        "amount": 2,
+        "kind": "damage",
+        "scope": "all_copies_of_this_card_in_combat",
+        "target": "single",
+        "upgrade": 1
+       },
+       "filter": {
+        "card": "MAUL",
+        "self": true
+       },
+       "when": "card_played"
+      }
+     ]
+    }
+   },
+   "cost_usd": 0.002394,
+   "latency_ms": 4280
+  },
+  {
+   "entity_key": "cards:CHO_CHORUS",
+   "stratum": "cards_hard",
+   "outcome": "auto_approved",
+   "reason": "auditor_agreed",
+   "revised": false,
+   "initial_core_match": false,
+   "final_core_match": false,
+   "final_strict_match": false,
+   "initial_audit_verdict": "agree",
+   "final_audit_verdict": "agree",
+   "diff_fields": [
+    "effects"
+   ],
+   "field_diffs": {
+    "effects": {
+     "expected": [
+      {
+       "amount": 12,
+       "kind": "block",
+       "upgrade": 3
+      },
+      {
+       "filter": {
+        "tag": [
+         "Wah",
+         "Ki"
+        ]
+       },
+       "kind": "auto_play",
+       "source": "hand"
+      }
+     ],
+     "actual": [
+      {
+       "amount": 12,
+       "kind": "block",
+       "upgrade": 3
+      },
+      {
+       "filter": {
+        "tags_any": [
+         "Wah",
+         "Ki"
+        ]
+       },
+       "free": true,
+       "kind": "auto_play",
+       "scope": "hand"
+      }
+     ]
+    }
+   },
+   "cost_usd": 0.014446,
+   "latency_ms": 28059
+  },
+  {
+   "entity_key": "cards:MIDNIGHT",
+   "stratum": "cards_hard",
+   "outcome": "auto_approved",
+   "reason": "auditor_agreed",
+   "revised": false,
+   "initial_core_match": false,
+   "final_core_match": false,
+   "final_strict_match": false,
+   "initial_audit_verdict": "agree",
+   "final_audit_verdict": "agree",
+   "diff_fields": [
+    "mechanics"
+   ],
+   "field_diffs": {
+    "mechanics": {
+     "expected": [
+      {
+       "effect": {
+        "amount": 1,
+        "kind": "cost_reduction"
+       },
+       "when": "card_exhausted"
+      }
+     ],
+     "actual": [
+      {
+       "effect": {
+        "amount": 1,
+        "kind": "cost_reduction",
+        "scale": {
+         "factor": 1,
+         "per": "exhaust_pile"
+        },
+        "scope": "this_combat"
+       },
+       "when": "combat_start"
+      },
+      {
+       "effect": {
+        "amount": 1,
+        "kind": "cost_reduction",
+        "scope": "this_combat"
+       },
+       "when": "card_exhausted"
+      }
+     ]
+    }
+   },
+   "cost_usd": 0.020869,
+   "latency_ms": 60058
+  },
+  {
+   "entity_key": "cards:CHILD_OF_THE_STARS",
+   "stratum": "cards_simple",
+   "outcome": "auto_approved",
+   "reason": "auditor_agreed",
+   "revised": false,
+   "initial_core_match": true,
+   "final_core_match": true,
+   "final_strict_match": true,
+   "initial_audit_verdict": "agree",
+   "final_audit_verdict": "agree",
+   "diff_fields": [],
+   "field_diffs": {},
+   "cost_usd": 0.011661,
+   "latency_ms": 19262
+  },
+  {
+   "entity_key": "cards:DEFEND_SILENT",
+   "stratum": "cards_simple",
+   "outcome": "auto_approved",
+   "reason": "auditor_agreed",
+   "revised": false,
+   "initial_core_match": true,
+   "final_core_match": true,
+   "final_strict_match": true,
+   "initial_audit_verdict": "agree",
+   "final_audit_verdict": "agree",
+   "diff_fields": [],
+   "field_diffs": {},
+   "cost_usd": 0.003042,
+   "latency_ms": 5905
+  },
+  {
+   "entity_key": "cards:METAMORPHOSIS",
+   "stratum": "cards_simple",
+   "outcome": "auto_approved",
+   "reason": "auditor_agreed",
+   "revised": false,
+   "initial_core_match": true,
+   "final_core_match": true,
+   "final_strict_match": false,
+   "initial_audit_verdict": "agree",
+   "final_audit_verdict": "agree",
+   "diff_fields": [
+    "effects"
+   ],
+   "field_diffs": {},
+   "cost_usd": 0.038747,
+   "latency_ms": 94621
+  },
+  {
+   "entity_key": "cards:WHITE_NOISE",
+   "stratum": "cards_simple",
+   "outcome": "auto_approved",
+   "reason": "auditor_agreed",
+   "revised": false,
+   "initial_core_match": true,
+   "final_core_match": true,
+   "final_strict_match": false,
+   "initial_audit_verdict": "agree",
+   "final_audit_verdict": "agree",
+   "diff_fields": [
+    "effects"
+   ],
+   "field_diffs": {},
+   "cost_usd": 0.016528,
+   "latency_ms": 24934
+  },
+  {
+   "entity_key": "powers:FEEDING_FRENZY",
+   "stratum": "powers_all",
+   "outcome": "auto_approved",
+   "reason": "auditor_agreed",
+   "revised": false,
+   "initial_core_match": true,
+   "final_core_match": true,
+   "final_strict_match": false,
+   "initial_audit_verdict": "agree",
+   "final_audit_verdict": "agree",
+   "diff_fields": [
+    "duration"
+   ],
+   "field_diffs": {},
+   "cost_usd": 0.008023,
+   "latency_ms": 15074
+  },
+  {
+   "entity_key": "powers:LOOP",
+   "stratum": "powers_all",
+   "outcome": "auto_approved",
+   "reason": "auditor_agreed",
+   "revised": false,
+   "initial_core_match": false,
+   "final_core_match": false,
+   "final_strict_match": false,
+   "initial_audit_verdict": "agree",
+   "final_audit_verdict": "agree",
+   "diff_fields": [
+    "mechanics"
+   ],
+   "field_diffs": {
+    "mechanics": {
+     "expected": [
+      {
+       "condition": {
+        "has_orbs": true
+       },
+       "effect": {
+        "amount_per_stack": 1,
+        "amount_text": "<text>",
+        "kind": "orb_passive",
+        "orb": "first orb in queue (index 0)"
+       },
+       "when": "turn_start"
+      }
+     ],
+     "actual": [
+      {
+       "effect": {
+        "kind": "orb_passive",
+        "orb_index": 0,
+        "times": "amount_per_stack"
+       },
+       "when": "turn_start"
+      }
+     ]
+    }
+   },
+   "cost_usd": 0.011594,
+   "latency_ms": 14981
+  },
+  {
+   "entity_key": "powers:SIC_EM",
+   "stratum": "powers_all",
+   "outcome": "auto_approved",
+   "reason": "auditor_agreed",
+   "revised": false,
+   "initial_core_match": false,
+   "final_core_match": false,
+   "final_strict_match": false,
+   "initial_audit_verdict": "agree",
+   "final_audit_verdict": "agree",
+   "diff_fields": [
+    "mechanics"
+   ],
+   "field_diffs": {
+    "mechanics": {
+     "expected": [
+      {
+       "effect": {
+        "amount_per_stack": 1,
+        "kind": "summon"
+       },
+       "filter": {
+        "dealer": "applier_osty"
+       },
+       "owner": "enemy",
+       "when": "damage_received"
+      }
+     ],
+     "actual": [
+      {
+       "effect": {
+        "amount_per_stack": 1,
+        "kind": "summon"
+       },
+       "filter": {
+        "dealer": "osty",
+        "dealer_owner": "applier",
+        "target": "owner"
+       },
+       "when": "damage_dealt"
+      }
+     ]
+    }
+   },
+   "cost_usd": 0.014559,
+   "latency_ms": 39763
+  },
+  {
+   "entity_key": "powers:SOULBOUND",
+   "stratum": "powers_all",
+   "outcome": "auto_approved",
+   "reason": "revised_auditor_agreed",
+   "revised": true,
+   "initial_core_match": false,
+   "final_core_match": false,
+   "final_strict_match": false,
+   "initial_audit_verdict": "disagree",
+   "final_audit_verdict": "agree",
+   "diff_fields": [
+    "mechanics"
+   ],
+   "field_diffs": {
+    "mechanics": {
+     "expected": [
+      {
+       "effect": {
+        "amount_per_stack": 1,
+        "card": "SOUL",
+        "destination": "draw",
+        "kind": "add_card"
+       },
+       "filter": {
+        "card": "SOUL",
+        "creator": "applier"
+       },
+       "owner": "ally (power owner is the ally targeted by cards:SOULBOUND)",
+       "when": "card_generated"
+      }
+     ],
+     "actual": [
+      {
+       "effect": {
+        "amount_per_stack": 1,
+        "card": "SOUL",
+        "count": 1,
+        "destination": "draw",
+        "kind": "add_card"
+       },
+       "filter": {
+        "card": "SOUL",
+        "creator": "owner"
+       },
+       "when": "card_generated"
+      }
+     ]
+    }
+   },
+   "cost_usd": 0.043042,
+   "latency_ms": 101527
+  },
+  {
+   "entity_key": "powers:TAG_TEAM",
+   "stratum": "powers_all",
+   "outcome": "needs_human",
+   "reason": "auditor_disagreed_after_revision",
+   "revised": true,
+   "initial_core_match": false,
+   "final_core_match": false,
+   "final_strict_match": false,
+   "initial_audit_verdict": "disagree",
+   "final_audit_verdict": "disagree",
+   "diff_fields": [
+    "has_unknowable",
+    "mechanics"
+   ],
+   "field_diffs": {
+    "has_unknowable": {
+     "expected": true,
+     "actual": false
+    },
+    "mechanics": {
+     "expected": [
+      {
+       "add_per_stack": 1,
+       "filter": {
+        "card_owner": "not_applier",
+        "card_type": "Attack",
+        "targets_power_owner": true
+       },
+       "limit": "consumed after first modification",
+       "modifier": "card_play_count",
+       "owner": "enemy"
+      }
+     ],
+     "actual": [
+      {
+       "add_per_stack": 1,
+       "filter": {
+        "card_type": "Attack",
+        "played_by": "applier",
+        "target_is_owner": true,
+        "target_type": [
+         2,
+         3
+        ]
+       },
+       "modifier": "card_play_count"
+      }
+     ]
+    }
+   },
+   "cost_usd": 0.03131,
+   "latency_ms": 113433
+  },
+  {
+   "entity_key": "relics:FUNERARY_MASK",
+   "stratum": "relics_combat",
+   "outcome": "auto_approved",
+   "reason": "auditor_agreed",
+   "revised": false,
+   "initial_core_match": false,
+   "final_core_match": false,
+   "final_strict_match": false,
+   "initial_audit_verdict": "agree",
+   "final_audit_verdict": "agree",
+   "diff_fields": [
+    "mechanics"
+   ],
+   "field_diffs": {
+    "mechanics": {
+     "expected": [
+      {
+       "effect": {
+        "card": "SOUL",
+        "count": 3,
+        "destination": "draw",
+        "kind": "add_card"
+       },
+       "when": "combat_start"
+      }
+     ],
+     "actual": [
+      {
+       "effect": {
+        "card": "SOUL",
+        "count": 3,
+        "destination": "draw",
+        "kind": "add_card"
+       },
+       "turns": [
+        1
+       ],
+       "when": "turn_start"
+      }
+     ]
+    }
+   },
+   "cost_usd": 0.013401,
+   "latency_ms": 20841
+  },
+  {
+   "entity_key": "relics:LETTER_OPENER",
+   "stratum": "relics_combat",
+   "outcome": "auto_approved",
+   "reason": "auditor_agreed",
+   "revised": false,
+   "initial_core_match": true,
+   "final_core_match": true,
+   "final_strict_match": false,
+   "initial_audit_verdict": "agree",
+   "final_audit_verdict": "agree",
+   "diff_fields": [
+    "mechanics"
+   ],
+   "field_diffs": {},
+   "cost_usd": 0.01143,
+   "latency_ms": 31483
+  },
+  {
+   "entity_key": "relics:TOXIC_EGG",
+   "stratum": "relics_combat",
+   "outcome": "auto_approved",
+   "reason": "auditor_agreed",
+   "revised": false,
+   "initial_core_match": true,
+   "final_core_match": true,
+   "final_strict_match": false,
+   "initial_audit_verdict": "agree",
+   "final_audit_verdict": "agree",
+   "diff_fields": [
+    "between_fights"
+   ],
+   "field_diffs": {},
+   "cost_usd": 0.00603,
+   "latency_ms": 14888
+  },
+  {
+   "entity_key": "relics:CAULDRON",
+   "stratum": "relics_out_of_combat",
+   "outcome": "auto_approved",
+   "reason": "auditor_agreed",
+   "revised": false,
+   "initial_core_match": true,
+   "final_core_match": true,
+   "final_strict_match": true,
+   "initial_audit_verdict": "agree",
+   "final_audit_verdict": "agree",
+   "diff_fields": [],
+   "field_diffs": {},
+   "cost_usd": 0.007382,
+   "latency_ms": 12513
+  },
+  {
+   "entity_key": "relics:DUSTY_TOME",
+   "stratum": "relics_out_of_combat",
+   "outcome": "auto_approved",
+   "reason": "auditor_agreed",
+   "revised": false,
+   "initial_core_match": true,
+   "final_core_match": true,
+   "final_strict_match": false,
+   "initial_audit_verdict": "agree",
+   "final_audit_verdict": "agree",
+   "diff_fields": [
+    "obtain"
+   ],
+   "field_diffs": {},
+   "cost_usd": 0.013897,
+   "latency_ms": 22779
+  },
+  {
+   "entity_key": "relics:NEOWS_BONES",
+   "stratum": "relics_out_of_combat",
+   "outcome": "auto_approved",
+   "reason": "auditor_agreed",
+   "revised": false,
+   "initial_core_match": false,
+   "final_core_match": false,
+   "final_strict_match": false,
+   "initial_audit_verdict": "agree",
+   "final_audit_verdict": "agree",
+   "diff_fields": [
+    "obtain"
+   ],
+   "field_diffs": {
+    "obtain": {
+     "expected": [
+      {
+       "count": 1,
+       "destination": "deck",
+       "kind": "add_card",
+       "pool": "<pool>"
+      },
+      {
+       "count": 2,
+       "distinct": true,
+       "kind": "gain_relic",
+       "source": "neow_options"
+      }
+     ],
+     "actual": [
+      {
+       "count": 1,
+       "destination": "deck",
+       "kind": "add_card",
+       "pool": "<pool>"
+      },
+      {
+       "kind": "offer_rewards",
+       "rewards": [
+        {
+         "count": 2,
+         "source": "neow_options",
+         "type": "relic"
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "cost_usd": 0.012245,
+   "latency_ms": 28732
+  }
+ ]
+}
