@@ -232,6 +232,8 @@ def derive_mechanic_effect_tags(item: Dict) -> EffectTags:
         if strength is not None and strength > 0:
             add("strength", "provider", strength, "vars.Strength")
         hit_count = _number(item.get("hit_count"))
+        if hit_count is None:
+            hit_count = _number(variables.get("HitCount"))
         if hit_count is not None and hit_count > 1:
             add("strength", "payoff", hit_count, "hit_count")
 
@@ -504,6 +506,8 @@ def derive_effect_tags(entity_type: str, item: Dict) -> EffectTags:
             add("draw", cards_draw, "cards_draw")
 
         hit_count = _number(item.get("hit_count"))
+        if hit_count is None:
+            hit_count = _number((item.get("vars") or {}).get("HitCount"))
         if hit_count is not None and hit_count > 1:
             add("multi_hit", hit_count, "hit_count")
 

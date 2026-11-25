@@ -1,8 +1,8 @@
 #ifndef AppVersion
-  #define AppVersion "0.3.15-alpha.0"
+  #define AppVersion "0.3.16-alpha.0"
 #endif
 #ifndef ExpectedGameVersion
-  #define ExpectedGameVersion "0.111.0"
+  #define ExpectedGameVersion "0.113.1"
 #endif
 #ifndef ExpectedGameAssemblySHA256
   #error ExpectedGameAssemblySHA256 must be supplied by build_public_beta.ps1

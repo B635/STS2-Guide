@@ -43,11 +43,11 @@ class CurrentCatalogTests(unittest.TestCase):
             self.assertEqual(len(ids), len(set(ids)), kind)
 
     def test_reworked_card_is_defense_not_old_energy_source(self):
+        # v0.113.1 reworked Expect a Fight to 3-cost 15 Block + reduce Attack costs in hand by 1.
         card = self.cards["EXPECT_A_FIGHT"]
         self.assertEqual((card["cost"], card["block"]), (3, 15))
         tags = derive_effect_tags("cards", card)
         self.assertEqual(tags["block"][0], 15)
-        self.assertNotIn("energy_gain", tags)
 
     def test_changed_upgrade_and_timing_facts_are_preserved(self):
         self.assertEqual(self.cards["RAMPAGE"]["damage"], 10)

@@ -338,5 +338,6 @@
 - 尚不能估值的动态量要报告缺口。FLORESCENCE 的生成牌增伤取这一次快照中的射击牌数（`damage_from: shoot_cards_snapshotted_by_this_florescence`），不是本场累计；不能把未算增伤的生成牌当成完整效果。
 - 只在多人模式出现的牌写 `multiplayer_only: true`（COVERING_FIRE、ENSEMBLE、SELF_DEPRECATE、COMPOST、ENRAPTURE、YOGA）。
 - `cost_modifier` 可带 `condition`（如 CHO_LIMBS：持有哇或叽旋律时减费）；箭矢事件的 `filter` 可用 `dealer: owner`。
-- 尚无写法、暂写 `amount_text`：手牌中的悲伤张数（GROWTH，建议来源名 `sadness_in_hand`）、卡牌自身数值整局成长（SHOW_OFF）。
+- 尚无写法、暂写 `amount_text`：手牌中的悲伤张数（GROWTH，建议来源名 `sadness_in_hand`）、卡牌自身数值整局成长（SHOW_OFF，能力触发写 `grow_card_var`）。
+- 遗物与宠物能力补充修正（v0.113.1，暂不计分）：`attack_hit_count`（如 THUMBSCREW，对多段攻击增加攻击次数）、`damage_target_redirect`（如 WUPPYS_LOYALTY，把针对持有者的受加成攻击伤害重定向给宠物）。
 - 引擎暂不计分：箭的供应与回收、扎穿条件、悲伤、塔罗牌（报缺口）；计划先支持拉伸、瞄准、旋律，箭按“每回合最多按箭位数射击”的暂定规则估计（TASK-029 第 3 步之后）。

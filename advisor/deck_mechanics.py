@@ -35,19 +35,26 @@ SUPPORTED_EFFECTS = frozenset({
     "exhaust_self", "exhaust_other", "discard", "gain_stars",
     "channel_orb", "evoke_orb", "orb_slots", "orb_passive", "summon", "kill_osty",
     "doom_kill", "enemy_strength_down", "forge", "generate", "upgrade_cards",
+    "arrow_slots", "dislodge_arrow",
 })
-SELF_POWERS = {"Strength": "strength", "Dexterity": "dexterity", "Vigor": "vigor", "Focus": "focus"}
+SELF_POWERS = {
+    "Strength": "strength", "Dexterity": "dexterity", "Vigor": "vigor", "Focus": "focus",
+    "Aim": "aim", "Stretch": "stretch",
+}
 # Orb names on effects -> orb fact ids (orbs:<ID>).
 ORB_TYPES = {"Lightning": "LIGHTNING_ORB", "Frost": "FROST_ORB", "Dark": "DARK_ORB",
              "Plasma": "PLASMA_ORB", "Glass": "GLASS_ORB"}
-ENEMY_POWERS = {"Vulnerable": "vulnerable", "Weak": "weak", "Poison": "poison", "Doom": "doom"}
+ENEMY_POWERS = {
+    "Vulnerable": "vulnerable", "Weak": "weak", "Poison": "poison", "Doom": "doom",
+    "DislikeYou": "dislike_you",
+}
 DAMAGE_TARGETS = frozenset({"single", "all", "random", "attacker", "evoke_targets"})
 EFFECT_KEYS = frozenset({
     "kind", "amount", "upgrade", "hits", "target", "power", "count", "choice", "per_x", "orb", "scope",
     # With ``per_x``: the upgraded card counts X + this (Tempest, Malaise).
     "bonus_if_upgraded",
-    # Osty attacks: dealt by the pet (``source: osty``), only while it lives.
-    "source",
+    # Osty attacks (``source: osty``) and Fool arrow shots (``source: arrow``).
+    "source", "aim_multiplier", "owner_only", "times", "multiply_if",
     # enemy_strength_down: until the enemy's turn ends, or for the combat.
     "lasting",
     # Power facts scale an effect by the stacks applied; ``unpowered`` only
@@ -78,6 +85,8 @@ SCALE_SOURCES = frozenset({
     "attacks_played_this_turn", "skills_played_this_turn", "osty_attacks_this_turn",
     "other_osty_attack_cards", "times_drawn_this_combat", "star_cost_cards", "x_value",
     "enemies_killed_by_this_card", "energy_after_cost", "own_exhausted_damage",
+    # Fool melodies.
+    "melodies_this_turn", "melody_cards_in_combat",
     # From the previous pass at an average moment (see ``_estimate``).
     "cards_drawn_this_combat", "draw_pile", "target_debuff_types", "discards_this_turn",
     "hand_space", "enemy_count", "orbs_channeled_this_combat", "lightning_channeled_this_combat",
@@ -87,8 +96,10 @@ SCALE_SOURCES = frozenset({
 EFFECT_CONDITIONS = frozenset({
     "target_has_power", "exhaust_pile_at_least", "lost_hp_this_turn",
     "card_exhausted_this_turn", "target_alive", "osty_alive",
+    "target_impaled", "target_impaled_at_play_start", "has_arrow", "shot_succeeded",
+    "melody_played_this_turn", "melodies_this_turn_at_least",
 })
-NUMERIC_EFFECT_KEYS = ("amount", "upgrade", "hits", "count", "amount_per_stack", "hits_upgrade")
+NUMERIC_EFFECT_KEYS = ("amount", "upgrade", "hits", "count", "amount_per_stack", "hits_upgrade", "aim_multiplier", "times")
 # Effects that act on a set of cards and may restrict it with ``filter``
 # (see ``_card_set_unsupported``); they have no amount, only a count.
 CARD_SET_EFFECTS = frozenset({"exhaust_other", "discard", "upgrade_cards"})
@@ -117,6 +128,7 @@ SUPPORTED_WHEN = frozenset({
     "combat_start", "turn_start", "turn_end", "card_played", "card_exhausted",
     "card_discarded", "shuffle", "damage_received", "enemy_died", "block_gained",
     "card_drawn", "damage_dealt", "orb_evoked",
+    "arrow_shot", "arrow_impaled", "arrow_dislodged",
 })
 SUPPORTED_CONDITIONS = frozenset({
     "no_block", "per_card_in_hand", "hand_empty", "block_at_least",
@@ -125,6 +137,8 @@ SUPPORTED_CONDITIONS = frozenset({
     "unblocked_damage", "during_own_turn", "caused_by_ethereal", "block_gained_above",
     # Always true for an attack that has a dealer.
     "has_dealer", "attacker_exists",
+    # Fool melody and arrow trigger conditions.
+    "melodies_played_this_turn", "target_impaled",
 })
 MECHANIC_KEYS = frozenset({
     "when", "filter", "every", "counter", "limit", "condition", "effect",
@@ -148,14 +162,20 @@ MODIFIER_FIELDS = {
     "focus": {"add"},     # temporary Focus on the owner
     # Extra free plays: ``uses`` matching plays per turn, or every match.
     "card_play_count": {"add", "filter", "uses", "counter", "applies_to"},
-    "hp_loss_negate": {"uses"},
+    "hp_loss_negate": {"uses", "filter"},
     "card_added_to_deck": {"filter", "upgrade"},
 }
 # Card-level triggers that fire between fights (quest and curse counters).
 RUN_ONLY_WHEN = frozenset({"combat_end", "room_entered", "rest_site", "map_generated", "quest_complete"})
-CARD_FILTER_KEYS = frozenset({"card_type", "tag", "min_cost", "upgraded", "x_cost", "owner_card", "card"})
+CARD_FILTER_KEYS = frozenset({
+    "card_type", "tag", "min_cost", "upgraded", "x_cost", "owner_card", "card",
+    "owner",
+})
 # Filters on an attack: the hit that is dealt or received.
-ATTACK_FILTER_KEYS = frozenset({"powered_attack", "powered_attack_or_card", "dealer"})
+ATTACK_FILTER_KEYS = frozenset({
+    "powered_attack", "powered_attack_or_card", "dealer", "from_arrow", "target_has_power",
+})
+MELODY_TAGS = ("Wah", "Cho", "Ki")
 COUNTERS = frozenset({None, "turn", "combat", "run"})
 LIMITS = frozenset({None, "once_per_turn", "once_per_combat"})
 # Generated cards: a named card sent to a pile. Pools, chosen copies and
@@ -258,6 +278,7 @@ class Situation:
     hp_ratio: float
     potion_count: Optional[int]
     orb_slots: float = 0.0            # character base slots (0: one is added on first channel)
+    arrow_slots: float = 0.0          # Fool base arrow slots (1 for Fool, 0 otherwise)
     orbs: Mapping[str, Mapping] = field(default_factory=dict)   # reviewed orb facts by ORB_TYPES id
     sovereign_blade: Optional["CardProfile"] = None   # the card a first forge creates
     # From encounter/monster facts; None/0 when they are not available.
@@ -284,6 +305,13 @@ class _Totals:
     dexterity_flat: float = 0.0
     dexterity_rate: float = 0.0
     vigor: float = 0.0
+    aim: float = 0.0               # Fool Aim (next powered arrow attack, per hit)
+    stretch: float = 0.0           # Fool Stretch (next powered block card, per block instance)
+    dislike_you: float = 0.0       # Fool DislikeYou enemy debuff (+1%/stack on arrow damage)
+    arrow_slots: float = 0.0       # extra combat arrow slots (Quiver)
+    dislodges: float = 0.0         # explicit dislodge_arrow returns per turn
+    arrow_damage: float = 0.0      # powered arrow base damage per turn (for DislikeYou)
+    arrow_aim_hits: float = 0.0    # resolved arrow hits * aim_multiplier per turn (for Aim)
     vulnerable: float = 0.0
     weak: float = 0.0
     poison_single: float = 0.0
@@ -353,20 +381,49 @@ def effect_unsupported(effect: object) -> Optional[str]:
         value = effect.get(key)
         if key == "hits" and value == "X" and effect.get("per_x"):
             continue  # one hit per energy spent (Whirlwind, Skewer)
-        if key == "count" and value == "all" and kind == "upgrade_cards":
-            continue  # every upgradable card in the scope
+        if key == "times" and value == "X" and effect.get("per_x"):
+            continue  # repeated X times (Brace)
+        if key == "count" and value == "all" and kind in {"upgrade_cards", "dislodge_arrow"}:
+            continue  # every upgradable card in scope / every owner arrow on target
         if value is not None and (isinstance(value, bool) or not isinstance(value, (int, float))):
             return f"effect_value:{key}"
+    if "owner_only" in effect and kind != "dislodge_arrow":
+        return "effect_key:owner_only"
+    if "aim_multiplier" in effect and (kind != "damage" or effect.get("source") != "arrow"):
+        return "effect_key:aim_multiplier"
+    if "times" in effect and not (
+        (kind == "block" and isinstance(effect.get("times"), (int, float)) and not isinstance(effect.get("times"), bool))
+        or (effect.get("times") == "X" and effect.get("per_x"))
+    ):
+        return "effect_key:times"
+    multiply_if = effect.get("multiply_if")
+    if multiply_if is not None:
+        if (
+            not isinstance(multiply_if, Mapping)
+            or set(multiply_if) != {"condition", "multiply"}
+            or not isinstance(multiply_if.get("condition"), Mapping)
+            or isinstance(multiply_if.get("multiply"), bool)
+            or not isinstance(multiply_if.get("multiply"), (int, float))
+        ):
+            return "effect_key:multiply_if"
     for key in ("scale", "hits_scale", "count_scale"):
         scale = effect.get(key)
         if scale is not None and (not isinstance(scale, Mapping) or scale.get("per") not in SCALE_SOURCES):
             return f"{key}:unsupported"
-    for condition in (effect.get("condition") or {}, (effect.get("hits_scale") or {}).get("condition") or {}):
+    for condition in (
+        effect.get("condition") or {},
+        (effect.get("hits_scale") or {}).get("condition") or {},
+        (multiply_if.get("condition") if isinstance(multiply_if, Mapping) else None) or {},
+    ):
         for key, value in condition.items():
             if key not in EFFECT_CONDITIONS:
                 return f"condition:{key}"
             if key == "target_has_power" and value not in {"Vulnerable", "Weak"}:
                 return f"condition:{key}:{value}"
+            if key == "melody_played_this_turn":
+                tags = value if isinstance(value, list) else [value]
+                if not tags or any(t not in MELODY_TAGS for t in tags):
+                    return f"condition:{key}"
     if kind == "damage" and (effect.get("target") or "single") not in DAMAGE_TARGETS:
         return f"effect_target:{effect.get('target')}"
     if kind in {"exhaust_other", "discard"} and effect.get("choice") not in {None, "random", "choose"} and not (
@@ -382,7 +439,7 @@ def effect_unsupported(effect: object) -> Optional[str]:
             return f"orb_target:{effect.get('target')}"
         if kind == "orb_passive" and effect.get("scope") != "all_of_type":
             return f"orb_scope:{effect.get('scope')}"
-    if effect.get("source") not in {None, "osty"}:
+    if effect.get("source") not in {None, "osty", "arrow"}:
         return f"effect_source:{effect.get('source')}"
     if kind == "summon" and effect.get("target") not in {None, "self"}:
         return f"summon_target:{effect.get('target')}"
@@ -468,10 +525,15 @@ def effect_text_only(effect: Mapping) -> Optional[str]:
     """
 
     for text_key, scale_key in VALUE_TEXT_KEYS.items():
-        if text_key == "amount_text" and effect.get("kind") in CARD_SET_EFFECTS and "amount" not in effect:
+        if text_key == "amount_text" and effect.get("kind") in (CARD_SET_EFFECTS | {"dislodge_arrow"}) and "amount" not in effect:
             if effect.get("count") == "all":
                 continue
             scale_key = "count_scale"
+        if text_key == "amount_text" and (
+            effect.get("multiply_if")
+            or (effect.get("per_x") and effect.get("times") == "X")
+        ):
+            continue
         if text_key in effect and not effect.get(scale_key) and effect.get("hits") != "X":
             return f"effect_text_only:{text_key}"
     return None
@@ -515,6 +577,8 @@ def _resolve_stacks(mechanic: Mapping, stacks: float) -> dict:
     for key in ("amount_per_stack", "add_per_stack"):
         if key in resolved:
             resolved["add"] = float(resolved.pop(key)) * stacks
+    if "multiply_percent_per_stack" in resolved:
+        resolved["multiply"] = 1.0 + float(resolved.pop("multiply_percent_per_stack")) * stacks / 100.0
     for key in ("limit_per_stack", "count_per_stack"):
         if key in resolved and resolved.get("modifier") in {"card_play_count", "hp_loss_negate"}:
             resolved["uses"] = float(resolved.pop(key)) * stacks
@@ -579,25 +643,40 @@ def power_use(
             mechanics.append(mechanic)
             per_stack.append(
                 "amount_per_stack" in (source.get("effect") or {})
-                or any(key in source for key in ("amount_per_stack", "add_per_stack"))
+                or any(key in source for key in ("amount_per_stack", "add_per_stack", "multiply_percent_per_stack"))
             )
     return PowerUse(power_id, duration, stacks, tuple(mechanics), tuple(per_stack)), tuple(gaps)
 
 
 def _filter_unsupported(
-    flt: object, card_filter_allowed: bool, attack_filter_allowed: bool = False,
+    flt: object,
+    card_filter_allowed: bool,
+    attack_filter_allowed: bool = False,
+    first_of_tag_allowed: bool = False,
 ) -> Optional[str]:
     if flt is None:
         return None
     if not isinstance(flt, Mapping):
         return "filter:invalid"
     allowed = (CARD_FILTER_KEYS if card_filter_allowed else frozenset()) | {"fight_kind"}
+    if first_of_tag_allowed:
+        allowed = allowed | {"first_of_tag_this_turn"}
     if attack_filter_allowed:
         allowed = allowed | ATTACK_FILTER_KEYS
         if flt.get("dealer") not in {None, "owner", "owner_or_owner_pet"}:
             return f"filter:dealer:{flt.get('dealer')}"
         if flt.get("powered_attack") is False:
             return "filter:powered_attack"
+        if flt.get("from_arrow") not in {None, True}:
+            return f"filter:from_arrow:{flt.get('from_arrow')}"
+        if flt.get("target_has_power") not in {None, "Impaled"}:
+            return f"filter:target_has_power:{flt.get('target_has_power')}"
+    if card_filter_allowed:
+        if flt.get("owner") not in {None, "self"}:
+            return f"filter:owner:{flt.get('owner')}"
+    if first_of_tag_allowed:
+        if flt.get("first_of_tag_this_turn") not in {None, True}:
+            return "filter:first_of_tag_this_turn"
     for key, value in flt.items():
         if key not in allowed:
             return f"filter:{key}"
@@ -618,8 +697,13 @@ def unsupported_reason(mechanic: Mapping) -> Optional[str]:
             extra.discard("applies_to")  # the power's owner, the player
         if extra:
             return f"key:{sorted(extra)[0]}"
+        if name == "hp_loss_negate":
+            flt = mechanic.get("filter")
+            if flt is not None and (not isinstance(flt, Mapping) or set(flt) - {"source_card_not"}):
+                return f"filter:{sorted(set(flt) - {'source_card_not'})[0]}" if isinstance(flt, Mapping) else "filter:invalid"
+            return None
         card_filter = name not in {"hand_draw", "max_energy"}
-        reason = _filter_unsupported(mechanic.get("filter"), card_filter)
+        reason = _filter_unsupported(mechanic.get("filter"), card_filter, attack_filter_allowed=(name == "damage"))
         if reason:
             return reason
         if name == "card_added_to_deck":
@@ -644,10 +728,16 @@ def unsupported_reason(mechanic: Mapping) -> Optional[str]:
         if set(orb_filter) - {"orb"} or orb_filter.get("orb") not in {None, *ORB_TYPES}:
             return "filter:orb"
         reason = None
+    elif when in {"arrow_shot", "arrow_impaled", "arrow_dislodged"}:
+        arrow_filter = mechanic.get("filter") or {}
+        if not isinstance(arrow_filter, Mapping) or set(arrow_filter) - {"owner_only", "from_arrow"}:
+            return "filter:arrow"
+        reason = None
     else:
         reason = _filter_unsupported(
             mechanic.get("filter"), when in {"card_played", "card_drawn"},
             when in {"damage_dealt", "damage_received"},
+            first_of_tag_allowed=(when == "card_played"),
         )
     if reason:
         return reason
@@ -663,6 +753,10 @@ def unsupported_reason(mechanic: Mapping) -> Optional[str]:
         # Mechanic effects are not resolved per event (``_apply_events``): a
         # filtered pick from hand would count as always finding a card.
         return "effect_filter:mechanic"
+    if isinstance(effect, Mapping):
+        for dynamic_key in ("scale", "hits_scale", "count_scale", "multiply_if", "condition"):
+            if effect.get(dynamic_key):
+                return f"effect_{dynamic_key}:mechanic"
     return effect_unsupported(effect) or effect_text_only(effect)
 
 
@@ -709,6 +803,15 @@ def _cost_rule(modifier: object) -> Optional[tuple]:
     if (m.get("duration") == "until_played" and isinstance(m.get("amount"), (int, float))
             and per.startswith("Status card generated")):
         return ("per_status_generated", float(m["amount"]))
+    if isinstance(add, (int, float)) and m.get("when") == "in_combat" and per == "melodies_this_turn":
+        return ("per_melodies_this_turn", float(add))
+    cond = m.get("condition")
+    if (isinstance(add, (int, float)) and m.get("when") == "in_combat"
+            and isinstance(cond, Mapping) and set(cond) == {"melody_played_this_turn"}):
+        raw_tags = cond["melody_played_this_turn"]
+        tags = tuple(raw_tags if isinstance(raw_tags, list) else [raw_tags])
+        if tags and all(t in MELODY_TAGS for t in tags):
+            return ("if_melody_played_this_turn", float(add), tags)
     return None
 
 
@@ -1176,6 +1279,14 @@ def relic_profile(
         return None, (f"relic_fact_missing:{relic_id}",)
     supported, gaps = [], list(_unknowable(fact, f"relics:{relic_id}"))
     for mechanic in fact.get("mechanics") or ():
+        # SongBow (starter relic) uses AfterRoomEntered gated on CombatRoom
+        # (all three combat room types), firing once on entering every fight.
+        if isinstance(mechanic, Mapping) and mechanic.get("when") == "room_entered":
+            flt = mechanic.get("filter")
+            rt = flt.get("room_type") if isinstance(flt, Mapping) and set(flt) == {"room_type"} else None
+            if rt == "CombatRoom" or (isinstance(rt, list) and set(rt) == {"Monster", "Elite", "Boss"}):
+                mechanic = {k: v for k, v in mechanic.items() if k != "filter"}
+                mechanic["when"] = "combat_start"
         mechanic, generated_gaps = _mechanic_cards(repository, mechanic)
         gaps.extend(generated_gaps)
         effect = mechanic.get("effect") or {}
@@ -1386,10 +1497,18 @@ class _Engine:
         self.per_turn = 0.0      # chance a deck card is drawn on a turn (this pass)
         self.energy_spent = 0.0  # energy the turn's plays use (this pass)
         self.orb_evokes: Dict[str, float] = {}   # evokes per turn by orb (previous pass)
+        self.arrow_avail = 1.0 if situation.arrow_slots > 0 else 0.0
+        self.impaled_prob = 0.0
+        self.arrow_shots = 0.0
+        self.arrow_dislodges = 0.0
+        self.arrow_slots_now = situation.arrow_slots
+        self.melody_plays: Dict[str, float] = {t: 0.0 for t in MELODY_TAGS}
+        self.melody_source_plays: Mapping[int, float] = {}
         self.known_set = {id(c) for c in self.known}
         self.deck_counts = {
             "OstyAttack": float(sum(1 for c in self.known if "OstyAttack" in c.tags)),
             "star_cost": float(sum(1 for c in self.known if c.star_cost is not None)),
+            "melody_cards": float(sum(1 for c in self.known if c.tags & set(MELODY_TAGS))),
         }
         self._cost_cache: Dict[int, Optional[float]] = {}
         self.last_plays: Dict[int, float] = {}
@@ -1498,7 +1617,26 @@ class _Engine:
                     if c is not card and c.card_type == rule[2]
                 )
                 cost = max(0.0, cost + rule[1] * others / 2.0)
+            elif rule[0] == "per_melodies_this_turn":
+                melodies = self._melodies_for_card(card)
+                cost = max(0.0, cost + rule[1] * melodies)
+            elif rule[0] == "if_melody_played_this_turn":
+                prob = self._melody_any_prob(rule[2], card)
+                cost = max(0.0, cost + rule[1] * prob)
         return cost
+
+    def _other_melody_plays(self, tag: str, card: Optional[CardProfile]) -> float:
+        own = self.melody_source_plays.get(id(card), 0.0) if (card is not None and tag in card.tags) else 0.0
+        return max(0.0, self.melody_plays.get(tag, 0.0) - own)
+
+    def _melodies_for_card(self, card: Optional[CardProfile]) -> float:
+        return sum(1.0 - math.exp(-self._other_melody_plays(t, card) / 2.0) for t in MELODY_TAGS)
+
+    def _melody_any_prob(self, tags: Sequence[str], card: Optional[CardProfile]) -> float:
+        p_none = 1.0
+        for tag in tags:
+            p_none *= math.exp(-self._other_melody_plays(tag, card) / 2.0)
+        return 1.0 - p_none
 
     def _matches(self, card: CardProfile, flt: Optional[Mapping], x_value: Optional[float]) -> bool:
         if not flt:
@@ -1712,12 +1850,53 @@ class _Engine:
             totals.ethereal_exhausts = sum(
                 n * max(0.0, rates[id(c)] - plays[id(c)]) for c, n in self.copies if c.ethereal
             )
+            # Fool arrows: flow conservation across starting slots + Quiver slots,
+            # Impaled passive hit-counter returns (every 3 powered hits), and
+            # explicit dislodge_arrow plays. Without arrow slots no shot lands.
+            arrow_slots = self.situation.arrow_slots + previous.arrow_slots * elapsed
+            self.arrow_slots_now = arrow_slots
+            shot_demand = sum(
+                n * plays[id(c)] for c, n in self.copies
+                if any(e.get("kind") == "damage" and e.get("source") == "arrow" for e in c.effects)
+            )
+            non_arrow_hits = sum(
+                n * plays[id(c)] * self._hits(e)
+                for c, n in self.copies for e in c.effects
+                if e.get("kind") == "damage" and e.get("source") not in {"arrow", "osty"}
+            )
+            if arrow_slots > 0.0:
+                arrow_return_rate = non_arrow_hits / 3.0 + previous.dislodges
+                arrow_supply = arrow_slots / turns + arrow_return_rate
+                self.arrow_avail = min(1.0, arrow_supply / shot_demand) if shot_demand > 0.0 else 1.0
+                self.arrow_shots = shot_demand * self.arrow_avail
+                stay = min(turns / 2.0, 1.0 / max(1e-6, arrow_return_rate + 1.0 / turns))
+                self.impaled_prob = (1.0 - math.exp(-self.arrow_shots * stay)) if self.arrow_shots > 0.0 else 0.0
+                self.arrow_dislodges = min(
+                    self.arrow_shots,
+                    self.impaled_prob * (non_arrow_hits / 3.0) + previous.dislodges + self.arrow_shots / turns,
+                )
+            else:
+                self.arrow_avail = 0.0
+                self.arrow_shots = 0.0
+                self.impaled_prob = 0.0
+                self.arrow_dislodges = 0.0
+            self.melody_plays = {
+                tag: sum(n * plays[id(c)] for c, n in self.copies if tag in c.tags)
+                for tag in MELODY_TAGS
+            }
+            self.melody_source_plays = plays
             self._estimate(previous, plays, drawn)
             # Copies share one profile: resolved once, applied for each copy
             # (``_apply`` is linear in the number of applications).
             for card, copies in self.copies:
                 for effect in card.effects:
                     resolved, chance = self._resolve(effect, card, plays[id(card)])
+                    if (
+                        resolved.get("kind") == "damage"
+                        and resolved.get("source") == "arrow"
+                        and not ({"has_arrow", "shot_succeeded"} & set(effect.get("condition") or ()))
+                    ):
+                        chance *= self.arrow_avail
                     self._apply(totals, resolved, plays[id(card)] * chance * copies, x_value if card.x_cost else None)
             self._apply_damage_modifiers(totals, plays, x_value)
             self._apply_block_modifiers(totals, plays)
@@ -1988,7 +2167,7 @@ class _Engine:
             "skills_in_hand": hand * sum(1 for c in self.known if c.card_type == "Skill") / known,
         }
 
-    def _condition_chance(self, condition: Mapping) -> float:
+    def _condition_chance(self, condition: Mapping, card: Optional[CardProfile] = None) -> float:
         chance = 1.0
         for key, value in condition.items():
             if key == "target_has_power":
@@ -2001,6 +2180,22 @@ class _Engine:
                 chance *= 1.0 - math.exp(-self.estimates["exhausts_per_turn"])
             elif key == "osty_alive":
                 chance *= self.estimates.get("osty_alive", 0.0)
+            elif key in {"target_impaled", "target_impaled_at_play_start"}:
+                chance *= self.impaled_prob
+            elif key in {"has_arrow", "shot_succeeded"}:
+                chance *= self.arrow_avail
+            elif key == "melody_played_this_turn":
+                tags = value if isinstance(value, list) else [value]
+                chance *= self._melody_any_prob(tags, card)
+            elif key == "melodies_this_turn_at_least":
+                k = int(value)
+                if k <= 0:
+                    pass
+                elif k >= len(MELODY_TAGS):
+                    for tag in MELODY_TAGS:
+                        chance *= 1.0 - math.exp(-self._other_melody_plays(tag, card) / 2.0)
+                else:
+                    chance *= _poisson_at_least(self._melodies_for_card(card), k)
             # target_alive: the card is played on a living target.
         return chance
 
@@ -2012,6 +2207,7 @@ class _Engine:
 
         if (
             "scale" not in effect and "hits_scale" not in effect and "count_scale" not in effect
+            and "multiply_if" not in effect
             and "filter" not in effect and effect.get("kind") != "upgrade_cards"
             and not effect.get("condition") and card.card_id != "SOVEREIGN_BLADE"
         ):
@@ -2040,6 +2236,8 @@ class _Engine:
         )
         estimates["times_drawn_this_combat"] = self.rates.get(id(card), rate) * self.situation.fight_turns / 2.0
         estimates["star_cost_cards"] = self.deck_counts["star_cost"]
+        estimates["melodies_this_turn"] = self._melodies_for_card(card)
+        estimates["melody_cards_in_combat"] = self.deck_counts["melody_cards"]
         estimates["x_value"] = self.x_value
         # Energy left after paying for this card, at an average moment.
         estimates["energy_after_cost"] = max(0.0, self.supply - (self._cost(card) or 0.0)) / 2.0
@@ -2064,17 +2262,23 @@ class _Engine:
         if hits_scale:
             base = float(hits_scale.get("base") or 0.0)
             if hits_scale["per"] == "condition":
-                chance = self._condition_chance(hits_scale.get("condition") or {})
+                chance = self._condition_chance(hits_scale.get("condition") or {}, card)
                 resolved["hits"] = base + (float(hits_scale["hits_if"]) - base) * chance
             else:
                 resolved["hits"] = base + estimates[hits_scale["per"]]
+        multiply_if = effect.get("multiply_if")
+        if multiply_if:
+            m_chance = self._condition_chance(multiply_if.get("condition") or {}, card)
+            resolved["amount"] = float(resolved.get("amount") or 0.0) * (
+                1.0 + (float(multiply_if["multiply"]) - 1.0) * m_chance
+            )
         count_scale = effect.get("count_scale")
         if count_scale:
             base = float(count_scale.get("base") or 0.0) + (
                 float(count_scale.get("base_upgrade") or 0.0) if card.upgraded else 0.0
             )
             resolved["count"] = base + estimates[count_scale["per"]]
-        return resolved, self._condition_chance(effect.get("condition") or {})
+        return resolved, self._condition_chance(effect.get("condition") or {}, card)
 
     def _apply(
         self,
@@ -2106,7 +2310,7 @@ class _Engine:
             return
         if kind == "apply_power" and effect.get("target") == "self" and persist_share is not None:
             name = SELF_POWERS[effect["power"]]
-            if name != "vigor":
+            if name not in {"vigor", "aim", "stretch"}:
                 setattr(totals, f"{name}_flat", getattr(totals, f"{name}_flat") + amount * persist_share)
                 return
         if times <= 0:
@@ -2121,7 +2325,16 @@ class _Engine:
                 target = "random"
             if effect.get("source") == "osty":
                 target = f"osty_{target}"
-            setattr(totals, target, getattr(totals, target) + amount * hits * times)
+            dealt = amount * hits * times
+            setattr(totals, target, getattr(totals, target) + dealt)
+            if effect.get("source") == "arrow":
+                totals.arrow_damage += dealt
+                totals.arrow_aim_hits += hits * float(effect.get("aim_multiplier") or 1.0) * times
+        elif kind == "arrow_slots":
+            totals.arrow_slots += amount * times
+        elif kind == "dislodge_arrow":
+            cnt = self.arrow_slots_now if effect.get("count") == "all" else float(effect.get("count") or 1.0)
+            totals.dislodges += cnt * times
         elif kind == "summon":
             totals.summoned += amount * times
             totals.summon_events += times
@@ -2157,9 +2370,10 @@ class _Engine:
         elif kind == "orb_slots":
             totals.slot_gain += amount * times
         elif kind in {"block", "draw", "energy", "heal", "hp_loss"}:
-            setattr(totals, kind, getattr(totals, kind) + amount * times)
+            reps = float(effect.get("times") or 1.0) if (kind == "block" and isinstance(effect.get("times"), (int, float))) else 1.0
+            setattr(totals, kind, getattr(totals, kind) + amount * reps * times)
             if kind == "block":
-                totals.block_events += times
+                totals.block_events += reps * times
             elif kind == "hp_loss":
                 totals.self_damage_events += times
         elif kind == "exhaust_other":
@@ -2179,8 +2393,8 @@ class _Engine:
                 target = "enemy"
             if target == "self":
                 name = SELF_POWERS[power]
-                if name == "vigor":
-                    totals.vigor += amount * times
+                if name in {"vigor", "aim", "stretch"}:
+                    setattr(totals, name, getattr(totals, name) + amount * times)
                 else:
                     setattr(totals, f"{name}_rate", getattr(totals, f"{name}_rate") + amount * times)
             elif power == "Doom":
@@ -2203,12 +2417,19 @@ class _Engine:
     def _apply_damage_modifiers(self, totals: _Totals, plays: Mapping[int, float], x_value: float) -> None:
         turns = self.situation.fight_turns
         for modifier, weight in ((m, w) for m, w in self.modifiers if m["modifier"] == "damage"):
+            flt = modifier.get("filter") or {}
             share = _schedule(modifier, turns)[0] * weight
+            if flt.get("target_has_power") == "Impaled":
+                share *= self.impaled_prob
+            from_arrow_only = bool(flt.get("from_arrow"))
             for card in self.cards:
-                if not self._matches(card, modifier.get("filter"), x_value):
+                if not self._matches(card, flt, x_value):
                     continue
                 for effect in card.effects:
                     if effect.get("kind") != "damage":
+                        continue
+                    is_arrow = effect.get("source") == "arrow"
+                    if from_arrow_only and not is_arrow:
                         continue
                     hits = self._hits(effect)
                     base = float(effect.get("amount") or 0.0)
@@ -2217,8 +2438,11 @@ class _Engine:
                     extra = float(modifier.get("add") or 0.0) * hits + (
                         float(modifier.get("multiply") or 1.0) - 1.0
                     ) * base * hits
+                    eff_share = share * (self.arrow_avail if is_arrow else 1.0)
                     target = effect.get("target") or "single"
-                    setattr(totals, target, getattr(totals, target) + extra * plays[id(card)] * share)
+                    if effect.get("source") == "osty":
+                        target = f"osty_{target}"
+                    setattr(totals, target, getattr(totals, target) + extra * plays[id(card)] * eff_share)
 
     def _apply_block_modifiers(self, totals: _Totals, plays: Mapping[int, float]) -> None:
         turns = self.situation.fight_turns
@@ -2229,7 +2453,12 @@ class _Engine:
                 if self._matches(card, modifier.get("filter"), None)
                 for effect in card.effects if effect.get("kind") == "block"
             ]
-            gained = sum(plays[id(c)] * float(e.get("amount") or 0.0) for c, e in matching)
+            gained = sum(
+                plays[id(c)] * float(e.get("amount") or 0.0)
+                * (float(e.get("times") or 1.0) if isinstance(e.get("times"), (int, float)) else 1.0)
+                * self._condition_chance(e.get("condition") or {}, c)
+                for c, e in matching
+            )
             if modifier.get("limit") == "once_per_combat":
                 rate = sum(plays[id(c)] for c, _ in matching)
                 average = gained / rate if rate else 0.0
@@ -2239,7 +2468,12 @@ class _Engine:
 
     def _block_plays(self, plays: Mapping[int, float]) -> float:
         return sum(
-            plays[id(c)] for c in self.cards
+            plays[id(c)] * sum(
+                (float(e.get("times") or 1.0) if isinstance(e.get("times"), (int, float)) else 1.0)
+                * self._condition_chance(e.get("condition") or {}, c)
+                for e in c.effects if e.get("kind") == "block"
+            )
+            for c in self.cards
             if any(e.get("kind") == "block" for e in c.effects)
         )
 
@@ -2250,10 +2484,18 @@ class _Engine:
         situation = self.situation
         when = mechanic["when"]
         if when == "card_played":
-            return sum(
+            flt = mechanic.get("filter") or {}
+            rate = sum(
                 plays[id(c)] for c in self.cards
-                if self._matches(c, mechanic.get("filter"), x_value)
+                if self._matches(c, flt, x_value)
             )
+            if flt.get("first_of_tag_this_turn"):
+                return 1.0 - math.exp(-rate)
+            return rate
+        if when in {"arrow_shot", "arrow_impaled"}:
+            return self.arrow_shots
+        if when == "arrow_dislodged":
+            return self.arrow_dislodges
         if when == "card_exhausted":
             own = totals.exhausts + sum(plays[id(c)] for c in self.cards if c.exhausts_self)
             ethereal = (mechanic.get("condition") or {}).get("caused_by_ethereal")
@@ -2330,6 +2572,12 @@ class _Engine:
                     probability = 0.0
                 else:
                     probability *= 1.0 if count == 0 else 0.0
+            elif key == "melodies_played_this_turn":
+                tags = value if isinstance(value, list) else [value]
+                for tag in tags:
+                    probability *= 1.0 - math.exp(-self.melody_plays.get(tag, 0.0))
+            elif key == "target_impaled":
+                probability *= self.impaled_prob
             # turn_at_least: handled by the schedule; unblocked_damage,
             # during_own_turn and caused_by_ethereal: what the event rate
             # already measures; block_gained_above 0: every block event.
@@ -2491,12 +2739,29 @@ class _Engine:
         turns = situation.fight_turns
         amplify = 1.0 + float(params["vulnerable_damage_bonus"]) * min(1.0, totals.vulnerable)
         attack_hits = sum(
-            plays[id(c)] * self._hits(e)
-            for c in self.cards for e in c.effects if e.get("kind") == "damage"
+            plays[id(c)] * self._hits(e) * (self.arrow_avail if e.get("source") == "arrow" else 1.0)
+            for c in self.cards for e in c.effects
+            if e.get("kind") == "damage" and e.get("source") != "osty"
         )
         # Strength or Dexterity gained during a fight is on average half built up.
         growth = max(0.0, turns - 1.0) / 2.0
         vigor = totals.vigor if attack_hits > 0 else 0.0  # next attack only
+        # Aim: next powered arrow attack only, multiplied by resolved hits and card aim_multiplier.
+        aim_bonus = (
+            totals.aim * (totals.arrow_aim_hits / self.arrow_shots)
+            if totals.aim > 0.0 and self.arrow_shots > 0.0 else 0.0
+        )
+        dislike_bonus = totals.arrow_damage * (totals.dislike_you / 100.0) if totals.dislike_you > 0.0 else 0.0
+        # Stretch: next powered block-gaining card only, once per block instance on that card.
+        block_card_plays = sum(
+            plays[id(c)] for c in self.cards if any(e.get("kind") == "block" for e in c.effects)
+        )
+        block_instances = self._block_plays(plays)
+        stretch_bonus = (
+            totals.stretch * (block_instances / block_card_plays)
+            if totals.stretch > 0.0 and block_card_plays > 0.0 else 0.0
+        )
+        effective_block = totals.block + stretch_bonus
         temp_strength = sum(
             float(m.get("add") or 0.0) * w for m, w in self.modifiers if m["modifier"] == "strength"
         )
@@ -2504,13 +2769,13 @@ class _Engine:
         kept_block = 0.0
         for m, w in self.modifiers:
             if m["modifier"] == "keep_block":
-                surplus = max(0.0, totals.block - incoming)
+                surplus = max(0.0, effective_block - incoming)
                 cap = m.get("max")
                 kept_block += w * (min(surplus, float(cap)) if cap else surplus)
         return {
             # Orb damage is unpowered: no Strength or Vulnerable amplification.
             "frontload": (
-                totals.single + totals.all + totals.random + vigor
+                totals.single + totals.all + totals.random + vigor + aim_bonus + dislike_bonus
                 + (totals.strength_flat + temp_strength) * attack_hits
             ) * amplify * (1.0 - float(params["weak_damage_reduction"]) * situation.player_weak)
             + totals.poison_single + totals.poison_all
@@ -2523,19 +2788,19 @@ class _Engine:
                 totals.all + totals.poison_all + totals.orb_all + totals.osty_all + totals.doom_all
             ) * situation.extra_enemies,
             "defense": (
-                totals.block * (1.0 - float(params["frail_block_reduction"]) * situation.player_frail)
+                effective_block * (1.0 - float(params["frail_block_reduction"]) * situation.player_frail)
                 + kept_block + totals.heal - totals.hp_loss
                 # Die For You: Osty takes the unblocked attack damage, up to
                 # the HP summoned for it.
-                + min(totals.summoned, max(0.0, incoming - totals.block))
+                + min(totals.summoned, max(0.0, incoming - effective_block))
                 # Buffer: each use negates one hit's unblocked damage.
-                + max(0.0, incoming - totals.block) * min(turns, sum(
+                + max(0.0, incoming - effective_block) * min(turns, sum(
                     float(m.get("uses") or 0.0) * w for m, w in self.modifiers
                     if m["modifier"] == "hp_loss_negate"
                 )) / turns
                 # Enemy Strength lost: less attack damage, never below none.
                 + min(incoming, totals.weaken_turn + totals.weaken_rate * growth)
-                + (totals.dexterity_flat + totals.dexterity_rate * growth) * self._block_plays(plays)
+                + (totals.dexterity_flat + totals.dexterity_rate * growth) * block_instances
                 + float(params["weak_damage_reduction"]) * situation.incoming_attack
                 * min(1.0, totals.weak)
             ),

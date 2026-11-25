@@ -631,6 +631,10 @@ class RelationalRepository:
                         ).strip()
                         if not external_id or not name:
                             continue
+                        if entity_type == "cards" and item.get("hit_count") is None:
+                            vars_hit = (item.get("vars") or {}).get("HitCount")
+                            if isinstance(vars_hit, int) and not isinstance(vars_hit, bool) and vars_hit > 0:
+                                item = {**item, "hit_count": vars_hit}
                         entity_key = f"{entity_type}:{external_id}"
                         connection.execute(
                             """

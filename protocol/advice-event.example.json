@@ -18,13 +18,13 @@
   "compatibility": {
     "status": "compatible",
     "manifest_version": 2,
-    "release_fingerprint": "e57d3e0626add46d16b2999616220839ee09cbe625b48dd97d7d2a877f5d5b5b",
-    "guide_version": "0.3.15-alpha.0",
+    "release_fingerprint": "a3c6d6b958dfb11663b77c12720e19011434483b98c1e3db97d8d6a9f4b49950",
+    "guide_version": "0.3.16-alpha.0",
     "state_event_schema_version": 9,
     "producer_id": "STS2GuideReadOnlyExporter",
-    "producer_version": "0.3.15",
-    "game_version": "0.111.0",
-    "game_assembly_sha256": "0861bfa1df347538d932f22d580e75420f08082792eb914e53b4882764acdbe9",
+    "producer_version": "0.3.16",
+    "game_version": "0.113.1",
+    "game_assembly_sha256": "62ecbe91093e1fa862de4329aac865209dcb297804caf0f0520d92d8c0b4a9c3",
     "capability": "card_reward",
     "capability_status": "enabled"
   },

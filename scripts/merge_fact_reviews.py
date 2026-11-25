@@ -42,7 +42,7 @@ EFFECT_KINDS = SUPPORTED_EFFECTS | {
     "remove_from_deck", "rest_site_option", "force_event", "kill_owner", "kill_target",
     "enchantment_amount", "set_cost",
     # the Fool (TASK-029, docs/dev/mechanic-facts.md "愚者")
-    "arrow_slots", "dislodge_arrow",
+    "arrow_slots", "dislodge_arrow", "grow_card_var",
 }
 WHEN = {
     "combat_start", "turn_start", "turn_end", "card_played", "card_exhausted",
@@ -67,6 +67,7 @@ MODIFIERS = {
     "weak_multiplier", "card_target", "orb_value",
     "damage_cap", "hp_loss_cap", "card_play_result_location", "star_cost",
     "sovereign_blade_block", "add_keyword", "start_position",
+    "attack_hit_count", "damage_target_redirect",
 }
 CATEGORIES = {"baseline", "trigger", "irrelevant"}
 # Relic pickup and between-fight effects (TASK-027 ticket 01): read when a

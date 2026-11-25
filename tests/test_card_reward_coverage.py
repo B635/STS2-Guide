@@ -136,14 +136,15 @@ class CardRewardCoverageTests(unittest.TestCase):
         self.assertEqual(efficiency[0]["delta"], 3.3)
 
     def test_release_retains_exact_assembly_verified_strike_membership(self):
-        # Every CanonicalTags getter in the 0.111.0 assembly was inspected;
-        # these 22 types add CardTag.Strike (enum value 1), no name matching.
+        # Every CanonicalTags getter in the 0.113.1 assembly was inspected;
+        # these 25 types add CardTag.Strike (enum value 1), no name matching.
         expected = {
             "ADAPTIVE_STRIKE", "ASHEN_STRIKE", "BLIGHT_STRIKE", "FOCUSED_STRIKE",
             "LEADING_STRIKE", "METEOR_STRIKE", "MINION_STRIKE", "MOMENTUM_STRIKE",
-            "PERFECTED_STRIKE", "POMMEL_STRIKE", "SCULPTING_STRIKE", "SEEKER_STRIKE",
-            "SETUP_STRIKE", "SHINING_STRIKE", "SOLAR_STRIKE", "STRIKE_DEFECT",
-            "STRIKE_IRONCLAD", "STRIKE_NECROBINDER", "STRIKE_REGENT", "STRIKE_SILENT",
+            "PERFECTED_STRIKE", "POMMEL_STRIKE", "RHYTHM_STRIKE", "SCULPTING_STRIKE",
+            "SEEKER_STRIKE", "SETUP_STRIKE", "SHINING_STRIKE", "SOLAR_STRIKE",
+            "SORROWFUL_STRIKE", "STRIKE_DEFECT", "STRIKE_FOOL", "STRIKE_IRONCLAD",
+            "STRIKE_NECROBINDER", "STRIKE_REGENT", "STRIKE_SILENT",
             "TWIN_STRIKE", "ULTIMATE_STRIKE",
         }
         catalog = json.loads((ROOT / "data" / "knowledge.json").read_text(encoding="utf-8"))

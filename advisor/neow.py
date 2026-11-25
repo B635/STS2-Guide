@@ -26,7 +26,7 @@ from storage.relational import RelationalRepository
 
 
 NEOW_BLESSING = "neow_blessing"
-CHARACTERS = frozenset({"IRONCLAD", "SILENT", "DEFECT", "NECROBINDER", "REGENT"})
+CHARACTERS = frozenset({"IRONCLAD", "SILENT", "DEFECT", "NECROBINDER", "REGENT", "FOOL"})
 
 
 class NeowPolicy:

@@ -35,7 +35,7 @@ DECK_KINDS = frozenset({
     "offer_rewards", "gain_relic",
 })
 RELIC_SOURCES = frozenset({"next_in_pool", "back_of_pool"})
-CHARACTERS = ("IRONCLAD", "SILENT", "DEFECT", "NECROBINDER", "REGENT")
+CHARACTERS = ("IRONCLAD", "SILENT", "DEFECT", "NECROBINDER", "REGENT", "FOOL")
 RESOURCE_KINDS = frozenset({
     "gain_gold", "lose_gold", "gain_max_hp", "lose_max_hp", "heal", "hp_loss",
 })

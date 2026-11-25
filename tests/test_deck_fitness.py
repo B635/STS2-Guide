@@ -1144,7 +1144,10 @@ class GapRoundTwoTests(unittest.TestCase):
 
         buffer, gaps = power_use(self.repository, "Buffer", 2)
         self.assertEqual((buffer.duration, gaps), ("combat", ()))
-        self.assertEqual(buffer.mechanics, ({"modifier": "hp_loss_negate", "uses": 2.0},))
+        self.assertEqual(
+            buffer.mechanics,
+            ({"modifier": "hp_loss_negate", "uses": 2.0, "filter": {"source_card_not": "BRIGHTEST_FLAME"}},),
+        )
 
 
 class FactBasedNeedsTests(unittest.TestCase):
@@ -1547,7 +1550,7 @@ class TransformTests(IndependentReviewFixTests):
     def test_the_upgraded_result_is_used_when_the_transform_says_so(self):
         for card_id, kind, plain, upgraded in (
             ("BEGONE", "damage", 6.0, 9.0),
-            ("CHARGE", "damage", 13.0, 16.0),
+            ("CHARGE", "damage", 11.0, 13.0),   # v0.113.1 Minion Dive Bomb: 11 (13)
             ("GUARDS", "block", 7.0, 10.0),     # written upgraded_result_if_upgraded
             ("COMPACT", "energy", 1.0, 2.0),
         ):
@@ -1892,4 +1895,233 @@ class HighCostAffordabilityTests(unittest.TestCase):
         with_turbo_base = self.fight(deck + [turbo])
         with_turbo_meteor = self.fight(deck + [turbo, meteor])
         self.assertGreater(with_turbo_meteor["frontload"], with_turbo_base["frontload"])
+
+
+class FoolMechanicsTests(unittest.TestCase):
+    """Fool (v0.113.1) shared-kernel mechanics: arrows, Impaled, Aim, Stretch, melodies."""
+
+    @classmethod
+    def setUpClass(cls):
+        DeckFitnessPolicyTests.setUpClass()
+        cls.repository = DeckFitnessPolicyTests.repository
+
+    @classmethod
+    def tearDownClass(cls):
+        DeckFitnessPolicyTests.tearDownClass()
+
+    def profile(self, card_id, upgrades=0):
+        from advisor.deck_mechanics import card_profile
+
+        return card_profile(self.repository, card_id, upgrades)
+
+    def relic(self, relic_id):
+        from advisor.deck_mechanics import relic_profile
+
+        return relic_profile(self.repository, relic_id)
+
+    def fight(self, cards, relics=(), turns=6.0, arrow_slots=1.0):
+        from advisor.deck_fitness import PARAMETERS_KEY
+        from advisor.deck_mechanics import Situation, deck_capabilities
+
+        params = self.repository.mechanic_constant(PARAMETERS_KEY)
+        situation = Situation(turns, 0.0, 10.0, {"MONSTER": 1.0}, 1.0, 0, arrow_slots=arrow_slots)
+        return deck_capabilities(list(cards), list(relics), situation, params)[0]
+
+    def test_arrow_shots_require_arrow_slots_and_benefit_from_quiver_and_dislodge(self):
+        shot, gaps = self.profile("FOOLISH_SHOT")
+        self.assertEqual(gaps, ())
+        strike = self.profile("STRIKE_FOOL")[0]
+        defend = self.profile("DEFEND_FOOL")[0]
+        # Without any arrow slot, an arrow shot deals 0 damage.
+        self.assertEqual(self.fight([shot], arrow_slots=0.0)["frontload"], 0.0)
+        self.assertGreater(self.fight([shot], arrow_slots=1.0)["frontload"], 0.0)
+        # In an arrow-starved deck (many shots, few non-arrow attacks), Quiver and Uproot increase frontload.
+        starved = [shot] * 4 + [defend] * 4
+        quiver, q_gaps = self.profile("QUIVER")
+        uproot, u_gaps = self.profile("UPROOT")
+        self.assertEqual(q_gaps, ())
+        self.assertEqual(u_gaps, ())
+        self.assertGreater(self.fight(starved + [quiver])["frontload"], self.fight(starved)["frontload"])
+        self.assertGreater(self.fight(starved + [uproot])["frontload"], self.fight(starved)["frontload"])
+        # Adding strikes helps recycle arrows via Impaled hit-counter (every 3 powered hits).
+        self.assertGreater(self.fight([shot, strike] * 4)["frontload"], self.fight([shot] * 4 + [defend] * 4)["frontload"])
+
+    def test_aim_scales_with_shots_and_multi_hit_or_heavy_shot_and_zero_without_shots(self):
+        nock, gaps = self.profile("NOCK")
+        self.assertEqual(gaps, ())
+        song_bow, sb_gaps = self.relic("SONG_BOW")
+        self.assertEqual(sb_gaps, ())
+        strike = self.profile("STRIKE_FOOL")[0]
+        defend = self.profile("DEFEND_FOOL")[0]
+        shot = self.profile("FOOLISH_SHOT")[0]
+        heavy = self.profile("HEAVY_SHOT")[0]
+        rapid = self.profile("RAPID_SHOT")[0]
+        # Aim has 0 value without arrow shots.
+        no_shot_deck = [strike] * 4 + [defend] * 4
+        self.assertAlmostEqual(
+            self.fight(no_shot_deck, [song_bow])["frontload"],
+            self.fight(no_shot_deck)["frontload"],
+            places=9,
+        )
+        # With arrow shots, SongBow and Nock add frontload, and HeavyShot (2x) / RapidShot (3 hits) gain more per Aim.
+        one_shot = [strike] * 4 + [defend] * 3 + [shot]
+        heavy_deck = [strike] * 4 + [defend] * 3 + [heavy]
+        rapid_deck = [strike] * 4 + [defend] * 3 + [rapid]
+        gain_one = self.fight(one_shot, [song_bow])["frontload"] - self.fight(one_shot)["frontload"]
+        gain_heavy = self.fight(heavy_deck, [song_bow])["frontload"] - self.fight(heavy_deck)["frontload"]
+        gain_rapid = self.fight(rapid_deck, [song_bow])["frontload"] - self.fight(rapid_deck)["frontload"]
+        self.assertGreater(gain_one, 0.0)
+        self.assertGreater(gain_heavy, gain_one)
+        self.assertGreater(gain_rapid, gain_heavy)
+        self.assertGreater(self.fight(one_shot + [nock])["frontload"], self.fight(one_shot)["frontload"])
+
+    def test_impaled_payoffs_require_arrow_shots_and_stretch_scales_with_block(self):
+        nail, nail_gaps = self.profile("NAIL")
+        deep_stretch, ds_gaps = self.profile("DEEP_STRETCH")
+        bounce, bounce_gaps = self.profile("BOUNCE")
+        exercise_mat, em_gaps = self.relic("EXERCISE_MAT")
+        self.assertEqual((nail_gaps, ds_gaps, em_gaps), ((), (), ()))
+        self.assertTrue(bounce_gaps)  # delayed next-turn hand return stays disclosed as gap
+        strike = self.profile("STRIKE_FOOL")[0]
+        defend = self.profile("DEFEND_FOOL")[0]
+        shot = self.profile("FOOLISH_SHOT")[0]
+        # Nail deals 0 damage without an impaled target, positive damage when shots are present.
+        self.assertEqual(self.fight([nail], arrow_slots=1.0)["frontload"], 0.0)
+        self.assertGreater(
+            self.fight([shot] * 2 + [strike] * 3 + [nail])["frontload"],
+            self.fight([shot] * 2 + [strike] * 3)["frontload"],
+        )
+        # Stretch adds 0 defense without block cards, positive defense with block cards.
+        self.assertEqual(self.fight([strike] * 5, [exercise_mat])["defense"], 0.0)
+        self.assertGreater(
+            self.fight([strike] * 3 + [defend] * 3, [exercise_mat])["defense"],
+            self.fight([strike] * 3 + [defend] * 3)["defense"],
+        )
+        self.assertGreater(
+            self.fight([strike] * 3 + [defend] * 3 + [deep_stretch])["defense"],
+            self.fight([strike] * 3 + [defend] * 3)["defense"],
+        )
+        self.assertGreater(
+            self.fight([strike] * 3 + [defend] * 3 + [bounce])["defense"],
+            self.fight([strike] * 3 + [defend] * 3)["defense"],
+        )
+
+    def test_melody_cards_scale_with_wah_cho_ki_and_unmodeled_effects_stay_gaps(self):
+        harmonic, h_gaps = self.profile("HARMONIC_SHIELD")
+        motif, m_gaps = self.profile("MOTIF")
+        cho_ready = self.profile("CHO_READY")[0]
+        wah_blast = self.profile("WAH_BLAST")[0]
+        strike = self.profile("STRIKE_FOOL")[0]
+        self.assertEqual((h_gaps, m_gaps), ((), ()))
+        # Harmonic Shield gains 0 block with no melody tags, positive block with Wah/Cho cards.
+        self.assertEqual(self.fight([strike] * 4 + [harmonic])["defense"], 0.0)
+        self.assertGreater(self.fight([cho_ready, wah_blast, strike, strike, harmonic])["defense"], 0.0)
+        # Motif draws extra cards beyond hand_size=5 in a >5-card deck only when Wah/Cho/Ki cards are played.
+        self.assertEqual(self.fight([strike] * 9 + [motif])["cycle"], 0.0)
+        self.assertGreater(self.fight([cho_ready, wah_blast] + [strike] * 7 + [motif])["cycle"], 0.0)
+        # Unmodeled Fool dynamic effects still disclose explicit gaps and do not fabricate value.
+        self.assertTrue(self.profile("TRICK_SHOT")[1])
+        self.assertTrue(self.profile("FLORESCENCE")[1])
+
+    def test_fool_end_to_end_card_reward_policy_scores_and_allows_skip(self):
+        view = copy.deepcopy(load_golden_set()[0]["scoring_view"])
+        card_tpl = copy.deepcopy(next(c for c in view["candidates"] if c["kind"] == "card"))
+        skip_tpl = copy.deepcopy(next(c for c in view["candidates"] if c["kind"] == "skip"))
+        deck_tpl = copy.deepcopy(view["state"]["deck"][0])
+
+        def make_deck_entry(cid, count):
+            return {**deck_tpl, "card": cid, "upgrades": 0, "count": count}
+
+        def make_card(idx, cid):
+            row = copy.deepcopy(card_tpl)
+            row.update(
+                candidate_id=f"{idx}:{cid}",
+                entity_id=cid,
+                label=cid,
+                eligible=True,
+                payload={**row["payload"], "card": cid, "upgrades": 0},
+            )
+            return row
+
+        view["state"]["character"] = "FOOL"
+        view["state"]["hp"] = 77
+        view["state"]["max_hp"] = 77
+        view["state"]["deck"] = [
+            make_deck_entry("STRIKE_FOOL", 5),
+            make_deck_entry("DEFEND_FOOL", 4),
+            make_deck_entry("FOOLISH_SHOT", 1),
+        ]
+        view["state"]["relics"] = ["SONG_BOW"]
+        view["candidates"] = [
+            make_card(0, "HEAVY_SHOT"),
+            make_card(1, "DEEP_STRETCH"),
+            make_card(2, "NOCK"),
+            copy.deepcopy(skip_tpl),
+        ]
+        result = PolicyRegistry([DeckFitnessPolicy(self.repository)]).recommend(card_reward_request(view))
+        self.assertIn(result.status, ("recommend", "skip"))
+        scored = {row.candidate_id: row for row in result.candidates}
+        for cid in ("0:HEAVY_SHOT", "1:DEEP_STRETCH", "2:NOCK", "skip"):
+            self.assertIsNotNone(scored[cid].score, cid)
+            self.assertFalse(scored[cid].data_gaps, cid)
+        # Skip stays a formal scored candidate and beats a zero-synergy card (Nail without shots).
+        view_no_shots = copy.deepcopy(view)
+        view_no_shots["state"]["deck"] = [
+            make_deck_entry("STRIKE_FOOL", 5),
+            make_deck_entry("DEFEND_FOOL", 5),
+        ]
+        view_no_shots["candidates"] = [make_card(0, "NAIL"), copy.deepcopy(skip_tpl)]
+        skip_result = PolicyRegistry([DeckFitnessPolicy(self.repository)]).recommend(card_reward_request(view_no_shots))
+        self.assertEqual(skip_result.recommended_candidate_id, "skip")
+
+    def test_v0113_boundary_fixes_isolate_non_fool_and_resolve_dynamic_hits_and_blocks(self):
+        # first_of_tag_this_turn must stay unsupported on damage modifiers (no Silent Phantom Blades overcount).
+        _, pb_gaps = self.profile("PHANTOM_BLADES")
+        self.assertTrue(
+            any("filter:first_of_tag_this_turn" in gap for gap in pb_gaps),
+            pb_gaps,
+        )
+        # Mechanic effects with scale (Obsidian Vice) disclose a gap instead of silently scoring flat damage.
+        _, ov_gaps = self.relic("OBSIDIAN_VICE")
+        self.assertTrue(any("effect_scale:mechanic" in gap for gap in ov_gaps), ov_gaps)
+        # Tormentous Collar uses documented filter.fight_kind=ELITE and scores with no gaps.
+        collar, collar_gaps = self.relic("TORMENTOUS_COLLAR")
+        self.assertEqual(collar_gaps, ())
+        self.assertTrue(collar.mechanics)
+        # Cho Firm conditional second block must not double-count Stretch when arrow_slots=0.
+        cho_firm = self.profile("CHO_FIRM")[0]
+        strike = self.profile("STRIKE_FOOL")[0]
+        exercise_mat = self.relic("EXERCISE_MAT")[0]
+        gain_no_arrow = (
+            self.fight([cho_firm] + [strike] * 4, [exercise_mat], turns=6.0, arrow_slots=0.0)["defense"]
+            - self.fight([cho_firm] + [strike] * 4, [], turns=6.0, arrow_slots=0.0)["defense"]
+        )
+        gain_with_arrow = (
+            self.fight([cho_firm] + [strike] * 4, [exercise_mat], turns=6.0, arrow_slots=1.0)["defense"]
+            - self.fight([cho_firm] + [strike] * 4, [], turns=6.0, arrow_slots=1.0)["defense"]
+        )
+        self.assertAlmostEqual(gain_no_arrow, 1.0, places=5)
+        self.assertAlmostEqual(gain_with_arrow, 2.0, places=5)
+        # Melodic Shot + Song Bow must scale Aim with resolved hits_scale (> 1x when melodies are played).
+        melodic = self.profile("MELODIC_SHOT")[0]
+        wah = self.profile("WAH_SWEEP")[0]
+        cho = self.profile("CHO_READY")[0]
+        defend = self.profile("DEFEND_FOOL")[0]
+        song_bow = self.relic("SONG_BOW")[0]
+        melodic_gain = (
+            self.fight([melodic, wah, cho, strike, defend], [song_bow], turns=6.0, arrow_slots=1.0)["frontload"]
+            - self.fight([melodic, wah, cho, strike, defend], [], turns=6.0, arrow_slots=1.0)["frontload"]
+        )
+        self.assertGreater(melodic_gain, 1.2)
+        # Explosive Arrows fires on every owner arrow impale (not multiplied again by impaled_prob).
+        explosive, ea_gaps = self.profile("EXPLOSIVE_ARROWS")
+        shot = self.profile("FOOLISH_SHOT")[0]
+        self.assertEqual(ea_gaps, ())
+        ea_gain = (
+            self.fight([shot] * 2 + [strike] * 4 + [defend] * 4 + [explosive])["frontload"]
+            - self.fight([shot] * 2 + [strike] * 4 + [defend] * 4)["frontload"]
+        )
+        # Net gain after 1-card deck dilution is ~1.43/turn (was ~0.73/turn with double impaled_prob penalty).
+        self.assertGreater(ea_gain, 1.2)
+
 

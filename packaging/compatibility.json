@@ -1,17 +1,17 @@
 {
   "manifest_version": 2,
-  "release_fingerprint": "e57d3e0626add46d16b2999616220839ee09cbe625b48dd97d7d2a877f5d5b5b",
+  "release_fingerprint": "a3c6d6b958dfb11663b77c12720e19011434483b98c1e3db97d8d6a9f4b49950",
   "status": "enabled",
   "guide": {
-    "version": "0.3.15-alpha.0"
+    "version": "0.3.16-alpha.0"
   },
   "game": {
-    "version": "0.111.0",
-    "sts2_dll_sha256": "0861bfa1df347538d932f22d580e75420f08082792eb914e53b4882764acdbe9"
+    "version": "0.113.1",
+    "sts2_dll_sha256": "62ecbe91093e1fa862de4329aac865209dcb297804caf0f0520d92d8c0b4a9c3"
   },
   "mod": {
     "id": "STS2GuideReadOnlyExporter",
-    "version": "0.3.15",
+    "version": "0.3.16",
     "producer": "sts2-guide-readonly-mod"
   },
   "protocol": {
@@ -21,8 +21,8 @@
   },
   "sqlite": {
     "schema_version": 9,
-    "snapshot_id": "knowledge-77836ab475f92ba7-facts-05aff7c45a9937cf-params-04c428da318425c3",
-    "knowledge_sha256": "77836ab475f92ba706788fadf6ac99e0d341ac92c82165b20495c3af3560e5be",
+    "snapshot_id": "knowledge-80b9f721c0b31be9-facts-3eb89ae0ed4b1db4-params-04c428da318425c3",
+    "knowledge_sha256": "80b9f721c0b31be9bd4b9537fb1140c3984d17038761f20c2f2d8bbb39d9f99a",
     "community_scores_sha256": "37d7975a8a85cf00b6b37a28bbac892ab1cf0863cd252f085dff83258e0f524f"
   },
   "policy": {

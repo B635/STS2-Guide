@@ -1077,6 +1077,7 @@ class DeckFitnessPolicy:
             orb_slots=float((params.get("base_orb_slots") or {}).get(
                 str(request.world.character or "").upper(), 0.0
             )),
+            arrow_slots=1.0 if str(request.world.character or "").upper() == "FOOL" else 0.0,
             orbs=self._orb_facts(),
             enemy_hits=needs.enemy_hits,
             player_weak=needs.player_weak,

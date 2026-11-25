@@ -46,16 +46,16 @@ class CompatibilityManifestTests(unittest.TestCase):
     def setUp(self):
         self.manifest = load_compatibility_manifest(MANIFEST_PATH)
 
-    def test_checked_in_manifest_identifies_01110_test_candidate(self):
+    def test_checked_in_manifest_identifies_01131_test_candidate(self):
         # Build identity permits local acceptance testing; it is not live evidence.
-        self.assertEqual(self.manifest.game.version, "0.111.0")
+        self.assertEqual(self.manifest.game.version, "0.113.1")
         self.assertEqual(
             self.manifest.release_fingerprint,
             compute_release_fingerprint(self.manifest),
         )
         self.assertEqual(
             self.manifest.game.sts2_dll_sha256,
-            "0861bfa1df347538d932f22d580e75420f08082792eb914e53b4882764acdbe9",
+            "62ecbe91093e1fa862de4329aac865209dcb297804caf0f0520d92d8c0b4a9c3",
         )
         self.assertEqual(self.manifest.status, "enabled")
         self.assertTrue(self.manifest.is_enabled)
@@ -575,7 +575,7 @@ class LiveCompatibilityGateTests(unittest.TestCase):
     def tearDown(self):
         self.tempdir.cleanup()
 
-    def _event(self, *, game_version: str | None = "0.111.0") -> dict:
+    def _event(self, *, game_version: str | None = "0.113.1") -> dict:
         event = json.loads(
             (ROOT / "protocol" / "state-event.example.json").read_text(
                 encoding="utf-8"

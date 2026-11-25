@@ -77,7 +77,7 @@ class GuardedCardRewardPolicyTests(unittest.TestCase):
             [(row.candidate_id, row.score, row.rank) for row in warm.candidates],
             [(row.candidate_id, row.score, row.rank) for row in cold.candidates],
         )
-        self.assertEqual(len(warm_processor.policies._policies[CARD_REWARD].primary._pools), 5)
+        self.assertEqual(len(warm_processor.policies._policies[CARD_REWARD].primary._pools), 6)
 
 
 if __name__ == "__main__":

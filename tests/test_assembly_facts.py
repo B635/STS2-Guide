@@ -201,7 +201,7 @@ class AssemblyFactValidityTests(unittest.TestCase):
         self.assertFalse(war_paint["valid"])
         self.assertTrue(evaluated["relics:ANCHOR"]["valid"])
         self.assertEqual(
-            war_paint["hook_tokens"], {"AfterObtained": "06002376"}
+            war_paint["hook_tokens"], {"AfterObtained": "0600250C"}
         )
 
     def test_release_metadata_pins_extract_and_facts(self):

@@ -45494,8 +45494,18 @@
    "unknowable": []
   },
   {
+   "audit": {
+    "by": "TASK-029 step 3 IL verification",
+    "notes": "Verified full IL dump of ByrdineMonster against sts2.dll v0.113.1: pet monster matching Byrdpip structure (HP 9999, NOTHING_MOVE, IsInteractable=false).",
+    "verdict": "agree"
+   },
    "class": "ByrdineMonster",
    "entity_key": "monsters:BYRDINE_MONSTER",
+   "evidence": [
+    "Sts2FactExtractor --dump-any MegaCrit.Sts2.Core.Models.Monsters.ByrdineMonster",
+    "get_MinInitialHp=9999, get_MaxInitialHp=9999, get_IsInteractable=false",
+    "GenerateMoveStateMachine: single MoveState NOTHING_MOVE with Array.Empty intents, action returns Task.CompletedTask, FollowUpState=self; SetupSkins is cosmetic"
+   ],
    "fingerprint": "5740e2a0002c9445a6f81769e9c20d2ef0c74a08985bcbe178814134da7e936e",
    "hook_tokens": {
     "GenerateMoveStateMachine": "0600303E",
@@ -45505,7 +45515,34 @@
     "GenerateMoveStateMachine",
     "SetupSkins"
    ],
-   "status": "unreviewed"
+   "hp": {
+    "max": 9999,
+    "min": 9999
+   },
+   "innate": [],
+   "mechanics": [],
+   "moves": [
+    {
+     "effects": [],
+     "id": "NOTHING_MOVE",
+     "intents": []
+    }
+   ],
+   "open_questions": [],
+   "pattern": {
+    "initial": "NOTHING_MOVE",
+    "states": [
+     {
+      "id": "NOTHING_MOVE",
+      "move": "NOTHING_MOVE",
+      "next": "NOTHING_MOVE",
+      "type": "move"
+     }
+    ]
+   },
+   "reviewed_by": "TASK-029 step 3",
+   "status": "converted",
+   "unknowable": []
   },
   {
    "audit": {
@@ -60619,8 +60656,18 @@
    "unknowable": []
   },
   {
+   "audit": {
+    "by": "TASK-029 step 3 IL verification",
+    "notes": "Verified full IL dump of Monsters.Wuppy against sts2.dll v0.113.1: pet monster with 50/50 initial HP, IsInteractable=true, and single NOTHING_MOVE.",
+    "verdict": "agree"
+   },
    "class": "Wuppy",
    "entity_key": "monsters:WUPPY",
+   "evidence": [
+    "Sts2FactExtractor --dump-any MegaCrit.Sts2.Core.Models.Monsters.Wuppy",
+    "get_MinInitialHp=50, get_MaxInitialHp=50, get_IsInteractable=true",
+    "GenerateMoveStateMachine: single MoveState NOTHING_MOVE with Array.Empty intents, action returns Task.CompletedTask, FollowUpState=self; GenerateAnimator is cosmetic"
+   ],
    "fingerprint": "51ce2b89ccdcb222d243e087a6b008ab6c77226fba829fd02a75bb28c2aeea60",
    "hook_tokens": {
     "GenerateAnimator": "06003757",
@@ -60630,7 +60677,36 @@
     "GenerateAnimator",
     "GenerateMoveStateMachine"
    ],
-   "status": "unreviewed"
+   "hp": {
+    "max": 50,
+    "min": 50
+   },
+   "innate": [],
+   "mechanics": [],
+   "moves": [
+    {
+     "effects": [],
+     "id": "NOTHING_MOVE",
+     "intents": []
+    }
+   ],
+   "open_questions": [
+    "Monster class defines 50/50 HP; relics:WUPPY overrides spawned pet MaxHp/CurrentHp to 60 and applies WuppysLoyaltyPower."
+   ],
+   "pattern": {
+    "initial": "NOTHING_MOVE",
+    "states": [
+     {
+      "id": "NOTHING_MOVE",
+      "move": "NOTHING_MOVE",
+      "next": "NOTHING_MOVE",
+      "type": "move"
+     }
+    ]
+   },
+   "reviewed_by": "TASK-029 step 3",
+   "status": "converted",
+   "unknowable": []
   },
   {
    "audit": {
@@ -61123,8 +61199,24 @@
    "status": "unreviewed"
   },
   {
+   "audit": {
+    "by": "fact-pipeline-v1-auditor (deepseek-flash)",
+    "notes": "Verified: StackType=1 (Counter), Type=2 (Debuff), no remove/decrement -> duration combat; category baseline (BeforeHandDraw turn-start hook, not card-play triggered). MoveNext: guard player.Creature==Owner, then CombatState.CreateCard<Wither>(player) and CardPileCmd.AddGeneratedCardToCombat(card, PileType.Draw(1), creator=null, CardPilePosition 2 = top of draw pile); no free-play change => free:false; no Amount usage => fixed count 1 regardless of stacks. Flash() only visual. ExtraHoverTips only builds Wither hover tip. Note (non-blocking): the \"top of draw pile\" placement has no dedicated schema field, destination \"draw\" is the correct expressible value.",
+    "verdict": "agree"
+   },
+   "category": "baseline",
    "class": "AeonglassDominionPower",
+   "duration": {
+    "kind": "combat",
+    "stack_type": "Counter"
+   },
    "entity_key": "powers:AEONGLASS_DOMINION",
+   "evidence": [
+    "get_StackType=1 (Counter), get_Type=2 (Debuff); no remove/decrement hook -> persists for combat",
+    "BeforeHandDraw <BeforeHandDraw>d__6: if player.Creature != Owner -> return; CombatState.CreateCard<Wither>(player); CardPileCmd.AddGeneratedCardToCombat(card, PileType 1 (Draw), null, CardPilePosition 2 (Top)); PowerModel.Flash()",
+    "get_ExtraHoverTips: HoverTipFactory.FromCardWithCardHoverTips<Wither>",
+    "get_CanonicalVars: none (fixed 1 card per turn)"
+   ],
    "fingerprint": "bc3696afa1fe8f938be4503b2f1b4d032143c8ce7fa87f31e824e526890b0198",
    "hook_tokens": {
     "BeforeHandDraw": "060025A0"
@@ -61132,7 +61224,21 @@
    "hooks": [
     "BeforeHandDraw"
    ],
-   "status": "unreviewed"
+   "mechanics": [
+    {
+     "effect": {
+      "card": "WITHER",
+      "count": 1,
+      "destination": "draw",
+      "free": false,
+      "kind": "add_card"
+     },
+     "when": "turn_start"
+    }
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash)",
+   "status": "converted",
+   "unknowable": []
   },
   {
    "audit": {
@@ -61236,8 +61342,27 @@
    "unknowable": []
   },
   {
+   "audit": {
+    "by": "fact-pipeline-v1-auditor (deepseek-flash)",
+    "notes": "IL matches the candidate on every field: category=trigger (modifies only the armed FromArrow powered card attack); duration.kind=until_triggered with StackType=Counter (stacks consumed via AfterAttack -> PowerCmd.ModifyAmount(-amountWhenAttackStarted)); static mechanic {\"modifier\":\"damage\",\"add_per_stack\":1} with filter dealer=owner (Owner vs dealer Creature arg), from_arrow=true (ValueProp 32 = FromArrow, read via read_enum) and powered_attack=true (both BeforeAttack gating and ModifyDamageAdditive); no CanonicalVars on the power; no separate damage/removal effect. HeavyShot.ModifyAimAmount doubling (AimMultiplier base 2) is genuinely a card-side hook and is correctly documented in evidence rather than fabricated as an illegal effect.",
+    "verdict": "agree"
+   },
+   "category": "trigger",
    "class": "AimPower",
+   "duration": {
+    "consumed_per": "arrow_attack",
+    "kind": "until_triggered",
+    "stack_type": "Counter"
+   },
    "entity_key": "powers:AIM",
+   "evidence": [
+    "get_StackType=1 (Counter), get_Type=1 (Buff)",
+    "BeforeAttack: Attacker==Owner && DamageProps.IsPoweredAttack && DamageProps.HasFlag(ValueProp.FromArrow=32, read via read_enum) && ModelSource is CardModel && Data.commandToModify==null -> Data.commandToModify=command, Data.amountWhenAttackStarted=Amount (arms the next arrow attack)",
+    "ModifyDamageAdditive: dealer==Owner && IsPoweredAttack && HasFlag(FromArrow) && Data.commandToModify!=null && (cardPlay==null || cardPlay==Data.commandToModify.ModelSource) -> returns +Amount as additive damage; else Decimal.Zero (no damage command executed by the power)",
+    "HeavyShot.ModifyAimAmount: returns amount * DynamicVars['AimMultiplier'].BaseValue (CanonicalVars AimMultiplier base 2) -> Aim's per-stack bonus is doubled for HeavyShot",
+    "AfterAttack <AfterAttack>d__8: command==Data.commandToModify -> PowerCmd.ModifyAmount(choiceContext, this, -Data.amountWhenAttackStarted, null, null, false) -> whole stack consumed on the armed arrow attack",
+    "No CanonicalVars; no remove/decrement hook -> consumed on the next powered FromArrow card attack"
+   ],
    "fingerprint": "06e5e19f45999a6ef77215f3b554369014c1f7f462e8a268e537eb1b857ee568",
    "hook_tokens": {
     "AfterAttack": "060025B2",
@@ -61251,11 +61376,41 @@
     "InitInternalData",
     "ModifyDamageAdditive"
    ],
-   "status": "unreviewed"
+   "mechanics": [
+    {
+     "add_per_stack": 1,
+     "filter": {
+      "dealer": "owner",
+      "from_arrow": true,
+      "powered_attack": true
+     },
+     "modifier": "damage"
+    }
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash, revised)",
+   "status": "converted",
+   "unknowable": []
   },
   {
+   "audit": {
+    "by": "fact-pipeline-v1-auditor (deepseek-flash)",
+    "notes": "IL verified: get_StackType=1 Counter, get_Type=1 Buff, no remove/decrement override -> duration combat; AfterCardGeneratedForCombat d__6 gates on creator!=null && creator.Creature==Owner && card is Sadness, then Flash + CreatureCmd.GainBlock(Owner, (decimal)Amount, ValueProp.Unpowered(4), null, false) — Amount is the block value (1 per stack), 4 is the ValueProp enum (Unpowered), not a block constant. get_ExtraHoverTips references Sadness; CanonicalVars empty. Candidate's trigger/card_generated/SADNESS+owner filter, block amount_per_stack=1, category trigger and duration combat all match.",
+    "verdict": "agree"
+   },
+   "category": "trigger",
    "class": "AllIsWellPower",
+   "duration": {
+    "kind": "combat",
+    "stack_type": "Counter"
+   },
    "entity_key": "powers:ALL_IS_WELL",
+   "evidence": [
+    "get_StackType=1 (Counter), get_Type=1 (Buff); no remove/decrement hook -> combat",
+    "AfterCardGeneratedForCombat <AfterCardGeneratedForCombat>d__6: creator != null && creator.Creature == Owner && card is Sadness -> Flash(); CreatureCmd.GainBlock(Owner, (decimal)Amount, ValueProp.Unpowered(4), null, false)",
+    "CreatureCmd.GainBlock(Creature, decimal amount, ValueProp props, CardPlay, bool fast): ldc.i4.4 is the props argument = ValueProp.Unpowered, not a block value; block amount = PowerModel::get_Amount (1 per stack)",
+    "get_ExtraHoverTips: HoverTipFactory.FromCard<Sadness>()",
+    "CanonicalVars empty"
+   ],
    "fingerprint": "320f7aab720dc311961cc7f6424a04717ec2f0ea43830f130e50edc24b0110e4",
    "hook_tokens": {
     "AfterCardGeneratedForCombat": "060025B7"
@@ -61263,11 +61418,44 @@
    "hooks": [
     "AfterCardGeneratedForCombat"
    ],
-   "status": "unreviewed"
+   "mechanics": [
+    {
+     "effect": {
+      "amount_per_stack": 1,
+      "kind": "block"
+     },
+     "filter": {
+      "card": "SADNESS",
+      "creator": "owner"
+     },
+     "when": "card_generated"
+    }
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash, revised)",
+   "status": "converted",
+   "unknowable": []
   },
   {
+   "audit": {
+    "by": "fact-pipeline-v1-auditor (deepseek-flash)",
+    "notes": "Verified get_StackType=2 (Single) and get_Type=2 (Debuff); CanonicalVars CardsVar(2)+EnergyVar(1); ModifyHandDraw returns Max(0, amount-2) only for Owner.Player; AfterPlayerTurnStart awaits PlayerCmd.LoseEnergy(1) (energy -1) for the owner's player; AfterSideTurnEnd returns early when side==Enemy (2) and otherwise PowerCmd.Remove(this) with no Decrement -> duration this_turn / removed at owner turn end. category=baseline, mechanics (static hand_draw -2 for self + turn_start energy -1) match IL. Minor cosmetic only: IL subtracts a literal 2 and stack is Single, so \"add\" would be equally faithful as \"add_per_stack\", and \"applies_to\" is used rather than filter — no numeric/factual divergence.",
+    "verdict": "agree"
+   },
+   "category": "baseline",
    "class": "AmnesiaPower",
+   "duration": {
+    "kind": "this_turn",
+    "removed_at": "owner_turn_end",
+    "stack_type": "Single"
+   },
    "entity_key": "powers:AMNESIA",
+   "evidence": [
+    "get_StackType=2 (Single), get_Type=2 (Debuff)",
+    "get_CanonicalVars: CardsVar(2), EnergyVar(1)",
+    "ModifyHandDraw: if player != Owner.Player -> unchanged; else Math.Max(0, amount - 2)",
+    "AfterPlayerTurnStart <AfterPlayerTurnStart>d__6: if Owner.Player == player -> PlayerCmd.LoseEnergy(1)",
+    "AfterSideTurnEnd <AfterSideTurnEnd>d__8: if side == 2 (Enemy) -> return; else PowerCmd.Remove(this)"
+   ],
    "fingerprint": "676ff00f457fd11e31d7f89bcb343b772a7db9d17ff2a859891e15b61284ac64",
    "hook_tokens": {
     "AfterPlayerTurnStart": "060025BC",
@@ -61279,7 +61467,23 @@
     "AfterSideTurnEnd",
     "ModifyHandDraw"
    ],
-   "status": "unreviewed"
+   "mechanics": [
+    {
+     "add_per_stack": -2,
+     "applies_to": "self",
+     "modifier": "hand_draw"
+    },
+    {
+     "effect": {
+      "amount": -1,
+      "kind": "energy"
+     },
+     "when": "turn_start"
+    }
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash)",
+   "status": "converted",
+   "unknowable": []
   },
   {
    "audit": {
@@ -61316,8 +61520,24 @@
    "unknowable": []
   },
   {
+   "audit": {
+    "by": "fact-pipeline-v1-auditor (deepseek-flash)",
+    "notes": "Verified in IL: get_StackType=1 (Counter), get_Type=1 (Buff), no decrement/remove hook -> duration combat. <AfterSideTurnStart>d__6 MoveNext: participants.Contains(Owner) gate (no TurnNumber check, so no turns:[1] needed); Flash(); PowerCmd.Apply<AimPower>(ctx, Owner as target, Owner.Amount as amount, Owner as applier, null, false) -> apply_power Aim to self, amount_per_stack 1. CanonicalVars empty, amount from stack Amount. Category baseline (turn-start hook, not card-triggered) is correct. Only cosmetic IL prose differences in evidence (applier/param description), no factual mismatch.",
+    "verdict": "agree"
+   },
+   "category": "baseline",
    "class": "ArcheryPower",
+   "duration": {
+    "kind": "combat",
+    "stack_type": "Counter"
+   },
    "entity_key": "powers:ARCHERY",
+   "evidence": [
+    "get_StackType=1 (Counter), get_Type=1 (Buff); no remove/decrement hook -> persists for combat",
+    "AfterSideTurnStart <AfterSideTurnStart>d__6: participants.Contains(Owner) -> Flash(); PowerCmd.Apply<AimPower>(Owner, Amount, Owner, null, false)",
+    "get_ExtraHoverTips: HoverTipFactory.FromPower<AimPower>",
+    "CanonicalVars empty; amount comes from power stack Amount"
+   ],
    "fingerprint": "715b32d2f05e62aa410cbad82dbda78b54190a1a34bc80a8eef3aa841650108a",
    "hook_tokens": {
     "AfterSideTurnStart": "060025C5"
@@ -61325,7 +61545,20 @@
    "hooks": [
     "AfterSideTurnStart"
    ],
-   "status": "unreviewed"
+   "mechanics": [
+    {
+     "effect": {
+      "amount_per_stack": 1,
+      "kind": "apply_power",
+      "power": "Aim",
+      "target": "self"
+     },
+     "when": "turn_start"
+    }
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash)",
+   "status": "converted",
+   "unknowable": []
   },
   {
    "audit": {
@@ -62222,12 +62455,52 @@
    "unknowable": []
   },
   {
+   "audit": {
+    "by": "fact-pipeline-v1-auditor (deepseek-flash)",
+    "notes": "Verified against IL: ChoBarbsPower only overrides get_OriginModel (ModelDb.Card<ChoBarbs>) and chains the base ctor; all behavior comes from TemporaryThornsPower. StackType=1 (Counter) confirmed via read_enum; Type=1 (Buff). BeforeApplied applies ThornsPower(target, amount) => amount_per_stack 1 with target self is correct; AfterPowerAmountChanged re-applies the same amount to Owner when stacks are added. AfterSideTurnEnd compares Owner.Side == side, calls Flash + PowerCmd.Remove(this) with no PowerCmd.Decrement (=> duration \"this_turn\"), then PowerCmd.ModifyAmount(thorns, -this.Amount, Owner, null, false), i.e. removes precisely the granted Thorns — matching the candidate's second mechanic (remove_power Thorns, amount_per_stack 1, self; note IL decrements by ModifyAmount(-Amount) rather than a full removal, which is consistent). Category \"baseline\" is correct: the effect is self-contained (power application/turn-end), not triggered by specific cards or modifying card subsets. No obtain/between_fights hooks; no missing effects, no sign/index errors. Minor prose-level only: evidence cites BeforeApplied's PowerCmd.Apply correctly and matches my trace.",
+    "verdict": "agree"
+   },
+   "category": "baseline",
    "class": "ChoBarbsPower",
+   "duration": {
+    "kind": "this_turn",
+    "stack_type": "Counter"
+   },
    "entity_key": "powers:CHO_BARBS",
+   "evidence": [
+    "ChoBarbsPower : TemporaryThornsPower; only override get_OriginModel -> ModelDb.Card<ChoBarbs> (title/hover tips); no CanonicalVars of its own",
+    "TemporaryThornsPower.get_InternallyAppliedPower -> ModelDb.Power<ThornsPower>; get_StackType=1 (Counter), get_Type=1 (Buff)",
+    "TemporaryThornsPower.BeforeApplied <BeforeApplied>d__16: PowerCmd.Apply<ThornsPower>(target, amount, applier, cardSource) - applying this power grants an equal amount of real ThornsPower",
+    "TemporaryThornsPower.AfterPowerAmountChanged <AfterPowerAmountChanged>d__17: power == this && amount == Amount -> PowerCmd.Apply<ThornsPower>(Owner, amount, applier, cardSource) (keeps Thorns in sync when stacks are added)",
+    "TemporaryThornsPower.AfterSideTurnEnd <AfterSideTurnEnd>d__18: if Owner.Side == side -> Flash; PowerCmd.Remove(this); then Owner.GetPower<ThornsPower>() != null -> PowerCmd.ModifyAmount(thorns, -Amount, Owner, null) - removes exactly the Thorns granted, no turn decrement",
+    "Applied by cards:CHO_BARBS (PowerVar<ChoBarbsPower>(3), +1 on upgrade); catalog 'gain Thorns this turn' matches IL"
+   ],
    "fingerprint": "2d35b8bcce8edb91f5c27d74a83ab675f8d21410fa3e6dffef46b02a4d2639e2",
    "hook_tokens": {},
    "hooks": [],
-   "status": "unreviewed"
+   "mechanics": [
+    {
+     "effect": {
+      "amount_per_stack": 1,
+      "kind": "apply_power",
+      "power": "Thorns",
+      "target": "self"
+     },
+     "when": "power_applied_self"
+    },
+    {
+     "effect": {
+      "amount_per_stack": 1,
+      "kind": "remove_power",
+      "power": "Thorns",
+      "target": "self"
+     },
+     "when": "turn_end"
+    }
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash)",
+   "status": "converted",
+   "unknowable": []
   },
   {
    "class": "ClarityPower",
@@ -62296,8 +62569,25 @@
    ]
   },
   {
+   "audit": {
+    "by": "fact-pipeline-v1-auditor (deepseek-flash)",
+    "notes": "IL verified against candidate: get_StackType=1 (Counter), get_Type=1 (Buff), only override AfterDeath (no remove/decrement) -> duration combat. <AfterDeath>d__8::MoveNext: target.Side == Owner.Side -> early return (only opposing-side deaths trigger); Flash(); GetTeammatesOf(Owner).Where(c != null && c.IsAlive && c.IsPlayer) -> PlayerCmd.GainEnergy((decimal)Amount, c.Player) per alive player teammate, i.e. +Amount energy per dying enemy (amount_per_stack 1, positive sign from GainEnergy). get_CanonicalVars = Array.Empty<DynamicVar>(); get_ExtraHoverTips = HoverTipFactory.ForEnergy. Category \"trigger\" (creature-death-triggered hook, not a turn/combat-start baseline and not out-of-combat) matches candidate. Note: energy recipient is technically every alive player on the owner's side (multiplayer), which the \"energy\" effect kind expresses without a target field, as the convention requires; evidence already states this.",
+    "verdict": "agree"
+   },
+   "category": "trigger",
    "class": "CompostPower",
+   "duration": {
+    "kind": "combat",
+    "stack_type": "Counter"
+   },
    "entity_key": "powers:COMPOST",
+   "evidence": [
+    "get_StackType=1 (Counter), get_Type=1 (Buff); no remove/decrement hook -> persists for combat",
+    "get_CanonicalVars returns Array.Empty<DynamicVar>() (no vars); get_ExtraHoverTips -> HoverTipFactory.ForEnergy",
+    "AfterDeath <AfterDeath>d__8: if target.Side == Owner.Side -> return (only enemies of owner's side trigger)",
+    "AfterDeath: Flash(); CombatState.GetTeammatesOf(Owner).Where(c => c != null && c.IsAlive && c.IsPlayer) -> for each: PlayerCmd.GainEnergy(Amount, creature.Player)",
+    "Energy gained equals power Amount per dying enemy, for every alive player teammate (all players in multiplayer)"
+   ],
    "fingerprint": "cb05cff81d4562ff3f85219c7d078827ed95e996ea090401254abe0f86d63e73",
    "hook_tokens": {
     "AfterDeath": "0600265E"
@@ -62305,7 +62595,18 @@
    "hooks": [
     "AfterDeath"
    ],
-   "status": "unreviewed"
+   "mechanics": [
+    {
+     "effect": {
+      "amount_per_stack": 1,
+      "kind": "energy"
+     },
+     "when": "enemy_died"
+    }
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash)",
+   "status": "converted",
+   "unknowable": []
   },
   {
    "audit": {
@@ -62363,8 +62664,25 @@
    "unknowable": []
   },
   {
+   "audit": {
+    "by": "fact-pipeline-v1-auditor (deepseek-flash)",
+    "notes": "IL confirms DynamicVar \"DamageDecrease\" = 0.75 (decimal scale 2), StackType=Single(2), Type=Buff(1). ModifyDamageMultiplicative returns 0.75 only when target==Owner and prompt IsPoweredAttack, otherwise Decimal.One -> static 25% reduction of powered-attack damage received. AfterSideTurnStart removes the power when participants.Contains(Owner) (owner's next turn start, no decrement), consistent with duration until_triggered and category baseline. No obtain/between-fight hooks (power, not relic).",
+    "verdict": "agree"
+   },
+   "category": "baseline",
    "class": "ConductorsBatonPower",
+   "duration": {
+    "kind": "until_triggered",
+    "stack_type": "Single"
+   },
    "entity_key": "powers:CONDUCTORS_BATON",
+   "evidence": [
+    "get_StackType=2 (Single), get_Type=1 (Buff)",
+    "get_CanonicalVars: DynamicVar(\"DamageDecrease\", 0.75)",
+    "ModifyDamageMultiplicative: target != Owner -> Decimal.One; !ValueProp.IsPoweredAttack -> Decimal.One; else returns DynamicVars[\"DamageDecrease\"].BaseValue (0.75) as multiplier",
+    "AfterSideTurnStart <AfterSideTurnStart>d__8: if participants.Contains(Owner) -> PowerCmd.Remove(this) (removed at owner's next side turn start, no decrement)",
+    "Catalog description 'Receive 25% less attack damage until your next turn' matches IL (0.75 multiplier on powered attack damage received)."
+   ],
    "fingerprint": "c88d73fd468fdd71c806dab5c3016b5eb793628b577b80516c2b46e2640795e9",
    "hook_tokens": {
     "AfterSideTurnStart": "0600266A",
@@ -62374,7 +62692,19 @@
     "AfterSideTurnStart",
     "ModifyDamageMultiplicative"
    ],
-   "status": "unreviewed"
+   "mechanics": [
+    {
+     "filter": {
+      "powered_attack": true,
+      "target": "owner"
+     },
+     "modifier": "damage_received",
+     "multiply": 0.75
+    }
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash)",
+   "status": "converted",
+   "unknowable": []
   },
   {
    "class": "ConfusedPower",
@@ -62790,8 +63120,25 @@
    "unknowable": []
   },
   {
+   "audit": {
+    "by": "fact-pipeline-v1-auditor (deepseek-flash)",
+    "notes": "Verified in IL: get_StackType=1 Counter, get_Type=1 Buff, no remove/decrement -> combat duration; category trigger on arrow_shot. MoveNext returns unless shooter.Creature == Owner and source (CardModel) != null, then GainBlock(creature, (decimal)Amount, ValueProp 4, null, false) for each alive player teammate of Owner excluding Owner. Candidate's category, duration, stack_type, mechanics (arrow_shot -> block amount_per_stack 1) and evidence all match; teammate targeting correctly documented in open_questions since block effects have no target field.",
+    "verdict": "agree"
+   },
+   "category": "trigger",
    "class": "CoveringFirePower",
+   "duration": {
+    "kind": "combat",
+    "stack_type": "Counter"
+   },
+   "effects": [],
    "entity_key": "powers:COVERING_FIRE",
+   "evidence": [
+    "get_StackType=1 (Counter), get_Type=1 (Buff); no remove/decrement hook -> persists for combat",
+    "AfterArrowShot <AfterArrowShot>d__6::MoveNext: if owner.Creature != Owner -> return; if source == null -> return; Flash(); CombatState.GetTeammatesOf(Owner).Where(c => c != null && c.IsAlive && c.IsPlayer && c.Player.Creature != Owner)",
+    "For each filtered creature: CreatureCmd.GainBlock(creature, (decimal)Amount, 4, null, false) -> block equal to power Amount per stack",
+    "get_ExtraHoverTips: HoverTipFactory.Static(5, empty DynamicVars)"
+   ],
    "fingerprint": "7a978019e1104824d7381798ba20ffd5e9559cc1e56b6656e99dc75041bc6405",
    "hook_tokens": {
     "AfterArrowShot": "060026A9"
@@ -62799,7 +63146,25 @@
    "hooks": [
     "AfterArrowShot"
    ],
-   "status": "unreviewed"
+   "mechanics": [
+    {
+     "effect": {
+      "amount_per_stack": 1,
+      "kind": "block"
+     },
+     "filter": {
+      "from_arrow": true
+     },
+     "when": "arrow_shot"
+    }
+   ],
+   "open_questions": [
+    "Block is granted to the owner's teammates (CombatState.GetTeammatesOf(Owner) filtered to alive players other than the owner); the block effect schema has no target field, so the teammate recipient is documented here.",
+    "IL requires source (CardModel) != null, i.e. the shot must come from a card."
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash)",
+   "status": "converted",
+   "unknowable": []
   },
   {
    "class": "CrabRagePower",
@@ -63513,8 +63878,24 @@
    "unknowable": []
   },
   {
+   "audit": {
+    "by": "fact-pipeline-v1-auditor (deepseek-flash)",
+    "notes": "Verified: Counter stack type, Debuff type, duration this_turn (AfterSideTurnEnd removes the power when side==Player, no decrement), category trigger (damage modifier restricted to arrow, powered attacks). ModifyDamageMultiplicative returns 1 + Amount/100 (1% per stack) only when target==Owner && ValueProp.IsPoweredAttack && ValueProp.HasFlag(FromArrow=32); filter {target: owner, powered_attack: true, from_arrow: true} and multiply_percent_per_stack: 1 match IL exactly. No CanonicalVars/upgrades; no obtain or between_fights hooks. Catalog \"50%\" corresponds to Amount=50 at 1%/stack. Adjudicated: normalized modifier to damage_received per docs/dev/mechanic-facts.md (enemy debuff).",
+    "verdict": "resolved"
+   },
+   "category": "trigger",
    "class": "DislikeYouPower",
+   "duration": {
+    "kind": "this_turn",
+    "stack_type": "Counter"
+   },
    "entity_key": "powers:DISLIKE_YOU",
+   "evidence": [
+    "get_StackType=1 (Counter), get_Type=2 (Debuff)",
+    "ModifyDamageMultiplicative: ldarg.1 (damaged creature) == get_Owner && ValueProp.IsPoweredAttack && ValueProp.HasFlag(32 = FromArrow) -> Decimal.One + (decimal)get_Amount()/100 (i.e. +1% per stack); else Decimal.One",
+    "AfterSideTurnEnd <AfterSideTurnEnd>d__5: side==1 (Player) -> PowerCmd.Remove(this); no decrement -> removed at end of current turn",
+    "CanonicalVars empty; no upgrade deltas"
+   ],
    "fingerprint": "7c9f22c013014222a6000b04ddca7b87cb0a77136f892c2d2ff5cebabb1deb0c",
    "hook_tokens": {
     "AfterSideTurnEnd": "0600271D",
@@ -63524,7 +63905,19 @@
     "AfterSideTurnEnd",
     "ModifyDamageMultiplicative"
    ],
-   "status": "unreviewed"
+   "mechanics": [
+    {
+     "filter": {
+      "from_arrow": true,
+      "powered_attack": true
+     },
+     "modifier": "damage_received",
+     "multiply_percent_per_stack": 1
+    }
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash, revised)",
+   "status": "converted",
+   "unknowable": []
   },
   {
    "audit": {
@@ -63752,8 +64145,22 @@
    "unknowable": []
   },
   {
+   "audit": {
+    "by": "TASK-029 step 3 adjudication (over fact-pipeline-v1-auditor IL trace)",
+    "notes": "Resolved auditor finding: replaced fixed count:1 with count_per_stack:1 matching Take(Amount) in IL and fixed CardPreviewStyle=1 evidence detail.",
+    "verdict": "resolved"
+   },
+   "category": "baseline",
    "class": "EcstasyPower",
+   "duration": {
+    "kind": "combat",
+    "stack_type": "Counter"
+   },
    "entity_key": "powers:ECSTASY",
+   "evidence": [
+    "get_StackType=1 (Counter), get_Type=1 (Buff); no remove/decrement hook -> persists for combat",
+    "AfterPlayerTurnStart <AfterPlayerTurnStart>d__6: owner match -> Hand.Cards.OfType<Sadness>() -> StableShuffle -> Take(Amount) -> CreateCard<Joy> -> CardCmd.Transform(transformations, null, CardPreviewStyle=1)"
+   ],
    "fingerprint": "a449a4381443e453b7448aa9a358bb504a5ccb989105963d8a4765d91e9e617d",
    "hook_tokens": {
     "AfterPlayerTurnStart": "06002750"
@@ -63761,11 +64168,49 @@
    "hooks": [
     "AfterPlayerTurnStart"
    ],
-   "status": "unreviewed"
+   "mechanics": [
+    {
+     "effect": {
+      "choice": "random",
+      "count_per_stack": 1,
+      "filter": {
+       "card": "SADNESS"
+      },
+      "into": "JOY",
+      "kind": "transform_cards",
+      "scope": "hand"
+     },
+     "when": "turn_start"
+    }
+   ],
+   "open_questions": [
+    "Transform count equals power stack Amount (Take(Amount) on shuffled Sadness cards in hand), encoded as count_per_stack: 1."
+   ],
+   "reviewed_by": "TASK-029 step 3 (fact-pipeline + adjudication)",
+   "status": "converted",
+   "unknowable": []
   },
   {
+   "audit": {
+    "by": "verifier-v0113 IL verification",
+    "notes": "Verified EncorePower.ShouldPlay IL (sts2.dll v0.113.1): Debuff capping remaining plays after application to Amount (clt against Amount), matching cards:ENCORE ('play only 1 more card'). Fixed misleading add_per_stack: 1 to max_per_stack: 1 (matching powers:SLOTH) and corrected open_questions.",
+    "verdict": "resolved"
+   },
+   "category": "baseline",
    "class": "EncorePower",
+   "duration": {
+    "kind": "this_turn",
+    "stack_type": "Counter"
+   },
    "entity_key": "powers:ENCORE",
+   "evidence": [
+    "get_StackType=1 (Counter), get_Type=2 (Debuff)",
+    "get_CanonicalVars: DynamicVar(\"PlaysRemaining\", 0); AfterApplied sets PlaysRemaining.BaseValue = get_PlaysRemaining()",
+    "get_PlaysRemaining: Mathf.Max(0, Amount - Data.numberOfCardsPlayedSinceApplied)",
+    "ShouldPlay: owner mismatch -> true; else numberOfCardsPlayedSinceApplied + cardsBeingPlayed.Count < Amount",
+    "BeforeCardPlayed: adds card to Data.cardsBeingPlayed; AfterCardPlayed: removes it and increments numberOfCardsPlayedSinceApplied, refreshes PlaysRemaining and InvokeDisplayAmountChanged",
+    "AfterSideTurnEnd <AfterSideTurnEnd>d__17: if participants contains Owner -> Flash(); PowerCmd.Remove(this) (no decrement) -> this_turn"
+   ],
    "fingerprint": "f428c397a192bf716d19570f2710d6bdccd5358f07e5dfb1441c74b54643b808",
    "hook_tokens": {
     "AfterApplied": "06002758",
@@ -63783,7 +64228,20 @@
     "InitInternalData",
     "ShouldPlay"
    ],
-   "status": "unreviewed"
+   "mechanics": [
+    {
+     "applies_to": "self",
+     "max_per_stack": 1,
+     "modifier": "cards_per_turn_limit"
+    }
+   ],
+   "open_questions": [
+    "IL implements a remaining-plays cap via ShouldPlay: a card may be played while numberOfCardsPlayedSinceApplied + cardsBeingPlayed.Count < Amount (Debuff; e.g. Encore applies 1 so only 1 more card can be played this turn); modeled as cards_per_turn_limit max_per_stack 1 (matching powers:SLOTH).",
+    "get_DisplayAmount returns PlaysRemaining (Amount - cards played since applied, min 0) rather than the raw stack amount."
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash)",
+   "status": "converted",
+   "unknowable": []
   },
   {
    "audit": {
@@ -63870,8 +64328,24 @@
    ]
   },
   {
+   "audit": {
+    "by": "fact-pipeline-v1-auditor (deepseek-flash)",
+    "notes": "IL verified: StackType=1 Counter, Type=1 Buff, no remove/decrement hook -> duration combat; CanonicalVars CardsVar(0) incremented +1 by IncrementSadnessAmount; BeforeHandDraw MoveNext checks player==Owner.Player, Flash(), loops i < DynamicVars.Cards.BaseValue creating Sadness via CombatState.CreateCard<Sadness>(Owner.Player), then CardPileCmd.AddGeneratedCardsToCombat(cards, PileType.Hand=2, player, CardPilePosition.Bottom=1); ModifyHandDraw adds Amount (per-stack +1 hand draw) -> modifier hand_draw add_per_stack 1. category=baseline correct. Minor nuance (not an error given schema): the per-turn Sadness count is a dynamic counter (+1 per power application, exposed via DynamicVars.Cards), so with repeated applications it grows; the fact's count:1 reflects a single application, consistent with the catalog's \"1 Sadness\" and with +Amount being handled by the hand_draw modifier.",
+    "verdict": "agree"
+   },
+   "category": "baseline",
    "class": "EnnuiPower",
+   "duration": {
+    "kind": "combat",
+    "stack_type": "Counter"
+   },
    "entity_key": "powers:ENNUI",
+   "evidence": [
+    "get_StackType=1 (Counter), get_Type=1 (Buff); no remove/decrement hook -> combat",
+    "get_CanonicalVars: CardsVar(0) (base sadness count, incremented by IncrementSadnessAmount)",
+    "BeforeHandDraw <BeforeHandDraw>d__6: if player != Owner.Player return; Flash(); loop i < DynamicVars.Cards.BaseValue -> CombatState.CreateCard<Sadness>(Owner.Player); CardPileCmd.AddGeneratedCardsToCombat(cards, PileType.Hand(2), player, true)",
+    "ModifyHandDraw: if player == Owner.Player -> return amount + Amount (extra cards drawn per stack)"
+   ],
    "fingerprint": "587186cba86282ae26a98632751368cd41ac0145d8e5fe4d65d8c3ac5fb0d0f5",
    "hook_tokens": {
     "BeforeHandDraw": "06002769",
@@ -63881,7 +64355,25 @@
     "BeforeHandDraw",
     "ModifyHandDraw"
    ],
-   "status": "unreviewed"
+   "mechanics": [
+    {
+     "effect": {
+      "card": "SADNESS",
+      "count": 1,
+      "destination": "hand",
+      "free": false,
+      "kind": "add_card"
+     },
+     "when": "turn_start"
+    },
+    {
+     "add_per_stack": 1,
+     "modifier": "hand_draw"
+    }
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash)",
+   "status": "converted",
+   "unknowable": []
   },
   {
    "class": "EnragePower",
@@ -63896,8 +64388,23 @@
    "status": "unreviewed"
   },
   {
+   "audit": {
+    "by": "TASK-029 step 3 adjudication (over fact-pipeline-v1-auditor IL trace)",
+    "notes": "Resolved auditor disagreement: replaced wrong energy_cost add:0 with multiply:0 (sets cost to 0) and canonical owner_card:false filter.",
+    "verdict": "resolved"
+   },
+   "category": "trigger",
    "class": "EnsemblePower",
+   "duration": {
+    "kind": "until_triggered",
+    "stack_type": "Counter"
+   },
    "entity_key": "powers:ENSEMBLE",
+   "evidence": [
+    "get_StackType=1 (Counter), get_Type=1 (Buff); no turn-start/turn-end hooks",
+    "TryModifyEnergyCostInCombatLate: ShouldSkip skips owner's own cards, null pile, or piles outside {Hand(2), Play(5)}; otherwise sets cost = 0 (initobj Decimal) and returns true",
+    "AfterCardPlayed <AfterCardPlayed>d__5: if cardPlay.Player.Creature != Owner -> PowerCmd.Decrement(this)"
+   ],
    "fingerprint": "b6618634963dd6fe7923784964eb47759a5c79d02189624f76ead3dbd4054c33",
    "hook_tokens": {
     "AfterCardPlayed": "06002774",
@@ -63907,7 +64414,37 @@
     "AfterCardPlayed",
     "TryModifyEnergyCostInCombatLate"
    ],
-   "status": "unreviewed"
+   "mechanics": [
+    {
+     "filter": {
+      "owner_card": false,
+      "pile": [
+       "Hand",
+       "Play"
+      ]
+     },
+     "modifier": "energy_cost",
+     "multiply": 0
+    },
+    {
+     "effect": {
+      "amount": 1,
+      "kind": "remove_power",
+      "power": "Ensemble",
+      "target": "self"
+     },
+     "filter": {
+      "owner_card": false
+     },
+     "when": "card_played"
+    }
+   ],
+   "open_questions": [
+    "Multiplayer-only buff (applies only to other players' cards); AfterCardPlayed decrements 1 stack via PowerCmd.Decrement(this) until 0."
+   ],
+   "reviewed_by": "TASK-029 step 3 (fact-pipeline + adjudication)",
+   "status": "converted",
+   "unknowable": []
   },
   {
    "audit": {
@@ -64029,8 +64566,25 @@
    "status": "unreviewed"
   },
   {
+   "audit": {
+    "by": "fact-pipeline-v1-auditor (deepseek-flash)",
+    "notes": "IL matches the candidate on every factual field: StackType=1 (Counter), Type=1 (Buff); trigger is the owner's own death (creature != Owner -> early return) gated on !wasRemovalPrevented; damage targets are CombatState.PlayerCreatures.Where(IsAlive) (all opponents, hardcoded to the player side — correctly flagged in open_questions), amount = PowerModel.Amount so amount_per_stack: 1 is right; ValueProp 20 = Unpowered(4)|SkipHurtAnim(16) confirms unpowered: true; dealer/cardSource/cardPlay are null; the NFireSmokePuffVfx/AddChildSafely calls are visual only and correctly excluded from effects; no CanonicalVars; no remove/decrement hook so until_triggered/trigger classification is consistent with the one-shot death trigger. Minor caveat (already disclosed in open_questions): the WHEN value 'enemy_died' plus condition keys owner_died/removal_not_prevented are an approximation of the AfterDeath(self) hook; free-form condition keys are permitted so no new vocabulary is strictly required.",
+    "verdict": "agree"
+   },
+   "category": "trigger",
    "class": "ExplosivePower",
+   "duration": {
+    "kind": "until_triggered",
+    "stack_type": "Counter"
+   },
    "entity_key": "powers:EXPLOSIVE",
+   "evidence": [
+    "get_StackType=1 (Counter), get_Type=1 (Buff); no remove/decrement hook -> consumed by the owner's death",
+    "AfterDeath <AfterDeath>d__4 MoveNext: if creature != Owner -> return; if wasRemovalPrevented -> return",
+    "Then CombatState.PlayerCreatures.Where(c => c.IsAlive).ToList() and CreatureCmd.Damage(choiceContext, list, Amount, 20, null, null, null, 14) -> damage equal to Amount to all living player creatures",
+    "NFireSmokePuffVfx.Create(Owner.GetCreatureNode()) added to NCombatRoom.CombatVfxContainer (visual only)",
+    "No CanonicalVars; damage value comes from PowerModel.Amount (stack count)"
+   ],
    "fingerprint": "b093fb6ba7df2cbc2ebb71d2f7cbe2307913a3d49ab6c71a6ff6189fd5d907e5",
    "hook_tokens": {
     "AfterDeath": "0600278C"
@@ -64038,11 +64592,49 @@
    "hooks": [
     "AfterDeath"
    ],
-   "status": "unreviewed"
+   "mechanics": [
+    {
+     "condition": {
+      "owner_died": true,
+      "removal_not_prevented": true
+     },
+     "effect": {
+      "amount_per_stack": 1,
+      "kind": "damage",
+      "target": "all",
+      "unpowered": true
+     },
+     "when": "enemy_died"
+    }
+   ],
+   "open_questions": [
+    "Vocabulary: condition keys 'owner_died' and 'removal_not_prevented' are not documented; the trigger is the owner's own death (AfterDeath hook) rather than an enemy death.",
+    "Damage targets all living player creatures (hardcoded PlayerCreatures), i.e. the owner's opponents; modeled as target 'all'."
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash)",
+   "status": "converted",
+   "unknowable": []
   },
   {
+   "audit": {
+    "by": "verifier-v0113 IL verification",
+    "notes": "Verified ExplosiveArrowsPower.<AfterArrowImpaled>d__6 IL (sts2.dll v0.113.1): only checks power.Arrows.FirstOrDefault()?.owner.Creature == Owner, not a pre-existing Impaled condition. Moved owner guard from condition.target_impaled to filter.owner_only: true (matching powers:YAH and relics:TWINE).",
+    "verdict": "resolved"
+   },
+   "category": "trigger",
    "class": "ExplosiveArrowsPower",
+   "duration": {
+    "kind": "combat",
+    "stack_type": "Counter"
+   },
    "entity_key": "powers:EXPLOSIVE_ARROWS",
+   "evidence": [
+    "get_StackType=1 (Counter), get_Type=1 (Buff); no remove/decrement hook -> combat",
+    "AfterArrowImpaled <AfterArrowImpaled>d__6: power.Arrows.FirstOrDefault()?.owner.Creature == Owner else return (only arrows owned by this power's owner)",
+    "AfterArrowImpaled: PowerModel.Flash(); foreach HittableEnemies -> NFireSmokePuffVfx.Create",
+    "AfterArrowImpaled: CreatureCmd.Damage(context, CombatState.HittableEnemies, (decimal)Amount, ValueProp 4 = Unpowered, Owner) -> unpowered damage to all enemies equal to stack Amount (Strength does not scale it)",
+    "get_ExtraHoverTips: HoverTipFactory.FromPower<ImpaledPower>"
+   ],
    "fingerprint": "9f9568c36beaa7537b7510445572799d1721450367b1ef4926a5b17636248cd2",
    "hook_tokens": {
     "AfterArrowImpaled": "06002788"
@@ -64050,11 +64642,43 @@
    "hooks": [
     "AfterArrowImpaled"
    ],
-   "status": "unreviewed"
+   "mechanics": [
+    {
+     "effect": {
+      "amount_per_stack": 1,
+      "kind": "damage",
+      "target": "all",
+      "unpowered": true
+     },
+     "filter": {
+      "from_arrow": true,
+      "owner_only": true
+     },
+     "when": "arrow_impaled"
+    }
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash, revised)",
+   "status": "converted",
+   "unknowable": []
   },
   {
+   "audit": {
+    "by": "fact-pipeline-v1-auditor (deepseek-flash)",
+    "notes": "IL confirms candidate: StackType=1 (Counter), Type=1 (Buff), IsVisibleInternal=true. ShouldTakeExtraTurn: Amount>0 && player==Owner.Player. AfterTakingExtraTurn MoveNext: owner-player check then PowerCmd.Decrement(this) — stack consumed only when the extra turn is actually taken (no PowerCmd.Remove, no per-turn countdown), so duration 'until_triggered' + Counter is correct. No card-triggered hooks -> category 'baseline'. Effect extra_turn amount 1 matches one extra turn per stack; 'turn_end' is the correct vocabulary mapping for this engine hook (extra turn granted after the current turn). No obtain/between_fights/unknowable content for this power.",
+    "verdict": "agree"
+   },
+   "category": "baseline",
    "class": "ExtraTurnPower",
+   "duration": {
+    "kind": "until_triggered",
+    "stack_type": "Counter"
+   },
    "entity_key": "powers:EXTRA_TURN",
+   "evidence": [
+    "get_StackType=1 (Counter), get_Type=1 (Buff), get_IsVisibleInternal=true",
+    "ShouldTakeExtraTurn: Amount > 0 && player == Owner.Player -> true",
+    "AfterTakingExtraTurn <AfterTakingExtraTurn>d__7::MoveNext: if player == Owner.Player -> PowerCmd.Decrement(this) (consumes one stack per extra turn taken)"
+   ],
    "fingerprint": "2b735511741b24a6d9f6b2107c6d9617ab93bb3201ccb289398b7ebc564c6af3",
    "hook_tokens": {
     "AfterTakingExtraTurn": "06002792",
@@ -64064,7 +64688,18 @@
     "AfterTakingExtraTurn",
     "ShouldTakeExtraTurn"
    ],
-   "status": "unreviewed"
+   "mechanics": [
+    {
+     "effect": {
+      "amount": 1,
+      "kind": "extra_turn"
+     },
+     "when": "turn_end"
+    }
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash)",
+   "status": "converted",
+   "unknowable": []
   },
   {
    "audit": {
@@ -64709,8 +65344,24 @@
    "unknowable": []
   },
   {
+   "audit": {
+    "by": "fact-pipeline-v1-auditor (deepseek-flash)",
+    "notes": "Verified against FreeCardPower IL: StackType=1 (Counter), Type=1 (Buff); TryModifyEnergyCostInCombatLate sets modifiedCost=0 and returns true only when card.Owner.Creature==Owner and card.Pile.Type is 2 (Hand) or 5 (Play); <BeforeCardPlayed>d__5 applies the identical owner+pile guard then awaits PowerCmd.Decrement(this), giving one free play per stack and until_triggered duration. No CanonicalVars, no upgrade, no other hooks, unknowable empty. Candidate's 'set: 0' / 'card_in_pile: [hand, play]' / limit_per_stack 1 are faithful to the IL (nonstandard key names self-flagged in open_questions).",
+    "verdict": "agree"
+   },
+   "category": "trigger",
    "class": "FreeCardPower",
+   "duration": {
+    "consumed_per": "card played from hand",
+    "kind": "until_triggered",
+    "stack_type": "Counter"
+   },
    "entity_key": "powers:FREE_CARD",
+   "evidence": [
+    "get_StackType=1 (Counter), get_Type=1 (Buff); no turn-end hook -> persists until used.",
+    "TryModifyEnergyCostInCombatLate: card.Owner.Creature == Owner && Pile.Type in {2 Hand, 5 Play} -> cost = 0, returns true.",
+    "BeforeCardPlayed <BeforeCardPlayed>d__5: same owner + pile filter -> PowerCmd.Decrement(this). Amount = number of cards that will be free."
+   ],
    "fingerprint": "78b0eabbe3e6c9c308e7dbaa49289a144fe074a0ffe2e40ebd31ff24e7510abc",
    "hook_tokens": {
     "BeforeCardPlayed": "060027E5",
@@ -64720,7 +65371,25 @@
     "BeforeCardPlayed",
     "TryModifyEnergyCostInCombatLate"
    ],
-   "status": "unreviewed"
+   "mechanics": [
+    {
+     "condition": {
+      "card_in_pile": [
+       "hand",
+       "play"
+      ]
+     },
+     "limit_per_stack": 1,
+     "modifier": "energy_cost",
+     "set": 0
+    }
+   ],
+   "open_questions": [
+    "Vocabulary: energy_cost 'set': 0 with a per-stack use limit is not documented."
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash)",
+   "status": "converted",
+   "unknowable": []
   },
   {
    "audit": {
@@ -64979,8 +65648,25 @@
    "status": "unreviewed"
   },
   {
+   "audit": {
+    "by": "verifier-v0113 IL verification",
+    "notes": "Added unpowered: true matching IL ValueProp 4 (Unpowered) documented in evidence and powers:THORNS precedent.",
+    "verdict": "resolved"
+   },
+   "category": "baseline",
    "class": "GodByrdPower",
+   "duration": {
+    "kind": "until_triggered",
+    "stack_type": "Counter"
+   },
    "entity_key": "powers:GOD_BYRD",
+   "evidence": [
+    "get_StackType=1 (Counter), get_Type=1 (Buff); PowerCmd.Remove(this) after triggering -> consumed on trigger (until_triggered).",
+    "AfterPlayerTurnStart <AfterPlayerTurnStart>d__5: player == Owner.Player && AmountOnTurnStart != 0 -> GetPet<ByrdineMonster>(); if byrdine != null: TriggerAnim(byrdine, \"Attack\"), SfxCmd.Play(\"event:/sfx/byrdpip/byrd_2_attack\"), NByrdineAttackVfx.Create(byrdine).",
+    "CreatureCmd.Damage(choiceContext, CombatState.HittableEnemies, Amount, ValueProp 4 (Unpowered), Owner, null, null) -> damage to all enemies equal to Amount (20 per catalog).",
+    "Then PowerCmd.Remove(this). No CanonicalVars; amount set by the applying card.",
+    "Catalog description (20 damage to all enemies at start of next turn) matches IL."
+   ],
    "fingerprint": "d3506aaa7f40419f1c926f238a5b8617864b7ed6720f3bf9d041a0b0801855ef",
    "hook_tokens": {
     "AfterPlayerTurnStart": "06002810"
@@ -64988,7 +65674,20 @@
    "hooks": [
     "AfterPlayerTurnStart"
    ],
-   "status": "unreviewed"
+   "mechanics": [
+    {
+     "effect": {
+      "amount_per_stack": 1,
+      "kind": "damage",
+      "target": "all",
+      "unpowered": true
+     },
+     "when": "turn_start"
+    }
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash)",
+   "status": "converted",
+   "unknowable": []
   },
   {
    "class": "GravityPower",
@@ -65448,8 +66147,24 @@
    "unknowable": []
   },
   {
+   "audit": {
+    "by": "fact-pipeline-v1-auditor (deepseek-flash)",
+    "notes": "IL verified: get_StackType=1 (Counter), get_Type=1 (Buff), no decrement/remove hook -> combat duration; <AfterSideTurnStart>d__6::MoveNext applies PowerCmd.Apply<StretchPower>(Owner, Amount, Owner, null, false) only when participants.Contains(Owner), Amount scaled per stack (amount_per_stack 1), self-targeted, no TurnNumber==1 restriction; ExtraHoverTips is StretchPower-only cosmetic; no CanonicalVars.",
+    "verdict": "agree"
+   },
+   "category": "baseline",
    "class": "HiddenRootsPower",
+   "duration": {
+    "kind": "combat",
+    "stack_type": "Counter"
+   },
    "entity_key": "powers:HIDDEN_ROOTS",
+   "evidence": [
+    "get_StackType=1 (Counter), get_Type=1 (Buff); no remove/decrement hook -> persists for combat",
+    "AfterSideTurnStart <AfterSideTurnStart>d__6: participants.Contains(Owner) -> Flash(); PowerCmd.Apply<StretchPower>(Owner, Amount, Owner, null, false)",
+    "get_ExtraHoverTips: HoverTipFactory.FromPower<StretchPower>()",
+    "No CanonicalVars; amount comes from power stack Amount"
+   ],
    "fingerprint": "9a87d1b6181032fd173d4bbf194171acd03a9d1acd3ae545335fee54c9cdde90",
    "hook_tokens": {
     "AfterSideTurnStart": "0600286D"
@@ -65457,7 +66172,20 @@
    "hooks": [
     "AfterSideTurnStart"
    ],
-   "status": "unreviewed"
+   "mechanics": [
+    {
+     "effect": {
+      "amount_per_stack": 1,
+      "kind": "apply_power",
+      "power": "Stretch",
+      "target": "self"
+     },
+     "when": "turn_start"
+    }
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash)",
+   "status": "converted",
+   "unknowable": []
   },
   {
    "class": "HighVoltagePower",
@@ -65472,8 +66200,24 @@
    "status": "unreviewed"
   },
   {
+   "audit": {
+    "by": "fact-pipeline-v1-auditor (deepseek-flash)",
+    "notes": "IL confirms: ModifyDamageMultiplicative returns Decimal.One unless dealer==Owner (ldarg.s 4 vs Owner), ValuePropExtensions.IsPoweredAttack(props) is true, and props.HasFlag((ValueProp)32=FromArrow); otherwise 1 + (Decimal)Amount/100, i.e. +1% per stack -> multiply_percent_per_stack 1 with filter {dealer owner, powered_attack, from_arrow}. get_StackType=1 (Counter), get_Type=1 (Buff), no remove/decrement -> duration combat. No CanonicalVars. Catalog's 50% corresponds to Amount=50 supplied by the applying card (out of scope of this class).",
+    "verdict": "agree"
+   },
+   "category": "trigger",
    "class": "HoningPower",
+   "duration": {
+    "kind": "combat",
+    "stack_type": "Counter"
+   },
    "entity_key": "powers:HONING",
+   "evidence": [
+    "get_StackType=1 (Counter), get_Type=1 (Buff); no remove/decrement hook -> persists for combat",
+    "ModifyDamageMultiplicative: arg4 (dealer) != Owner -> Decimal.One; !ValueProp.IsPoweredAttack(arg3) -> One; !arg3.HasFlag(32 = ValueProp.FromArrow) -> One",
+    "Otherwise returns Decimal.One + (Decimal)Amount / 100 -> +1% (x1.01) damage multiplier per stack for owner's arrow attacks; the 50% figure comes from Amount=50 applied by the source card",
+    "get_CanonicalVars empty; no CanonicalVars"
+   ],
    "fingerprint": "c344ce7890ccc808f56f9fefe462c407f9499efd223429c8f27ca543a60a0c28",
    "hook_tokens": {
     "ModifyDamageMultiplicative": "06002876"
@@ -65481,7 +66225,20 @@
    "hooks": [
     "ModifyDamageMultiplicative"
    ],
-   "status": "unreviewed"
+   "mechanics": [
+    {
+     "filter": {
+      "dealer": "owner",
+      "from_arrow": true,
+      "powered_attack": true
+     },
+     "modifier": "damage",
+     "multiply_percent_per_stack": 1
+    }
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash, revised)",
+   "status": "converted",
+   "unknowable": []
   },
   {
    "audit": {
@@ -65652,8 +66409,28 @@
    "unknowable": []
   },
   {
+   "audit": {
+    "by": "verifier-v0113 IL verification",
+    "notes": "Verified ImpaledPower.<AfterDeath>d__25 IL (sts2.dll v0.113.1): get_IsDead followed by brfalse.s -> continues only when !Applier.IsDead. Fixed inverted negation typo in evidence prose; structured mechanic unchanged.",
+    "verdict": "resolved"
+   },
+   "category": "trigger",
    "class": "ImpaledPower",
+   "duration": {
+    "kind": "until_triggered",
+    "stack_type": "Counter"
+   },
    "entity_key": "powers:IMPALED",
+   "evidence": [
+    "get_StackType=1 (Counter), get_Type=0 (Buff), get_InstanceType=2 (Single); no decrement/remove-per-turn hook -> persists until triggered",
+    "get_CanonicalVars: DynamicVar(\"HitCounter\", 3), StringVar(\"Applier\", \"\"); get_DisplayAmount returns HitCounter",
+    "AfterApplied: sets Applier StringVar to PlatformUtil.GetPlayerName(NetService.Platform, Applier.Player.NetId)",
+    "AfterDamageReceived <AfterDamageReceived>d__24: target==Owner && dealer!=null && dealer==Applier && props.IsPoweredAttack -> HitCounter-- ; if HitCounter<=0 -> set_HitCounter(3), ArrowCmd.DislodgeArrow(CombatState, this, choiceContext, source), then RemoveIfNoArrows",
+    "AfterDeath <AfterDeath>d__25: creature==Owner && !Applier.IsDead -> DislodgeAllArrows(choiceContext, source) then PowerCmd.Remove(this)",
+    "DislodgeAllArrows <DislodgeAllArrows>d__26: while Arrows.Count>0 -> ArrowCmd.DislodgeArrow(CombatState, this, choiceContext, source)",
+    "RemoveIfNoArrows <RemoveIfNoArrows>d__22: Arrows.Count==0 && Owner.Powers contains this -> PowerCmd.Remove(this)",
+    "AddArrow/RemoveFirstArrow/ForceRemoveArrow maintain Data.arrowSources list of ArrowSlot"
+   ],
    "fingerprint": "d2b6acbcbe6c55992e03e5ec0ffdf20cf8465e3554edf2127a716284b629cae6",
    "hook_tokens": {
     "AfterApplied": "060028A7",
@@ -65667,7 +66444,26 @@
     "AfterDeath",
     "InitInternalData"
    ],
-   "status": "unreviewed"
+   "mechanics": [
+    {
+     "counter": "combat",
+     "effect": {
+      "count": 1,
+      "kind": "dislodge_arrow",
+      "owner_only": true
+     },
+     "every": 3,
+     "filter": {
+      "dealer": "applier",
+      "powered_attack": true,
+      "target": "owner"
+     },
+     "when": "damage_received"
+    }
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash)",
+   "status": "converted",
+   "unknowable": []
   },
   {
    "audit": {
@@ -65831,8 +66627,23 @@
    "unknowable": []
   },
   {
+   "audit": {
+    "by": "TASK-029 step 3 adjudication (over fact-pipeline-v1-auditor IL trace)",
+    "notes": "Resolved all 3 auditor findings: removed duplicated top-level effects array, recorded owner self-damage via hp_loss without fabricating fixed amount:2, preserved TurnNumber growth in amount_text.",
+    "verdict": "resolved"
+   },
+   "category": "baseline",
    "class": "InsatiableDominionPower",
+   "duration": {
+    "kind": "combat",
+    "stack_type": "Counter"
+   },
    "entity_key": "powers:INSATIABLE_DOMINION",
+   "evidence": [
+    "get_CanonicalVars: DamageVar(2); get_StackType=1 (Counter), get_Type=2 (Debuff); persists for combat",
+    "get_DisplayAmount: 2 + Owner.Player.PlayerCombatState.TurnNumber; RefreshDamage updates DynamicVars.Damage on AfterApplied and player AfterSideTurnStart",
+    "AfterSideTurnEndLate <AfterSideTurnEndLate>d__12: if participants contains Owner -> Flash; CreatureCmd.Damage(choiceContext, Owner, DynamicVars.Damage, null, null, null)"
+   ],
    "fingerprint": "f37fe73a1acce427f5806eabd352be4fd46b696bca989e97cb0d30e525e2ab22",
    "hook_tokens": {
     "AfterApplied": "060028C7",
@@ -65844,7 +66655,21 @@
     "AfterSideTurnEndLate",
     "AfterSideTurnStart"
    ],
-   "status": "unreviewed"
+   "mechanics": [
+    {
+     "effect": {
+      "amount_text": "2 + Owner.Player.PlayerCombatState.TurnNumber (grows +1 each player turn; dealt via CreatureCmd.Damage to Owner)",
+      "kind": "hp_loss"
+     },
+     "when": "turn_end"
+    }
+   ],
+   "open_questions": [
+    "Self-damage scales as 2 + TurnNumber via RefreshDamage on AfterApplied and player AfterSideTurnStart; no scale.per='turn_number' vocabulary exists, so amount is recorded via amount_text."
+   ],
+   "reviewed_by": "TASK-029 step 3 (fact-pipeline + adjudication)",
+   "status": "converted",
+   "unknowable": []
   },
   {
    "audit": {
@@ -66077,8 +66902,25 @@
    "unknowable": []
   },
   {
+   "audit": {
+    "by": "fact-pipeline-v1-auditor (deepseek-flash)",
+    "notes": "IL confirms: StackType=1 Counter, Type=1 Buff; ModifyCardPlayCount gates on card.Owner.Creature == Owner and card.Tags containing 6/7/8 (Wah/Cho/Ki, enum verified) and returns count+1 (constant 1, not Amount-scaled); AfterModifyingCardPlayCount does Flash + PowerCmd.Decrement; AfterSideTurnEnd removes the power when participants contains Owner (=> duration this_turn); no obtain/out-of-combat hooks, tag-subset card modification => category trigger. Candidate's +1 card_play_count with tag filter/self owner, duration this_turn, and evidence all match independently read IL.",
+    "verdict": "agree"
+   },
+   "category": "trigger",
    "class": "KiVersePower",
+   "duration": {
+    "kind": "this_turn",
+    "stack_type": "Counter"
+   },
    "entity_key": "powers:KI_VERSE",
+   "evidence": [
+    "get_StackType=1 (Counter), get_Type=1 (Buff)",
+    "ModifyCardPlayCount(card, creature, count): if card.Owner.Creature != Owner -> return count unchanged; else if card.Tags contains 6 (Wah) or 7 (Cho) or 8 (Ki) -> return count + 1 (constant ldc.i4.1; add, does NOT scale with Amount)",
+    "AfterModifyingCardPlayCount <AfterModifyingCardPlayCount>d__5: PowerModel.Flash(); PowerCmd.Decrement(this) -> one stack consumed per modified play",
+    "AfterSideTurnEnd <AfterSideTurnEnd>d__6: if participants contains Owner -> PowerCmd.Remove(this) (whole power removed at end of owner's side turn, no decrement)",
+    "No CanonicalVars; each stack is a separate one-shot charge granting +1 play count"
+   ],
    "fingerprint": "82429a5690b22e1c07ac7188f3d986afa81cc669a7a0dc79a9050210e45b4cde",
    "hook_tokens": {
     "AfterModifyingCardPlayCount": "060028F5",
@@ -66090,7 +66932,23 @@
     "AfterSideTurnEnd",
     "ModifyCardPlayCount"
    ],
-   "status": "unreviewed"
+   "mechanics": [
+    {
+     "add": 1,
+     "filter": {
+      "owner": "self",
+      "tag": [
+       "Wah",
+       "Cho",
+       "Ki"
+      ]
+     },
+     "modifier": "card_play_count"
+    }
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash, revised)",
+   "status": "converted",
+   "unknowable": []
   },
   {
    "audit": {
@@ -66144,8 +67002,24 @@
    "unknowable": []
   },
   {
+   "audit": {
+    "by": "fact-pipeline-v1-auditor (deepseek-flash)",
+    "notes": "IL confirmed: StackType 2 = Single, Type 2 = Debuff, no CanonicalVars. AfterSideTurnEnd MoveNext requires side == CombatSide.Player (1) and participants.Contains(Owner), then Flash + PowerCmd.Apply<StrengthPower>(Owner, -Amount) + PowerCmd.Apply<DexterityPower>(Owner, -Amount) + PowerCmd.Remove(this). StrengthPower allows negative amounts, so -Amount correctly reduces the stats; candidate's amount_per_stack = -1 on self matches. Self-removal without decrement -> duration until_triggered; automatic turn-end hook -> category baseline. No obtain/between-fight hooks. ExtraHoverTips is cosmetic only.",
+    "verdict": "agree"
+   },
+   "category": "baseline",
    "class": "LagavulinMatriarchDominionPower",
+   "duration": {
+    "kind": "until_triggered",
+    "stack_type": "Single"
+   },
    "entity_key": "powers:LAGAVULIN_MATRIARCH_DOMINION",
+   "evidence": [
+    "get_StackType=2 (Single), get_Type=2 (Debuff)",
+    "AfterSideTurnEnd <AfterSideTurnEnd>d__6: side==1 (Player) && participants.Contains(Owner) -> Flash; PowerCmd.Apply<StrengthPower>(Owner, -Amount); PowerCmd.Apply<DexterityPower>(Owner, -Amount); PowerCmd.Remove(this)",
+    "get_ExtraHoverTips: HoverTipFactory.FromPowerWithPowerHoverTips<StrengthPower> and <DexterityPower>",
+    "No CanonicalVars; amount comes from PowerModel.Amount (stack amount)"
+   ],
    "fingerprint": "9219ba8a31bfe25d31ba2e079fe886e6e5aa99caf414e1c6d1f84c85ebfb6ab6",
    "hook_tokens": {
     "AfterSideTurnEnd": "06002903"
@@ -66153,7 +67027,37 @@
    "hooks": [
     "AfterSideTurnEnd"
    ],
-   "status": "unreviewed"
+   "mechanics": [
+    {
+     "effect": {
+      "amount_per_stack": -1,
+      "kind": "apply_power",
+      "power": "Strength",
+      "target": "self"
+     },
+     "when": "turn_end"
+    },
+    {
+     "effect": {
+      "amount_per_stack": -1,
+      "kind": "apply_power",
+      "power": "Dexterity",
+      "target": "self"
+     },
+     "when": "turn_end"
+    },
+    {
+     "effect": {
+      "kind": "remove_power",
+      "power": "LagavulinMatriarchDominion",
+      "target": "self"
+     },
+     "when": "turn_end"
+    }
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash)",
+   "status": "converted",
+   "unknowable": []
   },
   {
    "class": "LeadershipPower",
@@ -66312,8 +67216,22 @@
    "unknowable": []
   },
   {
+   "audit": {
+    "by": "TASK-029 step 3 adjudication (over fact-pipeline-v1-auditor IL trace)",
+    "notes": "Normalized to documented Fool melody filter syntax {owner_card: true, tag: [Wah, Cho, Ki], per_new_tag: true} with count_per_stack: 1 matching counter * Amount in IL.",
+    "verdict": "resolved"
+   },
+   "category": "trigger",
    "class": "LostLutePower",
+   "duration": {
+    "kind": "combat",
+    "stack_type": "Counter"
+   },
    "entity_key": "powers:LOST_LUTE",
+   "evidence": [
+    "get_StackType=1 (Counter), get_Type=1 (Buff); persists for combat",
+    "AfterCardPlayed <AfterCardPlayed>d__6: owner match; counts how many of CardTag {6=Wah, 7=Cho, 8=Ki} on played card have Count==1 in this turn's History.CardPlaysStarted -> if counter > 0: Flash(); CardPileCmd.AutoPlayFromDrawPile(choiceContext, Owner.Player, counter * Amount, 2, false)"
+   ],
    "fingerprint": "f47913839b8389cffd24409102d8d0033bcbdc706eb888095cedc9be0476122a",
    "hook_tokens": {
     "AfterCardPlayed": "0600291A"
@@ -66321,11 +67239,52 @@
    "hooks": [
     "AfterCardPlayed"
    ],
-   "status": "unreviewed"
+   "mechanics": [
+    {
+     "effect": {
+      "count_per_stack": 1,
+      "kind": "auto_play_from_draw"
+     },
+     "filter": {
+      "owner_card": true,
+      "per_new_tag": true,
+      "tag": [
+       "Wah",
+       "Cho",
+       "Ki"
+      ]
+     },
+     "when": "card_played"
+    }
+   ],
+   "open_questions": [],
+   "reviewed_by": "TASK-029 step 3 (fact-pipeline + adjudication)",
+   "status": "converted",
+   "unknowable": []
   },
   {
+   "audit": {
+    "by": "fact-pipeline-v1-auditor (deepseek-flash)",
+    "notes": "IL matches the candidate on every factual field: category trigger (AfterCardPlayed on melody tags), duration combat + stack_type Counter (get_StackType=1, no remove/decrement hook), when=card_played with owner-scoped filter (cardPlay.Card.Owner.Creature != Owner -> return), condition requiring Cho+Wah+Ki played this turn (PlayedCho/Wah/KiThisTurn via tags 7/6/8, AND-ed), limit once_per_turn (ProccdThisTurn guarded, reset in BeforeSideTurnStart only for the owner's side), effect block with amount_per_stack 1 (CreatureCmd.GainBlock(Owner, Amount, null, 1)), no target on the block effect. AfterApplied only arms ProccdThisTurn when all three melodies were already played (no immediate block), and combat-in-progress/once-per-turn guards are all correctly captured in evidence. Minor non-factual note: the condition key 'melodies_played_this_turn' is a free-form condition (consistent with the documented scale source 'melodies_this_turn'); semantics are faithful, so no new vocabulary is strictly required.",
+    "verdict": "agree"
+   },
+   "category": "trigger",
    "class": "LullabyPower",
+   "duration": {
+    "kind": "combat",
+    "stack_type": "Counter"
+   },
    "entity_key": "powers:LULLABY",
+   "evidence": [
+    "get_StackType=1 (Counter), get_Type=1 (Buff); no remove/decrement hook -> persists for combat",
+    "AfterCardPlayed <AfterCardPlayed>d__12: cardPlay.Card.Owner.Creature != Owner -> return; !CombatManager.IsInProgress -> return; ProccdThisTurn -> return",
+    "AfterCardPlayed: MelodyCmd.PlayedChoThisTurn(Owner.Player) && PlayedWahThisTurn && PlayedKiThisTurn -> Flash(); ProccdThisTurn=true; CreatureCmd.GainBlock(Owner, Amount, null, 1)",
+    "MelodyCmd.PlayedWahThisTurn/PlayedChoThisTurn/PlayedKiThisTurn check CardTag 6/7/8 played this turn by that player",
+    "BeforeSideTurnStart: if side creatures contain Owner -> ProccdThisTurn=false (reset each turn)",
+    "AfterApplied: if all three melodies already played this turn -> ProccdThisTurn=true (no immediate block)",
+    "get_ExtraHoverTips: HoverTipFactory.Static(5, 17, 18, 19) (Block + Wah/Cho/Ki melody tips)",
+    "No CanonicalVars; block amount equals power Amount (20 per Spire Codex description)"
+   ],
    "fingerprint": "4c1538eaff7380f13b9955dab6bb38a35c49ec3c912cd4ea1459c4548359d5ac",
    "hook_tokens": {
     "AfterApplied": "06002924",
@@ -66337,7 +67296,29 @@
     "AfterCardPlayed",
     "BeforeSideTurnStart"
    ],
-   "status": "unreviewed"
+   "mechanics": [
+    {
+     "condition": {
+      "melodies_played_this_turn": [
+       "Wah",
+       "Cho",
+       "Ki"
+      ]
+     },
+     "effect": {
+      "amount_per_stack": 1,
+      "kind": "block"
+     },
+     "filter": {
+      "owner": "self"
+     },
+     "limit": "once_per_turn",
+     "when": "card_played"
+    }
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash)",
+   "status": "converted",
+   "unknowable": []
   },
   {
    "audit": {
@@ -66703,8 +67684,26 @@
    "unknowable": []
   },
   {
+   "audit": {
+    "by": "fact-pipeline-v1-auditor (deepseek-flash)",
+    "notes": "All mechanic fields match my independent IL read: category=trigger; duration combat (no Decrement/Remove hook); StackType=1 Counter, Type=1 Buff; three card_played mechanics filtered to owner-self plays with tag Wah(6)/Cho(7)/Ki(8) and first-play-of-that-tag-this-turn (IL: Count(CardPlaysStarted where Actor==Owner && HappenedThisTurn && tags contains tag) == 1); effect draw amount 1 scaled per stack, which reproduces IL's total Draw(counter * Amount) (IL aggregates the qualifying tags into one draw call, per-tag decomposition is arithmetically identical). Shoot(9) correctly excluded. Minor evidence nit (not a mechanic field): the hover-tip line attributes ints 17/18/19 to CardTag, but HoverTipFactory.Static takes StaticHoverTip, so those are StaticHoverTip values (CardTag has only 0-9). Also note Spire Codex's 'whenever you gain a Melody' description is a looser paraphrase of the IL, which literally keys off first play per Wah/Cho/Ki tag each turn. Adjudicated: removed redundant amount:1 alongside amount_per_stack:1 and normalized filter key to first_of_tag_this_turn.",
+    "verdict": "resolved"
+   },
+   "category": "trigger",
    "class": "MotifPower",
+   "duration": {
+    "kind": "combat",
+    "stack_type": "Counter"
+   },
    "entity_key": "powers:MOTIF",
+   "evidence": [
+    "get_StackType=1 (Counter), get_Type=1 (Buff); no remove/decrement hook -> combat duration",
+    "get_ExtraHoverTips: HoverTipFactory.Static for CardTag 17,18,19 (Wah/Cho/Ki melody hover tips)",
+    "AfterCardPlayed <AfterCardPlayed>d__6::MoveNext: cardPlay.Card.Owner.Player == Owner.Player else return",
+    "For each of CardTag 6 (Wah), 7 (Cho), 8 (Ki): if card has tag, Count(CardPlaysStarted where Actor==Owner && HappenedThisTurn && card has that tag) == 1 -> counter++ (b__6_0/b__6_1/b__6_2 compare ceq ldc.i4.1)",
+    "If counter > 0: Flash(); CardPileCmd.Draw(choiceContext, counter * PowerModel.get_Amount(), Owner.Player, false) -> single combined draw of counter*Amount cards",
+    "CardTag enum: 6=Wah, 7=Cho, 8=Ki, 9=Shoot (Shoot not checked)"
+   ],
    "fingerprint": "e55b06f4cbb694dbf548fa4bc0df83dc0d271ca77e168f9e1050f943c6d8e3a5",
    "hook_tokens": {
     "AfterCardPlayed": "0600295E"
@@ -66712,11 +67711,65 @@
    "hooks": [
     "AfterCardPlayed"
    ],
-   "status": "unreviewed"
+   "mechanics": [
+    {
+     "effect": {
+      "amount_per_stack": 1,
+      "kind": "draw"
+     },
+     "filter": {
+      "first_of_tag_this_turn": true,
+      "owner_card": true,
+      "tag": "Wah"
+     },
+     "when": "card_played"
+    },
+    {
+     "effect": {
+      "amount_per_stack": 1,
+      "kind": "draw"
+     },
+     "filter": {
+      "first_of_tag_this_turn": true,
+      "owner_card": true,
+      "tag": "Cho"
+     },
+     "when": "card_played"
+    },
+    {
+     "effect": {
+      "amount_per_stack": 1,
+      "kind": "draw"
+     },
+     "filter": {
+      "first_of_tag_this_turn": true,
+      "owner_card": true,
+      "tag": "Ki"
+     },
+     "when": "card_played"
+    }
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash, revised)",
+   "status": "converted",
+   "unknowable": []
   },
   {
+   "audit": {
+    "by": "TASK-029 step 3 adjudication (over fact-pipeline-v1-auditor IL trace)",
+    "notes": "Resolved auditor findings: used documented Tarot pool {source: tarot, allowed_in_run: true}, removed invented count_scale/upgraded_count with factor:0, recorded count_per_stack:1 and upgraded_text faithfully.",
+    "verdict": "resolved"
+   },
+   "category": "baseline",
    "class": "MythicFormPower",
+   "duration": {
+    "kind": "combat",
+    "stack_type": "Counter"
+   },
    "entity_key": "powers:MYTHIC_FORM",
+   "evidence": [
+    "get_StackType=1 (Counter), get_Type=1 (Buff); persists for combat; CanonicalVars DynamicVar('Upgraded', 0)",
+    "BeforeHandDraw <BeforeHandDraw>d__9: owner match -> Flash(); loops i < Amount selecting from TarotCards.All.Where(c => c.IsAllowedInRun(player.RunState)), upgrades when i < DynamicVars['Upgraded'].IntValue, adds to Hand"
+   ],
    "fingerprint": "8a9f05e326abaaf5c081f8d5c47cf1d4534592f9dc8096d6e0dda1a1ca6beb46",
    "hook_tokens": {
     "BeforeHandDraw": "06002967"
@@ -66724,7 +67777,27 @@
    "hooks": [
     "BeforeHandDraw"
    ],
-   "status": "unreviewed"
+   "mechanics": [
+    {
+     "effect": {
+      "count_per_stack": 1,
+      "destination": "hand",
+      "kind": "add_card",
+      "pool": {
+       "allowed_in_run": true,
+       "source": "tarot"
+      },
+      "upgraded_text": "first DynamicVars['Upgraded'].IntValue cards upgraded"
+     },
+     "when": "turn_start"
+    }
+   ],
+   "open_questions": [
+    "Hook fires in BeforeHandDraw; count equals power stack Amount and the first DynamicVars['Upgraded'] generated cards are upgraded via IncrementUpgraded()."
+   ],
+   "reviewed_by": "TASK-029 step 3 (fact-pipeline + adjudication)",
+   "status": "converted",
+   "unknowable": []
   },
   {
    "audit": {
@@ -67879,8 +68952,25 @@
    "unknowable": []
   },
   {
+   "audit": {
+    "by": "TASK-029 step 3 adjudication (over fact-pipeline-v1-auditor IL trace)",
+    "notes": "Resolved all auditor findings: removed fabricated dislodge_arrow effect, used documented Fool spec Quietus modifier shape with multiply_by_stack:true and destroys_arrow:true, fixed cardSource evidence.",
+    "verdict": "resolved"
+   },
+   "category": "trigger",
    "class": "QuietusPower",
+   "duration": {
+    "kind": "this_turn",
+    "stack_type": "Counter"
+   },
    "entity_key": "powers:QUIETUS",
+   "evidence": [
+    "get_StackType=1 (Counter), get_Type=1 (Buff); AfterSideTurnEnd removes power when owner turn ends -> this_turn",
+    "BeforeAttack: captures first powered FromArrow CardModel AttackCommand by Owner into Data.commandToModify",
+    "ModifyDamageMultiplicative: when cardSource == Data.commandToModify.ModelSource returns Decimal(Amount)",
+    "AfterArrowShot: when slot!=null && card!=null && player.Creature==Owner sets slot.DestroyAfterImpaled = true",
+    "AfterAttack: when command == Data.commandToModify calls PowerCmd.Remove(this)"
+   ],
    "fingerprint": "f91fe955f2d312e3e5a0148c267af29359926fa17d38cdbc677a1e78f7e8e2d9",
    "hook_tokens": {
     "AfterArrowShot": "06002A29",
@@ -67898,7 +68988,25 @@
     "InitInternalData",
     "ModifyDamageMultiplicative"
    ],
-   "status": "unreviewed"
+   "mechanics": [
+    {
+     "destroys_arrow": true,
+     "filter": {
+      "dealer": "owner",
+      "from_arrow": true,
+      "powered_attack": true
+     },
+     "limit": "next_shot",
+     "modifier": "damage",
+     "multiply_by_stack": true
+    }
+   ],
+   "open_questions": [
+    "Multiplier equals power Amount (2 base / 3 upgraded, stackable) locked to the first matching powered FromArrow AttackCommand captured in BeforeAttack; AfterArrowShot sets slot.DestroyAfterImpaled = true; AfterAttack removes the power."
+   ],
+   "reviewed_by": "TASK-029 step 3 (fact-pipeline + adjudication)",
+   "status": "converted",
+   "unknowable": []
   },
   {
    "class": "RadiancePower",
@@ -68647,8 +69755,26 @@
    "unknowable": []
   },
   {
+   "audit": {
+    "by": "fact-pipeline-v1-auditor (deepseek-flash)",
+    "notes": "Verified from IL: ModifyDamageMultiplicative returns Decimal.One unless IsPoweredAttack(arg3); then requires dealer (arg4, confirmed as dealer by VulnerablePower's identical signature usage) to equal Owner or be in Owner.get_Pets(); then requires target (arg1) non-null and HasPower<ImpaledPower>; returns One + (decimal)Amount/100m i.e. +1 percentage point per stack (Amount=1 -> 1.01x). get_StackType=1 (Counter), get_Type=1 (Buff), no remove/decrement hook -> duration combat. get_ExtraHoverTips: HoverTipFactory.FromPower<ImpaledPower> (UI only, correctly excluded from mechanics). category=trigger matches existing convention for card-subset damage modifiers (cf. powers:ACCURACY). All candidate fields match; no factual discrepancies.",
+    "verdict": "agree"
+   },
+   "category": "trigger",
    "class": "SerratedArrowsPower",
+   "duration": {
+    "kind": "combat",
+    "stack_type": "Counter"
+   },
    "entity_key": "powers:SERRATED_ARROWS",
+   "evidence": [
+    "get_StackType=1 (Counter), get_Type=1 (Buff); no remove/decrement hook -> persists all combat",
+    "ModifyDamageMultiplicative: returns Decimal.One unless ValueProp.IsPoweredAttack",
+    "dealer (arg4) must equal Owner, or Owner.get_Pets() + Enumerable.Contains(arg4) -> owner or owner's pet",
+    "target (arg1) must be non-null and HasPower<ImpaledPower>, else One",
+    "returns Decimal.One + (decimal)get_Amount() / 100m -> multiplier 1 + Amount/100, i.e. +1% damage per stack (Amount=1 -> 1.01x)",
+    "get_ExtraHoverTips: HoverTipFactory.FromPower<ImpaledPower> (hover tip only, no mechanic)"
+   ],
    "fingerprint": "a338d799711668cb57d6a1a15c112d254f44610639a966431a3640c2b5d66f54",
    "hook_tokens": {
     "ModifyDamageMultiplicative": "06002AC2"
@@ -68656,7 +69782,20 @@
    "hooks": [
     "ModifyDamageMultiplicative"
    ],
-   "status": "unreviewed"
+   "mechanics": [
+    {
+     "filter": {
+      "dealer": "owner_or_owner_pet",
+      "powered_attack": true,
+      "target_has_power": "Impaled"
+     },
+     "modifier": "damage",
+     "multiply_percent_per_stack": 1
+    }
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash, revised)",
+   "status": "converted",
+   "unknowable": []
   },
   {
    "audit": {
@@ -68794,8 +69933,23 @@
    "unknowable": []
   },
   {
+   "audit": {
+    "by": "TASK-029 step 3 adjudication (over fact-pipeline-v1-auditor IL trace)",
+    "notes": "Resolved all auditor findings: removed fabricated apply_power Aim and once_per_combat limit, encoded actual linked-card permanent growth via grow_card_var.",
+    "verdict": "resolved"
+   },
+   "category": "trigger",
    "class": "ShowOffPower",
+   "duration": {
+    "kind": "this_turn",
+    "stack_type": "Counter"
+   },
    "entity_key": "powers:SHOW_OFF",
+   "evidence": [
+    "get_StackType=1 (Counter), get_Type=1 (Buff), get_InstanceType=1 (Instanced); no CanonicalVars",
+    "AfterDeath <AfterDeath>d__10: opposing side & target.Powers.All(ShouldOwnerDeathTriggerFatal) -> Flash(); ShowOffInstance?.IncreaseAim(Amount); PowerCmd.Remove(this)",
+    "AfterSideTurnEnd <AfterSideTurnEnd>d__11: owner turn end -> PowerCmd.Remove(this)"
+   ],
    "fingerprint": "edad84bbb4263d6ed9486a4abcdfdd58224a3062a089683cc90bc65ae0e0061c",
    "hook_tokens": {
     "AfterDeath": "06002AD8",
@@ -68805,7 +69959,27 @@
     "AfterDeath",
     "AfterSideTurnEnd"
    ],
-   "status": "unreviewed"
+   "mechanics": [
+    {
+     "condition": {
+      "target_powers_all_allow_fatal_death": true
+     },
+     "effect": {
+      "amount_per_stack": 1,
+      "card": "SHOW_OFF",
+      "kind": "grow_card_var",
+      "persist": "run",
+      "var": "Aim"
+     },
+     "when": "enemy_died"
+    }
+   ],
+   "open_questions": [
+    "Instanced power linked to the played ShowOff card copy; triggers once (then PowerCmd.Remove(this)) when a non-ally dies fatally this turn, permanently increasing that ShowOff copy's Aim (and DeckVersion) by Amount."
+   ],
+   "reviewed_by": "TASK-029 step 3 (fact-pipeline + adjudication)",
+   "status": "converted",
+   "unknowable": []
   },
   {
    "class": "ShriekPower",
@@ -68988,8 +70162,25 @@
    "unknowable": []
   },
   {
+   "audit": {
+    "by": "fact-pipeline-v1-auditor (deepseek-flash)",
+    "notes": "IL matches the candidate fact on every factual field: Counter stack + Buff type, combat duration (no decrement/remove hook), trigger when=auto_post_play_phase, effect auto_play_card from hand, filter excluding Unplayable (CardKeyword 4, enum verified) and restricted to the lowest resolved energy cost group (X-cost cards grouped at 999999999), random selection inside the tied group via RunState.Rng.CombatCardSelection.NextItem, and repetition scaled by Amount (loop i < Amount, re-evaluating the hand each iteration) expressed as count_per_stack: 1. Category \"baseline\" is correct since the hook is a turn/end-of-turn phase hook rather than a play/discard/exhaust trigger. The tie-break unknowable entry is legitimate (specific card identity inside the tied group is RNG-determined). Minor non-factual note: the stack scaling is keyed as count_per_stack rather than the generic amount_per_stack convention, but the value/per-stack semantics is faithful to the IL loop bound.",
+    "verdict": "agree"
+   },
+   "category": "baseline",
    "class": "SimpletonPower",
+   "duration": {
+    "kind": "combat",
+    "stack_type": "Counter"
+   },
    "entity_key": "powers:SIMPLETON",
+   "evidence": [
+    "get_StackType=1 (Counter), get_Type=1 (Buff); no remove/decrement hook -> persists for combat",
+    "AfterAutoPostPlayPhaseEntered <AfterAutoPostPlayPhaseEntered>d__4: if player != Owner.Player -> return; hand = PileType 2 (Hand) pile of Owner.Player",
+    "Loop for i in 0..Amount-1: hand.Cards.Where(c => !c.Keywords.Contains(4 = Unplayable)).GroupBy(c => c.EnergyCost.CostsX ? 999999999 : c.EnergyCost.GetResolved()).OrderBy(g => g.Key).FirstOrDefault() -> lowest-cost group",
+    "Card = Owner.Player.RunState.Rng.CombatCardSelection.NextItem(group); CardCmd.AutoPlay(choiceContext, card, null, 1, false, false)",
+    "CardKeyword enum: 4 = Unplayable (excluded from candidates)"
+   ],
    "fingerprint": "50f28d524ad302a7bab637803bbf063d5d7f2ab8841183133680045d0f28dd8c",
    "hook_tokens": {
     "AfterAutoPostPlayPhaseEntered": "06002B01"
@@ -68997,7 +70188,29 @@
    "hooks": [
     "AfterAutoPostPlayPhaseEntered"
    ],
-   "status": "unreviewed"
+   "mechanics": [
+    {
+     "effect": {
+      "choice": "random",
+      "count_per_stack": 1,
+      "filter": {
+       "exclude_keyword": "Unplayable",
+       "lowest_cost": true
+      },
+      "from": "hand",
+      "kind": "auto_play_card"
+     },
+     "when": "auto_post_play_phase"
+    }
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash)",
+   "status": "converted",
+   "unknowable": [
+    {
+     "reason": "Tie broken by Rng.CombatCardSelection.NextItem over the lowest-cost group; only the group is known",
+     "what": "Which card is auto-played when several hand cards tie for lowest energy cost"
+    }
+   ]
   },
   {
    "class": "SkittishPower",
@@ -69292,8 +70505,22 @@
    "status": "unreviewed"
   },
   {
+   "audit": {
+    "by": "TASK-029 step 3 adjudication (over fact-pipeline-v1-auditor IL trace)",
+    "notes": "Resolved both auditor issues: added unpowered:true (ValueProp 4), normalized filter to documented {owner_card: true, tag: Cho, first_of_tag_this_turn: true}, fixed Cho-only melody prose.",
+    "verdict": "resolved"
+   },
+   "category": "trigger",
    "class": "SongPathPower",
+   "duration": {
+    "kind": "combat",
+    "stack_type": "Counter"
+   },
    "entity_key": "powers:SONG_PATH",
+   "evidence": [
+    "get_StackType=1 (Counter), get_Type=1 (Buff); persists for combat",
+    "AfterCardPlayed <AfterCardPlayed>d__6: cardPlay.Card.Owner.Player == Owner.Player, Tags contains CardTag.Cho(7), MelodyCmd.IsFirstPlayThisTurn(cardPlay, 7) (first Cho-tagged play this turn) -> Flash(); CreatureCmd.GainBlock(Owner, Amount, ValueProp 4 [Unpowered], null, false)"
+   ],
    "fingerprint": "3dd784bc2493f348757226e698d40c41d8ec2fa9d41070dd029241c5caa6b584",
    "hook_tokens": {
     "AfterCardPlayed": "06002B4A"
@@ -69301,7 +70528,25 @@
    "hooks": [
     "AfterCardPlayed"
    ],
-   "status": "unreviewed"
+   "mechanics": [
+    {
+     "effect": {
+      "amount_per_stack": 1,
+      "kind": "block",
+      "unpowered": true
+     },
+     "filter": {
+      "first_of_tag_this_turn": true,
+      "owner_card": true,
+      "tag": "Cho"
+     },
+     "when": "card_played"
+    }
+   ],
+   "open_questions": [],
+   "reviewed_by": "TASK-029 step 3 (fact-pipeline + adjudication)",
+   "status": "converted",
+   "unknowable": []
   },
   {
    "audit": {
@@ -69877,8 +71122,27 @@
    "status": "unreviewed"
   },
   {
+   "audit": {
+    "by": "fact-pipeline-v1-auditor (deepseek-flash)",
+    "notes": "Independent IL read matches candidate: StackType=1 (Counter), Type=1 (Buff); no decrement hook, stacks removed via PowerCmd.ModifyAmount(this, -Data.amountWhenCardStarted) inside AfterCardPlayed -> duration until_triggered, category trigger. ModifyBlockAdditive returns (decimal)Amount additively for the owner's block gains, requiring Data.cardPlay == cardPlay (or cardPlay==null + GainsBlock(card)), gated by IsPoweredCardOrMonsterMoveBlock and card.Owner == Owner.Player; Data.gaveBonusBlock prevents double application, so add_per_stack:1 with filter {gains_block, owner self} is accurate. Only nit: evidence says 'removes all stacks' whereas IL removes exactly the amount captured at card start (equivalent absent mid-resolution changes) — trivial prose, no factual field impact.",
+    "verdict": "agree"
+   },
+   "category": "trigger",
    "class": "StretchPower",
+   "duration": {
+    "consumed_per": "block_card",
+    "kind": "until_triggered",
+    "stack_type": "Counter"
+   },
    "entity_key": "powers:STRETCH",
+   "evidence": [
+    "get_StackType=1 (Counter), get_Type=1 (Buff); no decrement/remove hook -> consumed on trigger",
+    "BeforeCardPlayed: cardPlay.Player.Creature == Owner && GainsBlock(cardPlay.Card) -> Data.cardPlay = cardPlay; Data.amountWhenCardStarted = Amount",
+    "GainsBlock(CardModel): card.GainsBlock || card.Enchantment?.GainsBlock",
+    "ModifyBlockAdditive: requires cardPlay != null, cardPlay == Data.cardPlay, ValueProp.IsPoweredCardOrMonsterMoveBlock, card.Owner == Owner.Player; if cardPlay==null then card.GainsBlock -> +Amount; else sets Data.gaveBonusBlock=true and returns Decimal.op_Implicit(Amount) (adds +Amount per stack)",
+    "AfterCardPlayed <AfterCardPlayed>d__11: if cardPlay == Data.cardPlay -> clear Data.cardPlay; if gaveBonusBlock -> PowerCmd.ModifyAmount(choiceContext, this, -Data.amountWhenCardStarted) (removes all stacks)",
+    "get_ExtraHoverTips: HoverTipFactory.Static(5)"
+   ],
    "fingerprint": "1db00ede74de5984c1d0d4cd1f92b98582e799ea864b74451c312d040e0107de",
    "hook_tokens": {
     "AfterCardPlayed": "06002B9B",
@@ -69892,7 +71156,19 @@
     "InitInternalData",
     "ModifyBlockAdditive"
    ],
-   "status": "unreviewed"
+   "mechanics": [
+    {
+     "add_per_stack": 1,
+     "filter": {
+      "gains_block": true,
+      "owner": "self"
+     },
+     "modifier": "block"
+    }
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash, revised)",
+   "status": "converted",
+   "unknowable": []
   },
   {
    "audit": {
@@ -70813,8 +72089,26 @@
    ]
   },
   {
+   "audit": {
+    "by": "verifier-v0113 spec normalization",
+    "notes": "Normalized condition key from played_tag_this_turn: Ki to documented melody_played_this_turn: [Ki] per docs/dev/mechanic-facts.md.",
+    "verdict": "resolved"
+   },
+   "category": "trigger",
    "class": "TunePower",
+   "duration": {
+    "kind": "combat",
+    "stack_type": "Counter"
+   },
    "entity_key": "powers:TUNE",
+   "evidence": [
+    "get_StackType=1 (Counter), get_Type=1 (Buff); no remove/decrement hook -> persists for combat",
+    "AfterSideTurnEnd <AfterSideTurnEnd>d__6: ldfld side; ldc.i4.2; bne.un.s 5; leave -> returns when side == 2 (CombatSide.Enemy per read_enum: 0=None,1=Player,2=Enemy), so body runs only at the player side turn end",
+    "Then MelodyCmd.PlayedKiThisTurn(Owner.Player) false -> return",
+    "On success: PowerModel.Flash(); PowerCmd.Apply<FreeCardPower>(choiceContext, Owner, (decimal)Amount, Owner, null, false)",
+    "MelodyCmd.PlayedKiThisTurn -> PlayedThisTurn(player, CardTag 8 = Ki): Any CardPlaysFinished entry where HappenedThisTurn && card.Tags contains Ki && entry.CardPlay.Player == player",
+    "FreeCardPower.TryModifyEnergyCostInCombatLate: card owner creature == power owner && card pile type in {2 Hand, 5 Play} -> cost set to 0; BeforeCardPlayed decrements FreeCardPower for such cards"
+   ],
    "fingerprint": "46a8b8b40c5663ce7284b2fea1a8a3ef5406db9436baa767f3f20b52271070f2",
    "hook_tokens": {
     "AfterSideTurnEnd": "06002C6D"
@@ -70822,7 +72116,25 @@
    "hooks": [
     "AfterSideTurnEnd"
    ],
-   "status": "unreviewed"
+   "mechanics": [
+    {
+     "condition": {
+      "melody_played_this_turn": [
+       "Ki"
+      ]
+     },
+     "effect": {
+      "amount_per_stack": 1,
+      "kind": "apply_power",
+      "power": "FreeCard",
+      "target": "self"
+     },
+     "when": "turn_end"
+    }
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash, revised)",
+   "status": "converted",
+   "unknowable": []
   },
   {
    "audit": {
@@ -71097,8 +72409,25 @@
    "status": "unreviewed"
   },
   {
+   "audit": {
+    "by": "fact-pipeline-v1-auditor (deepseek-flash)",
+    "notes": "IL confirms: StackType=1 Counter, Type=1 Buff, no remove/decrement -> combat; category trigger. AfterCardPlayed gates on card owner == power owner, CardTag 6 = Wah (verified via read_enum), and MelodyCmd.IsFirstPlayThisTurn(cardPlay, 6). Effect: CreatureCmd.Damage(ctx, CombatState.HittableEnemies, (decimal)get_Amount, ValueProp.Unpowered(4), Owner) -> damage to all enemies equal to the power Amount, represented as amount_per_stack 1 with base amount 9 (power IL has no CanonicalVars; 9 is the applied stack value, consistent with catalog and not contradicted by IL). Unmodeled nuance (no vocabulary slot): damage uses ValueProp.Unpowered, so it ignores strength/weak modifiers. Adjudicated: removed redundant amount:9 alongside amount_per_stack:1, added unpowered:true (ValueProp 4 in IL), and normalized filter key to first_of_tag_this_turn.",
+    "verdict": "resolved"
+   },
+   "category": "trigger",
    "class": "ViolentChordPower",
+   "duration": {
+    "kind": "combat",
+    "stack_type": "Counter"
+   },
    "entity_key": "powers:VIOLENT_CHORD",
+   "evidence": [
+    "get_StackType=1 (Counter), get_Type=1 (Buff); no remove/decrement hook -> persists for combat",
+    "AfterCardPlayed <AfterCardPlayed>d__6: cardPlay.Card.Owner.Player == Owner.Player; cardPlay.Card.Tags contains 6 (CardTag.Wah); MelodyCmd.IsFirstPlayThisTurn(cardPlay, 6) must be true",
+    "MelodyCmd.IsFirstPlayThisTurn: first CardPlayStartedEntry this turn whose card has the given tag and belongs to the same player equals this cardPlay",
+    "Then PowerModel.Flash(); CreatureCmd.Damage(choiceContext, CombatState.HittableEnemies, Amount, 4, Owner) -> damage equal to power Amount to all enemies",
+    "get_ExtraHoverTips: HoverTipFactory.Static(17)"
+   ],
    "fingerprint": "0f09f22097afb669d5b13dc3eceb05d7990896114f111b4aeb496ca4f52bad04",
    "hook_tokens": {
     "AfterCardPlayed": "06002C95"
@@ -71106,7 +72435,25 @@
    "hooks": [
     "AfterCardPlayed"
    ],
-   "status": "unreviewed"
+   "mechanics": [
+    {
+     "effect": {
+      "amount_per_stack": 1,
+      "kind": "damage",
+      "target": "all",
+      "unpowered": true
+     },
+     "filter": {
+      "first_of_tag_this_turn": true,
+      "owner_card": true,
+      "tag": "Wah"
+     },
+     "when": "card_played"
+    }
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash)",
+   "status": "converted",
+   "unknowable": []
   },
   {
    "class": "VitalSparkPower",
@@ -71360,8 +72707,23 @@
    "unknowable": []
   },
   {
+   "audit": {
+    "by": "TASK-029 step 3 adjudication (over fact-pipeline-v1-auditor IL trace)",
+    "notes": "Replaced invalid damage target:self with canonical modifier damage_target_redirect and stripped stray needs_new_vocabulary field.",
+    "verdict": "resolved"
+   },
+   "category": "baseline",
    "class": "WuppysLoyaltyPower",
+   "duration": {
+    "kind": "combat",
+    "stack_type": "Single"
+   },
    "entity_key": "powers:WUPPYS_LOYALTY",
+   "evidence": [
+    "get_StackType=2 (Single), get_Type=1 (Buff); persists after owner death",
+    "ModifyPreBlockDamageTarget: when target == Owner.PetOwner?.Creature, !Owner.IsDead, and props.IsPoweredAttack() -> redirects target to Owner (pet Wuppy)",
+    "ShouldAllowHitting -> creature.IsAlive; ShouldCreatureBeRemovedFromCombatAfterDeath -> creature != Owner; ShouldPowerBeRemovedAfterOwnerDeath -> false"
+   ],
    "fingerprint": "392dc3aa7f1e7d2457103a027efd01de4df6f1acd5c66b93395ad43e7d56fdf8",
    "hook_tokens": {
     "ModifyPreBlockDamageTarget": "06002CD7",
@@ -71375,11 +72737,45 @@
     "ShouldCreatureBeRemovedFromCombatAfterDeath",
     "ShouldPowerBeRemovedAfterOwnerDeath"
    ],
-   "status": "unreviewed"
+   "mechanics": [
+    {
+     "condition": {
+      "owner_alive": true
+     },
+     "filter": {
+      "powered_attack": true,
+      "target": "pet_owner"
+     },
+     "modifier": "damage_target_redirect",
+     "to": "power_owner"
+    }
+   ],
+   "open_questions": [
+    "Also overrides ShouldAllowHitting(Owner.IsAlive), ShouldCreatureBeRemovedFromCombatAfterDeath(creature != Owner), and ShouldPowerBeRemovedAfterOwnerDeath(false)."
+   ],
+   "reviewed_by": "TASK-029 step 3 (fact-pipeline + adjudication)",
+   "status": "converted",
+   "unknowable": []
   },
   {
+   "audit": {
+    "by": "fact-pipeline-v1-auditor (deepseek-flash)",
+    "notes": "IL confirms: Counter/Buff (StackType 1, Type 1), no decrement/remove -> combat; BeforeSideTurnStart resets Data.triggeredThisTurn when Owner is in the side's creatures (once-per-turn gate); AfterArrowDislodged MoveNext returns early if arrow.owner.Creature != Owner and if triggeredThisTurn, then sets it true, Flash() and PlayerCmd.GainEnergy(Amount, Owner.Player) — positive energy equal to stack Amount. Category trigger, when arrow_dislodged with owner-only arrow filter, limit once_per_turn, effect energy amount_per_stack 1, filter.from_arrow: true — all match the candidate.",
+    "verdict": "agree"
+   },
+   "category": "trigger",
    "class": "YahPower",
+   "duration": {
+    "kind": "combat",
+    "stack_type": "Counter"
+   },
    "entity_key": "powers:YAH",
+   "evidence": [
+    "get_StackType=1 (Counter), get_Type=1 (Buff); no remove/decrement -> combat",
+    "BeforeSideTurnStart: if side creatures contains Owner -> internal Data.triggeredThisTurn = false (reset each turn)",
+    "AfterArrowDislodged <AfterArrowDislodged>d__8: arrow.owner.Creature != Owner -> return; if Data.triggeredThisTurn -> return; set triggeredThisTurn=true; Flash(); PlayerCmd.GainEnergy(Amount, Owner.Player)",
+    "get_ExtraHoverTips: HoverTipFactory.ForEnergy"
+   ],
    "fingerprint": "4d3dfdfb81d6843d569f847d05ecc50067e2feed119a3d054c5c1d24f5109942",
    "hook_tokens": {
     "AfterArrowDislodged": "06002CE0",
@@ -71391,11 +72787,43 @@
     "BeforeSideTurnStart",
     "InitInternalData"
    ],
-   "status": "unreviewed"
+   "mechanics": [
+    {
+     "effect": {
+      "amount_per_stack": 1,
+      "kind": "energy"
+     },
+     "filter": {
+      "from_arrow": true,
+      "owner_only": true
+     },
+     "limit": "once_per_turn",
+     "when": "arrow_dislodged"
+    }
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash)",
+   "status": "converted",
+   "unknowable": []
   },
   {
+   "audit": {
+    "by": "fact-pipeline-v1-auditor (deepseek-flash)",
+    "notes": "IL confirms: StackType=2 (Single), Type=2 (Debuff), no CanonicalVars. MoveNext of <AfterPlayerTurnStart>d__6 gates on player == Owner.Player && PlayerCombatState.TurnNumber < 2 (null-coalesced to 0), then applies WeakPower, VulnerablePower and FrailPower each with this.Amount to player.Creature (self) and immediately PowerCmd.Remove(this) -> baseline turn-start hook, duration until_triggered, amount_per_stack 1, turns [1] (TurnNumber <= 1). ExtraHoverTips only builds hover tips from Amount. Candidate fact matches every field.",
+    "verdict": "agree"
+   },
+   "category": "baseline",
    "class": "YouAreMinePower",
+   "duration": {
+    "kind": "until_triggered",
+    "stack_type": "Single"
+   },
    "entity_key": "powers:YOU_ARE_MINE",
+   "evidence": [
+    "get_StackType=2 (PowerStackType.Single), get_Type=2 (Debuff)",
+    "AfterPlayerTurnStart <AfterPlayerTurnStart>d__6::MoveNext: player == Owner.Player && player.PlayerCombatState.TurnNumber < 2 -> PowerCmd.Apply<WeakPower>(player.Creature, Amount), PowerCmd.Apply<VulnerablePower>(player.Creature, Amount), PowerCmd.Apply<FrailPower>(player.Creature, Amount), then PowerCmd.Remove(this)",
+    "get_ExtraHoverTips: FromPowerWithPowerHoverTips<WeakPower/VulnerablePower/FrailPower>(Amount)",
+    "No CanonicalVars; amounts come from power stack Amount (amount_per_stack 1)"
+   ],
    "fingerprint": "e06109eb849ee2a578c1dfbf6d88bf4f4eb3e854b90a3eebd1ae9ca1a90aeb53",
    "hook_tokens": {
     "AfterPlayerTurnStart": "06002CE6"
@@ -71403,7 +72831,47 @@
    "hooks": [
     "AfterPlayerTurnStart"
    ],
-   "status": "unreviewed"
+   "mechanics": [
+    {
+     "effect": {
+      "amount_per_stack": 1,
+      "kind": "apply_power",
+      "power": "Weak",
+      "target": "self"
+     },
+     "turns": [
+      1
+     ],
+     "when": "turn_start"
+    },
+    {
+     "effect": {
+      "amount_per_stack": 1,
+      "kind": "apply_power",
+      "power": "Vulnerable",
+      "target": "self"
+     },
+     "turns": [
+      1
+     ],
+     "when": "turn_start"
+    },
+    {
+     "effect": {
+      "amount_per_stack": 1,
+      "kind": "apply_power",
+      "power": "Frail",
+      "target": "self"
+     },
+     "turns": [
+      1
+     ],
+     "when": "turn_start"
+    }
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash, revised)",
+   "status": "converted",
+   "unknowable": []
   },
   {
    "audit": {
@@ -71998,8 +73466,20 @@
    "unknowable": []
   },
   {
+   "audit": {
+    "by": "TASK-029 step 3 adjudication (over fact-pipeline-v1-auditor IL trace)",
+    "notes": "Resolved auditor feedback: replaced invented condition.room_type with filter {fight_kind: BOSS} (matching relics:PANTOGRAPH), replaced heal amount 0 with amount_from: full, added once_per_run limit and empty obtain/between_fights.",
+    "verdict": "resolved"
+   },
+   "between_fights": [],
+   "category": "baseline",
    "class": "BathRobes",
    "entity_key": "relics:BATH_ROBES",
+   "evidence": [
+    "get_Rarity: ldc.i4.6 (Event relic); no CanonicalVars",
+    "AfterRoomEntered: display-only Status=Active when next map point is BossMapPoint",
+    "BeforeCombatStart <BeforeCombatStart>d__9: if WasUsed or Owner.IsDead or CurrentRoom.RoomType != 3 (Boss) -> return; Flash; CreatureCmd.Heal(Owner.Creature, MaxHp - CurrentHp, true); set_WasUsed(true)"
+   ],
    "fingerprint": "c485849977b12e00cc226f3bce27f176d46bf1956ea068b0c6f04e4e321af73b",
    "hook_tokens": {
     "AfterRoomEntered": "06001D93",
@@ -72009,7 +73489,23 @@
     "AfterRoomEntered",
     "BeforeCombatStart"
    ],
-   "status": "unreviewed",
+   "mechanics": [
+    {
+     "effect": {
+      "amount_from": "full",
+      "kind": "heal"
+     },
+     "filter": {
+      "fight_kind": "BOSS"
+     },
+     "limit": "once_per_run",
+     "when": "combat_start"
+    }
+   ],
+   "obtain": [],
+   "open_questions": [],
+   "reviewed_by": "TASK-029 step 3 (fact-pipeline + adjudication)",
+   "status": "converted",
    "triage": {
     "category": "baseline",
     "hook_groups": {
@@ -72023,11 +73519,23 @@
      "trigger": [],
      "unknown": []
     }
-   }
+   },
+   "unknowable": []
   },
   {
+   "audit": {
+    "by": "fact-pipeline-v1-auditor (deepseek-flash)",
+    "notes": "IL confirms HealVar(8), Rarity 6 = Event, and a single baseline hook: AfterPlayerTurnStartLate gates on player==Owner and Owner.PlayerCombatState.TurnNumber <= 1, then Flash() + CreatureCmd.Heal(Owner.Creature, 8, true). Candidate's category \"baseline\", turn_start/turns [1] gate, and heal amount 8 (no target) all match IL; no AfterObtained/between_fights hooks exist to record.",
+    "verdict": "agree"
+   },
+   "category": "baseline",
    "class": "BathTowel",
    "entity_key": "relics:BATH_TOWEL",
+   "evidence": [
+    "get_CanonicalVars: HealVar(8)",
+    "get_Rarity = 6 (Event)",
+    "AfterPlayerTurnStartLate <AfterPlayerTurnStartLate>d__4: player != Owner -> return; Owner.PlayerCombatState.TurnNumber <= 1 -> Flash(); CreatureCmd.Heal(Owner.Creature, DynamicVars.Heal.IntValue)"
+   ],
    "fingerprint": "6242b420e9505a4273cba57845d0fab2d804debd387dfe4be75da73eab1b3aec",
    "hook_tokens": {
     "AfterPlayerTurnStartLate": "06001D98"
@@ -72035,7 +73543,20 @@
    "hooks": [
     "AfterPlayerTurnStartLate"
    ],
-   "status": "unreviewed",
+   "mechanics": [
+    {
+     "effect": {
+      "amount": 8,
+      "kind": "heal"
+     },
+     "turns": [
+      1
+     ],
+     "when": "turn_start"
+    }
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash)",
+   "status": "converted",
    "triage": {
     "category": "baseline",
     "hook_groups": {
@@ -72047,7 +73568,8 @@
      "trigger": [],
      "unknown": []
     }
-   }
+   },
+   "unknowable": []
   },
   {
    "audit": {
@@ -72551,8 +74073,22 @@
    "unknowable": []
   },
   {
+   "audit": {
+    "by": "fact-pipeline-v1-auditor (deepseek-flash)",
+    "notes": "IL confirms: BeforeHandDraw is Owner-gated and only fires when Owner.PlayerCombatState.TurnNumber <= 1, then creates Joy and Sadness via ICombatState.CreateCard<T> and adds both to PileType 2 (Hand) at CardPilePosition 1 (Bottom) through CardPileCmd.AddGeneratedCardsToCombat(cards, Hand, Owner, Bottom). No free-play or cost modification, no canonical vars, no Dread/Blitz branches, no obtain/between_fights hooks. get_Rarity returns 5 = RelicRarity.Shop. Candidate's category (baseline), when (turn_start), turns [1], both add_card effects (JOY/SADNESS, count 1, destination hand, free false) all match; evidence values (PileType 2 = Hand, position 1) are accurate.",
+    "verdict": "agree"
+   },
+   "category": "baseline",
    "class": "BizarreLamp",
    "entity_key": "relics:BIZARRE_LAMP",
+   "evidence": [
+    "get_Rarity: ldc.i4.5 (Shop)",
+    "get_ExtraHoverTips: HoverTipFactory.FromCard<Joy>, FromCard<Sadness>",
+    "BeforeHandDraw <BeforeHandDraw>d__4::MoveNext: player != Owner -> return; Owner.PlayerCombatState.TurnNumber <= 1 else return",
+    "MoveNext: combatState.CreateCard<Joy>(Owner) and CreateCard<Sadness>(Owner) collected into List<CardModel>, then RelicModel.Flash and CardPileCmd.AddGeneratedCardsToCombat(cards, PileType 2 (Hand), Owner, CardPilePosition 1)",
+    "No CanonicalVars; no Dread (GameMode 3) or Blitz (GameMode 4) branches",
+    "Catalog: adds one Joy and one Sadness to hand at combat start — agrees"
+   ],
    "fingerprint": "dc5c67862ef462feb72451f8896132ac5331ae9db1e0d5602e6cd3d753fa90ce",
    "hook_tokens": {
     "BeforeHandDraw": "06001DD3"
@@ -72560,7 +74096,36 @@
    "hooks": [
     "BeforeHandDraw"
    ],
-   "status": "unreviewed",
+   "mechanics": [
+    {
+     "effect": {
+      "card": "JOY",
+      "count": 1,
+      "destination": "hand",
+      "free": false,
+      "kind": "add_card"
+     },
+     "turns": [
+      1
+     ],
+     "when": "turn_start"
+    },
+    {
+     "effect": {
+      "card": "SADNESS",
+      "count": 1,
+      "destination": "hand",
+      "free": false,
+      "kind": "add_card"
+     },
+     "turns": [
+      1
+     ],
+     "when": "turn_start"
+    }
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash)",
+   "status": "converted",
    "triage": {
     "category": "baseline",
     "hook_groups": {
@@ -72572,7 +74137,8 @@
      "trigger": [],
      "unknown": []
     }
-   }
+   },
+   "unknowable": []
   },
   {
    "audit": {
@@ -73695,8 +75261,20 @@
    "unknowable": []
   },
   {
+   "audit": {
+    "by": "TASK-029 step 3 adjudication (over fact-pipeline-v1-auditor IL trace)",
+    "notes": "Verified IL matches mechanics/obtain; normalized add_pet field to monster: BYRDINE_MONSTER per docs/dev/mechanic-facts.md and retained mid-combat pickup note in open_questions.",
+    "verdict": "resolved"
+   },
+   "between_fights": [],
+   "category": "baseline",
    "class": "Byrdine",
    "entity_key": "relics:BYRDINE",
+   "evidence": [
+    "get_Rarity=6 (Event), get_AddsPet=true, get_SpawnsPets=true, get_HasUponPickupEffect=true",
+    "AfterObtained <AfterObtained>d__16: transforms all ByrdSwoop in Deck (and PlayerCombatState.AllCards if CombatManager.IsInProgress) into GodByrd preserving IsUpgraded; if in combat calls SummonPet()",
+    "BeforeCombatStart <BeforeCombatStart>d__17 -> SummonPet <SummonPet>d__18: PlayerCmd.AddPet<ByrdineMonster>(Owner)"
+   ],
    "fingerprint": "1d77cb38f630692ca5bef21a007aa719e8dcb16f3fe4769fe346ede1e19d1672",
    "hook_tokens": {
     "AfterObtained": "06001E55",
@@ -73706,7 +75284,31 @@
     "AfterObtained",
     "BeforeCombatStart"
    ],
-   "status": "unreviewed",
+   "mechanics": [
+    {
+     "effect": {
+      "kind": "add_pet",
+      "monster": "BYRDINE_MONSTER"
+     },
+     "when": "combat_start"
+    }
+   ],
+   "obtain": [
+    {
+     "filter": {
+      "card": "BYRD_SWOOP"
+     },
+     "into": "GOD_BYRD",
+     "kind": "transform_cards",
+     "scope": "deck",
+     "upgraded_if_self_upgraded": true
+    }
+   ],
+   "open_questions": [
+    "AfterObtained also transforms ByrdSwoop copies in live combat piles and summons ByrdineMonster immediately when obtained mid-combat; obtain vocabulary has no combat-pile scope."
+   ],
+   "reviewed_by": "TASK-029 step 3 (fact-pipeline + adjudication)",
+   "status": "converted",
    "triage": {
     "category": "baseline",
     "hook_groups": {
@@ -73720,7 +75322,8 @@
      "trigger": [],
      "unknown": []
     }
-   }
+   },
+   "unknowable": []
   },
   {
    "audit": {
@@ -74510,8 +76113,23 @@
    "unknowable": []
   },
   {
+   "audit": {
+    "by": "verifier-v0113 spec normalization",
+    "notes": "Normalized condition key from scale-source name melodies_this_turn to documented condition melodies_this_turn_at_least: 3 per docs/dev/mechanic-facts.md.",
+    "verdict": "resolved"
+   },
+   "category": "trigger",
    "class": "ConductorsBaton",
    "entity_key": "relics:CONDUCTORS_BATON",
+   "evidence": [
+    "AfterCardPlayed <AfterCardPlayed>d__6: cardPlay.Card.Owner == Owner; CombatManager.IsInProgress; !_triggeredThisTurn; MelodyCmd.MelodiesThisTurn(Owner) >= 3 -> _triggeredThisTurn=true; Flash(); PowerCmd.Apply<ConductorsBatonPower>(Owner.Creature, 1)",
+    "MelodyCmd.MelodiesThisTurn counts PlayedWahThisTurn + PlayedChoThisTurn + PlayedKiThisTurn (CardTag 6/7/8) -> max 3",
+    "BeforeSideTurnStart: if participants contains Owner.Creature -> _triggeredThisTurn = false (reset each own turn)",
+    "ConductorsBatonPower.get_CanonicalVars: DynamicVar DamageDecrease base 75; ModifyDamageMultiplicative: target==Owner && ValueProp.IsPoweredAttack -> DamageDecrease.BaseValue (0.75 multiplier)",
+    "ConductorsBatonPower.AfterSideTurnStart: participants contains Owner -> PowerCmd.Remove(this) (removed at owner's next turn start)",
+    "ConductorsBatonPower get_StackType=2 (Counter), get_Type=1 (Buff)",
+    "get_Rarity=4 (Rare); get_ExtraHoverTips includes ConductorsBatonPower"
+   ],
    "fingerprint": "13de3a32551a9a3243bc3798b4b031638a0c6a3fd6b5673d959e85561a12a85b",
    "hook_tokens": {
     "AfterCardPlayed": "06001EB7",
@@ -74521,7 +76139,23 @@
     "AfterCardPlayed",
     "BeforeSideTurnStart"
    ],
-   "status": "unreviewed",
+   "mechanics": [
+    {
+     "condition": {
+      "melodies_this_turn_at_least": 3
+     },
+     "effect": {
+      "amount": 1,
+      "kind": "apply_power",
+      "power": "ConductorsBaton",
+      "target": "self"
+     },
+     "limit": "once_per_turn",
+     "when": "card_played"
+    }
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash)",
+   "status": "converted",
    "triage": {
     "category": "trigger",
     "hook_groups": {
@@ -74535,7 +76169,8 @@
      ],
      "unknown": []
     }
-   }
+   },
+   "unknowable": []
   },
   {
    "audit": {
@@ -75940,8 +77575,19 @@
    }
   },
   {
+   "audit": {
+    "by": "fact-pipeline-v1-auditor (deepseek-flash)",
+    "notes": "Verified: PowerVar<StretchPower>(6) from get_CanonicalVars; AfterSideTurnStart state machine guards on participants.Contains(Owner.Creature) and PlayerCombatState.TurnNumber <= 1, then Flash() + PowerCmd.Apply<StretchPower>(Owner.Creature, DynamicVars[\"StretchPower\"].IntValue = 6) on self. category=baseline, when=turn_start with turns=[1] is justified by the explicit TurnNumber<=1 check (same pattern as reviewed AKABEKO). No obtain/between_fights hooks in IL (no AfterObtained/SetupForPlayer overrides). Rarity 2 = Common. Only cosmetic gap: effect omits `upgrade: 0`, which is meaningless for relic-applied powers (spec's own AKABEKO canonical example omits it).",
+    "verdict": "agree"
+   },
+   "category": "baseline",
    "class": "ExerciseMat",
    "entity_key": "relics:EXERCISE_MAT",
+   "evidence": [
+    "get_CanonicalVars: PowerVar<StretchPower>(6)",
+    "AfterSideTurnStart <AfterSideTurnStart>d__6: participants.Contains(Owner.Creature) && Owner.PlayerCombatState.TurnNumber <= 1 -> Flash(); PowerCmd.Apply<StretchPower>(Owner.Creature, DynamicVars[\"StretchPower\"].IntValue)",
+    "get_Rarity = 2 (Common)"
+   ],
    "fingerprint": "acbda6b960f85074002b7998761c826eb93c9580edf3a19edd8b0177d8db4a3f",
    "hook_tokens": {
     "AfterSideTurnStart": "06001F39"
@@ -75949,7 +77595,22 @@
    "hooks": [
     "AfterSideTurnStart"
    ],
-   "status": "unreviewed",
+   "mechanics": [
+    {
+     "effect": {
+      "amount": 6,
+      "kind": "apply_power",
+      "power": "Stretch",
+      "target": "self"
+     },
+     "turns": [
+      1
+     ],
+     "when": "turn_start"
+    }
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash)",
+   "status": "converted",
    "triage": {
     "category": "baseline",
     "hook_groups": {
@@ -75961,7 +77622,8 @@
      "trigger": [],
      "unknown": []
     }
-   }
+   },
+   "unknowable": []
   },
   {
    "audit": {
@@ -76505,8 +78167,20 @@
    "unknowable": []
   },
   {
+   "audit": {
+    "by": "fact-pipeline-v1-auditor (deepseek-flash)",
+    "notes": "IL confirms candidate: AfterCardGeneratedForCombat returns unless creator == Owner and the generated card is Sadness, then PowerCmd.Apply<StrengthPower>(Owner.Creature, DynamicVars.Strength.BaseValue=1, Owner.Creature, null, false) -> +1 Strength to self (positive sign). get_CanonicalVars = PowerVar<StrengthPower>(1); ExtraHoverTips = Sadness card + StrengthPower, consistent with the filter. Rarity=4 (rare). No AfterObtained/SetupForPlayer/out-of-combat hooks exist, so category \"trigger\", mechanics-only, empty obtain/between_fights is correct.",
+    "verdict": "agree"
+   },
+   "category": "trigger",
    "class": "Fertilizer",
    "entity_key": "relics:FERTILIZER",
+   "evidence": [
+    "get_CanonicalVars: PowerVar<StrengthPower>(1)",
+    "get_ExtraHoverTips: HoverTipFactory.FromCard<Sadness>, HoverTipFactory.FromPower<StrengthPower>",
+    "AfterCardGeneratedForCombat <AfterCardGeneratedForCombat>d__6: creator != Owner -> return; card is not Sadness -> return; Flash(); PowerCmd.Apply<StrengthPower>(Owner.Creature, DynamicVars.Strength.BaseValue, Owner.Creature, null, false)",
+    "get_Rarity = 4"
+   ],
    "fingerprint": "7ba690ab236e502d917e51b509abf7e90e0d679d9a4e3fea7caaa2c70ca9bc8a",
    "hook_tokens": {
     "AfterCardGeneratedForCombat": "06001F8B"
@@ -76514,7 +78188,23 @@
    "hooks": [
     "AfterCardGeneratedForCombat"
    ],
-   "status": "unreviewed",
+   "mechanics": [
+    {
+     "effect": {
+      "amount": 1,
+      "kind": "apply_power",
+      "power": "Strength",
+      "target": "self"
+     },
+     "filter": {
+      "card": "SADNESS",
+      "creator": "owner"
+     },
+     "when": "card_generated"
+    }
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash)",
+   "status": "converted",
    "triage": {
     "category": "trigger",
     "hook_groups": {
@@ -76526,7 +78216,8 @@
      ],
      "unknown": []
     }
-   }
+   },
+   "unknowable": []
   },
   {
    "audit": {
@@ -80657,8 +82348,20 @@
    "unknowable": []
   },
   {
+   "audit": {
+    "by": "fact-pipeline-v1-auditor (deepseek-flash)",
+    "notes": "IL confirms: `when: damage_dealt` with filter {dealer: owner (Owner.Creature or Owner.Osty), powered_attack: true (IsPoweredAttack: Move flag set, Unpowered clear), min_damage: 30} where the IL uses op_LessThan + brfalse/leave so the threshold is inclusive (>=30); effect = PowerCmd.Apply<StrengthPower>(Owner.Creature, 2) into \"self\". CanonicalVars DamageThreshold=30 and PowerVar<StrengthPower>=2 verified; rarity=6; no obtain/between_fights hooks exist. Only cosmetic deviation: the apply_power effect omits \"upgrade\": 0, which is a no-op since relics have no upgrade path.",
+    "verdict": "agree"
+   },
+   "category": "trigger",
    "class": "MightyWings",
    "entity_key": "relics:MIGHTY_WINGS",
+   "evidence": [
+    "get_CanonicalVars: DynamicVar(\"DamageThreshold\", 30), PowerVar<StrengthPower>(2)",
+    "get_Rarity = 6 (Event relic)",
+    "AfterDamageGiven <AfterDamageGiven>d__7::MoveNext: props.IsPoweredAttack() required, dealer must be Owner.Creature or Owner.Osty, result.TotalDamage >= DynamicVars[\"DamageThreshold\"].BaseValue (30)",
+    "then RelicModel.Flash and PowerCmd.Apply<StrengthPower>(Owner.Creature, DynamicVars[StrengthPower].BaseValue=2)"
+   ],
    "fingerprint": "403e3ccc8be9cc705bc51429caa9e97a95184665d268974a5e934abb604f5616",
    "hook_tokens": {
     "AfterDamageGiven": "0600214C"
@@ -80666,7 +82369,24 @@
    "hooks": [
     "AfterDamageGiven"
    ],
-   "status": "unreviewed",
+   "mechanics": [
+    {
+     "effect": {
+      "amount": 2,
+      "kind": "apply_power",
+      "power": "Strength",
+      "target": "self"
+     },
+     "filter": {
+      "dealer": "owner",
+      "min_damage": 30,
+      "powered_attack": true
+     },
+     "when": "damage_dealt"
+    }
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash)",
+   "status": "converted",
    "triage": {
     "category": "needs_review",
     "hook_groups": {
@@ -80678,7 +82398,8 @@
       "AfterDamageGiven"
      ]
     }
-   }
+   },
+   "unknowable": []
   },
   {
    "audit": {
@@ -81660,8 +83381,21 @@
    }
   },
   {
+   "audit": {
+    "by": "verifier-v0113 IL verification",
+    "notes": "Verified ObsidianVice.<BeforeSideTurnEnd>d__4 IL (sts2.dll v0.113.1): damage = DamageVar(1) * handCount with ValueProp 4 (Unpowered). Fixed amount 1 -> 0 (mechanic-facts.md: amount + factor * hand_size) and added unpowered: true.",
+    "verdict": "resolved"
+   },
+   "category": "baseline",
    "class": "ObsidianVice",
    "entity_key": "relics:OBSIDIAN_VICE",
+   "evidence": [
+    "get_CanonicalVars: DamageVar(1m) (Decimal::One)",
+    "get_Rarity: ldc.i4.6 (Event relic)",
+    "BeforeSideTurnEnd <BeforeSideTurnEnd>d__4::MoveNext: participants.Contains(Owner.Creature) else return; handCount = Owner.GetPile(PileType 2 = Hand).Cards.Count; if handCount == 0 return",
+    "MoveNext: target = RunState.Rng.CombatTargets.NextItem(Owner.Creature.CombatState.HittableEnemies); if null return; Flash(); damage = DynamicVars.Damage.BaseValue * handCount",
+    "MoveNext: CreatureCmd.Damage(choiceContext, target, damage, 4, Owner.Creature, null, null) -> single random enemy takes 1 damage per card in hand"
+   ],
    "fingerprint": "766bdd361d5f95d18e9e424e6cd7eb3420cb83ce89501259d3d240ec2114d47b",
    "hook_tokens": {
     "BeforeSideTurnEnd": "060021AF"
@@ -81669,7 +83403,26 @@
    "hooks": [
     "BeforeSideTurnEnd"
    ],
-   "status": "unreviewed",
+   "mechanics": [
+    {
+     "effect": {
+      "amount": 0,
+      "kind": "damage",
+      "scale": {
+       "factor": 1,
+       "factor_upgrade": 0,
+       "min": 0,
+       "per": "hand_size"
+      },
+      "target": "random",
+      "unpowered": true,
+      "upgrade": 0
+     },
+     "when": "turn_end"
+    }
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash)",
+   "status": "converted",
    "triage": {
     "category": "baseline",
     "hook_groups": {
@@ -81681,11 +83434,27 @@
      "trigger": [],
      "unknown": []
     }
-   }
+   },
+   "unknowable": []
   },
   {
+   "audit": {
+    "by": "fact-pipeline-v1-auditor (deepseek-flash)",
+    "notes": "Verified against IL: category=baseline (BeforeHandDraw), turn-1-only gate (TurnNumber <= 1), owner-only check, pool = UnlockState.CharacterCardPools.SelectMany(GetUnlockedCards(...)) filtered by card.Tags containing any of the 3 static melody CardTags (Wah=6, Cho=7, Ki=8 per read_enum), GetDistinctForCombat(..., count=1, Rng.CombatCardGeneration) -> exactly 1 distinct random card, AddGeneratedCardsToCombat(cards, PileType.Hand=2, Owner, CardPilePosition.Bottom=1). Effect fields (kind add_card, count 1, destination hand, tags Wah/Cho/Ki, distinct+random) all match. Minor non-field nit: evidence prose labels ldc.i4.3 as \"(Rare)\", but RelicRarity 3 = Uncommon (matching catalog 罕见); rarity is not a graded fact field, so verdict remains agree.",
+    "verdict": "agree"
+   },
+   "category": "baseline",
    "class": "Ocarina",
    "entity_key": "relics:OCARINA",
+   "evidence": [
+    "get_Rarity: ldc.i4.3 (Rare)",
+    "BeforeHandDraw <BeforeHandDraw>d__5::MoveNext: player != Owner -> return; Owner.PlayerCombatState.TurnNumber <= 1 (ldc.i4.1 ble) else return",
+    "MoveNext: Owner.UnlockState.CharacterCardPools.SelectMany(GetUnlockedCards) -> Where(card.Tags.Any(t => _melodyTags.Contains(t))) -> ToList; if Count == 0 return",
+    "_melodyTags static array of 3 CardTag values (Wah=6, Cho=7, Ki=8)",
+    "MoveNext: CardFactory.GetDistinctForCombat(Owner, melodyCards, 1, RunState.Rng.CombatCardGeneration) -> 1 distinct random card",
+    "MoveNext: RelicModel.Flash(); CardPileCmd.AddGeneratedCardsToCombat(cards, PileType 2 (Hand), Owner, CardPilePosition 1 (Bottom))",
+    "get_ExtraHoverTips: 3 HoverTipFactory.Static tips (ids 17,18,19) for the three melody tags"
+   ],
    "fingerprint": "a6f1b514a502565d19e57378db895cd92d46d5bd1b414e310c4d2b37652acd3a",
    "hook_tokens": {
     "BeforeHandDraw": "060021B3"
@@ -81693,7 +83462,31 @@
    "hooks": [
     "BeforeHandDraw"
    ],
-   "status": "unreviewed",
+   "mechanics": [
+    {
+     "effect": {
+      "count": 1,
+      "destination": "hand",
+      "kind": "add_card",
+      "pool": {
+       "distinct": true,
+       "random": true,
+       "source": "character_card_pools",
+       "tags": [
+        "Wah",
+        "Cho",
+        "Ki"
+       ]
+      }
+     },
+     "turns": [
+      1
+     ],
+     "when": "turn_start"
+    }
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash)",
+   "status": "converted",
    "triage": {
     "category": "baseline",
     "hook_groups": {
@@ -81705,7 +83498,8 @@
      "trigger": [],
      "unknown": []
     }
-   }
+   },
+   "unknowable": []
   },
   {
    "audit": {
@@ -86231,8 +88025,22 @@
    "unknowable": []
   },
   {
+   "audit": {
+    "by": "fact-pipeline-v1-auditor (deepseek-flash)",
+    "notes": "IL confirms: PowerVar<AimPower>(6); AfterRoomEntered state machine applies AimPower 6 to Owner.Creature (applier = same creature) only when the entered room is a CombatRoom, no RoomType comparison, and there are no AfterObtained/between-fight hooks. Candidate's baseline category, room_entered trigger with monster/elite/boss combat filter, amount 6, and self target all match the IL.",
+    "verdict": "agree"
+   },
+   "category": "baseline",
    "class": "SongBow",
    "entity_key": "relics:SONG_BOW",
+   "evidence": [
+    "get_CanonicalVars: PowerVar<AimPower>(6) (ldc.i4.6 -> Decimal::.ctor)",
+    "get_Rarity: ldc.i4.1 (Starter)",
+    "AfterRoomEntered <AfterRoomEntered>d__6::MoveNext: ldfld room; isinst MegaCrit.Sts2.Core.Rooms.CombatRoom; brtrue -> Flash(); PowerCmd.Apply<AimPower>(Owner.Creature, DynamicVars[\"AimPower\"].BaseValue=6, Owner.Creature, null, false)",
+    "CombatRoom.get_RoomType returns Encounter.get_RoomType, so the CombatRoom check covers Monster, Elite and Boss combats (no RoomType comparison in SongBow IL)",
+    "get_ExtraHoverTips: HoverTipFactory.FromPower<AimPower>",
+    "No AfterObtained/SetupForPlayer or between-fight hooks in IL"
+   ],
    "fingerprint": "e65835b169d6a78122de49d6fad2edfc2c77a4d9b8006a5a59f750e9dd045256",
    "hook_tokens": {
     "AfterRoomEntered": "060023DA"
@@ -86240,7 +88048,26 @@
    "hooks": [
     "AfterRoomEntered"
    ],
-   "status": "unreviewed",
+   "mechanics": [
+    {
+     "effect": {
+      "amount": 6,
+      "kind": "apply_power",
+      "power": "Aim",
+      "target": "self"
+     },
+     "filter": {
+      "room_type": [
+       "Monster",
+       "Elite",
+       "Boss"
+      ]
+     },
+     "when": "room_entered"
+    }
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash, revised)",
+   "status": "converted",
    "triage": {
     "category": "baseline",
     "hook_groups": {
@@ -86252,7 +88079,8 @@
      "trigger": [],
      "unknown": []
     }
-   }
+   },
+   "unknowable": []
   },
   {
    "audit": {
@@ -86660,8 +88488,20 @@
    }
   },
   {
+   "audit": {
+    "by": "fact-pipeline-v1-auditor (deepseek-flash)",
+    "notes": "IL matches candidate exactly: CanonicalVars PowerVar<AimPower>(12) + EndOfTurnAim=3; AfterRoomEntered applies 12 Aim to Owner.Creature when room is CombatRoom; BeforeSideTurnEnd applies 3 Aim when participants contains Owner.Creature; get_Rarity=1 (Starter, confirmed via read_enum); no obtain/between_fights hooks; category baseline with when=combat_start / turn_end is a faithful model of the two hooks.",
+    "verdict": "agree"
+   },
+   "category": "baseline",
    "class": "Storyteller",
    "entity_key": "relics:STORYTELLER",
+   "evidence": [
+    "get_CanonicalVars: PowerVar<AimPower>(12) and PowerVar<AimPower>(\"EndOfTurnAim\", 3)",
+    "AfterRoomEntered <AfterRoomEntered>d__7: room is CombatRoom -> Flash(); PowerCmd.Apply<AimPower>(Owner.Creature, DynamicVars[\"AimPower\"].BaseValue=12)",
+    "BeforeSideTurnEnd <BeforeSideTurnEnd>d__8: participants.Contains(Owner.Creature) -> Flash(); PowerCmd.Apply<AimPower>(Owner.Creature, DynamicVars[\"EndOfTurnAim\"].BaseValue=3)",
+    "get_Rarity=1 (Starter); get_ExtraHoverTips: HoverTipFactory.FromPower<AimPower>"
+   ],
    "fingerprint": "13f6f80de1083ffd29e568b1eed592df91c900cb843da2a17965c24cf9bdd5cc",
    "hook_tokens": {
     "AfterRoomEntered": "06002409",
@@ -86671,7 +88511,28 @@
     "AfterRoomEntered",
     "BeforeSideTurnEnd"
    ],
-   "status": "unreviewed",
+   "mechanics": [
+    {
+     "effect": {
+      "amount": 12,
+      "kind": "apply_power",
+      "power": "Aim",
+      "target": "self"
+     },
+     "when": "combat_start"
+    },
+    {
+     "effect": {
+      "amount": 3,
+      "kind": "apply_power",
+      "power": "Aim",
+      "target": "self"
+     },
+     "when": "turn_end"
+    }
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash)",
+   "status": "converted",
    "triage": {
     "category": "baseline",
     "hook_groups": {
@@ -86685,7 +88546,8 @@
      "trigger": [],
      "unknown": []
     }
-   }
+   },
+   "unknowable": []
   },
   {
    "audit": {
@@ -87317,8 +89179,19 @@
    "unknowable": []
   },
   {
+   "audit": {
+    "by": "TASK-029 step 3 adjudication (over fact-pipeline-v1-auditor IL trace)",
+    "notes": "Replaced drafter's inaccurate damage:1 approximation with canonical modifier attack_hit_count (+1 hit when hitCount > 1 on owner Attack cards); engine reports gap until modeled.",
+    "verdict": "resolved"
+   },
+   "between_fights": [],
+   "category": "trigger",
    "class": "Thumbscrew",
    "entity_key": "relics:THUMBSCREW",
+   "evidence": [
+    "get_Rarity: ldc.i4.6 (Event relic); no CanonicalVars",
+    "ModifyAttackHitCount(AttackCommand, int hitCount): if hitCount <= 1 -> return hitCount; requires ModelSource is CardModel with Type==Attack(1) and Owner==Relic.Owner; returns hitCount + 1"
+   ],
    "fingerprint": "1dab87a5f8ef9c5b8215ec90edc7faeaa6a4c9fc6fdf13783fb55944ab6db373",
    "hook_tokens": {
     "ModifyAttackHitCount": "06002453"
@@ -87326,7 +89199,21 @@
    "hooks": [
     "ModifyAttackHitCount"
    ],
-   "status": "unreviewed",
+   "mechanics": [
+    {
+     "add": 1,
+     "filter": {
+      "card_type": "Attack",
+      "min_hits": 2,
+      "owner_card": true
+     },
+     "modifier": "attack_hit_count"
+    }
+   ],
+   "obtain": [],
+   "open_questions": [],
+   "reviewed_by": "TASK-029 step 3 (fact-pipeline + adjudication)",
+   "status": "converted",
    "triage": {
     "category": "needs_review",
     "hook_groups": {
@@ -87338,7 +89225,8 @@
       "ModifyAttackHitCount"
      ]
     }
-   }
+   },
+   "unknowable": []
   },
   {
    "audit": {
@@ -87581,8 +89469,21 @@
    "unknowable": []
   },
   {
+   "audit": {
+    "by": "verifier-v0113 spec normalization",
+    "notes": "Normalized Elite room gate from undocumented condition.room_type to documented filter.fight_kind: ELITE per docs/dev/mechanic-facts.md (matching relics:PANTOGRAPH and relics:BATH_ROBES).",
+    "verdict": "resolved"
+   },
+   "category": "baseline",
    "class": "TormentousCollar",
    "entity_key": "relics:TORMENTOUS_COLLAR",
+   "evidence": [
+    "get_CanonicalVars: PowerVar<WeakPower>(2)",
+    "get_Rarity = 6 (Event)",
+    "BeforeSideTurnStart <BeforeSideTurnStart>d__6: CurrentRoom.RoomType != 2 (Elite) -> return",
+    "BeforeSideTurnStart: participants must contain Owner.Creature; PlayerCombatState.TurnNumber <= 1 required",
+    "BeforeSideTurnStart: RelicModel.Flash; PowerCmd.Apply<WeakPower>(combatState.HittableEnemies, DynamicVars.Weak.BaseValue, Owner.Creature)"
+   ],
    "fingerprint": "ef76d30cfbfc05f48db96a7249199c02a89d80a7a27a5d1e138cb3a9142ecba8",
    "hook_tokens": {
     "BeforeSideTurnStart": "06002469"
@@ -87590,7 +89491,25 @@
    "hooks": [
     "BeforeSideTurnStart"
    ],
-   "status": "unreviewed",
+   "mechanics": [
+    {
+     "effect": {
+      "amount": 2,
+      "kind": "apply_power",
+      "power": "Weak",
+      "target": "all_enemies"
+     },
+     "filter": {
+      "fight_kind": "ELITE"
+     },
+     "turns": [
+      1
+     ],
+     "when": "turn_start"
+    }
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash)",
+   "status": "converted",
    "triage": {
     "category": "baseline",
     "hook_groups": {
@@ -87602,7 +89521,8 @@
      "trigger": [],
      "unknown": []
     }
-   }
+   },
+   "unknowable": []
   },
   {
    "audit": {
@@ -88064,8 +89984,19 @@
    "unknowable": []
   },
   {
+   "audit": {
+    "by": "fact-pipeline-v1-auditor (deepseek-flash)",
+    "notes": "IL confirms: BlockVar(4), rarity 4 = Rare, and AfterArrowDislodged MoveNext guards `arrow.owner == this.Owner` before RelicModel.Flash and CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, null, false) — i.e. +4 block to the relic owner when their own arrow is dislodged. Candidate's category=trigger, when=arrow_dislodged, filter.owner_only=true, block amount 4/upgrade 0 all match; no obtain/between_fights hooks exist. Codex description (own arrows, 4 block, Rare) agrees with IL.",
+    "verdict": "agree"
+   },
+   "category": "trigger",
    "class": "Twine",
    "entity_key": "relics:TWINE",
+   "evidence": [
+    "get_CanonicalVars: BlockVar(4)",
+    "AfterArrowDislodged <AfterArrowDislodged>d__6::MoveNext: arrow.owner == Owner check, then RelicModel.Flash and CreatureCmd.GainBlock(Owner.Creature, DynamicVars.Block, null, false)",
+    "get_Rarity = 4 (Rare); get_ExtraHoverTips includes ArrowHoverTip"
+   ],
    "fingerprint": "381e920a055fc9be91586d3d91959cc6688d4ed3f889604e43351c1cc929e067",
    "hook_tokens": {
     "AfterArrowDislodged": "060024AF"
@@ -88073,7 +90004,21 @@
    "hooks": [
     "AfterArrowDislodged"
    ],
-   "status": "unreviewed",
+   "mechanics": [
+    {
+     "effect": {
+      "amount": 4,
+      "kind": "block",
+      "upgrade": 0
+     },
+     "filter": {
+      "owner_only": true
+     },
+     "when": "arrow_dislodged"
+    }
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash)",
+   "status": "converted",
    "triage": {
     "category": "needs_review",
     "hook_groups": {
@@ -88085,7 +90030,8 @@
       "AfterArrowDislodged"
      ]
     }
-   }
+   },
+   "unknowable": []
   },
   {
    "audit": {
@@ -89078,8 +91024,20 @@
    }
   },
   {
+   "audit": {
+    "by": "fact-pipeline-v1-auditor (deepseek-flash)",
+    "notes": "Verified: get_CanonicalVars PowerVar<AimPower>(5); AfterShuffle MoveNext returns early unless shuffler == Owner, then Flash + PowerCmd.Apply<AimPower>(Owner.Creature, DynamicVars[\"AimPower\"].BaseValue=5, Owner.Creature, null, false) -> self Aim 5 on own shuffle. Category \"trigger\" with when \"shuffle\" is correct; no obtain/between_fights hooks exist. Minor evidence-prose nit: get_Rarity=3 is RelicRarity.Uncommon, not Rare (read_enum), though the CN catalog label 罕见 also means Uncommon; no structured field is affected.",
+    "verdict": "agree"
+   },
+   "category": "trigger",
    "class": "WhittlingKnife",
    "entity_key": "relics:WHITTLING_KNIFE",
+   "evidence": [
+    "get_CanonicalVars: PowerVar<AimPower>(5)",
+    "get_Rarity=3 (Rare)",
+    "AfterShuffle <AfterShuffle>d__6::MoveNext: if (shuffler != Owner) return; Flash(); PowerCmd.Apply<AimPower>(Owner.Creature, DynamicVars[\"AimPower\"].BaseValue=5, Owner.Creature, null, false)",
+    "get_ExtraHoverTips: HoverTipFactory.FromPower<AimPower>"
+   ],
    "fingerprint": "fd5728d2e8d45d56cf160508988757d927c7a04063f8b2d83c36a8ee320d9a27",
    "hook_tokens": {
     "AfterShuffle": "06002524"
@@ -89087,7 +91045,19 @@
    "hooks": [
     "AfterShuffle"
    ],
-   "status": "unreviewed",
+   "mechanics": [
+    {
+     "effect": {
+      "amount": 5,
+      "kind": "apply_power",
+      "power": "Aim",
+      "target": "self"
+     },
+     "when": "shuffle"
+    }
+   ],
+   "reviewed_by": "fact-pipeline-v1 (deepseek-flash)",
+   "status": "converted",
    "triage": {
     "category": "trigger",
     "hook_groups": {
@@ -89099,7 +91069,8 @@
      ],
      "unknown": []
     }
-   }
+   },
+   "unknowable": []
   },
   {
    "audit": {
@@ -89337,8 +91308,26 @@
    }
   },
   {
+   "audit": {
+    "by": "TASK-029 step 3 adjudication (over fact-pipeline-v1-auditor IL trace)",
+    "notes": "Used documented between_fights modifier rest_site_option (option: RESTORE) and add_pet monster: WUPPY; persisted pet HP details documented in open_questions.",
+    "verdict": "resolved"
+   },
+   "between_fights": [
+    {
+     "modifier": "rest_site_option",
+     "option": "RESTORE"
+    }
+   ],
+   "category": "baseline",
    "class": "Wuppy",
    "entity_key": "relics:WUPPY",
+   "evidence": [
+    "get_CanonicalVars: MaxHpVar(0), DynamicVar(CurrentHp, 0); get_Rarity=6 (Event), get_AddsPet=true",
+    "AfterObtained: initializes MaxHp=60 and CurrentHp=60, summons pet if in CombatRoom",
+    "BeforeCombatStart -> SummonPet: creates MonsterDb.Monster<Wuppy>(), applies WuppysLoyaltyPower(1), sets MaxHp/CurrentHp from relic, calls PlayerCmd.AddPet",
+    "TryModifyRestSiteOptions: adds RestoreRestSiteOption(Owner) which restores Wuppy CurrentHp to MaxHp"
+   ],
    "fingerprint": "8986e8f71211ab3fd878344dcab781d701bc9a9fc4d8351546d8052160da4eec",
    "hook_tokens": {
     "AfterCurrentHpChanged": "06002555",
@@ -89352,7 +91341,26 @@
     "BeforeCombatStart",
     "TryModifyRestSiteOptions"
    ],
-   "status": "unreviewed",
+   "mechanics": [
+    {
+     "effect": {
+      "kind": "add_pet",
+      "monster": "WUPPY"
+     },
+     "when": "combat_start"
+    }
+   ],
+   "obtain": [
+    {
+     "kind": "add_pet",
+     "monster": "WUPPY"
+    }
+   ],
+   "open_questions": [
+    "Pet Wuppy starts with 60 MaxHp persisted across combats (AfterCurrentHpChanged), receives WuppysLoyaltyPower(1), and the RESTORE rest-site option heals Wuppy back to MaxHp."
+   ],
+   "reviewed_by": "TASK-029 step 3 (fact-pipeline + adjudication)",
+   "status": "converted",
    "triage": {
     "category": "baseline",
     "hook_groups": {
@@ -89368,7 +91376,8 @@
      "trigger": [],
      "unknown": []
     }
-   }
+   },
+   "unknowable": []
   },
   {
    "audit": {
