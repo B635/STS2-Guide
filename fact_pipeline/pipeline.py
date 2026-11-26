@@ -784,6 +784,31 @@ def process_entity(
             )
 
         if audit1.verdict == "agree":
+            if val1.codex_conflicts:
+                return (
+                    EntityPipelineResult(
+                        entity_key=entity_key,
+                        entity_type=entity_type,
+                        class_name=class_name,
+                        fingerprint=fingerprint,
+                        outcome="needs_human",
+                        reason="codex_conflict",
+                        fact=initial_draft,
+                        initial_draft=initial_draft,
+                        initial_audit=audit1,
+                        final_audit=audit1,
+                        codex_conflicts=val1.codex_conflicts,
+                        schema_repairs=d_repairs,
+                        drafter_tool_calls=d_tools,
+                        auditor_tool_calls=auditor_tools,
+                        usage=total_usage,
+                        stage_usage=stage_usage,
+                        latency_ms=total_latency,
+                        drafter_model=config.drafter_model,
+                        auditor_model=config.auditor_model,
+                    ),
+                    trace,
+                )
             merged = prepare_mergeable_entry(
                 initial_draft,
                 reviewed_by=f"{config.reviewed_by_tag} ({config.drafter_model})",
@@ -949,7 +974,7 @@ def process_entity(
         total_latency += a2_ms
         auditor_tools += audit2.tool_calls
 
-        if audit2.verdict == "agree" and not audit2.needs_new_vocabulary:
+        if audit2.verdict == "agree" and not audit2.needs_new_vocabulary and not val2.codex_conflicts:
             merged = prepare_mergeable_entry(
                 revised_draft,
                 reviewed_by=f"{config.reviewed_by_tag} ({config.drafter_model}, revised)",
@@ -983,7 +1008,12 @@ def process_entity(
                 trace,
             )
 
-        reason = "needs_new_vocabulary" if audit2.needs_new_vocabulary else "auditor_disagreed_after_revision"
+        if audit2.needs_new_vocabulary:
+            reason = "needs_new_vocabulary"
+        elif audit2.verdict == "agree" and val2.codex_conflicts:
+            reason = "codex_conflict"
+        else:
+            reason = "auditor_disagreed_after_revision"
         return (
             EntityPipelineResult(
                 entity_key=entity_key,

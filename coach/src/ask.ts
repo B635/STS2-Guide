@@ -231,6 +231,11 @@ export type AskContext = AgentContext;
 const TIER_LABELS: Record<string, string> = { "1": "不同，引擎有把握且差距明显（复盘报告里的“值得想一想”）", "0": "一致" };
 
 function verdictLabel(row: DecisionRow): string {
+  if (row.tier === 0 && row.chosen !== row.engine_top) {
+    return row.kind === "shop"
+      ? "一致（都在这家商店选择了消费而非离开，具体购买项不同）"
+      : "一致（方向一致，具体选项不同）";
+  }
   if (row.tier === 1 || row.tier === 0) return TIER_LABELS[String(row.tier)]!;
   if (row.tier === 2) return `不同，引擎把握不大（${notStrictLabel(row.not_strict_because)}）`;
   return "未判断";
@@ -269,7 +274,8 @@ export function overview(summary: RunSummary, decisions: DecisionList, notes: Pl
     stats: stats(decisions.decisions),
     decisions: decisions.decisions.map((d) => ({
       id: d.id, act: d.act, floor: d.floor, kind: KIND_LABELS[d.kind] ?? d.kind,
-      player: d.chosen_name ?? d.chosen, engine: d.engine_top_name ?? d.engine_top, gap: d.gap, verdict: verdictLabel(d),
+      player: d.chosen_name ?? (d.chosen === "bought_unscored" ? "已购买（未计分项）" : d.chosen),
+      engine: d.engine_top_name ?? d.engine_top, gap: d.gap, verdict: verdictLabel(d),
     })),
     not_scored: decisions.skipped.map((s) => ({ id: s.id, floor: s.floor, kind: KIND_LABELS[s.kind] ?? s.kind, reason: skippedLabel(s.reason) })),
     // Only other runs: this run's own flags are in `decisions` already, and mixing them confused the critic.
@@ -338,10 +344,14 @@ export function withoutCut(list: string[], cut: ReadonlySet<string>): string[] {
 }
 
 /** Does the critic's quote point at this sentence? (It may quote part of one, or a sentence without its punctuation.) */
-function quotes(issue: CriticIssue, sentence: string): boolean {
+export function quotes(issue: CriticIssue, sentence: string): boolean {
   const strip = (s: string) => s.replace(/[\s。！？!?；，,：:“”"「」]/g, "");
   const a = strip(issue.sentence), b = strip(sentence);
-  return a.length > 0 && b.length > 0 && (b.includes(a) || a.includes(b));
+  if (a.length === 0 || b.length === 0) return false;
+  if (a === b) return true;
+  if (a.length >= 2 && b.includes(a)) return true;
+  if (b.length >= 4 && a.includes(b)) return true;
+  return issue.sentence.includes(sentence.trim());
 }
 
 function compactDetail(detail: DecisionDetail, row: DecisionRow | undefined): unknown {
@@ -363,19 +373,30 @@ const NO_SUBJECT: Record<string, string> = {
   no_factor_difference: "引擎在这两个选项之间没有可以比较的因子（例如休息点只按规则判断）",
 };
 
+export function investigationHeadline(detail: DecisionDetail, subject: Subject): string {
+  const name = (id: string) =>
+    id === "bought_unscored" ? "已购买（未计分项）" : (detail.options.find((o) => o.id === id)?.name ?? id);
+  const score = (id: string) => detail.options.find((o) => o.id === id)?.deck_score ?? 0;
+  if (detail.tier === 0 && detail.chosen !== detail.engine_top) {
+    const playerLabel = name(detail.chosen ?? subject.pair.b);
+    const engineLabel = name(detail.engine_top ?? subject.pair.a);
+    const gapPart = detail.gap !== null ? `；按引擎评分「${engineLabel}」比「${playerLabel}」高 ${detail.gap} 分` : "";
+    return `你和引擎都在这家商店选择了消费而非离开，具体购买项不同：你选了「${playerLabel}」，引擎首选「${engineLabel}」${gapPart}`;
+  }
+  if (subject.relation === "agree") {
+    const gap = Math.round((score(subject.pair.a) - score(subject.pair.b)) * 100) / 100;
+    return `你和引擎都选了「${name(subject.pair.a)}」，牌组分数比第二名「${name(subject.pair.b)}」高 ${gap} 分`;
+  }
+  if ((detail.gap ?? 0) > 0) {
+    return headline(detail);
+  }
+  return `引擎首选「${name(subject.pair.a)}」，你选了「${name(subject.pair.b)}」；只看牌组分数两者相差 ${detail.gap}，引擎的首选来自它的取舍倾向（例如跳过门槛）`;
+}
+
 /** What the lead gets back from one investigator: the engine's comparison (program) and the checked finding (model). */
 function report(detail: DecisionDetail, subject: Subject, result: FlagResult, row: DecisionRow | undefined): unknown {
   const name = (id: string) => detail.options.find((o) => o.id === id)?.name ?? id;
-  const score = (id: string) => detail.options.find((o) => o.id === id)?.deck_score ?? 0;
-  let head: string;
-  if (subject.relation === "agree") {
-    const gap = Math.round((score(subject.pair.a) - score(subject.pair.b)) * 100) / 100;
-    head = `你和引擎都选了「${name(subject.pair.a)}」，牌组分数比第二名「${name(subject.pair.b)}」高 ${gap} 分`;
-  } else if ((detail.gap ?? 0) > 0) {
-    head = headline(detail);
-  } else {
-    head = `引擎首选「${name(subject.pair.a)}」，你选了「${name(subject.pair.b)}」；只看牌组分数两者相差 ${detail.gap}，引擎的首选来自它的取舍倾向（例如跳过门槛）`;
-  }
+  const head = investigationHeadline(detail, subject);
   const compared = result.evidence.find((e) => e.tool === "compare_options")?.result as
     | { factors?: Array<{ factor: string; a_message: string | null; b_message: string | null }> }
     | undefined;
@@ -492,7 +513,15 @@ export async function ask(ctx: AskContext, session: Session, question: string, o
         investigatorsUsed--; // no model call
         answer.investigators.push({ decision: id, status: "unavailable", relation: "none", cached: false });
         trace.event("investigate.skipped", id, { question: label, reason: subject.reason });
-        return { ...unavailable(id, NO_SUBJECT[subject.reason] ?? subject.reason) as object, headline: detail.engine_top === detail.chosen ? undefined : headline(detail) };
+        const fallbackHead =
+          detail.engine_top === detail.chosen
+            ? undefined
+            : detail.tier === 0
+              ? `你和引擎都在这家商店选择了消费而非离开，具体购买项不同（引擎首选「${detail.options.find((o) => o.id === detail.engine_top)?.name ?? detail.engine_top ?? "-"}」）`
+              : detail.gap !== null
+                ? headline(detail)
+                : undefined;
+        return { ...unavailable(id, NO_SUBJECT[subject.reason] ?? subject.reason) as object, headline: fallbackHead };
       }
       const slot = { decision: id, status: "running", relation: subject.relation, cached: false };
       answer.investigators.push(slot);
@@ -628,11 +657,17 @@ export async function ask(ctx: AskContext, session: Session, question: string, o
         }
         const reports = await runInvestigations(ids, String(args.focus ?? question));
         // Every report is evidence (the lead reads all of them); finished ones are also kept for follow-ups.
+        // Cache hits must also call keep() to renew their lifetime in the sliding turn window.
         const kept = reports.map((r, i) => {
-          const status = (r as { status?: string }).status;
-          if ((r as { note_cached?: string }).note_cached) return r;
+          const obj = r as { status?: string; note_cached?: string };
+          if (obj.note_cached) {
+            const { note_cached: _note, ...fresh } = obj as Record<string, unknown>;
+            const e = keep("investigate", fresh);
+            session.reports.set(ids[i]!, e);
+            return { result_id: e.id, ...(r as object) };
+          }
           const e = keep("investigate", r);
-          if (status === "verified" || status === "not_confirmed") session.reports.set(ids[i]!, e);
+          if (obj.status === "verified" || obj.status === "not_confirmed") session.reports.set(ids[i]!, e);
           return { result_id: e.id, ...(r as object) };
         });
         reply(call.id, { reports: kept });
@@ -666,7 +701,7 @@ export async function ask(ctx: AskContext, session: Session, question: string, o
     const verdict = await critique(ctx.llm, ctx.model, question, text, window(), trace, label, SCOPE);
     tally.cost += verdict.cost_usd;
     tally.byRole.critic += verdict.cost_usd;
-    tally.calls++;
+    tally.calls += 1 + (verdict.retries ?? 0);
     tally.prompt += verdict.prompt_tokens;
     tally.completion += verdict.completion_tokens;
     if (!verdict.parsed) answer.checks.critic_unparsed++;
@@ -708,7 +743,7 @@ export async function ask(ctx: AskContext, session: Session, question: string, o
     const verdict = await critique(ctx.llm, ctx.model, question, kept.join(""), window(), trace, label, SCOPE);
     tally.cost += verdict.cost_usd;
     tally.byRole.critic += verdict.cost_usd;
-    tally.calls++;
+    tally.calls += 1 + (verdict.retries ?? 0);
     tally.prompt += verdict.prompt_tokens;
     tally.completion += verdict.completion_tokens;
     if (!verdict.parsed) answer.checks.critic_unparsed++;

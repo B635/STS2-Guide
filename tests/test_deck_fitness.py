@@ -1896,6 +1896,244 @@ class HighCostAffordabilityTests(unittest.TestCase):
         with_turbo_meteor = self.fight(deck + [turbo, meteor])
         self.assertGreater(with_turbo_meteor["frontload"], with_turbo_base["frontload"])
 
+    def test_single_plus_one_energy_source_cannot_unlock_five_cost_meteor_strike(self):
+        from advisor.deck_fitness import PARAMETERS_KEY
+        from advisor.deck_mechanics import ORB_TYPES, CardProfile, Situation, _Engine, deck_capabilities
+
+        deck = self.starter("DEFECT")
+        meteor = self.profile("METEOR_STRIKE")[0]
+        meteor_plus = self.profile("METEOR_STRIKE", 1)[0]
+        wound = self.profile("WOUND")[0]
+        wisp = self.profile("WISP")[0]
+        armaments = self.profile("ARMAMENTS")[0]
+        double_energy = self.profile("DOUBLE_ENERGY", 0)[0]
+        double_energy_plus = self.profile("DOUBLE_ENERGY", 1)[0]
+        happy_flower = self.relic("HAPPY_FLOWER")[0]
+        lantern = self.relic("LANTERN")[0]
+        candelabra = self.relic("CANDELABRA")[0]
+
+        params = self.repository.mechanic_constant(PARAMETERS_KEY)
+        orbs = {orb: self.repository.find_assembly_fact("orbs", orb) for orb in ORB_TYPES.values()}
+        orb_sit = Situation(6.0, 0.0, 10.0, {"MONSTER": 1.0}, 1.0, 0, orb_slots=3.0, orbs=orbs)
+
+        def orb_fight(cards, relics=()):
+            return deck_capabilities(list(cards), list(relics), orb_sit, params)[0]
+
+        # Single +1 sources reach at most 4 energy on a 3-energy base: cannot unlock 5-cost Meteor Strike
+        # or self-bootstrap its Plasma orbs (even with active orb_slots and Plasma orb facts).
+        for label, extra_cards, relics, cand in (
+            ("1x WISP", [wisp], (), meteor),
+            ("1x WISP + ARMAMENTS", [wisp, armaments], (), meteor_plus),
+            ("HAPPY_FLOWER", [], (happy_flower,), meteor),
+            ("LANTERN", [], (lantern,), meteor),
+            ("DOUBLE_ENERGY base (net +1 on 3E)", [double_energy], (), meteor),
+        ):
+            with self.subTest(label=label):
+                with_meteor = orb_fight(deck + extra_cards + [cand], relics)
+                with_wound = orb_fight(deck + extra_cards + [wound], relics)
+                self.assertAlmostEqual(with_meteor["frontload"], with_wound["frontload"], places=9)
+
+        # Also check base Meteor Strike with 1x WISP + ARMAMENTS directly: 0 plays (no upgraded WISP double-count).
+        eng = _Engine(deck + [wisp, armaments, meteor], [], orb_sit, params)
+        eng.run()
+        self.assertAlmostEqual(eng.last_plays[id(meteor)], 0.0, places=9)
+
+        # Sources reaching >= +2 in a single turn DO unlock 5-cost Meteor Strike and Plasma feedback.
+        for label, extra_cards, relics in (
+            ("2x WISP (+2)", [wisp, wisp], ()),
+            ("DOUBLE_ENERGY+ (+3 on 3E)", [double_energy_plus], ()),
+            ("LANTERN (t1 +1) + CANDELABRA (t2 +2)", [], (lantern, candelabra)),
+        ):
+            with self.subTest(label=label):
+                with_meteor = orb_fight(deck + extra_cards + [meteor], relics)
+                with_wound = orb_fight(deck + extra_cards + [wound], relics)
+                self.assertGreater(with_meteor["frontload"], with_wound["frontload"])
+
+        # Fixed-turn relics on distinct turns do not add together: Lantern (t1 +1) + Candelabra (t2 +2)
+        # gives peak +2 (5E max), not +3 (6E), so a synthetic 6-cost attack stays unplayable.
+        six_cost = CardProfile(
+            card_id="SYNTH_SIX_COST", cost=6.0, x_cost=False, card_type="Attack",
+            tags=frozenset(), upgraded=False, exhausts_self=False, ethereal=False,
+            sly=False, retain=False, innate=False, returns=None,
+            effects=({"kind": "damage", "amount": 40.0, "hits": 1.0, "target": "single"},),
+            powers=(), generates=(),
+        )
+        self.assertAlmostEqual(
+            orb_fight(deck + [six_cost], (lantern, candelabra))["frontload"],
+            orb_fight(deck + [wound], (lantern, candelabra))["frontload"],
+            places=9,
+        )
+
+    def test_negative_energy_deficit_reduces_playability_near_base_energy(self):
+        from advisor.deck_mechanics import RelicProfile
+
+        minus_one_t1 = RelicProfile(
+            relic_id="SYNTH_MINUS_ONE",
+            category="COMMON",
+            mechanics=({"when": "turn_start", "turns": [1], "effect": {"kind": "energy", "amount": -1}},),
+        )
+        soul = self.profile("SOUL")[0]
+        strike = self.profile("STRIKE_IRONCLAD")[0]
+        bludgeon = self.profile("BLUDGEON")[0]
+        bash = self.profile("BASH")[0]
+        bread = self.relic("BREAD")[0]
+
+        # On 3 base energy with a -1 turn-1 deficit, a 3-cost card loses playability while
+        # a 1-cost card in an unsaturated deck remains fully playable.
+        heavy_deck = [soul] * 4 + [bludgeon]
+        light_deck = [soul] * 4 + [strike]
+        self.assertLess(
+            self.fight(heavy_deck, (minus_one_t1,))["frontload"],
+            self.fight(heavy_deck)["frontload"],
+        )
+        self.assertAlmostEqual(
+            self.fight(light_deck, (minus_one_t1,))["frontload"],
+            self.fight(light_deck)["frontload"],
+            places=9,
+        )
+        # Real Bread relic (-2 energy on turn 1): on turn 1 (1E available), 2-cost Bash
+        # drops in frontload while 1-cost Strike stays fully affordable.
+        bash_deck = [soul] * 4 + [bash]
+        self.assertLess(
+            self.fight(bash_deck, (bread,), turns=1.0)["frontload"],
+            self.fight(bash_deck, (), turns=1.0)["frontload"],
+        )
+        self.assertAlmostEqual(
+            self.fight(light_deck, (bread,), turns=1.0)["frontload"],
+            self.fight(light_deck, (), turns=1.0)["frontload"],
+            places=9,
+        )
+
+    def test_cost_rule_discrete_states_avoid_jensen_step_cliff(self):
+        from advisor.deck_mechanics import CardProfile
+
+        wound = self.profile("WOUND")[0]
+        # Kingly Kick (cost 4, per_own_draw -1): AfterCardDrawn fires before play so draw #1 costs 3.
+        kingly = self.profile("KINGLY_KICK")[0]
+        large_deck = self.starter("IRONCLAD") + [self.profile("SOUL")[0]] * 6
+        self.assertGreater(
+            self.fight(large_deck + [kingly])["frontload"],
+            self.fight(large_deck + [wound])["frontload"],
+        )
+
+        # Coda (cost 6, per_melodies_this_turn -2): unplayable without melodies, playable in a
+        # melody deck even when scalar E[cost] > 3 because P(melodies >= 2) > 0.
+        coda = self.profile("CODA")[0]
+        fool_base = self.starter("FOOL")
+        self.assertAlmostEqual(
+            self.fight(fool_base + [coda])["frontload"],
+            self.fight(fool_base + [wound])["frontload"],
+            places=9,
+        )
+        wah = self.profile("WAH_BLAST")[0]
+        cho = self.profile("CHO_READY")[0]
+        melody_deck = [self.profile("SOUL")[0]] * 4 + [wah, cho]
+        self.assertGreater(
+            self.fight(melody_deck + [coda])["frontload"],
+            self.fight(melody_deck + [wound])["frontload"],
+        )
+
+        # Modded (cost 0, per_own_play +1) & Frantic Escape (cost 1, per_own_play +1): in a small 6-card deck
+        # over 9 turns (scalar mean > 3), early plays at cost <= 3 remain playable instead of collapsing to 0.
+        from advisor.deck_fitness import PARAMETERS_KEY
+        from advisor.deck_mechanics import Situation, _Engine
+
+        modded = self.profile("MODDED")[0]
+        frantic = self.profile("FRANTIC_ESCAPE")[0]
+        small_deck = [self.profile("ANGER")[0]] * 5
+        self.assertGreater(
+            self.fight(small_deck + [modded], turns=9.0)["cycle"],
+            self.fight(small_deck + [wound], turns=9.0)["cycle"],
+        )
+        params = self.repository.mechanic_constant(PARAMETERS_KEY)
+        eng_frantic = _Engine(small_deck + [frantic], [], Situation(9.0, 0.0, 10.0, {"MONSTER": 1.0}, 1.0, 0), params)
+        eng_frantic.run()
+        self.assertGreater(eng_frantic.last_plays[id(frantic)], 0.0)
+
+        # Synthetic 4-cost per_type_this_turn (-1 per Skill): scalar mean > 3, but P(K >= 1) > 0.
+        synth_skill_reducer = CardProfile(
+            card_id="SYNTH_SKILL_4COST", cost=4.0, x_cost=False, card_type="Attack",
+            tags=frozenset(), upgraded=False, exhausts_self=False, ethereal=False,
+            sly=False, retain=False, innate=False, returns=None,
+            effects=({"kind": "damage", "amount": 20.0, "hits": 1.0, "target": "single"},),
+            powers=(), generates=(), cost_rule=("per_type_this_turn", -1.0, "Skill"),
+        )
+        skill_deck = [self.profile("DEFEND_IRONCLAD")[0]] * 2 + [self.profile("STRIKE_IRONCLAD")[0]] * 6
+        self.assertGreater(
+            self.fight(skill_deck + [synth_skill_reducer])["frontload"],
+            self.fight(skill_deck + [wound])["frontload"],
+        )
+
+    def test_dead_high_cost_card_does_not_inflate_energy_when_adding_zero_cost_cards(self):
+        soul = self.profile("SOUL")[0]
+        anger = self.profile("ANGER")[0]
+        bury = self.profile("BURY")[0]
+        armaments = self.profile("ARMAMENTS")[0]
+
+        zero_deck = [soul] * 5
+        with_bury = self.fight(zero_deck + [bury])
+        self.assertLess(with_bury["energy"], self.fight(zero_deck)["energy"])
+        # Adding an unrelated 0-cost card to a deck holding an unplayable Bury must not inflate energy.
+        with_bury_and_zero = self.fight(zero_deck + [bury, anger])
+        self.assertLessEqual(with_bury_and_zero["energy"], with_bury["energy"] + 1e-12)
+        # In-fight upgrade support (Armaments) must not double-count Bury's upgraded profile brick cost.
+        with_armaments_base = self.fight(zero_deck + [armaments, bury])
+        self.assertGreater(with_armaments_base["energy"], 0.0)
+        self.assertAlmostEqual(
+            self.fight(zero_deck + [bury, soul])["energy"],
+            with_bury["energy"],
+            places=9,
+        )
+
+    def test_x_cost_zero_energy_grants_no_free_triggers_and_positive_x_updates_energy_spent(self):
+        from advisor.deck_fitness import PARAMETERS_KEY
+        from advisor.deck_mechanics import Situation, _Engine
+
+        # Energy-saturated deck (demand 5 > supply 3 -> x_value == 0).
+        saturated = [self.profile("STRIKE_IRONCLAD")[0]] * 5 + [self.profile("DEFEND_IRONCLAD")[0]] * 5
+        whirlwind = self.profile("WHIRLWIND", 0)[0]
+        tempest_plus = self.profile("TEMPEST", 1)[0]
+        wound = self.profile("WOUND")[0]
+        shuriken = self.relic("SHURIKEN")[0]
+        ornamental_fan = self.relic("ORNAMENTAL_FAN")[0]
+
+        # At X=0, Whirlwind (no base non-X effect) gets 0 plays and grants zero free Shuriken/Fan procs.
+        ww_caps = self.fight(saturated + [whirlwind], (shuriken, ornamental_fan))
+        wound_caps = self.fight(saturated + [wound], (shuriken, ornamental_fan))
+        self.assertAlmostEqual(ww_caps["frontload"], wound_caps["frontload"], places=9)
+        self.assertAlmostEqual(ww_caps["defense"], wound_caps["defense"], places=9)
+        self.assertAlmostEqual(ww_caps["scaling"], wound_caps["scaling"], places=9)
+
+        # Tempest+ and Malaise+ have non-zero X=0 effects (X+1), so they still play at X=0.
+        from advisor.deck_mechanics import ORB_TYPES, deck_capabilities
+
+        params = self.repository.mechanic_constant(PARAMETERS_KEY)
+        orbs = {orb: self.repository.find_assembly_fact("orbs", orb) for orb in ORB_TYPES.values()}
+        orb_sit = Situation(6.0, 0.0, 10.0, {"MONSTER": 1.0}, 1.0, 0, orb_slots=3.0, orbs=orbs)
+        tempest_caps, _ = deck_capabilities(saturated + [tempest_plus], [], orb_sit, params)
+        wound_orb_caps, _ = deck_capabilities(saturated + [wound], [], orb_sit, params)
+        self.assertGreater(tempest_caps["frontload"], wound_orb_caps["frontload"])
+
+        malaise_plus = self.profile("MALAISE", 1)[0]
+        self.assertGreater(
+            self.fight(saturated + [malaise_plus])["defense"],
+            self.fight(saturated + [wound])["defense"],
+        )
+
+        # With surplus energy, an X-cost card spends energy and raises energy_spent for Helix Drill.
+        soul = self.profile("SOUL")[0]
+        brace = self.profile("BRACE", 0)[0]
+        helix_drill = self.profile("HELIX_DRILL", 0)[0]
+        situation = Situation(6.0, 0.0, 10.0, {"MONSTER": 1.0}, 1.0, 0)
+
+        engine_wound = _Engine([soul] * 4 + [helix_drill, wound], [], situation, params)
+        caps_wound, _ = engine_wound.run()
+        engine_brace = _Engine([soul] * 4 + [helix_drill, brace], [], situation, params)
+        caps_brace, _ = engine_brace.run()
+        self.assertAlmostEqual(engine_wound.energy_spent, 0.0, places=9)
+        self.assertGreater(engine_brace.energy_spent, 0.0)
+        self.assertGreater(caps_brace["frontload"], caps_wound["frontload"])
+
 
 class FoolMechanicsTests(unittest.TestCase):
     """Fool (v0.113.1) shared-kernel mechanics: arrows, Impaled, Aim, Stretch, melodies."""

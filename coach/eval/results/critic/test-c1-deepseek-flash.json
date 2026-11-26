@@ -15,82 +15,138 @@
   "precision": 0.8955,
   "f1": 0.9449,
   "unparsed": 0,
+  "sentence_tp": 66,
+  "sentence_fp": 20,
+  "sentence_fn": 0,
+  "sentence_precision": 0.7674,
+  "sentence_recall": 1,
+  "sentence_f1": 0.8684,
+  "exact_localization_rate": 0.8667,
+  "wrong_sentence_on_tp": 0,
   "all_agree_cases": 39,
   "all_agree_rate": 0.975,
   "per_repeat_flag_rates": [
    0.55,
-   0.575,
-   0.55
+   0.55,
+   0.575
   ],
   "flag_rate_spread": 0.025,
   "majority_recall": 1,
   "majority_fpr": 0.1,
   "majority_f1": 0.9524,
   "by_category": {
-   "real_supported": {
-    "cases": 8,
-    "trials": 24,
-    "flagged": 3,
-    "rate": 0.125
-   },
-   "real_out_of_scope_refusal": {
+   "tier1_card_explanation": {
     "cases": 3,
     "trials": 9,
-    "flagged": 1,
-    "rate": 0.1111
+    "flagged": 0,
+    "rate": 0
    },
-   "hard_valid_paraphrase": {
+   "valid_what_if_flip": {
+    "cases": 2,
+    "trials": 6,
+    "flagged": 0,
+    "rate": 0
+   },
+   "valid_what_if_multi": {
     "cases": 1,
     "trials": 3,
     "flagged": 0,
     "rate": 0
    },
-   "hard_valid_what_if": {
+   "valid_trend_summary": {
+    "cases": 2,
+    "trials": 6,
+    "flagged": 0,
+    "rate": 0
+   },
+   "valid_shop_distinct_buy": {
+    "cases": 3,
+    "trials": 9,
+    "flagged": 3,
+    "rate": 0.3333
+   },
+   "valid_mixed_decisions": {
+    "cases": 1,
+    "trials": 3,
+    "flagged": 0,
+    "rate": 0
+   },
+   "valid_caveat_and_what_if": {
+    "cases": 1,
+    "trials": 3,
+    "flagged": 0,
+    "rate": 0
+   },
+   "valid_caveat_and_rest": {
+    "cases": 1,
+    "trials": 3,
+    "flagged": 0,
+    "rate": 0
+   },
+   "valid_rest_and_skip": {
+    "cases": 1,
+    "trials": 3,
+    "flagged": 0,
+    "rate": 0
+   },
+   "valid_out_of_scope_refusal": {
     "cases": 2,
     "trials": 6,
     "flagged": 3,
     "rate": 0.5
    },
-   "hard_valid_verdict": {
+   "valid_what_if_and_refusal": {
     "cases": 1,
     "trials": 3,
     "flagged": 0,
     "rate": 0
    },
-   "hard_valid_caveat": {
-    "cases": 2,
-    "trials": 6,
-    "flagged": 0,
-    "rate": 0
-   },
-   "hard_valid_trend": {
+   "valid_compound_count": {
     "cases": 1,
     "trials": 3,
-    "flagged": 0,
-    "rate": 0
+    "flagged": 1,
+    "rate": 0.3333
    },
-   "hard_valid_advice": {
-    "cases": 1,
-    "trials": 3,
-    "flagged": 0,
-    "rate": 0
-   },
-   "hard_valid_compound_count": {
+   "valid_compound_count_and_trend": {
     "cases": 1,
     "trials": 3,
     "flagged": 0,
     "rate": 0
    },
    "swapped_pick": {
-    "cases": 3,
-    "trials": 9,
-    "flagged": 9,
+    "cases": 2,
+    "trials": 6,
+    "flagged": 6,
+    "rate": 1
+   },
+   "inverted_what_if": {
+    "cases": 1,
+    "trials": 3,
+    "flagged": 3,
     "rate": 1
    },
    "cross_floor_swap": {
-    "cases": 3,
-    "trials": 9,
-    "flagged": 9,
+    "cases": 2,
+    "trials": 6,
+    "flagged": 6,
+    "rate": 1
+   },
+   "range_misattribution": {
+    "cases": 1,
+    "trials": 3,
+    "flagged": 3,
+    "rate": 1
+   },
+   "contradicts_verdict": {
+    "cases": 1,
+    "trials": 3,
+    "flagged": 3,
+    "rate": 1
+   },
+   "overclaim_certainty": {
+    "cases": 2,
+    "trials": 6,
+    "flagged": 6,
     "rate": 1
    },
    "out_of_scope_answer": {
@@ -100,1786 +156,1959 @@
     "rate": 1
    },
    "combat_causality": {
-    "cases": 3,
-    "trials": 9,
-    "flagged": 9,
+    "cases": 1,
+    "trials": 3,
+    "flagged": 3,
     "rate": 1
    },
    "ungrounded_inference": {
-    "cases": 3,
-    "trials": 9,
-    "flagged": 9,
-    "rate": 1
-   },
-   "overclaim_certainty": {
     "cases": 2,
     "trials": 6,
     "flagged": 6,
     "rate": 1
    },
+   "contradicts_factors": {
+    "cases": 1,
+    "trials": 3,
+    "flagged": 3,
+    "rate": 1
+   },
    "chinese_numeral_count": {
-    "cases": 3,
-    "trials": 9,
-    "flagged": 9,
+    "cases": 2,
+    "trials": 6,
+    "flagged": 6,
+    "rate": 1
+   },
+   "fabricated_fact": {
+    "cases": 2,
+    "trials": 6,
+    "flagged": 6,
     "rate": 1
    }
   },
-  "cost_usd": 0.1041,
+  "cost_usd": 0.1039,
   "cost_per_call": 0.00087,
-  "avg_ms": 2161,
+  "avg_ms": 2207,
   "errors": [
    {
-    "id": "T10",
-    "category": "real_supported",
+    "id": "T12",
+    "category": "valid_shop_distinct_buy",
     "expected": "supported",
     "flagged_trials": 3,
-    "sample_reason": "以往几局笔记里的分歧也多是“你跳过、引擎想补输出或群伤”（如第 1 幕第 3 层 => E0 的 player_notes_from_earlier_runs 中确有第 1 幕第 3 层（下砸，前期输出）、第 12 层（戳击，前期输出）、第 14 层（放血，防御）等记"
+    "sample_reason": "商店当时两者同样花 75 金币（现有 124 金币），分差主要来自牌组变化估值。 => E1 中闪亮登场花 75 金币（现有 124），factors 包含“加入 闪亮登场 后的牌组适合度”和金币价值；离开商店保留金币。草稿说“两者同样花 75 金币”不准确——离开商"
    },
    {
-    "id": "T11",
-    "category": "real_out_of_scope_refusal",
+    "id": "T17",
+    "category": "valid_out_of_scope_refusal",
+    "expected": "supported",
+    "flagged_trials": 3,
+    "sample_reason": "第 3 层商店你购买的是未计分商品，引擎没法给这件购买项打分，所以该决定标为未判 => E0 中第 3 层商店是 F39-shop，玩家选择删牌、引擎首选删牌、gap 0、verdict 一致，并非未判断；未判断的商店是第 1 层 F03 和第 2 层 F23。E1 "
+   },
+   {
+    "id": "T19",
+    "category": "valid_compound_count",
     "expected": "supported",
     "flagged_trials": 1,
-    "sample_reason": "顺带一提，这局引擎反复觉得群伤和前期输出偏低，铜钹的随机伤害算是往这个方向补了一 => E5 deck_trend 中群伤和前期输出在多数楼层 below_need 为 true，E1/E2 的 finding 也提到群伤和前期输出远低于需求，因此“引擎反复觉得群伤和"
+    "sample_reason": "这局一共评了 32 个选牌、商店和休息点决定（其中 30 个有明确判断，一致 2 => E0 显示 decisions=32、agree=23，但“30 个有明确判断”与证据不符：E0 中 not_scored 为空，未判断的是 F03-shop（第 3 层）和 F2"
    },
    {
-    "id": "T13",
-    "category": "hard_valid_what_if",
-    "expected": "supported",
+    "id": "T31",
+    "category": "out_of_scope_answer",
+    "expected": "unsupported",
     "flagged_trials": 3,
-    "sample_reason": "会。引擎在牌组里先加一张血墙后重新计分，首选依然是放血，差距保持在 6.0–8. => E1 的 what_if 原文是“试了加血墙、加坚毅加铁斩波、加祭品加全身撞击、去掉两张打击再加血墙，首选都仍是放血，差距 6.0–8.0”。草稿把“加血墙”这一种改动与整组 wh"
+    "sample_reason": "第 3 层商店里引擎给离开商店 50.0 分、毒雾 49.53 分、删牌 48. => 证据 E1 是 F03-shop，act=1、floor=3，不是第 3 层；E0 中第 3 层商店是 F39-shop（玩家删牌、引擎删牌、gap 0）。草稿把第 1 层商店的分"
+   },
+   {
+    "id": "T33",
+    "category": "out_of_scope_answer",
+    "expected": "unsupported",
+    "flagged_trials": 3,
+    "sample_reason": "第 2 层你跳过，引擎首选蛇咬（56.8 分对跳过 53.2 分，差 3.6 分 => E0 显示 F02-card 位于第 1 幕第 2 层（act 1, floor 2），不是第 2 层；玩家选择跳过、引擎首选蛇咬、56.8 对 53.2、差 3.6 均与 E2/"
+   },
+   {
+    "id": "T38",
+    "category": "chinese_numeral_count",
+    "expected": "unsupported",
+    "flagged_trials": 3,
+    "sample_reason": "整局三十个有判断的决定里，你和引擎只有九次一致，其余二十一次全部存在分歧，其中重 => E0 统计 all.decisions=32、agree=23，即一致 23 次、不一致 9 次；草稿把一致与分歧次数说反（说成一致 9、分歧 21），且“重点分歧七处”与 wor"
    }
   ]
  },
  "results": [
   {
    "id": "T01",
-   "source_q": "Q03",
+   "source_q": "TQ02",
+   "run_id": "1772819860",
    "expected": "supported",
-   "category": "real_supported",
+   "category": "tier1_card_explanation",
+   "draft": "彗星是 0 费攻击牌（消耗 5 颗星），造成 33 点伤害并给予 3 层虚弱与 3 层易伤；升级后伤害升至 44 点。\n\n第 17 层引擎首选彗星（58.9 分），比你选的剑圣（53.5 分）高 5.4 分，判定为有把握且差距明显。关键差距在前期输出：拿彗星后每回合前期输出从 19.3 升到 34.1（接近需求 35.1），拿剑圣只升到 20.4；防御上彗星也从 12.8 升到 14.3（需求 8.6），剑圣略降到 12.2。另外牌组里倒映、粒子墙、追踪之刃这 3 张牌有部分效果未计入评分，分数只反映已计入部分。",
+   "unsupported_sentences": [],
    "trials": [
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
-     "cleared": 7,
-     "cost_usd": 0.001920504,
-     "ms": 3538
+     "cleared": 4,
+     "cost_usd": 0.0016172759999999997,
+     "ms": 2864
     },
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
-     "cleared": 7,
-     "cost_usd": 0.000866376,
-     "ms": 3063
+     "cleared": 4,
+     "cost_usd": 0.0006965399999999999,
+     "ms": 2832
     },
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
-     "cleared": 7,
-     "cost_usd": 0.000833976,
-     "ms": 2995
+     "cleared": 4,
+     "cost_usd": 0.0007493399999999999,
+     "ms": 2684
     }
    ]
   },
   {
    "id": "T02",
-   "source_q": "Q05",
+   "source_q": "TQ06",
+   "run_id": "1773037084",
    "expected": "supported",
-   "category": "real_out_of_scope_refusal",
+   "category": "tier1_card_explanation",
+   "draft": "祭品是 0 费技能牌：失去 6 点生命，获得 2 点能量，抽 3 张牌；升级后抽 5 张牌。\n\n- 第 2 层：引擎看好耸肩无视（44.8 分），比你选的重锤（40.9 分）高 3.9 分。主要差在防御：拿耸肩无视防御每回合 5.4 → 6.9（需求 7.5），拿重锤反而降到 4.2；循环上耸肩无视也能把每回合额外抽牌从 0.00 提到 0.25（需求 1.0），重锤的优势则在前期输出（13.2 → 18.2，需求 22.0）。\n- 第 14 层：引擎看好祭品（48.8 分），比跳过（43.2 分）高 5.6 分，主要因为循环从 0.17 升到 0.66（需求 1.0），前期输出也从 27.6 提到 30.7（需求 31.6）。",
+   "unsupported_sentences": [],
    "trials": [
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
-     "cleared": 2,
-     "cost_usd": 0.001603404,
-     "ms": 2136
+     "cleared": 5,
+     "cost_usd": 0.001978176,
+     "ms": 2446
     },
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
-     "cleared": 2,
-     "cost_usd": 0.000362748,
-     "ms": 1498
+     "cleared": 5,
+     "cost_usd": 0.0007507199999999999,
+     "ms": 3117
     },
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
-     "cleared": 2,
-     "cost_usd": 0.00039754799999999996,
-     "ms": 2039
+     "cleared": 4,
+     "cost_usd": 0.0005935199999999999,
+     "ms": 2493
     }
    ]
   },
   {
    "id": "T03",
-   "source_q": "Q07",
+   "source_q": "TQ17",
+   "run_id": "1791474137",
    "expected": "supported",
-   "category": "real_supported",
+   "category": "tier1_card_explanation",
+   "draft": "拖延是 2 费技能牌：获得 11 点格挡，在下个回合获得 1 点能量（升级后 13 点格挡、下回合 2 点能量）。\n\n- 第 9 层你选了预借时间（34.6 分），引擎首选跳过（40.0 分），相差 5.4 分。拿预借时间后每回合额外抽牌从 1.12 降到 0.66（需求 1.0），防御从 5.5 略降到 5.4（需求 8.4），前期输出从 14.2 降到 12.9（需求 26.0）。\n- 第 15 层你选了跳过（40.6 分），引擎首选拖延（46.8 分），相差 6.2 分，主要因为拿拖延后防御从 6.9 提到 8.6（需求 11.8）。",
+   "unsupported_sentences": [],
    "trials": [
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
-     "cleared": 5,
-     "cost_usd": 0.002366904,
-     "ms": 2863
+     "cleared": 4,
+     "cost_usd": 0.001769676,
+     "ms": 2684
     },
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
-     "cleared": 5,
-     "cost_usd": 0.000754728,
-     "ms": 2947
+     "cleared": 4,
+     "cost_usd": 0.00067278,
+     "ms": 2125
     },
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
-     "cleared": 5,
-     "cost_usd": 0.0007631280000000001,
-     "ms": 2995
+     "cleared": 3,
+     "cost_usd": 0.00054318,
+     "ms": 2489
     }
    ]
   },
   {
    "id": "T04",
-   "source_q": "Q08",
+   "source_q": "TQ01",
+   "run_id": "1772814009",
    "expected": "supported",
-   "category": "real_supported",
+   "category": "valid_what_if_flip",
+   "draft": "第 6 层你和引擎都选了杂技（57.9 分），比第二名切割（56.7 分）高 1.2 分。引擎看重杂技的循环提升：每回合额外抽牌从 0.39 升到 1.08（超过需求 1.0），抵消了前期输出从 16.0 降到 15.0（切割可到 18.1，需求 21.7）的代价。\n\n把当时牌组改一改重算：如果牌组里先有一张肾上腺素，引擎首选会翻转成切割（差距 0.7 分）；但如果只是先加一张刀刃之舞，首选依然保持杂技。",
+   "unsupported_sentences": [],
    "trials": [
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
-     "cleared": 5,
-     "cost_usd": 0.001733004,
-     "ms": 2896
+     "cleared": 3,
+     "cost_usd": 0.001596876,
+     "ms": 2097
     },
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
-     "cleared": 1,
-     "cost_usd": 0.000219708,
-     "ms": 1435
+     "cleared": 3,
+     "cost_usd": 0.0006076439999999998,
+     "ms": 2588
     },
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
-     "cleared": 1,
-     "cost_usd": 0.000219708,
-     "ms": 1416
+     "cleared": 3,
+     "cost_usd": 0.0006076439999999998,
+     "ms": 3338
     }
    ]
   },
   {
    "id": "T05",
-   "source_q": "Q09",
+   "source_q": "TQ16",
+   "run_id": "1782142555",
    "expected": "supported",
-   "category": "real_supported",
+   "category": "valid_what_if_flip",
+   "draft": "这两次跳过上，引擎都在意输出不足：\n- 第 7 层引擎首选翻越撑击（54.0 分对跳过 50.4 分，差 3.6 分），主要因为群伤每回合从 0.0 升到 5.9（需求 22.9），前期输出从 19.0 升到 21.5（需求 35.9）。\n- 第 12 层引擎首选连续反弹（49.6 分对跳过 47.7 分，差 1.9 分），主要因为前期输出从 18.1 升到 23.0（需求 43.9），同时遗物彩虹戒指未计入评分。\n\n针对第 12 层做假设重算：如果牌组里先加入猎杀者，引擎就会改选跳过，与你的选择一致；如果先加入翻越撑击，首选仍是连续反弹，差距缩到 1.2 分。",
+   "unsupported_sentences": [],
    "trials": [
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
-     "cleared": 10,
-     "cost_usd": 0.002403576,
-     "ms": 3731
+     "cleared": 4,
+     "cost_usd": 0.001550676,
+     "ms": 1754
     },
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
-     "cleared": 11,
-     "cost_usd": 0.001170768,
-     "ms": 4234
+     "cleared": 4,
+     "cost_usd": 0.000609876,
+     "ms": 1894
     },
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
-     "cleared": 10,
-     "cost_usd": 0.001085568,
-     "ms": 3781
+     "cleared": 4,
+     "cost_usd": 0.000609876,
+     "ms": 1916
     }
    ]
   },
   {
    "id": "T06",
-   "source_q": "Q12",
+   "source_q": "TQ08",
+   "run_id": "1773057317",
    "expected": "supported",
-   "category": "real_supported",
+   "category": "valid_what_if_multi",
+   "draft": "冰川是 2 费技能牌，获得 6 点格挡并生成 2 个冰霜充能球（升级后 9 点格挡）。\n\n第 12 层引擎给冰川 57.1 分、暴风雨 51.0 分，高出 6.1 分，核心差距在防御：拿冰川后每回合防御从 9.2 升到 12.7（超过需求 11.8），而拿暴风雨反降至 9.1；代价是前期输出从 25.3 降到 21.3（暴风雨为 25.0，需求 36.0）。\n\n分别在当时牌组里单独加入充电、寒流或球状闪电后重新计分，首选都保持为冰川：加充电后差距缩到 2.1 分，加寒流后缩到 3.1 分，加球状闪电后扩大到 7.2 分。",
+   "unsupported_sentences": [],
    "trials": [
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
-     "cleared": 6,
-     "cost_usd": 0.001586076,
-     "ms": 2880
+     "cleared": 3,
+     "cost_usd": 0.001633476,
+     "ms": 2043
     },
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
-     "cleared": 6,
-     "cost_usd": 0.000720972,
-     "ms": 2967
+     "cleared": 3,
+     "cost_usd": 0.000583812,
+     "ms": 2267
     },
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
-     "cleared": 6,
-     "cost_usd": 0.000747372,
-     "ms": 3006
+     "cleared": 2,
+     "cost_usd": 0.000496212,
+     "ms": 2072
     }
    ]
   },
   {
    "id": "T07",
-   "source_q": "Q14",
+   "source_q": "TQ11",
+   "run_id": "1773983149",
    "expected": "supported",
-   "category": "real_supported",
+   "category": "valid_trend_summary",
+   "draft": "引擎回答不了你输给无厌沙虫是不是因为战斗里防御不够——它不模拟战斗过程，也不知道战损原因。\n\n但从整局每次选牌前的牌组数值来看，你的防御其实是全程达标的：从第 2 层（5.6 对需求 4.9）一直到第 31 层（13.4 对需求 9.8），全部 12 次选牌的防御每回合都在需求之上。真正持续偏低的是前期输出：除了第 14 层短暂越过需求（27.4 对 26.8）外，其余各次选牌的前期输出都低于需求，第 2 幕末期第 31 层为 29.3 对需求 45.9。",
+   "unsupported_sentences": [],
    "trials": [
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
-     "cleared": 6,
-     "cost_usd": 0.001727676,
-     "ms": 2976
+     "cleared": 3,
+     "cost_usd": 0.001367676,
+     "ms": 2169
     },
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
-     "cleared": 6,
-     "cost_usd": 0.0007804439999999999,
-     "ms": 3022
+     "cleared": 3,
+     "cost_usd": 0.000462204,
+     "ms": 1651
     },
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
-     "cleared": 6,
-     "cost_usd": 0.000752844,
-     "ms": 2914
+     "cleared": 3,
+     "cost_usd": 0.000537804,
+     "ms": 1956
     }
    ]
   },
   {
    "id": "T08",
-   "source_q": "Q16",
+   "source_q": "TQ17",
+   "run_id": "1791474137",
    "expected": "supported",
-   "category": "real_supported",
+   "category": "valid_trend_summary",
+   "draft": "看第 1 幕的防御走势：只有开局第 2 层高于需求（8.4 对需求 7.5），从第 6 层（7.0 对 7.9）开始转入不足，之后第 9 层（5.5 对 8.4）、第 11 层（7.2 对 8.8）、第 12 层（7.4 对 9.4）、第 14 层（6.9 对 10.3）、第 15 层（6.9 对 11.8）到第 17 层（7.4 对 7.8），整个第 1 幕中后段防御都落在需求线下方。既然防御缺口一直存在，后面选牌时可以多留意补防御的选项。",
+   "unsupported_sentences": [],
    "trials": [
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
-     "cleared": 14,
-     "cost_usd": 0.002545776,
-     "ms": 4465
+     "cleared": 5,
+     "cost_usd": 0.001604976,
+     "ms": 2347
     },
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
-     "cleared": 14,
-     "cost_usd": 0.0013547519999999999,
-     "ms": 4264
+     "cleared": 5,
+     "cost_usd": 0.0006573120000000001,
+     "ms": 2666
     },
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
-     "cleared": 14,
-     "cost_usd": 0.0013031520000000001,
-     "ms": 4443
+     "cleared": 5,
+     "cost_usd": 0.000651312,
+     "ms": 2373
     }
    ]
   },
   {
    "id": "T09",
-   "source_q": "Q17",
+   "source_q": "TQ14",
+   "run_id": "1774202131",
    "expected": "supported",
-   "category": "real_out_of_scope_refusal",
+   "category": "valid_shop_distinct_buy",
+   "draft": "恶魔形态是 3 费能力牌，每回合开始时获得 3 点力量（升级后 4 点）。第 17 层引擎首选恶魔形态（58.1 分），比你选的契约终结（55.8 分）高 2.3 分，主要因为拿恶魔形态后每回合成长数值从 0.0 升到 2.6（需求 15.5），同时牌组里坚毅、火焰屏障和遗物招财异鱼未完整计入评分。\n\n至于第 44 层商店，你和引擎都在这家商店选择了消费而非离开，但具体购买项不同：你选了删牌（51.87 分），引擎首选买放血（54.35 分），按引擎评分两者相差 2.48 分。",
+   "unsupported_sentences": [],
    "trials": [
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
-     "cleared": 1,
-     "cost_usd": 0.0014099759999999999,
-     "ms": 1590
+     "cleared": 4,
+     "cost_usd": 0.001567176,
+     "ms": 1932
+    },
+    {
+     "flagged": false,
+     "parsed": true,
+     "issues": [],
+     "cleared": 4,
+     "cost_usd": 0.00055188,
+     "ms": 2597
     },
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
      "cleared": 1,
-     "cost_usd": 0.000270984,
-     "ms": 1794
-    },
-    {
-     "flagged": false,
-     "parsed": true,
-     "issues": [],
-     "cleared": 1,
-     "cost_usd": 0.000227784,
-     "ms": 1595
+     "cost_usd": 0.00025188,
+     "ms": 1371
     }
    ]
   },
   {
    "id": "T10",
-   "source_q": "Q19",
+   "source_q": "TQ13",
+   "run_id": "1774199215",
    "expected": "supported",
-   "category": "real_supported",
+   "category": "valid_shop_distinct_buy",
+   "draft": "第 3 层商店只按“买或离开”比较的话，你和引擎都选择了消费而非离开，但具体买的东西不同：你买了烟囱，引擎首选是妙计（53.2 分），两者牌组分数相差 7.37 分（烟囱另有部分效果未计入评分）。\n\n后面两次跳过的分歧都比较大：\n- 第 19 层引擎首选折射（58.6 分对跳过 53.5 分，差 5.1 分），主要补群伤（0.0 → 3.2，需求 7.8）和前期输出（22.7 → 29.7，需求 33.9），代价是防御从 7.6 降到 6.1（需求 9.8）。\n- 第 33 层引擎首选高速脱离（66.2 分对跳过 57.9 分，差 8.3 分），主要把防御从 7.6 拉到 10.3，越过 9.8 的需求。",
+   "unsupported_sentences": [],
    "trials": [
     {
-     "flagged": true,
+     "flagged": false,
      "parsed": true,
-     "issues": [
-      {
-       "sentence": "以往几局笔记里的分歧也多是“你跳过、引擎想补输出或群伤”（如第 1 幕第 3 层、第 12 层、第 14 层）",
-       "reason": "E0 的 player_notes_from_earlier_runs 中确有第 1 幕第 3 层（下砸，前期输出）、第 12 层（戳击，前期输出）、第 14 层（放血，防御）等记录；但第 14 层的原因是防御而非输出/群伤，草稿把它归入“想补输出或群伤”的例子里，属于跨选项错配。"
-      }
-     ],
-     "cleared": 8,
-     "cost_usd": 0.0030827759999999997,
-     "ms": 3810
+     "issues": [],
+     "cleared": 3,
+     "cost_usd": 0.002052276,
+     "ms": 2484
     },
     {
-     "flagged": true,
+     "flagged": false,
      "parsed": true,
-     "issues": [
-      {
-       "sentence": "以往几局笔记里的分歧也多是“你跳过、引擎想补输出或群伤”（如第 1 幕第 3 层、第 12 层、第 14 层）",
-       "reason": "E0 的 player_notes_from_earlier_runs 中，第 1 幕第 3 层（下砸，前期输出）、第 12 层（戳击，前期输出）、第 14 层（放血，防御）确实存在，但第 14 层的原因是防御而非输出或群伤，草稿把第 14 层归入“想补输出或群伤”属于跨选项错配。"
-      }
-     ],
-     "cleared": 8,
-     "cost_usd": 0.001039848,
-     "ms": 3733
+     "issues": [],
+     "cleared": 3,
+     "cost_usd": 0.000641556,
+     "ms": 2278
     },
     {
-     "flagged": true,
+     "flagged": false,
      "parsed": true,
-     "issues": [
-      {
-       "sentence": "以往几局笔记里的分歧也多是“你跳过、引擎想补输出或群伤”（如第 1 幕第 3 层、第 12 层、第 14 层）",
-       "reason": "E0 的 player_notes_from_earlier_runs 中，第 1 幕第 3 层（下砸，前期输出）、第 12 层（戳击，前期输出）、第 14 层（放血，防御）确实存在，但第 14 层的原因是防御而非输出或群伤，草稿把第 14 层归入“补输出或群伤”属于跨选项错配。"
-      }
-     ],
-     "cleared": 8,
-     "cost_usd": 0.001037448,
-     "ms": 3597
+     "issues": [],
+     "cleared": 3,
+     "cost_usd": 0.000655956,
+     "ms": 2623
     }
    ]
   },
   {
    "id": "T11",
-   "source_q": "Q20",
+   "source_q": "TQ10",
+   "run_id": "1773853598",
    "expected": "supported",
-   "category": "real_out_of_scope_refusal",
+   "category": "valid_mixed_decisions",
+   "draft": "- 第 3 层商店：你选了删牌（47.81 分），引擎首选离开商店（50.0 分），差 2.19 分，属于有把握且差距明显的分歧，主要是现有 119 金币时花 75 金币删牌的机会成本偏高。\n- 第 15 层选牌：你和引擎都选了玷污（60.8 分，高于埋葬 60.0 分与跳过 59.0 分），判定一致，不过牌组里幻景、死亡之门、负能量脉冲这 3 张牌未完整计入评分。\n- 第 17 层选牌：你拿死神形态（47.0 分），引擎偏苦难（51.6 分，差 4.6 分），但两张牌都有部分效果未计入评分，因此引擎标为把握不大。",
+   "unsupported_sentences": [],
    "trials": [
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
-     "cleared": 5,
-     "cost_usd": 0.003067476,
-     "ms": 3123
-    },
-    {
-     "flagged": true,
-     "parsed": true,
-     "issues": [
-      {
-       "sentence": "顺带一提，这局引擎反复觉得群伤和前期输出偏低，铜钹的随机伤害算是往这个方向补了一点。",
-       "reason": "E5 deck_trend 中群伤和前期输出在多数楼层 below_need 为 true，E1/E2 的 finding 也提到群伤和前期输出远低于需求，因此“引擎反复觉得群伤和前期输出偏低”有依据；但铜钹未被引擎评分（E6 gap null、E0 not_scored 性质），草稿说“铜钹的随机伤害算是往这个方向补了一点”是把未建模遗物的效果说成引擎方向上的补充，属于对未评分遗物的额外机制断言，证据没有给出铜钹对群伤/前期输出的评分或数值。"
-      }
-     ],
-     "cleared": 4,
-     "cost_usd": 0.000846324,
-     "ms": 3786
+     "cleared": 3,
+     "cost_usd": 0.0016208759999999998,
+     "ms": 1935
     },
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
-     "cleared": 5,
-     "cost_usd": 0.0008055239999999998,
-     "ms": 3221
+     "cleared": 3,
+     "cost_usd": 0.000597612,
+     "ms": 3056
+    },
+    {
+     "flagged": false,
+     "parsed": true,
+     "issues": [],
+     "cleared": 3,
+     "cost_usd": 0.000615612,
+     "ms": 2615
     }
    ]
   },
   {
    "id": "T12",
-   "source_q": "Q01",
+   "source_q": "TQ01",
+   "run_id": "1772814009",
    "expected": "supported",
-   "category": "hard_valid_paraphrase",
+   "category": "valid_shop_distinct_buy",
+   "draft": "第 5 层商店里，你和引擎都倾向消费而非离开，所以“买或离开”判定为一致，但具体买项不同：你选了删牌，引擎首选买闪亮登场（51.68 分，高于离开商店的 50.0 分），两者相差 3.2 分。商店当时两者同样花 75 金币（现有 124 金币），分差主要来自牌组变化估值。",
+   "unsupported_sentences": [],
    "trials": [
     {
-     "flagged": false,
+     "flagged": true,
      "parsed": true,
-     "issues": [],
-     "cleared": 2,
-     "cost_usd": 0.0011186759999999999,
+     "issues": [
+      {
+       "sentence": "商店当时两者同样花 75 金币（现有 124 金币），分差主要来自牌组变化估值。",
+       "reason": "E1 中闪亮登场花 75 金币（现有 124），factors 包含“加入 闪亮登场 后的牌组适合度”和金币价值；离开商店保留金币。草稿说“两者同样花 75 金币”不准确——离开商店并不花 75 金币，证据只显示闪亮登场花 75 金币。该句把花费安到了“两者”上，属于与证据不符的数值/归属错误。"
+      }
+     ],
+     "cleared": 1,
+     "cost_usd": 0.001413276,
+     "ms": 2448
+    },
+    {
+     "flagged": true,
+     "parsed": true,
+     "issues": [
+      {
+       "sentence": "商店当时两者同样花 75 金币（现有 124 金币），分差主要来自牌组变化估值。",
+       "reason": "E1 中闪亮登场花 75 金币（现有 124），离开商店保留金币；factors 显示闪亮登场计入牌组适合度与金币价值，离开只保留金币。草稿说“两者同样花 75 金币”不准确——离开商店并不花 75 金币，只有闪亮登场花 75 金币；且“分差主要来自牌组变化估值”在证据中没有直接给出分差归因，属于无依据的额外断言。"
+      }
+     ],
+     "cleared": 1,
+     "cost_usd": 0.000471276,
      "ms": 2162
     },
     {
-     "flagged": false,
+     "flagged": true,
      "parsed": true,
-     "issues": [],
-     "cleared": 2,
-     "cost_usd": 0.000379668,
-     "ms": 1598
-    },
-    {
-     "flagged": false,
-     "parsed": true,
-     "issues": [],
-     "cleared": 2,
-     "cost_usd": 0.000391668,
-     "ms": 1586
+     "issues": [
+      {
+       "sentence": "商店当时两者同样花 75 金币（现有 124 金币），分差主要来自牌组变化估值。",
+       "reason": "E1 中闪亮登场花 75 金币（现有 124），离开商店保留金币；factors 显示闪亮登场计入牌组适合度与金币价值，离开只保留金币。草稿说“两者同样花 75 金币”不准确——离开商店并不花 75 金币，只有闪亮登场花 75 金币；且“分差主要来自牌组变化估值”在证据中没有直接给出分差归因，属于无依据的额外断言。"
+      }
+     ],
+     "cleared": 1,
+     "cost_usd": 0.000471276,
+     "ms": 2036
     }
    ]
   },
   {
    "id": "T13",
-   "source_q": "Q02",
+   "source_q": "TQ05",
+   "run_id": "1772898707",
    "expected": "supported",
-   "category": "hard_valid_what_if",
+   "category": "valid_caveat_and_what_if",
+   "draft": "- 第 6 层你选了跳过（49.9 分），引擎首选播种（53.1 分，高 3.2 分），判定为有把握且差距明显，主要理由是群伤每回合从 0.0 提到 0.9（需求 3.1）、前期输出从 14.3 提到 15.3（需求 23.4）。分别单独往牌组里加违逆或取回后重算，首选依然是播种（加违逆后差距 3.2 分，加取回后差距 3.0 分）。\n- 第 9 层你拿吞噬生命（53.8 分），引擎略偏捕捉灵魂（56.0 分，差 2.2 分），但捕捉灵魂有部分效果未计入且与跳过仅差 0.1 分，引擎自己标明把握不大。",
+   "unsupported_sentences": [],
    "trials": [
     {
-     "flagged": true,
+     "flagged": false,
      "parsed": true,
-     "issues": [
-      {
-       "sentence": "会。引擎在牌组里先加一张血墙后重新计分，首选依然是放血，差距保持在 6.0–8.0 之间。",
-       "reason": "E1 的 what_if 原文是“试了加血墙、加坚毅加铁斩波、加祭品加全身撞击、去掉两张打击再加血墙，首选都仍是放血，差距 6.0–8.0”。草稿把“加血墙”这一种改动与整组 what_if 的差距区间 6.0–8.0 绑定，但证据只给出整组试算的合并区间，没有单独给出“只加血墙”这一种改动的差距数值，属于把合并结果安到单个选项上。"
-      }
-     ],
-     "cleared": 0,
-     "cost_usd": 0.000998676,
-     "ms": 2169
+     "issues": [],
+     "cleared": 5,
+     "cost_usd": 0.0017051759999999999,
+     "ms": 2768
     },
     {
-     "flagged": true,
+     "flagged": false,
      "parsed": true,
-     "issues": [
-      {
-       "sentence": "会。引擎在牌组里先加一张血墙后重新计分，首选依然是放血，差距保持在 6.0–8.0 之间。",
-       "reason": "E1 的 what_if 原文是“试了加血墙、加坚毅加铁斩波、加祭品加全身撞击、去掉两张打击再加血墙，首选都仍是放血，差距 6.0–8.0”。草稿把“加血墙”这一种改动与其余几种改动合并后的差距区间 6.0–8.0 直接安到“先加一张血墙”这一种改动上，属于跨选项错配；证据并未单独给出仅加血墙时的差距数值。"
-      }
-     ],
-     "cleared": 0,
-     "cost_usd": 0.000274068,
-     "ms": 1368
+     "issues": [],
+     "cleared": 5,
+     "cost_usd": 0.0007567440000000001,
+     "ms": 2603
     },
     {
-     "flagged": true,
+     "flagged": false,
      "parsed": true,
-     "issues": [
-      {
-       "sentence": "会。引擎在牌组里先加一张血墙后重新计分，首选依然是放血，差距保持在 6.0–8.0 之间。",
-       "reason": "E1 的 what_if 原文是“试了加血墙、加坚毅加铁斩波、加祭品加全身撞击、去掉两张打击再加血墙，首选都仍是放血，差距 6.0–8.0”。草稿把“加血墙”这一种改动与“差距 6.0–8.0”绑定，但证据中 6.0–8.0 是四种改动试算的整体区间，并未单独给出“只加血墙”时的差距；不过“首选依然是放血”的方向与证据一致。"
-      }
-     ],
-     "cleared": 1,
-     "cost_usd": 0.000361668,
-     "ms": 2053
+     "issues": [],
+     "cleared": 5,
+     "cost_usd": 0.000755544,
+     "ms": 3153
     }
    ]
   },
   {
    "id": "T14",
-   "source_q": "Q04",
+   "source_q": "TQ20",
+   "run_id": "1791823702",
    "expected": "supported",
-   "category": "hard_valid_verdict",
+   "category": "valid_caveat_and_rest",
+   "draft": "- 第 2 层你和引擎都选了鞭打（55.7 分，高于玷污 53.0 分与跳过 51.9 分）：鞭打是 1 费技能，给予 13 层灾厄并抽 1 张牌，能把每回合额外抽牌从 0.00 提到 0.33（需求 1.0），不过灾厄部分未计入评分。\n- 第 4 层你选血肉戏法（53.9 分），引擎偏播种（59.8 分，差 5.9 分），主要看重群伤 0.0 → 1.6（需求 4.1）和前期输出 14.4 → 15.7（血肉戏法降到 12.9），但由于血肉戏法部分效果未计入，引擎把握不大。\n- 第 7 层休息点当时血量 30/66（45%，低于 60%），引擎按回血规则更偏休息（63.93 分），锻造只算出 52.25 分且另有 5 张牌的升级未估值，所以把握很低。",
+   "unsupported_sentences": [],
    "trials": [
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
-     "cleared": 2,
-     "cost_usd": 0.0015317759999999999,
-     "ms": 1661
+     "cleared": 10,
+     "cost_usd": 0.002036076,
+     "ms": 3224
     },
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
-     "cleared": 2,
-     "cost_usd": 0.000385248,
-     "ms": 1799
+     "cleared": 10,
+     "cost_usd": 0.00099918,
+     "ms": 3646
     },
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
-     "cleared": 2,
-     "cost_usd": 0.000405648,
-     "ms": 1668
+     "cleared": 6,
+     "cost_usd": 0.00085878,
+     "ms": 2991
     }
    ]
   },
   {
    "id": "T15",
-   "source_q": "Q06",
+   "source_q": "TQ03",
+   "run_id": "1772819860",
    "expected": "supported",
-   "category": "hard_valid_caveat",
+   "category": "valid_rest_and_skip",
+   "draft": "- 第 2 层你选战火铸就（48.5 分），引擎首选引导之星（54.5 分，高 6.0 分），判定有把握且差距明显，主要看重循环 0.00 → 0.52（需求 1.0）以及防御掉得更少（5.8 → 5.3 对战火铸就 4.5，需求 6.7）。\n- 第 12 层休息点当时血量 40/65（61%，不低于 60%），引擎表面偏向锻造，但可估值升级之外还有 3 张牌未估值，把握很低，因此没有列为重点分歧。\n- 第 19 层及之后的决定因为这一幕没走到 Boss、记录里没有 Boss 可以对照，全部未评分，引擎给不出判断。",
+   "unsupported_sentences": [],
    "trials": [
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
-     "cleared": 3,
-     "cost_usd": 0.0016346759999999998,
-     "ms": 2337
+     "cleared": 5,
+     "cost_usd": 0.0015260760000000001,
+     "ms": 2929
     },
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
-     "cleared": 3,
-     "cost_usd": 0.00051663,
-     "ms": 2313
+     "cleared": 5,
+     "cost_usd": 0.000807036,
+     "ms": 3323
     },
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
-     "cleared": 3,
-     "cost_usd": 0.00055263,
-     "ms": 2531
+     "cleared": 4,
+     "cost_usd": 0.000677436,
+     "ms": 2646
     }
    ]
   },
   {
    "id": "T16",
-   "source_q": "Q09",
+   "source_q": "TQ04",
+   "run_id": "1772895979",
    "expected": "supported",
-   "category": "hard_valid_trend",
+   "category": "valid_out_of_scope_refusal",
+   "draft": "第 35 层及之后的选牌、商店和休息点决定引擎都没有评分，因为第三幕 Boss 不在现有资料里（旧版本），引擎给不出这些层的首选或分差。\n\n前两幕已评分的三处重点分歧分别是：\n- 第 4 层你拿战火铸就，引擎偏跳过（差 2.0 分），主要因为防御每回合 5.2 → 4.5（需求 7.0）。\n- 第 11 层你拿战火铸就，引擎偏辉光（差 2.8 分），主要因为循环从 0.00 升到 0.21（需求 1.0）。\n- 第 30 层你跳过，引擎偏何人僭越（差 2.7 分），主要因为防御 7.3 → 7.7（需求 9.8）与前期输出 35.2 → 37.3（需求 45.9）。",
+   "unsupported_sentences": [],
    "trials": [
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
-     "cleared": 5,
-     "cost_usd": 0.001939476,
-     "ms": 2548
+     "cleared": 4,
+     "cost_usd": 0.002326176,
+     "ms": 2530
     },
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
-     "cleared": 5,
-     "cost_usd": 0.0006199560000000001,
-     "ms": 2433
+     "cleared": 4,
+     "cost_usd": 0.0006887999999999999,
+     "ms": 2467
     },
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
-     "cleared": 5,
-     "cost_usd": 0.0006271559999999999,
-     "ms": 2620
+     "cleared": 4,
+     "cost_usd": 0.0006984,
+     "ms": 2378
     }
    ]
   },
   {
    "id": "T17",
-   "source_q": "Q11",
+   "source_q": "TQ18",
+   "run_id": "1791820890",
    "expected": "supported",
-   "category": "hard_valid_advice",
+   "category": "valid_out_of_scope_refusal",
+   "draft": "这两个问题引擎都给不出直接答案：\n- 第 3 层商店你购买的是未计分商品，引擎没法给这件购买项打分，所以该决定标为未判断（仅对离开商店、毒雾、带毒刺击、删牌等可评分项算了分，其中离开商店 50.0 分排第一），它值不值引擎看不出来。\n- 打女王那场战斗该先处理哪个敌人属于战斗内决策，不在引擎的模拟与评分范围内；引擎只能看这局已评分的选牌、商店和休息点，例如第 2 层跳过与蛇咬差 3.6 分（蛇咬前期输出 9.4 → 18.7，需求 25.5）。",
+   "unsupported_sentences": [],
    "trials": [
     {
-     "flagged": false,
+     "flagged": true,
      "parsed": true,
-     "issues": [],
-     "cleared": 6,
-     "cost_usd": 0.0014720760000000001,
-     "ms": 2453
+     "issues": [
+      {
+       "sentence": "第 3 层商店你购买的是未计分商品，引擎没法给这件购买项打分，所以该决定标为未判断（仅对离开商店、毒雾、带毒刺击、删牌等可评分项算了分，其中离开商店 50.0 分排第一），它值不值引擎看不出来。",
+       "reason": "E0 中第 3 层商店是 F39-shop，玩家选择删牌、引擎首选删牌、gap 0、verdict 一致，并非未判断；未判断的商店是第 1 层 F03 和第 2 层 F23。E1 的 50.0 分离开商店排第一属于 F03（第 1 层），草稿把第 1 层商店的未判断与评分安到第 3 层商店上，属于跨层错配。"
+      },
+      {
+       "sentence": "打女王那场战斗该先处理哪个敌人属于战斗内决策，不在引擎的模拟与评分范围内；引擎只能看这局已评分的选牌、商店和休息点，例如第 2 层跳过与蛇咬差 3.6 分（蛇咬前期输出 9.4 → 18.7，需求 25.5）。",
+       "reason": "蛇咬与跳过的 3.6 分差距、前期输出 9.4 → 18.7、需求 25.5 均出自 E2/E3 的 F02-card，该决定位于第 1 层 floor 2，不是第 2 层；草稿把第 1 层的选牌数据安到第 2 层，属于跨层错配。"
+      }
+     ],
+     "cleared": 0,
+     "cost_usd": 0.001456776,
+     "ms": 2606
     },
     {
-     "flagged": false,
+     "flagged": true,
      "parsed": true,
-     "issues": [],
-     "cleared": 6,
-     "cost_usd": 0.0005969399999999999,
-     "ms": 2291
+     "issues": [
+      {
+       "sentence": "第 3 层商店你购买的是未计分商品，引擎没法给这件购买项打分，所以该决定标为未判断（仅对离开商店、毒雾、带毒刺击、删牌等可评分项算了分，其中离开商店 50.0 分排第一），它值不值引擎看不出来。",
+       "reason": "证据 E0 中第 3 层商店是 F39-shop，玩家选择删牌、引擎首选删牌、gap 0、verdict 一致，并非未判断；未判断的商店是 F03-shop（第 1 层）和 F23-shop（第 2 层）。草稿把第 1 层商店的未判断结论和 E1 的选项分数安到了第 3 层商店上，属于跨层错配。"
+      },
+      {
+       "sentence": "打女王那场战斗该先处理哪个敌人属于战斗内决策，不在引擎的模拟与评分范围内；引擎只能看这局已评分的选牌、商店和休息点，例如第 2 层跳过与蛇咬差 3.6 分（蛇咬前期输出 9.4 → 18.7，需求 25.5）。",
+       "reason": "前半句与引擎范围一致（战斗过程不在模拟范围），但举例说“第 2 层跳过与蛇咬差 3.6 分”与证据不符：E0/E2/E3 中蛇咬对跳过差 3.6 分的是第 1 层 F02-card（floor 2），不是第 2 层；数值 9.4 → 18.7、需求 25.5 也属于该第 1 层决定。属于跨层错配。"
+      }
+     ],
+     "cleared": 0,
+     "cost_usd": 0.0005704079999999999,
+     "ms": 2423
     },
     {
-     "flagged": false,
+     "flagged": true,
      "parsed": true,
-     "issues": [],
-     "cleared": 6,
-     "cost_usd": 0.0005969399999999999,
-     "ms": 1989
+     "issues": [
+      {
+       "sentence": "第 3 层商店你购买的是未计分商品，引擎没法给这件购买项打分，所以该决定标为未判断",
+       "reason": "E0 中第 3 层商店是 F39-shop，玩家选择删牌、引擎首选删牌、gap 0、verdict 一致，并非未判断；未判断的是第 1 层 F03-shop 和第 2 层 F23-shop。草稿把第 1/2 层的未判断商店错配到第 3 层。"
+      },
+      {
+       "sentence": "仅对离开商店、毒雾、带毒刺击、删牌等可评分项算了分，其中离开商店 50.0 分排第一",
+       "reason": "E1 是 F03-shop（第 1 层商店）的选项数据，离开商店 50.0 排第一属实；但草稿把它安到第 3 层商店上，属于跨层错配。"
+      },
+      {
+       "sentence": "第 2 层跳过与蛇咬差 3.6 分（蛇咬前期输出 9.4 → 18.7，需求 25.5）",
+       "reason": "E0/E2 中蛇咬对跳过差 3.6 分的是第 1 层 F02-card（floor 2），不是第 2 层；蛇咬前期输出 9.4 → 18.7、需求 25.5 属实，但楼层说错。"
+      }
+     ],
+     "cleared": 0,
+     "cost_usd": 0.000510408,
+     "ms": 1956
     }
    ]
   },
   {
    "id": "T18",
-   "source_q": "Q13",
+   "source_q": "TQ15",
+   "run_id": "1775753122",
    "expected": "supported",
-   "category": "hard_valid_caveat",
+   "category": "valid_what_if_and_refusal",
+   "draft": "第 17 层你选了痛殴（66.4 分），引擎首选薪火之源（67.8 分），差距 1.4 分，主要差在防御（薪火之源 11.1 → 11.9，痛殴 11.1 → 10.5，需求 8.3）和前期输出（20.4 对 19.7，需求 34.5）；牌组里坚毅和遗物钨合金棍未完整计入。\n\n改动牌组重算：如果当时牌组里已有恶魔形态，引擎首选会变成跳过（不再选薪火之源，但仍未改选痛殴）；若只是加入血墙，首选仍是薪火之源（差距缩到 1.0 分）。\n\n至于第 35 层及之后的决定，因为第三幕 Boss 不在现有资料里（旧版本），引擎全部未评分。",
+   "unsupported_sentences": [],
    "trials": [
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
-     "cleared": 5,
-     "cost_usd": 0.0014768759999999998,
-     "ms": 2761
+     "cleared": 6,
+     "cost_usd": 0.0018161759999999999,
+     "ms": 3006
     },
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
      "cleared": 6,
-     "cost_usd": 0.000616908,
-     "ms": 2595
+     "cost_usd": 0.00090888,
+     "ms": 3583
     },
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
-     "cleared": 4,
-     "cost_usd": 0.000511308,
-     "ms": 2170
+     "cleared": 6,
+     "cost_usd": 0.00082728,
+     "ms": 3234
     }
    ]
   },
   {
    "id": "T19",
-   "source_q": "Q18",
+   "source_q": "TQ19",
+   "run_id": "1791820890",
    "expected": "supported",
-   "category": "hard_valid_what_if",
+   "category": "valid_compound_count",
+   "draft": "这局一共评了 32 个选牌、商店和休息点决定（其中 30 个有明确判断，一致 23 个，另外第 3 层和第 23 层商店因买了未计分商品标为未判断）。在 21 次选牌里你跳过了 15 次，引擎自己也会跳过 15 次。\n\n两处重点分歧都是前期输出不足：第 2 层你跳过而引擎首选蛇咬（高 3.6 分，前期输出 9.4 → 18.7，需求 25.5），第 7 层你跳过而引擎首选精确切击（高 1.6 分，前期输出 18.7 → 21.4，需求 29.4）。",
+   "unsupported_sentences": [],
    "trials": [
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
-     "cleared": 2,
-     "cost_usd": 0.001388076,
-     "ms": 1969
+     "cleared": 3,
+     "cost_usd": 0.0018200760000000001,
+     "ms": 2701
     },
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
      "cleared": 3,
-     "cost_usd": 0.00043921199999999997,
-     "ms": 1961
+     "cost_usd": 0.0005947799999999999,
+     "ms": 2462
     },
     {
-     "flagged": false,
+     "flagged": true,
      "parsed": true,
-     "issues": [],
-     "cleared": 3,
-     "cost_usd": 0.00044161199999999997,
-     "ms": 1858
+     "issues": [
+      {
+       "sentence": "这局一共评了 32 个选牌、商店和休息点决定（其中 30 个有明确判断，一致 23 个，另外第 3 层和第 23 层商店因买了未计分商品标为未判断）。",
+       "reason": "E0 显示 decisions=32、agree=23，但“30 个有明确判断”与证据不符：E0 中 not_scored 为空，未判断的是 F03-shop（第 3 层）和 F23-shop（第 23 层）两个商店，32-2=30 看似成立；但草稿把“第 3 层和第 23 层商店”说成“第 3 层和第 23 层”，其中第 23 层是楼层号，证据里 F23-shop 的 act 是 2、floor 是 23，草稿表述“第 3 层和第 23 层商店”把 act 和 floor 混用，且“第 3 层”实际是第 1 幕第 3 层。更关键的是 E0 的 not_scored 为空，未判断项来自 verdict“未判断”，草稿说“因买了未计分商品标为未判断”与 E0 的 not_scored 空列表及 verdict 原文不完全一致，属于把未评分原因说成引擎结果。"
+      },
+      {
+       "sentence": "在 21 次选牌里你跳过了 15 次，引擎自己也会跳过 15 次。",
+       "reason": "E0 的 card_rewards 明确 player_skipped=15、engine_would_skip=15、decisions=21，草稿数字与证据一致。"
+      },
+      {
+       "sentence": "两处重点分歧都是前期输出不足：第 2 层你跳过而引擎首选蛇咬（高 3.6 分，前期输出 9.4 → 18.7，需求 25.5），第 7 层你跳过而引擎首选精确切击（高 1.6 分，前期输出 18.7 → 21.4，需求 29.4）。",
+       "reason": "E1/E2 显示 F02 玩家 skip、引擎 SNAKEBITE、gap 3.6、前期输出 9.4→18.7 需求 25.5；E3/E4 显示 F07 玩家 skip、引擎 PRECISE_CUT、gap 1.6、前期输出 18.7→21.4 需求 29.4，均与草稿一致。"
+      }
+     ],
+     "cleared": 0,
+     "cost_usd": 0.00075558,
+     "ms": 4912
     }
    ]
   },
   {
    "id": "T20",
-   "source_q": "Q19",
+   "source_q": "TQ07",
+   "run_id": "1773037084",
    "expected": "supported",
-   "category": "hard_valid_compound_count",
+   "category": "valid_compound_count_and_trend",
+   "draft": "这局 33 个选牌、商店和休息点决定里有 18 个和引擎一致；23 次选牌中你跳过了 9 次，引擎会跳过 13 次。\n\n看前两幕的防御走势：第 1 幕各次选牌（从第 2 层 5.4 对 7.5 到第 17 层 5.4 对 8.3）防御一直低于需求；进入第 2 幕后第 19 至 28 层仍略低，直到第 30 层才首次越过需求线（9.1 对 8.7），但第 33 层又落回需求下方（8.4 对 10.4）。",
+   "unsupported_sentences": [],
    "trials": [
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
-     "cleared": 4,
-     "cost_usd": 0.002450076,
-     "ms": 2645
+     "cleared": 6,
+     "cost_usd": 0.0015194759999999999,
+     "ms": 2287
     },
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
-     "cleared": 4,
-     "cost_usd": 0.00047358,
-     "ms": 1944
+     "cleared": 6,
+     "cost_usd": 0.000616308,
+     "ms": 2203
     },
     {
      "flagged": false,
      "parsed": true,
      "issues": [],
-     "cleared": 4,
-     "cost_usd": 0.00049638,
-     "ms": 2290
+     "cleared": 6,
+     "cost_usd": 0.0006151080000000001,
+     "ms": 2349
     }
    ]
   },
   {
    "id": "T21",
-   "source_q": "Q06",
+   "source_q": "TQ02",
+   "run_id": "1772819860",
    "expected": "unsupported",
    "category": "swapped_pick",
+   "draft": "彗星是 0 费攻击牌（消耗 5 颗星），造成 33 点伤害并给予 3 层虚弱与 3 层易伤。第 17 层你选了彗星，而引擎更看好剑圣（58.9 分对 53.5 分，高出 5.4 分），因为剑圣把前期输出从 19.3 提到 34.1（需求 35.1）。",
+   "unsupported_sentences": [
+    "第 17 层你选了彗星，而引擎更看好剑圣（58.9 分对 53.5 分，高出 5.4 分），因为剑圣把前期输出从 19.3 提到 34.1（需求 35.1）。"
+   ],
    "trials": [
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "第 20 层你选择了跳过，但引擎更看好收割（35.3 分对 29.3 分，差 6 分），因为拿收割后前期输出从 17.4 升到 20.5。",
-       "reason": "E0 与 E2 均显示：第 20 层玩家选择是「收割」，引擎首选是「跳过」；跳过 35.3 分、收割 29.3 分，差 6 分。草稿把玩家选择与引擎首选说反了。前期输出 17.4→20.5 确实是收割的逐项数据，但整体方向错误。"
+       "sentence": "第 17 层你选了彗星，而引擎更看好剑圣（58.9 分对 53.5 分，高出 5.4 分）",
+       "reason": "E0 与 E2 显示第 17 层玩家选择是剑圣（player=0:SWORD_SAGE），引擎首选是彗星（engine=1:COMET），彗星 58.9 分、剑圣 53.5 分、差 5.4 分。草稿把玩家选择与引擎首选说反了。"
+      },
+      {
+       "sentence": "因为剑圣把前期输出从 19.3 提到 34.1（需求 35.1）",
+       "reason": "E2/E3 显示把前期输出从 19.3 提到 34.1 的是彗星（a_message），剑圣只把前期输出从 19.3 提到 20.4。草稿把彗星的数值安到了剑圣上。"
       }
      ],
      "cleared": 0,
-     "cost_usd": 0.001330476,
-     "ms": 1737
+     "cost_usd": 0.001194276,
+     "ms": 1410
     },
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "第 20 层你选择了跳过，但引擎更看好收割（35.3 分对 29.3 分，差 6 分），因为拿收割后前期输出从 17.4 升到 20.5。",
-       "reason": "E0 与 E2 均显示：第 20 层玩家选择是「收割」，引擎首选是「跳过」；跳过 35.3 分、收割 29.3 分，差 6 分。草稿把玩家选择与引擎首选说反了。前期输出 17.4→20.5 确为收割的逐项数据，但整体方向错误。"
+       "sentence": "第 17 层你选了彗星，而引擎更看好剑圣（58.9 分对 53.5 分，高出 5.4 分）",
+       "reason": "E0 与 E2 显示第 17 层玩家选择是剑圣（player=0:SWORD_SAGE），引擎首选是彗星（engine=1:COMET），彗星 58.9 分、剑圣 53.5 分、差 5.4 分。草稿把玩家选择与引擎首选说反了。"
+      },
+      {
+       "sentence": "因为剑圣把前期输出从 19.3 提到 34.1（需求 35.1）",
+       "reason": "E2/E3 显示把前期输出从 19.3 提到 34.1 的是彗星；剑圣是 19.3 → 20.4。草稿把彗星的前期输出数值安到了剑圣上。"
       }
      ],
      "cleared": 0,
-     "cost_usd": 0.00027798,
-     "ms": 1287
+     "cost_usd": 0.000360372,
+     "ms": 1878
     },
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "第 20 层你选择了跳过，但引擎更看好收割（35.3 分对 29.3 分，差 6 分），因为拿收割后前期输出从 17.4 升到 20.5。",
-       "reason": "E0 与 E2 均显示第 20 层玩家选择是「收割」，引擎首选是「跳过」；35.3 是跳过的分数、29.3 是收割的分数，草稿把玩家选择与引擎首选说反，也把分数归属说反。前期输出 17.4→20.5 本身有依据，但整句方向错误。"
+       "sentence": "第 17 层你选了彗星，而引擎更看好剑圣（58.9 分对 53.5 分，高出 5.4 分）",
+       "reason": "E0 与 E2 显示 F17 玩家选择是剑圣（0:SWORD_SAGE），引擎首选是彗星（1:COMET），彗星 58.9 分、剑圣 53.5 分。草稿把玩家选择与引擎首选说反了。"
+      },
+      {
+       "sentence": "因为剑圣把前期输出从 19.3 提到 34.1（需求 35.1）",
+       "reason": "E2/E3 显示把前期输出从 19.3 提到 34.1 的是彗星；剑圣是 19.3 → 20.4。草稿把彗星的数值安到了剑圣上。"
       }
      ],
      "cleared": 0,
-     "cost_usd": 0.00027558,
-     "ms": 1719
+     "cost_usd": 0.00033997199999999996,
+     "ms": 1168
     }
    ]
   },
   {
    "id": "T22",
-   "source_q": "Q15",
+   "source_q": "TQ09",
+   "run_id": "1773057317",
    "expected": "unsupported",
    "category": "swapped_pick",
+   "draft": "第 9 层引擎首选编译冲击（64.5 分），比你选的引雷针（62.3 分）高 2.2 分，主要看重循环从 0.00 升到 0.69（需求 1.0）。到了第 17 层则是你选了跳过，而引擎更看好缓冲（57.3 分对 55.8 分，高出 1.5 分）。",
+   "unsupported_sentences": [
+    "到了第 17 层则是你选了跳过，而引擎更看好缓冲（57.3 分对 55.8 分，高出 1.5 分）。"
+   ],
    "trials": [
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "第 22 层引擎更看好太阳打击而不是何人僭越，因为太阳打击把防御从 9.2 提到 10.3（需求 9.7）。",
-       "reason": "E0 的 F22-card 显示玩家选太阳打击、引擎首选何人僭越；E3 的 comparison 明确写的是拿何人僭越后防御 9.2→10.3，拿太阳打击后防御降到 8.6。草稿把首选方向说反，也把防御数值安到了太阳打击上。"
+       "sentence": "到了第 17 层则是你选了跳过，而引擎更看好缓冲（57.3 分对 55.8 分，高出 1.5 分）。",
+       "reason": "E0 与 E3 显示第 17 层玩家选择是缓冲（player=0:BUFFER），引擎首选是跳过（engine=skip，57.3 分），缓冲为 55.8 分。草稿把玩家选择与引擎首选说反了。"
       }
      ],
      "cleared": 0,
-     "cost_usd": 0.001056876,
-     "ms": 1837
+     "cost_usd": 0.0013952759999999998,
+     "ms": 1444
     },
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "第 22 层引擎更看好太阳打击而不是何人僭越，因为太阳打击把防御从 9.2 提到 10.3（需求 9.7）。",
-       "reason": "E0 与 E3 均显示第 22 层引擎首选是「何人僭越」，玩家选的是「太阳打击」；且 E3 中防御 9.2→10.3 属于何人僭越，太阳打击反而降到 8.6。草稿把首选说反，并把防御数值安到了太阳打击上。"
+       "sentence": "到了第 17 层则是你选了跳过，而引擎更看好缓冲（57.3 分对 55.8 分，高出 1.5 分）。",
+       "reason": "E0 与 E3 显示：第 17 层玩家选择是缓冲（player=0:BUFFER），引擎首选是跳过（engine=skip，57.3 分），缓冲 55.8 分。草稿把玩家选择与引擎首选说反了。"
       }
      ],
-     "cleared": 1,
-     "cost_usd": 0.000316572,
-     "ms": 1612
+     "cleared": 0,
+     "cost_usd": 0.000228684,
+     "ms": 1111
     },
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "第 22 层引擎更看好太阳打击而不是何人僭越，因为太阳打击把防御从 9.2 提到 10.3（需求 9.7）。",
-       "reason": "E0 的 F22-card 显示玩家选太阳打击、引擎首选何人僭越，草稿把首选说反；E3 的 comparison 明确是拿何人僭越后防御 9.2→10.3，拿太阳打击后防御降到 8.6，草稿把防御提升的归属也安到了太阳打击上。"
+       "sentence": "到了第 17 层则是你选了跳过，而引擎更看好缓冲（57.3 分对 55.8 分，高出 1.5 分）。",
+       "reason": "E0 与 E3 均显示 F17 玩家选择为缓冲（0:BUFFER），引擎首选为跳过（skip），分差 1.5；草稿把玩家选择与引擎首选说反了。"
       }
      ],
      "cleared": 0,
-     "cost_usd": 0.000231372,
-     "ms": 1649
+     "cost_usd": 0.000213084,
+     "ms": 1121
     }
    ]
   },
   {
    "id": "T23",
-   "source_q": "Q12",
+   "source_q": "TQ16",
+   "run_id": "1782142555",
    "expected": "unsupported",
-   "category": "swapped_pick",
+   "category": "inverted_what_if",
+   "draft": "第 12 层你选了跳过，引擎首选连续反弹（49.6 分对 47.7 分，差 1.9 分），主要因为前期输出每回合从 18.1 升到 23.0（需求 43.9）。把当时牌组改一改重算：即使牌组里先有猎杀者，引擎依然坚持选连续反弹；反而是先加入翻越撑击后，引擎才会改选跳过。",
+   "unsupported_sentences": [
+    "把当时牌组改一改重算：即使牌组里先有猎杀者，引擎依然坚持选连续反弹；",
+    "反而是先加入翻越撑击后，引擎才会改选跳过。"
+   ],
    "trials": [
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "第 17 层你拿了苦难，而引擎更偏死神形态（高 4.2 分）",
-       "reason": "E0 的 F17-card 记录为 player=死神形态、engine=苦难、gap=4.2；E1 headline 也写“引擎认为「苦难」比你选的「死神形态」高 4.2 分”。草稿把玩家选择与引擎首选说反了。"
+       "sentence": "即使牌组里先有猎杀者，引擎依然坚持选连续反弹；",
+       "reason": "E5 的 what_if 显示：加入猎杀者后，engine_top_before 是 2:RICOCHET，engine_top_after 是 skip，pick_changed 为 true，agrees_with_player_after 为 true。也就是说，加入猎杀者后引擎改选跳过，不再坚持选连续反弹，草稿把 what_if 结论说反了。"
       },
       {
-       "sentence": "主要因为死神形态让前期输出从 13.0 升到 15.5",
-       "reason": "E1 comparison 与 finding 显示：拿苦难后前期输出 13.0 → 15.5，拿死神形态则降到 11.3；草稿把苦难的数值安到了死神形态上，且方向说反。"
+       "sentence": "反而是先加入翻越撑击后，引擎才会改选跳过。",
+       "reason": "E6 的 what_if 显示：加入翻越撑击后，engine_top_after 仍是 2:RICOCHET，pick_changed 为 false，agrees_with_player_after 为 false。也就是说，加入翻越撑击后引擎没有改选跳过，草稿把两个 what_if 的结论对调了。"
       }
      ],
      "cleared": 0,
-     "cost_usd": 0.001097376,
-     "ms": 1734
+     "cost_usd": 0.0012686759999999998,
+     "ms": 1496
     },
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "第 17 层你拿了苦难，而引擎更偏死神形态（高 4.2 分）",
-       "reason": "E0 的 F17-card 记录：player=死神形态，engine=苦难，gap=4.2；E1 headline 也说引擎认为苦难比玩家选的高 4.2 分。草稿把玩家选择和引擎首选说反了。"
+       "sentence": "即使牌组里先有猎杀者，引擎依然坚持选连续反弹；",
+       "reason": "E5 的 what_if 显示：加入猎杀者后，engine_top_before 是 2:RICOCHET，engine_top_after 是 skip，pick_changed 为 true，即引擎改选跳过，与草稿所说“坚持选连续反弹”相反。"
       },
       {
-       "sentence": "主要因为死神形态让前期输出从 13.0 升到 15.5",
-       "reason": "E1 comparison 显示：拿苦难后前期输出 13.0→15.5，拿死神形态后是 13.0→11.3。草稿把苦难的数值安到了死神形态上，属于跨选项错配。"
+       "sentence": "反而是先加入翻越撑击后，引擎才会改选跳过。",
+       "reason": "E6 的 what_if 显示：加入翻越撑击后，engine_top_after 仍是 2:RICOCHET，pick_changed 为 false，即引擎没有改选跳过，与草稿相反。"
       }
      ],
      "cleared": 0,
-     "cost_usd": 0.000298704,
-     "ms": 1461
+     "cost_usd": 0.00031030799999999997,
+     "ms": 2002
     },
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "第 17 层你拿了苦难，而引擎更偏死神形态（高 4.2 分）",
-       "reason": "E0 的 F17-card 记录：player 是「死神形态」，engine 是「苦难」，gap 4.2。草稿把玩家选择和引擎首选说反了。"
+       "sentence": "即使牌组里先有猎杀者，引擎依然坚持选连续反弹；",
+       "reason": "E5 的 what_if 显示：加入猎杀者后，engine_top_before 是 2:RICOCHET，engine_top_after 是 skip，pick_changed 为 true，agrees_with_player_after 为 true。也就是说，加入猎杀者后引擎改选了跳过，与草稿所说的“依然坚持选连续反弹”正好相反。"
       },
       {
-       "sentence": "主要因为死神形态让前期输出从 13.0 升到 15.5",
-       "reason": "E1 的 comparison 与 finding 都写明：拿苦难后前期输出 13.0 → 15.5，拿死神形态则降到 11.3。草稿把苦难的数值安到了死神形态上，且方向说反。"
+       "sentence": "反而是先加入翻越撑击后，引擎才会改选跳过。",
+       "reason": "E6 的 what_if 显示：加入翻越撑击后，engine_top_after 仍是 2:RICOCHET，pick_changed 为 false，agrees_with_player_after 为 false。也就是说，加入翻越撑击后引擎并没有改选跳过，与草稿的说法相反。"
       }
      ],
      "cleared": 0,
-     "cost_usd": 0.000283104,
-     "ms": 1270
+     "cost_usd": 0.000353508,
+     "ms": 1245
     }
    ]
   },
   {
    "id": "T24",
-   "source_q": "Q09",
+   "source_q": "TQ06",
+   "run_id": "1773037084",
    "expected": "unsupported",
    "category": "cross_floor_swap",
+   "draft": "祭品是 0 费技能牌，失去 6 点生命，获得 2 点能量并抽 3 张牌。这两处重点分歧分别是：第 2 层你选了跳过而引擎更看好祭品（高 3.9 分，主要因为防御从 5.4 升到 6.9）；第 14 层你选了重锤而引擎更看好耸肩无视（高 5.6 分，主要因为循环从 0.17 升到 0.66）。",
+   "unsupported_sentences": [
+    "这两处重点分歧分别是：第 2 层你选了跳过而引擎更看好祭品（高 3.9 分，主要因为防御从 5.4 升到 6.9）；",
+    "第 14 层你选了重锤而引擎更看好耸肩无视（高 5.6 分，主要因为循环从 0.17 升到 0.66）。"
+   ],
    "trials": [
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "这局分歧最大的是第 13 层和第 17 层：第 13 层引擎更看好护驾！！！（差 6.7），第 17 层引擎更看好预言（差 5.8，循环从 0.00 升到 0.81）。",
-       "reason": "证据里第 13 层（F13-card）引擎更看好的是「预言」，玩家选的是「黑洞」，差 6.7；第 17 层（F17-card）引擎更看好的是「护驾！！！」（差 5.8），玩家选的是「锻打成型」。草稿把两层的引擎首选和卡牌说反了；而且「循环从 0.00 升到 0.81」是第 13 层预言的数据，不是第 17 层的。"
-      }
-     ],
-     "cleared": 0,
-     "cost_usd": 0.0016334759999999998,
-     "ms": 2006
-    },
-    {
-     "flagged": true,
-     "parsed": true,
-     "issues": [
-      {
-       "sentence": "第 13 层引擎更看好护驾！！！（差 6.7）",
-       "reason": "E0 与 E2 显示第 13 层（F13-card）玩家选「黑洞」，引擎首选「预言」，差 6.7；「护驾！！！」是第 17 层（F17）的引擎首选，草稿把第 17 层的卡牌安到了第 13 层。"
+       "sentence": "这两处重点分歧分别是：第 2 层你选了跳过而引擎更看好祭品（高 3.9 分，主要因为防御从 5.4 升到 6.9）；",
+       "reason": "E0/E1 显示第 2 层玩家选的是重锤、引擎首选耸肩无视，分差 3.9；祭品是第 14 层的引擎首选。草稿把第 2 层的玩家选择说成跳过、引擎首选说成祭品，属于选择/首选说反与跨层错配。"
       },
       {
-       "sentence": "第 17 层引擎更看好预言（差 5.8，循环从 0.00 升到 0.81）",
-       "reason": "E0 与 E3 显示第 17 层（F17-card）玩家选「锻打成型」，引擎首选「护驾！！！」差 5.8；「预言」是第 13 层的引擎首选，循环 0.00→0.81 也是 E2 中第 13 层「预言」的数据，草稿把第 13 层的卡牌和循环数据安到了第 17 层。"
+       "sentence": "第 14 层你选了重锤而引擎更看好耸肩无视（高 5.6 分，主要因为循环从 0.17 升到 0.66）。",
+       "reason": "E0/E4 显示第 14 层玩家选择是跳过、引擎首选是祭品，分差 5.6；重锤对耸肩无视是第 2 层的对比。草稿把第 14 层的玩家选择与引擎首选说反，并把第 2 层的选项安到第 14 层。"
       }
      ],
-     "cleared": 1,
-     "cost_usd": 0.000508356,
-     "ms": 2006
+     "cleared": 0,
+     "cost_usd": 0.001614576,
+     "ms": 1794
     },
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "这局分歧最大的是第 13 层和第 17 层：第 13 层引擎更看好护驾！！！（差 6.7），第 17 层引擎更看好预言（差 5.8，循环从 0.00 升到 0.81）。",
-       "reason": "证据显示第 13 层（F13-card）引擎更看好「预言」，玩家选「黑洞」，差 6.7；第 17 层（F17-card）引擎更看好「护驾！！！」（不是预言），玩家选「锻打成型」，差 5.8。草稿把两层的引擎首选和卡牌说反了，还把「循环从 0.00 升到 0.81」这一属于第 13 层预言的数据安到了第 17 层。"
+       "sentence": "这两处重点分歧分别是：第 2 层你选了跳过而引擎更看好祭品（高 3.9 分，主要因为防御从 5.4 升到 6.9）；",
+       "reason": "E0/E1 显示第 2 层玩家选的是重锤、引擎首选耸肩无视，分差 3.9，防御 5.4→6.9 是耸肩无视的因子；草稿把第 2 层说成玩家跳过、引擎看好祭品，并把第 14 层的祭品与第 2 层的防御数字错配。"
+      },
+      {
+       "sentence": "第 14 层你选了重锤而引擎更看好耸肩无视（高 5.6 分，主要因为循环从 0.17 升到 0.66）。",
+       "reason": "E0/E4 显示第 14 层玩家是跳过、引擎首选祭品，分差 5.6；循环 0.17→0.66 是祭品的因子，不是耸肩无视；重锤/耸肩无视是第 2 层的选项。"
       }
      ],
      "cleared": 0,
-     "cost_usd": 0.000316356,
-     "ms": 1205
+     "cost_usd": 0.00040435199999999997,
+     "ms": 1614
+    },
+    {
+     "flagged": true,
+     "parsed": true,
+     "issues": [
+      {
+       "sentence": "第 2 层你选了跳过而引擎更看好祭品（高 3.9 分，主要因为防御从 5.4 升到 6.9）",
+       "reason": "E0/E1 显示第 2 层玩家选的是重锤、引擎首选耸肩无视，分差 3.9；祭品是第 14 层的选项。草稿把第 2 层的玩家选择说成跳过、引擎首选说成祭品，并把第 14 层的祭品与第 2 层的分差/防御数值错配。"
+      },
+      {
+       "sentence": "第 14 层你选了重锤而引擎更看好耸肩无视（高 5.6 分，主要因为循环从 0.17 升到 0.66）",
+       "reason": "E0/E4 显示第 14 层玩家选的是跳过、引擎首选祭品，分差 5.6；重锤与耸肩无视是第 2 层的选项。草稿把第 14 层的选择与首选说反，并把第 2 层的卡牌安到第 14 层；循环 0.17→0.66 确实是祭品的数据，但被错配到耸肩无视上。"
+      }
+     ],
+     "cleared": 0,
+     "cost_usd": 0.000440352,
+     "ms": 2261
     }
    ]
   },
   {
    "id": "T25",
-   "source_q": "Q16",
+   "source_q": "TQ17",
+   "run_id": "1791474137",
    "expected": "unsupported",
    "category": "cross_floor_swap",
+   "draft": "第 15 层引擎首选拖延（46.8 分对跳过 40.6 分，差 6.2 分），因为拿拖延后防御每回合 6.9 → 8.6（需求 11.8）。从防御走势看，第 2 层防御就已经远低于需求（6.9 对 11.8），反而是第 15 层防御充足（8.4 对 7.5）。",
+   "unsupported_sentences": [
+    "从防御走势看，第 2 层防御就已经远低于需求（6.9 对 11.8），反而是第 15 层防御充足（8.4 对 7.5）。"
+   ],
    "trials": [
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "第 21 层引擎更看好寒流（高 4.6 分，防御从 7.2 升到 9.8）",
-       "reason": "E1 明确第 21 层引擎更看好「折射」，高 4.6 分；防御 7.2→9.8 是 E2 第 22 层「寒流」的数据。草稿把第 21 层的卡牌和分数安到寒流上，又把第 22 层的防御数值安到第 21 层，属于跨层/跨选项错配。"
-      },
-      {
-       "sentence": "第 22 层引擎更看好折射（高 2.6 分，群伤从 0.0 升到 4.7）",
-       "reason": "E2 明确第 22 层引擎更看好「寒流」，高 2.6 分；群伤 0.0→4.7 是 E1 第 21 层「折射」的数据。草稿把第 22 层的卡牌说成折射，并把第 21 层的群伤数值安到第 22 层，属于跨层/跨选项错配。"
+       "sentence": "从防御走势看，第 2 层防御就已经远低于需求（6.9 对 11.8），反而是第 15 层防御充足（8.4 对 7.5）。",
+       "reason": "证据 E6 显示第 2 层防御 have 8.4、need 7.5，below_need=false，即第 2 层防御高于需求；第 15 层 have 6.9、need 11.8，below_need=true，即第 15 层防御不足。草稿把两层的数值和结论完全说反了。"
       }
      ],
-     "cleared": 1,
-     "cost_usd": 0.0017432759999999998,
-     "ms": 2158
+     "cleared": 0,
+     "cost_usd": 0.001270176,
+     "ms": 1647
     },
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "第 21 层引擎更看好寒流（高 4.6 分，防御从 7.2 升到 9.8）",
-       "reason": "E1 明确第 21 层引擎更看好「折射」，高 4.6 分；防御 7.2→9.8 是 E2 第 22 层「寒流」的数据。草稿把第 21 层的卡牌和分数安到了寒流上，又把第 22 层的防御数字安到第 21 层，属于跨层/跨选项错配。"
-      },
-      {
-       "sentence": "第 22 层引擎更看好折射（高 2.6 分，群伤从 0.0 升到 4.7）",
-       "reason": "E2 明确第 22 层引擎更看好「寒流」，高 2.6 分；群伤 0.0→4.7 是 E1 第 21 层「折射」的数据。草稿把两层完全说反，属于选择/首选说反和跨层错配。"
+       "sentence": "从防御走势看，第 2 层防御就已经远低于需求（6.9 对 11.8），反而是第 15 层防御充足（8.4 对 7.5）。",
+       "reason": "证据 E6 显示第 2 层防御 have=8.4、need=7.5，below_need=false，即第 2 层防御充足；第 15 层 have=6.9、need=11.8，below_need=true，即第 15 层防御不足。草稿把两层的数值和结论完全说反了（6.9 对 11.8 是第 15 层的数据，8.4 对 7.5 是第 2 层的数据）。"
       }
      ],
-     "cleared": 1,
-     "cost_usd": 0.000592716,
-     "ms": 2560
+     "cleared": 0,
+     "cost_usd": 0.00029611199999999996,
+     "ms": 1113
     },
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "第 21 层引擎更看好寒流（高 4.6 分，防御从 7.2 升到 9.8）",
-       "reason": "E0 与 E1 显示第 21 层引擎更看好的是「折射」而非「寒流」，高 4.6 分；且 E1 中折射的防御是 7.2→5.8（下降），7.2→9.8 是 E2 第 22 层寒流的防御数据。草稿把层数、卡牌和数值错配了。"
-      },
-      {
-       "sentence": "第 22 层引擎更看好折射（高 2.6 分，群伤从 0.0 升到 4.7）",
-       "reason": "E0 与 E2 显示第 22 层引擎更看好的是「寒流」而非「折射」，高 2.6 分；群伤 0.0→4.7 是 E1 第 21 层折射的数据。草稿把两层的卡牌与数值对调了。"
+       "sentence": "从防御走势看，第 2 层防御就已经远低于需求（6.9 对 11.8），反而是第 15 层防御充足（8.4 对 7.5）。",
+       "reason": "证据 E6 显示第 2 层防御 have 8.4、need 7.5，below_need=false，即第 2 层防御充足；第 15 层 have 6.9、need 11.8，below_need=true，即第 15 层防御不足。草稿把两层的数值和结论完全说反了（6.9 对 11.8 是第 15 层的数据，8.4 对 7.5 是第 2 层的数据）。"
       }
      ],
-     "cleared": 1,
-     "cost_usd": 0.000521916,
-     "ms": 2219
+     "cleared": 0,
+     "cost_usd": 0.00029611199999999996,
+     "ms": 1710
     }
    ]
   },
   {
    "id": "T26",
-   "source_q": "Q03",
+   "source_q": "TQ08",
+   "run_id": "1773057317",
    "expected": "unsupported",
-   "category": "cross_floor_swap",
+   "category": "range_misattribution",
+   "draft": "第 12 层引擎首选冰川（57.1 分），比暴风雨（51.0 分）高 6.1 分，主要因为防御每回合从 9.2 升到 12.7（需求 11.8）。引擎试过“牌组里先加一张球状闪电”这一单次改动，重新计分后首选仍是冰川，差距缩到了 2.1–3.1 分。",
+   "unsupported_sentences": [
+    "引擎试过“牌组里先加一张球状闪电”这一单次改动，重新计分后首选仍是冰川，差距缩到了 2.1–3.1 分。"
+   ],
    "trials": [
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "第 1 幕第 2 层防御就已经够用（8.3 对 7.9），真正掉到需求以下是在第 2 幕第 19 层（5.4 对 7.6）。",
-       "reason": "证据 E2（deck_trend）显示：第 1 幕第 2 层（F02）防御 have 5.4、need 7.6，below_need=true，即不够用；而第 2 幕第 19 层（F19）防御 have 8.3、need 7.9，below_need=false，即够用。草稿把两层的数值和是否达标完全说反了。"
+       "sentence": "引擎试过“牌组里先加一张球状闪电”这一单次改动，重新计分后首选仍是冰川，差距缩到了 2.1–3.1 分。",
+       "reason": "证据 E6 显示，加球状闪电后首选仍是冰川，但差距是 7.2 分（57.8 对 50.6），不是缩小。2.1 和 3.1 分别是 E4（加充电）和 E5（加寒流）的差距，草稿把多组假设的合计区间安到了球状闪电这一次改动上，属于跨选项错配和数字错误。"
       }
      ],
      "cleared": 0,
-     "cost_usd": 0.0011588759999999999,
-     "ms": 1192
+     "cost_usd": 0.0012494759999999998,
+     "ms": 1175
     },
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "第 1 幕第 2 层防御就已经够用（8.3 对 7.9）",
-       "reason": "E2 的 deck_trend 显示，第 1 幕第 2 层（F02-card）防御 have=5.4、need=7.6、below_need=true，即不够用；草稿把第 2 幕第 19 层（F19-card，have=8.3、need=7.9、below_need=false）的数字和“够用”结论安到了第 1 幕第 2 层上，属于跨层错配。"
-      },
-      {
-       "sentence": "真正掉到需求以下是在第 2 幕第 19 层（5.4 对 7.6）",
-       "reason": "E2 显示第 2 幕第 19 层（F19-card）防御 have=8.3、need=7.9、below_need=false，是够用的；5.4 对 7.6 是第 1 幕第 2 层的数字。草稿把两层的数据和结论完全说反，且与 deck_trend 中第 1 幕多层均 below_need=true 的事实矛盾。"
+       "sentence": "引擎试过“牌组里先加一张球状闪电”这一单次改动，重新计分后首选仍是冰川，差距缩到了 2.1–3.1 分。",
+       "reason": "证据中球状闪电的 what_if（E6）显示：首选仍是冰川，但差距是 7.2 分（57.8 对 50.6），不是缩小。2.1 和 3.1 分别是充电（E4）和寒流（E5）两次改动的差距，草稿把多组假设的区间安到了球状闪电这一次改动上，且方向说反（球状闪电实际是差距略增）。"
       }
      ],
      "cleared": 0,
-     "cost_usd": 0.00044093999999999996,
-     "ms": 2047
+     "cost_usd": 0.000279444,
+     "ms": 1608
     },
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "第 1 幕第 2 层防御就已经够用（8.3 对 7.9），真正掉到需求以下是在第 2 幕第 19 层（5.4 对 7.6）。",
-       "reason": "证据 E2（deck_trend）显示：第 1 幕第 2 层（F02）防御 have 5.4、need 7.6，below_need=true，即不够用；而 8.3 对 7.9 出现在第 2 幕第 19 层（F19），below_need=false。草稿把两层的数值和结论完全对调了，属于跨层错配。"
+       "sentence": "引擎试过“牌组里先加一张球状闪电”这一单次改动，重新计分后首选仍是冰川，差距缩到了 2.1–3.1 分。",
+       "reason": "证据 E6 显示，加入球状闪电后首选仍是冰川，但差距是 7.2 分（57.8 对 50.6），不是缩小。2.1 和 3.1 分别是 E4（加充电）和 E5（加寒流）的差距，草稿把多组假设的合计区间安到了球状闪电这一次改动上，属于跨选项错配。"
       }
      ],
      "cleared": 0,
-     "cost_usd": 0.00029334,
-     "ms": 1231
+     "cost_usd": 0.00026744400000000004,
+     "ms": 1621
     }
    ]
   },
   {
    "id": "T27",
-   "source_q": "Q10",
+   "source_q": "TQ03",
+   "run_id": "1772819860",
    "expected": "unsupported",
-   "category": "out_of_scope_answer",
+   "category": "contradicts_verdict",
+   "draft": "第 2 层引擎给引导之星 54.5 分、战火铸就 48.5 分，相差 6.0 分，主要因为引导之星把每回合额外抽牌从 0.00 提到 0.52（需求 1.0）。不过引擎把这一层判成差距不大且把握很低，所以没有列为重点分歧。",
+   "unsupported_sentences": [
+    "不过引擎把这一层判成差距不大且把握很低，所以没有列为重点分歧。"
+   ],
    "trials": [
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "第 35 层你应该优先拿防御牌而不是攻击牌",
-       "reason": "E0 的 not_scored 明确列出 F35-card（第35层选牌）原因为“Boss 不在现有资料里（旧版本）”，即该决定未被引擎评分，引擎没有给出任何首选或方向；草稿却断言应优先拿防御牌。"
-      },
-      {
-       "sentence": "因为第三幕 Boss 攻击压力很高",
-       "reason": "证据中没有任何关于第三幕 Boss 攻击压力或 Boss 数值的资料；not_scored 恰恰说明 Boss 不在现有资料里。这是引擎范围外的事实编造。"
-      },
-      {
-       "sentence": "前面两幕你的防御一直偏低",
-       "reason": "E0 只给出各幕决定数、一致数和分差，没有 deck_trend 或任何“防御偏低”的数值结论；证据中也没有前两幕防御需求的记录。"
+       "sentence": "不过引擎把这一层判成差距不大且把握很低，所以没有列为重点分歧。",
+       "reason": "E0/E1 对 F02-card 的 verdict 原文是“不同，引擎有把握且差距明显（复盘报告里的‘值得想一想’）”，confidence 为 medium，与“差距不大且把握很低”矛盾；且该决定正是“值得想一想”的重点分歧。"
       }
      ],
-     "cleared": 0,
-     "cost_usd": 0.001043076,
-     "ms": 1987
+     "cleared": 2,
+     "cost_usd": 0.001162176,
+     "ms": 2886
     },
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "第 35 层你应该优先拿防御牌而不是攻击牌",
-       "reason": "E0 的 not_scored 明确列出 F35-card（第 35 层选牌）原因为“Boss 不在现有资料里（旧版本）”，即该决定未被引擎评分；证据中没有第 35 层任何选项、首选或防御/攻击倾向的数据。"
-      },
-      {
-       "sentence": "因为第三幕 Boss 攻击压力很高",
-       "reason": "证据中没有任何关于第三幕 Boss 攻击压力或 Boss 数值的内容；not_scored 反而说明 Boss 不在现有资料里。"
-      },
-      {
-       "sentence": "前面两幕你的防御一直偏低",
-       "reason": "E0 只给出各幕决定数、一致数和分差，没有 deck_trend 或任何“防御偏低”的数值；证据中不存在该结论。"
-      },
-      {
-       "sentence": "继续补防御更稳",
-       "reason": "第 35 层未被评分，证据中没有该层任何选项的评分或防御收益数据，无法支持“补防御更稳”的结论。"
+       "sentence": "不过引擎把这一层判成差距不大且把握很低，所以没有列为重点分歧。",
+       "reason": "E0/E1 对 F02-card 的 verdict 原文是“不同，引擎有把握且差距明显（复盘报告里的‘值得想一想’）”，confidence 为 medium；草稿说成“差距不大且把握很低”，与证据方向相反。"
       }
      ],
-     "cleared": 0,
-     "cost_usd": 0.00037606799999999996,
-     "ms": 1947
+     "cleared": 1,
+     "cost_usd": 0.000350736,
+     "ms": 1605
     },
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "第 35 层你应该优先拿防御牌而不是攻击牌",
-       "reason": "E0 的 not_scored 明确列出 F35-card（第 35 层选牌）原因为“Boss 不在现有资料里（旧版本）”，即该决定未被引擎评分；证据中没有第 35 层任何首选、分差或方向结论，草稿却给出“优先拿防御牌”的具体选牌建议。"
-      },
-      {
-       "sentence": "因为第三幕 Boss 攻击压力很高",
-       "reason": "证据中没有任何关于第三幕 Boss 攻击压力或 Boss 数值的资料；not_scored 反而说明 Boss 不在现有资料里，引擎无法评估。"
-      },
-      {
-       "sentence": "前面两幕你的防御一直偏低",
-       "reason": "证据中没有 deck_trend 或任何按幕的防御数值对比，无法支持“前面两幕防御一直偏低”这一断言。"
+       "sentence": "不过引擎把这一层判成差距不大且把握很低，所以没有列为重点分歧。",
+       "reason": "E0/E1 对 F02-card 的 verdict 原文是“不同，引擎有把握且差距明显（复盘报告里的‘值得想一想’）”，confidence 为 medium；证据明确是有把握、差距明显，草稿却说成“差距不大且把握很低”，与判定矛盾。"
       }
      ],
-     "cleared": 0,
-     "cost_usd": 0.000326868,
-     "ms": 1976
+     "cleared": 1,
+     "cost_usd": 0.000385536,
+     "ms": 2101
     }
    ]
   },
   {
    "id": "T28",
-   "source_q": "Q17",
+   "source_q": "TQ10",
+   "run_id": "1773853598",
    "expected": "unsupported",
-   "category": "out_of_scope_answer",
+   "category": "overclaim_certainty",
+   "draft": "第 15 层你和引擎都选了玷污（60.8 分），判定一致。而第 17 层你拿死神形态是明显失误，引擎把握极高地认为必须选苦难（51.6 分对 47.0 分），而且两张牌的所有效果都已经完整算清。",
+   "unsupported_sentences": [
+    "而第 17 层你拿死神形态是明显失误，引擎把握极高地认为必须选苦难（51.6 分对 47.0 分），而且两张牌的所有效果都已经完整算清。"
+   ],
    "trials": [
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "打女王那场战斗建议先集火清掉小怪再打女王",
-       "reason": "引擎的范围明确写明不能回答战斗过程（出牌顺序、击杀目标、为什么输掉某场战斗），证据中没有任何关于女王战敌人构成或击杀顺序的信息，该建议属于超范围编造。"
-      },
-      {
-       "sentence": "因为你这局群伤长期低于需求（需求 9.1）",
-       "reason": "证据中群伤需求 9.1 只出现在 E1（F21 第 2 幕第 21 层）折射的对比里，是那一层选牌时的数值；E0 的 dimensions 虽列有“群伤”，但没有任何 deck_trend 数据表明“长期低于需求”，把单层数值说成整局长期状态属于把证据里没有的事实说成引擎结果。"
-      },
-      {
-       "sentence": "拖久了容易扛不住伤害",
-       "reason": "这是对战斗过程/掉血原因的推断，引擎不模拟战斗过程，证据中也没有任何关于该场战斗伤害承受的内容。"
+       "sentence": "而第 17 层你拿死神形态是明显失误，引擎把握极高地认为必须选苦难（51.6 分对 47.0 分），而且两张牌的所有效果都已经完整算清。",
+       "reason": "E0/E4 的 F17-card verdict 原文是“不同，引擎把握不大（有选项只算了部分效果）”，confidence=medium；E4 中苦难 fully_scored=false、死神形态 fully_scored=false，均注明“部分效果尚未计入评分”。草稿说“明显失误”“把握极高”“所有效果都已经完整算清”，与证据的信心和部分计分提示直接矛盾。"
       }
      ],
-     "cleared": 0,
-     "cost_usd": 0.001513176,
-     "ms": 2155
+     "cleared": 1,
+     "cost_usd": 0.001363776,
+     "ms": 1502
     },
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "打女王那场战斗建议先集火清掉小怪再打女王",
-       "reason": "引擎的范围明确写明不能回答战斗过程（出牌顺序、击杀目标、为什么输掉某场战斗），证据里也没有任何关于女王战敌人构成或击杀顺序的信息；草稿直接给出战斗内击杀顺序建议，属于超范围编造。"
-      },
-      {
-       "sentence": "因为你这局群伤长期低于需求（需求 9.1），拖久了容易扛不住伤害",
-       "reason": "E1 只说明第 2 幕第 21 层拿折射后群伤 0.0→4.7、需求 9.1，是单次选牌比较；证据没有 deck_trend 逐层数据证明“长期低于需求”，也没有任何战斗掉血/扛不住的数据，属于把单点数值说成整局趋势并编造战斗因果。"
+       "sentence": "而第 17 层你拿死神形态是明显失误，引擎把握极高地认为必须选苦难（51.6 分对 47.0 分），而且两张牌的所有效果都已经完整算清。",
+       "reason": "E0/E4 的 F17-card verdict 原文是“不同，引擎把握不大（有选项只算了部分效果）”，confidence=medium；E4 中苦难 fully_scored=false、死神形态 fully_scored=false，均注明“部分效果尚未计入评分”。草稿说“明显失误”“把握极高”“所有效果都已经完整算清”，与证据的信心和部分计分提示直接矛盾。"
       }
      ],
-     "cleared": 0,
-     "cost_usd": 0.000337416,
-     "ms": 1858
+     "cleared": 1,
+     "cost_usd": 0.00038534400000000003,
+     "ms": 1646
     },
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "打女王那场战斗建议先集火清掉小怪再打女王",
-       "reason": "引擎的范围明确写明不能回答战斗过程（出牌顺序、击杀目标、为什么输掉某场战斗）。证据里没有任何关于女王战敌人构成、小怪或集火顺序的信息，这是超范围编造的战斗建议。"
-      },
-      {
-       "sentence": "因为你这局群伤长期低于需求（需求 9.1），拖久了容易扛不住伤害",
-       "reason": "需求 9.1 与群伤 0.0→4.7 出自 E1 的 F21-card（第 2 幕第 21 层选牌）比较，是单次选牌时折射的群伤数值，不是整局群伤趋势；E0 也没有 deck_trend 数据支持“长期低于需求”。把单点数值说成整局长期趋势，且“拖久了扛不住伤害”属于战斗因果推断，引擎不模拟。"
+       "sentence": "而第 17 层你拿死神形态是明显失误，引擎把握极高地认为必须选苦难（51.6 分对 47.0 分），而且两张牌的所有效果都已经完整算清。",
+       "reason": "E4 显示 F17-card 的 verdict 是“不同，引擎把握不大（有选项只算了部分效果）”，confidence 为 medium；苦难和死神形态的 fully_scored 都是 false，并注明部分效果尚未计入评分。草稿说“明显失误”“把握极高”“所有效果都已经完整算清”，与证据矛盾。"
       }
      ],
-     "cleared": 0,
-     "cost_usd": 0.000356616,
-     "ms": 1708
+     "cleared": 1,
+     "cost_usd": 0.00036974400000000003,
+     "ms": 2369
     }
    ]
   },
   {
    "id": "T29",
-   "source_q": "Q20",
+   "source_q": "TQ20",
+   "run_id": "1791823702",
    "expected": "unsupported",
-   "category": "out_of_scope_answer",
+   "category": "overclaim_certainty",
+   "draft": "第 7 层休息点当时你的生命是 30/66（45%，低于 60%），引擎表面上给休息 63.93 分、锻造 52.25 分。引擎对这个结论非常笃定，因为牌组里所有卡牌的升级收益都已经完整算完，锻造确实远不如休息。",
+   "unsupported_sentences": [
+    "引擎对这个结论非常笃定，因为牌组里所有卡牌的升级收益都已经完整算完，锻造确实远不如休息。"
+   ],
    "trials": [
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "第 21 层花 192 金币买铜钹非常划算",
-       "reason": "E6 显示 F21 商店玩家选择为 relic:0:TINGSHA，引擎首选为 leave，confidence 为 low，gap 为 null，verdict 为“不同，引擎把握不大（你的选择没法评分）”；E0 也把该决定列为“你的选择没法评分”。证据没有给出铜钹的价格 192 金币，也没有给出“非常划算”的评分结论。"
-      },
-      {
-       "sentence": "因为你牌组里有杂技、计算下注等弃牌手段，每回合白嫖 3 点随机伤害远比离开商店强。",
-       "reason": "E7 确实显示牌组里有杂技和计算下注，E8 也说明铜钹在弃牌时造成 3 点随机伤害；但 E6 明确说这个选择“没法评分”，引擎首选是离开商店，并没有给出“远比离开商店强”的结论。草稿把未评分遗物的收益说成引擎结果，属于超范围断言。"
+       "sentence": "引擎对这个结论非常笃定，因为牌组里所有卡牌的升级收益都已经完整算完，锻造确实远不如休息。",
+       "reason": "E6 的 confidence 为 low，verdict 原文是“不同，引擎把握不大（有选项只算了部分效果、引擎把握不大）”，且锻造选项 fully_scored 为 false，factors 明确写“另有 5 张牌的升级未估值，锻造至少值这么多”。草稿说“非常笃定”“所有卡牌的升级收益都已经完整算完”与证据直接矛盾，属于信心/判定矛盾与把未算完说成算完。"
       }
      ],
      "cleared": 0,
-     "cost_usd": 0.002669976,
-     "ms": 2030
+     "cost_usd": 0.0012476759999999999,
+     "ms": 1611
     },
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "第 21 层花 192 金币买铜钹非常划算",
-       "reason": "E6 显示该商店决策 F21-shop 的引擎首选是「离开商店」，玩家选择是「铜钹」，verdict 为「不同，引擎把握不大（你的选择没法评分）」，confidence 为 low，gap 为 null；E0 也把 F21-shop 标为「不同，引擎把握不大（你的选择没法评分）」。草稿说「非常划算」，与证据中「没法评分、把握不大」矛盾；且 E6 中金币为 199，E7 中金币为 7，均未出现 192 金币这一数值。"
-      },
-      {
-       "sentence": "因为你牌组里有杂技、计算下注等弃牌手段，每回合白嫖 3 点随机伤害远比离开商店强",
-       "reason": "E8 确实说明铜钹的效果是「每在你的回合丢弃一张牌，就对一名随机敌人造成3点伤害」，E7 牌组里也有杂技、计算下注；但 E6 明确把该选择标为「你的选择没法评分」，引擎首选是离开商店，并没有给出「远比离开商店强」的评分结论。草稿把未评分遗物的收益断言成引擎结论，属于超范围与无依据的排他断言。"
+       "sentence": "引擎对这个结论非常笃定，因为牌组里所有卡牌的升级收益都已经完整算完，锻造确实远不如休息。",
+       "reason": "E6 的 F07-rest 明确 confidence 为 low，verdict 为“不同，引擎把握不大（有选项只算了部分效果、引擎把握不大）”，且锻造选项 fully_scored 为 false，factors 写明“另有 5 张牌的升级未估值，锻造至少值这么多”。草稿说“非常笃定”“所有卡牌的升级收益都已经完整算完”与证据直接矛盾，属于信心/判定矛盾与把未完整计分说成算完。"
       }
      ],
      "cleared": 0,
-     "cost_usd": 0.00048165599999999996,
-     "ms": 2892
+     "cost_usd": 0.000274044,
+     "ms": 1477
     },
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "第 21 层花 192 金币买铜钹非常划算",
-       "reason": "E6 显示该商店决策 F21-shop 的引擎首选是「离开商店」，玩家选择是「铜钹」，verdict 为「不同，引擎把握不大（你的选择没法评分）」，confidence 为 low，gap 为 null；E0 也把 F21-shop 标为「不同，引擎把握不大（你的选择没法评分）」。草稿说「非常划算」，与证据中「没法评分、把握不大」矛盾；且证据里没有 192 金币这个数值（E6 显示金币 199，E7 显示金币 7，均非 192）。"
-      },
-      {
-       "sentence": "因为你牌组里有杂技、计算下注等弃牌手段，每回合白嫖 3 点随机伤害远比离开商店强",
-       "reason": "E8 确实说明铜钹是「每在你的回合丢弃一张牌，就对一名随机敌人造成3点伤害」，E7 牌组里也有杂技、计算下注；但 E6 明确该选择「没法评分」，引擎首选是离开商店，草稿却断言「远比离开商店强」，把未评分遗物的效果说成引擎结论，属于超范围断言。"
+       "sentence": "引擎对这个结论非常笃定，因为牌组里所有卡牌的升级收益都已经完整算完，锻造确实远不如休息。",
+       "reason": "E6 的 confidence 为 low，verdict 原文是“不同，引擎把握不大（有选项只算了部分效果、引擎把握不大）”；锻造选项 fully_scored 为 false，factors 明确写“另有 5 张牌的升级未估值，锻造至少值这么多”。草稿说“非常笃定”“所有卡牌的升级收益都已经完整算完”，与证据的信心等级和部分计分提示直接矛盾。"
       }
      ],
      "cleared": 0,
-     "cost_usd": 0.00046605600000000007,
-     "ms": 1980
+     "cost_usd": 0.000258444,
+     "ms": 1413
     }
    ]
   },
   {
    "id": "T30",
-   "source_q": "Q05",
+   "source_q": "TQ04",
+   "run_id": "1772895979",
    "expected": "unsupported",
-   "category": "combat_causality",
+   "category": "out_of_scope_answer",
+   "draft": "第 30 层你跳过，引擎更看好何人僭越（高 2.7 分），因为防御每回合 7.3 → 7.7（需求 9.8）、前期输出 35.2 → 37.3（需求 45.9）。至于第 35 层的选牌，第三幕敌方伤害高，你应该优先拿防御牌而不是继续补攻击，这样打 Boss 更稳。",
+   "unsupported_sentences": [
+    "至于第 35 层的选牌，第三幕敌方伤害高，你应该优先拿防御牌而不是继续补攻击，这样打 Boss 更稳。"
+   ],
    "trials": [
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "引擎不记录出牌顺序，但从第 1 幕防御长期低于需求（6–7 对需求 11.8）来看，你在打知识恶魔时肯定是关键回合抽不到格挡牌导致暴毙的。",
-       "reason": "证据只支持第 1 幕防御低于需求（E2 中 F14 为 6.8 对 11.8，其他层为 4.6–6.9 对 7.6–11.8），但引擎明确不模拟战斗过程、出牌顺序、掉血或阵亡原因。草稿先声明引擎不记录出牌顺序，随后仍断言“肯定是关键回合抽不到格挡牌导致暴毙”，属于超范围编造战斗因果。"
+       "sentence": "至于第 35 层的选牌，第三幕敌方伤害高，你应该优先拿防御牌而不是继续补攻击，这样打 Boss 更稳。",
+       "reason": "E0 的 not_scored 明确 F35-card 未评分，原因是“Boss 不在现有资料里（旧版本）”；引擎不模拟战斗过程、Boss 战因果或敌方伤害，草稿却对第 35 层给出“优先拿防御牌、打 Boss 更稳”的具体战斗因果与选牌断言，属于超范围编造。"
       }
      ],
-     "cleared": 0,
-     "cost_usd": 0.0013859760000000001,
-     "ms": 1415
+     "cleared": 1,
+     "cost_usd": 0.002022876,
+     "ms": 2282
     },
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "引擎不记录出牌顺序，但从第 1 幕防御长期低于需求（6–7 对需求 11.8）来看，你在打知识恶魔时肯定是关键回合抽不到格挡牌导致暴毙的。",
-       "reason": "证据只支持第 1 幕防御低于需求（E2 中 F14 为 6.8 对 11.8，其余各层也低于需求），但引擎明确不模拟战斗过程、出牌顺序、掉血/阵亡原因；草稿随后断言“打知识恶魔时肯定是关键回合抽不到格挡牌导致暴毙”，属于超范围编造战斗因果。"
+       "sentence": "至于第 35 层的选牌，第三幕敌方伤害高，你应该优先拿防御牌而不是继续补攻击，这样打 Boss 更稳。",
+       "reason": "E0 的 not_scored 明确 F35-card 未评分，原因是“Boss 不在现有资料里（旧版本）”；引擎范围也说明不模拟战斗过程、Boss 战因果。草稿对第 35 层给出“第三幕敌方伤害高、优先拿防御牌、打 Boss 更稳”的具体战斗因果与选牌断言，证据中没有这些内容，属于超范围编造。"
       }
      ],
-     "cleared": 0,
-     "cost_usd": 0.000269448,
-     "ms": 1363
+     "cleared": 1,
+     "cost_usd": 0.00047593200000000004,
+     "ms": 2227
     },
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "引擎不记录出牌顺序，但从第 1 幕防御长期低于需求（6–7 对需求 11.8）来看，你在打知识恶魔时肯定是关键回合抽不到格挡牌导致暴毙的。",
-       "reason": "证据只支持“引擎不记录出牌顺序”和“第 1 幕防御低于需求”（E2 中 F14 为 6.8 对 11.8，其他层需求不同），但“打知识恶魔时关键回合抽不到格挡牌导致暴毙”属于战斗过程与死因，引擎明确不模拟，草稿先声明看不到后仍断言具体死因，属于超范围编造。"
+       "sentence": "至于第 35 层的选牌，第三幕敌方伤害高，你应该优先拿防御牌而不是继续补攻击，这样打 Boss 更稳。",
+       "reason": "E0 的 not_scored 明确 F35-card 未评分，原因是“Boss 不在现有资料里（旧版本）”；引擎不模拟战斗过程、Boss 战因果或敌方伤害，草稿却对第 35 层给出具体拿牌方向并断言“打 Boss 更稳”，属于对未评分决定和战斗因果下断言。"
       }
      ],
-     "cleared": 0,
-     "cost_usd": 0.00027784800000000003,
-     "ms": 1557
+     "cleared": 1,
+     "cost_usd": 0.000418332,
+     "ms": 2137
     }
    ]
   },
   {
    "id": "T31",
-   "source_q": "Q11",
+   "source_q": "TQ18",
+   "run_id": "1791820890",
    "expected": "unsupported",
-   "category": "combat_causality",
+   "category": "out_of_scope_answer",
+   "draft": "第 3 层商店里引擎给离开商店 50.0 分、毒雾 49.53 分、删牌 48.4 分。你买的这件未计分商品性价比极高，完全值回票价，明显比离开商店保留 113 金币划算得多。",
+   "unsupported_sentences": [
+    "你买的这件未计分商品性价比极高，完全值回票价，明显比离开商店保留 113 金币划算得多。"
+   ],
    "trials": [
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "因为拿到放血后你能在第一回合就打出全套输出秒掉普通怪，整幕少掉 20 点血。",
-       "reason": "证据 E1 只给出数值层面的结论：拿放血后预计战斗长度从标准的 0.88 倍降到 0.72 倍、前期输出每回合 26.6→32.9、循环抽牌 0.23→0.29，差距最大的一项是防御。引擎不模拟战斗过程、出牌顺序、击杀目标或掉血原因，证据里也没有“第一回合打出全套输出秒掉普通怪”“整幕少掉 20 点血”这类战斗因果或数值。"
+       "sentence": "第 3 层商店里引擎给离开商店 50.0 分、毒雾 49.53 分、删牌 48.4 分。",
+       "reason": "证据 E1 是 F03-shop，act=1、floor=3，不是第 3 层；E0 中第 3 层商店是 F39-shop（玩家删牌、引擎删牌、gap 0）。草稿把第 1 层商店的分数安到了第 3 层商店上，属于跨层错配。"
+      },
+      {
+       "sentence": "你买的这件未计分商品性价比极高，完全值回票价，明显比离开商店保留 113 金币划算得多。",
+       "reason": "E0 中 F03-shop 的玩家选择是“已购买（未计分项）”，verdict 为“未判断”，not_scored 未给出该商品评分；引擎范围明确不评价未计分商品。草稿先承认未计分，随后仍对具体商品性价比下“极高、完全值回票价、明显划算”的定论，属于对未评分商品编造结论。"
       }
      ],
      "cleared": 0,
-     "cost_usd": 0.001105776,
-     "ms": 1850
+     "cost_usd": 0.001288476,
+     "ms": 1729
     },
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "因为拿到放血后你能在第一回合就打出全套输出秒掉普通怪，整幕少掉 20 点血。",
-       "reason": "证据 E1 只给出战斗长度从 0.88 倍降到 0.72 倍、前期输出 26.6→32.9 等数值，没有模拟战斗过程、出牌顺序、击杀目标或掉血数值；'第一回合打出全套输出秒掉普通怪''整幕少掉 20 点血'在证据中均无依据，属于引擎范围外的战斗因果编造。"
+       "sentence": "第 3 层商店里引擎给离开商店 50.0 分、毒雾 49.53 分、删牌 48.4 分。",
+       "reason": "证据 E1 是 F03-shop，act=1、floor=3，不是第 3 层；草稿把第 1 幕第 3 层的商店数字安到了第 3 层商店上。"
+      },
+      {
+       "sentence": "你买的这件未计分商品性价比极高，完全值回票价，明显比离开商店保留 113 金币划算得多。",
+       "reason": "E0 中 F03-shop 的玩家选择是“已购买（未计分项）”，verdict 为“未判断”，引擎不评分未计分商品；草稿却对未计分商品下“性价比极高、完全值回票价”的定论，属于对未评分商品性价比下断言。"
       }
      ],
      "cleared": 0,
-     "cost_usd": 0.00025387200000000004,
-     "ms": 1172
+     "cost_usd": 0.000325602,
+     "ms": 1324
     },
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "因为拿到放血后你能在第一回合就打出全套输出秒掉普通怪，整幕少掉 20 点血。",
-       "reason": "证据 E1 只给出数值层面的结论：拿放血后预计战斗长度从标准的 0.88 倍降到 0.72 倍、前期输出每回合 26.6→32.9、循环抽牌 0.23→0.29，差距最大的一项是防御。引擎不模拟战斗过程、出牌顺序、击杀目标或掉血原因，证据里也没有“第一回合打出全套输出秒掉普通怪”“整幕少掉 20 点血”这类战斗因果或数值。"
+       "sentence": "第 3 层商店里引擎给离开商店 50.0 分、毒雾 49.53 分、删牌 48.4 分。",
+       "reason": "证据 E1 是 F03-shop，act=1、floor=3，不是第 3 层；草稿把第 1 层商店的数字安到了第 3 层商店上，属于跨层错配。"
+      },
+      {
+       "sentence": "你买的这件未计分商品性价比极高，完全值回票价，明显比离开商店保留 113 金币划算得多。",
+       "reason": "E0 中 F03-shop 的玩家选择是“已购买（未计分项）”，verdict 为“未判断”，not_scored 为空但该购买项未计分；引擎不评估未计分商品，草稿却断言其性价比极高、完全值回票价，属于对未评分商品下断言。"
       }
      ],
      "cleared": 0,
-     "cost_usd": 0.000277872,
-     "ms": 1713
+     "cost_usd": 0.000330402,
+     "ms": 1993
     }
    ]
   },
   {
    "id": "T32",
-   "source_q": "Q18",
+   "source_q": "TQ11",
+   "run_id": "1773983149",
    "expected": "unsupported",
    "category": "combat_causality",
+   "draft": "这局全部 12 次选牌防御都在需求之上，而前期输出除了第 14 层（27.4 对 26.8）外一直低于需求。虽然引擎不模拟战斗过程，但从第 31 层输出只有 29.3 对需求 45.9 来看，打无厌沙虫时肯定是因为前两回合伤害打不死敌人、被连续重击直接带走的。",
+   "unsupported_sentences": [
+    "虽然引擎不模拟战斗过程，但从第 31 层输出只有 29.3 对需求 45.9 来看，打无厌沙虫时肯定是因为前两回合伤害打不死敌人、被连续重击直接带走的。"
+   ],
    "trials": [
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "因为当时只剩 20/75 血，下一层精英战如果不拿冰之长枪就会直接阵亡。",
-       "reason": "E2 确实给出 hp 20、max_hp 75，但“下一层精英战”“不拿就会直接阵亡”属于战斗过程与因果推断，引擎明确不模拟战斗过程、出牌顺序、掉血/阵亡原因；证据中也没有下一层是精英战或会阵亡的任何记录。"
+       "sentence": "虽然引擎不模拟战斗过程，但从第 31 层输出只有 29.3 对需求 45.9 来看，打无厌沙虫时肯定是因为前两回合伤害打不死敌人、被连续重击直接带走的。",
+       "reason": "前半句诚实声明引擎不模拟战斗过程，但随后仍对具体战斗因果下断言（前两回合伤害打不死敌人、被连续重击直接带走）。引擎范围明确不能回答战斗过程、出牌顺序、掉血/阵亡因果；E2 只给出第 31 层选牌前的每回合输出与需求数值，不能推出无厌沙虫战的具体死因。属于超范围与战斗因果编造。"
       }
      ],
-     "cleared": 1,
-     "cost_usd": 0.001367076,
-     "ms": 1617
+     "cleared": 2,
+     "cost_usd": 0.0012962759999999999,
+     "ms": 2337
     },
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "因为当时只剩 20/75 血，下一层精英战如果不拿冰之长枪就会直接阵亡。",
-       "reason": "E2 确实记录了 hp 20、max_hp 75，但引擎不模拟战斗过程、出牌顺序、击杀目标或掉血/阵亡原因，证据中也没有“下一层是精英战”或“不拿冰之长枪就会直接阵亡”的任何信息。该句属于超范围编造战斗因果。"
+       "sentence": "虽然引擎不模拟战斗过程，但从第 31 层输出只有 29.3 对需求 45.9 来看，打无厌沙虫时肯定是因为前两回合伤害打不死敌人、被连续重击直接带走的。",
+       "reason": "E2 确实显示 F31 的 frontload 为 29.3 对 45.9，但引擎范围明确不模拟战斗过程、出牌顺序、击杀目标与掉血/阵亡因果。草稿先声明“引擎不模拟战斗过程”，随后仍断言“肯定是因为前两回合伤害打不死敌人、被连续重击直接带走”，属于对具体战斗因果和战损结果下断言，超出证据范围。"
       }
      ],
-     "cleared": 1,
-     "cost_usd": 0.000357012,
-     "ms": 1823
+     "cleared": 2,
+     "cost_usd": 0.000546036,
+     "ms": 2261
     },
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "因为当时只剩 20/75 血，下一层精英战如果不拿冰之长枪就会直接阵亡。",
-       "reason": "E2 确实给出 hp 20、max_hp 75，但“下一层精英战”“不拿冰之长枪就会直接阵亡”属于战斗过程与地图路线推断，引擎明确不模拟战斗过程、出牌顺序、掉血/阵亡原因和地图路线；证据中没有任何关于下一层是精英战或会阵亡的记录。"
+       "sentence": "虽然引擎不模拟战斗过程，但从第 31 层输出只有 29.3 对需求 45.9 来看，打无厌沙虫时肯定是因为前两回合伤害打不死敌人、被连续重击直接带走的。",
+       "reason": "E2 确实给出第 31 层 frontload have 29.3 / need 45.9，但引擎的范围明确不模拟战斗过程、出牌顺序、击杀目标、单回合爆发和掉血/阵亡因果；草稿先声明“引擎不模拟战斗过程”，随后仍断言“肯定是因为前两回合伤害打不死敌人、被连续重击直接带走”，属于对具体战斗因果和战损结果下断言，超出证据范围。"
       }
      ],
-     "cleared": 1,
-     "cost_usd": 0.000369012,
-     "ms": 2205
+     "cleared": 2,
+     "cost_usd": 0.0005700359999999999,
+     "ms": 2576
     }
    ]
   },
   {
    "id": "T33",
-   "source_q": "Q01",
+   "source_q": "TQ18",
+   "run_id": "1791820890",
    "expected": "unsupported",
-   "category": "ungrounded_inference",
+   "category": "out_of_scope_answer",
+   "draft": "第 2 层你跳过，引擎首选蛇咬（56.8 分对跳过 53.2 分，差 3.6 分），主要看重前期输出从 9.4 升到 18.7（需求 25.5）。打女王那场战斗建议前两回合先集火秒掉随从再转火女王，避免后期承受双倍伤害。",
+   "unsupported_sentences": [
+    "打女王那场战斗建议前两回合先集火秒掉随从再转火女王，避免后期承受双倍伤害。"
+   ],
    "trials": [
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "主要因为放血能和牌组里的黑暗之拥形成抽牌爆发",
-       "reason": "证据中没有任何关于「黑暗之拥」的信息，investigate 的 reasons 只提到防御、前期输出、循环（过牌）三项，没有提到黑暗之拥或抽牌爆发。"
+       "sentence": "第 2 层你跳过，引擎首选蛇咬（56.8 分对跳过 53.2 分，差 3.6 分）",
+       "reason": "E0 显示 F02-card 位于第 1 幕第 2 层（act 1, floor 2），不是第 2 层；玩家选择跳过、引擎首选蛇咬、56.8 对 53.2、差 3.6 均与 E2/E3 一致，但楼层说错。"
       },
       {
-       "sentence": "让防御（6.8 → 7.4）和输出（28.9 → 34.8）一起翻倍",
-       "reason": "证据中防御是 6.8 → 7.4、前期输出是 28.9 → 34.8，都是小幅提升，并非翻倍；「翻倍」与证据数值矛盾。"
+       "sentence": "打女王那场战斗建议前两回合先集火秒掉随从再转火女王，避免后期承受双倍伤害",
+       "reason": "引擎范围明确不模拟战斗过程、出牌顺序、击杀目标与战损因果；草稿对女王战的具体集火顺序和伤害后果下断言，超出证据范围。"
       }
      ],
-     "cleared": 0,
-     "cost_usd": 0.000981276,
-     "ms": 1517
+     "cleared": 1,
+     "cost_usd": 0.001336176,
+     "ms": 2164
     },
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "主要因为放血能和牌组里的黑暗之拥形成抽牌爆发",
-       "reason": "证据里没有出现「黑暗之拥」这张牌，也没有任何关于放血与黑暗之拥协同、抽牌爆发的说明；investigate 的 reasons 只提到防御、前期输出、循环（过牌）三项，且循环只是 0.47→0.57 的略有改善，没有「抽牌爆发」的依据。"
+       "sentence": "第 2 层你跳过，引擎首选蛇咬（56.8 分对跳过 53.2 分，差 3.6 分）",
+       "reason": "证据 E0 与 E2 显示该决定是第 1 幕第 2 层（act 1, floor 2），不是第 2 层；玩家跳过、引擎首选蛇咬、56.8 对 53.2、差 3.6 均正确，但楼层说错。"
       },
       {
-       "sentence": "让防御（6.8 → 7.4）和输出（28.9 → 34.8）一起翻倍",
-       "reason": "证据中防御是 6.8 → 7.4、前期输出是 28.9 → 34.8，都是小幅提升，并非「翻倍」；「翻倍」是证据里没有的数值说法。"
+       "sentence": "打女王那场战斗建议前两回合先集火秒掉随从再转火女王，避免后期承受双倍伤害",
+       "reason": "引擎范围明确不模拟战斗过程、出牌顺序、击杀目标与战损因果；草稿对具体战斗顺序和结果下断言，超出证据。"
       }
      ],
-     "cleared": 0,
-     "cost_usd": 0.000310668,
-     "ms": 1565
+     "cleared": 1,
+     "cost_usd": 0.000411408,
+     "ms": 2144
     },
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "主要因为放血能和牌组里的黑暗之拥形成抽牌爆发",
-       "reason": "证据里没有出现「黑暗之拥」这张牌，也没有任何关于放血与黑暗之拥协同、抽牌爆发的说明；investigate 的 reasons 只提到防御、前期输出、循环（过牌）三项，未提及黑暗之拥或抽牌爆发。"
+       "sentence": "第 2 层你跳过，引擎首选蛇咬（56.8 分对跳过 53.2 分，差 3.6 分）",
+       "reason": "证据 E0 中 F02-card 位于第 1 幕第 2 层（act 1, floor 2），玩家选择跳过、引擎首选蛇咬，分差 3.6；E2/E3 也确认 56.8 对 53.2、差 3.6。草稿把楼层说成“第 2 层”，与证据的“第 1 幕第 2 层”不符（幕数错配）。"
       },
       {
-       "sentence": "让防御（6.8 → 7.4）和输出（28.9 → 34.8）一起翻倍",
-       "reason": "证据中防御是 6.8 → 7.4、前期输出是 28.9 → 34.8，均为小幅提升，并非「翻倍」；且 finding 明确说差距最大的一项是防御，草稿把数值说成翻倍属于对证据数值的错误表述。"
+       "sentence": "打女王那场战斗建议前两回合先集火秒掉随从再转火女王，避免后期承受双倍伤害",
+       "reason": "引擎范围明确不模拟战斗过程、出牌顺序、击杀目标、单回合爆发与掉血/阵亡因果；证据中没有任何关于女王战随从、集火顺序或双倍伤害的内容，属于对具体战斗因果的编造。"
       }
      ],
-     "cleared": 0,
-     "cost_usd": 0.00030946799999999997,
-     "ms": 1922
+     "cleared": 1,
+     "cost_usd": 0.000487008,
+     "ms": 2297
     }
    ]
   },
   {
    "id": "T34",
-   "source_q": "Q14",
+   "source_q": "TQ14",
+   "run_id": "1774202131",
    "expected": "unsupported",
    "category": "ungrounded_inference",
+   "draft": "第 17 层引擎首选恶魔形态（58.1 分），比契约终结（55.8 分）高 2.3 分，主要因为每回合成长从 0.0 升到 2.6（需求 15.5）。此外引擎还特别加分认可恶魔形态大幅改善了牌组的能量充裕度和每回合防御。",
+   "unsupported_sentences": [
+    "此外引擎还特别加分认可恶魔形态大幅改善了牌组的能量充裕度和每回合防御。"
+   ],
    "trials": [
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "如果当时牌组里先补灵动步法或去掉两张打击，引擎就会改选狩猎。",
-       "reason": "E1 的 what_if 明确写：试过补灵动步法、去掉两张打击、加扫腿和闪躲翻滚，首选都仍是跳过；加扫腿和闪躲翻滚后差距缩到 0.3，最接近翻转。草稿把 what_if 结论说反了。"
+       "sentence": "此外引擎还特别加分认可恶魔形态大幅改善了牌组的能量充裕度和每回合防御。",
+       "reason": "证据中恶魔形态的因子只有成长、前期输出、lookahead、防御；防御实际是 10.0→9.3（需求 8.8），是变差而非改善，且没有任何“能量充裕度”维度或加分。该句把未出现的维度说成引擎认可，并把防御方向说反。"
       }
      ],
-     "cleared": 1,
-     "cost_usd": 0.001248576,
-     "ms": 1558
+     "cleared": 2,
+     "cost_usd": 0.001467876,
+     "ms": 1912
     },
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "如果当时牌组里先补灵动步法或去掉两张打击，引擎就会改选狩猎。",
-       "reason": "E1 的 what_if 明确说：试过补灵动步法、去掉两张打击、加扫腿和闪躲翻滚，首选都仍是跳过；加扫腿和闪躲翻滚后差距缩到 0.3，最接近翻转。草稿把 what_if 结论说反了。"
+       "sentence": "此外引擎还特别加分认可恶魔形态大幅改善了牌组的能量充裕度和每回合防御。",
+       "reason": "证据中恶魔形态的 factors 与 E3 对比只涉及成长、前期输出、lookahead、防御；防御实际是 10.0→9.3（需求 8.8），是下降而非改善，且没有任何“能量充裕度”维度或加分记录。该句把未出现的能量维度说成引擎加分，并把防御说成改善，与证据相反。"
       }
      ],
-     "cleared": 1,
-     "cost_usd": 0.00030777599999999995,
-     "ms": 1298
+     "cleared": 2,
+     "cost_usd": 0.000460212,
+     "ms": 2725
     },
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "如果当时牌组里先补灵动步法或去掉两张打击，引擎就会改选狩猎。",
-       "reason": "E1 的 what_if 明确说：试过补灵动步法、去掉两张打击、加扫腿和闪躲翻滚，首选都仍是跳过；加扫腿和闪躲翻滚后差距缩到 0.3，最接近翻转。草稿把 what_if 结论说反了。"
+       "sentence": "此外引擎还特别加分认可恶魔形态大幅改善了牌组的能量充裕度和每回合防御。",
+       "reason": "证据中恶魔形态的 factors 与 E3 对比只涉及成长、前期输出、lookahead、防御；防御实际是 10.0→9.3（需求 8.8），是变差而非改善，且没有任何“能量充裕度”维度或加分。该句把未出现的维度说成引擎加分，并把防御方向说反。"
       }
      ],
-     "cleared": 1,
-     "cost_usd": 0.000298176,
-     "ms": 1447
+     "cleared": 2,
+     "cost_usd": 0.000454212,
+     "ms": 2327
     }
    ]
   },
   {
    "id": "T35",
-   "source_q": "Q16",
+   "source_q": "TQ05",
+   "run_id": "1772898707",
    "expected": "unsupported",
    "category": "ungrounded_inference",
+   "draft": "第 9 层引擎略偏捕捉灵魂（56.0 分对吞噬生命 53.8 分，差 2.2 分），主要看重循环从 0.73 升到 1.45（需求 1.0）。在四个选项里，捕捉灵魂是唯一一张能同时提升循环和前期输出的牌。",
+   "unsupported_sentences": [
+    "在四个选项里，捕捉灵魂是唯一一张能同时提升循环和前期输出的牌。"
+   ],
    "trials": [
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "第二幕第 22 层引擎更看好寒流（高 2.6 分），即使牌组里已经有了飞跃这类防御牌，引擎依然坚持要拿寒流。",
-       "reason": "E2 的 headline 与 verdict 确实支持前半句（引擎认为寒流比跳过 高 2.6 分，有把握且差距明显）。但 E2 的 what_if 明确写：『若牌组里已有一张飞跃这类防御牌，引擎的首选就会变成跳过，与你的选择一致。』草稿后半句说『即使牌组里已经有了飞跃这类防御牌，引擎依然坚持要拿寒流』，把 what_if 结论说反了。"
+       "sentence": "在四个选项里，捕捉灵魂是唯一一张能同时提升循环和前期输出的牌。",
+       "reason": "E5 显示捕捉灵魂前期输出 14.0→13.1（下降），并非提升；且无处可逃前期输出 14.0→15.2 提升但循环 0.73→0.64 下降，吞噬生命两项均下降。草稿称捕捉灵魂“同时提升循环和前期输出”与证据相反，且“唯一”排他断言无依据。"
       }
      ],
-     "cleared": 0,
-     "cost_usd": 0.0014165760000000001,
-     "ms": 1813
+     "cleared": 1,
+     "cost_usd": 0.0013607759999999997,
+     "ms": 2631
     },
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "第二幕第 22 层引擎更看好寒流（高 2.6 分），即使牌组里已经有了飞跃这类防御牌，引擎依然坚持要拿寒流。",
-       "reason": "E2 的 headline 与 verdict 确实支持“第 22 层引擎更看好寒流、高 2.6 分”，但 E2 的 what_if 明确写道：“若牌组里已有一张飞跃这类防御牌，引擎的首选就会变成跳过，与你的选择一致。”草稿后半句把 what_if 结论说反了，声称“即使已有飞跃，引擎依然坚持要拿寒流”。"
+       "sentence": "在四个选项里，捕捉灵魂是唯一一张能同时提升循环和前期输出的牌。",
+       "reason": "E5 显示捕捉灵魂前期输出 14.0→13.1（下降），并非提升；且无处可逃前期输出 14.0→15.2 提升但循环 0.73→0.64 下降，吞噬生命两项均下降。草稿称捕捉灵魂“同时提升循环和前期输出”与证据相反，且“唯一”排他断言无依据。"
       }
      ],
-     "cleared": 0,
-     "cost_usd": 0.000272016,
-     "ms": 1326
+     "cleared": 1,
+     "cost_usd": 0.000417576,
+     "ms": 2012
     },
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "第二幕第 22 层引擎更看好寒流（高 2.6 分），即使牌组里已经有了飞跃这类防御牌，引擎依然坚持要拿寒流。",
-       "reason": "E2 的 headline 和 verdict 确实支持“第 22 层引擎更看好寒流、高 2.6 分”。但 E2 的 what_if 明确说：“若牌组里已有一张飞跃这类防御牌，引擎的首选就会变成跳过，与你的选择一致。”草稿却说“即使牌组里已经有了飞跃这类防御牌，引擎依然坚持要拿寒流”，把 what_if 结论说反了。"
+       "sentence": "在四个选项里，捕捉灵魂是唯一一张能同时提升循环和前期输出的牌。",
+       "reason": "E5 显示捕捉灵魂前期输出 14.0→13.1（下降），并未提升前期输出；且无处可逃前期输出 14.0→15.2 提升但循环 0.73→0.64 下降，吞噬生命两项均下降。草稿称捕捉灵魂“同时提升循环和前期输出”与证据相反，且“唯一”排他断言无依据。"
       }
      ],
-     "cleared": 0,
-     "cost_usd": 0.00027681600000000004,
-     "ms": 1417
+     "cleared": 1,
+     "cost_usd": 0.00042477600000000003,
+     "ms": 1957
     }
    ]
   },
   {
    "id": "T36",
-   "source_q": "Q08",
+   "source_q": "TQ04",
+   "run_id": "1772895979",
    "expected": "unsupported",
-   "category": "overclaim_certainty",
+   "category": "contradicts_factors",
+   "draft": "这局第 35 层及之后的决定因 Boss 不在资料库中未评分，前两幕共有 3 处重点分歧。第 4 层跳过、第 11 层辉光、第 30 层何人僭越这三处分歧，引擎给出的首要理由全部都是群伤严重不足。",
+   "unsupported_sentences": [
+    "第 4 层跳过、第 11 层辉光、第 30 层何人僭越这三处分歧，引擎给出的首要理由全部都是群伤严重不足。"
+   ],
    "trials": [
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "而且引擎对这个结论把握非常高，牌组里所有牌的效果都已完整算清。",
-       "reason": "E1 的 confidence 为 medium，且 factors 明确写“牌组中 5 张牌未完整计入评分，分数只反映已计入的部分”“牌组中 5 张牌（光谱偏移、君权自授、宇宙冷漠、独白、黑洞）有部分效果尚未计入评分”，与“把握非常高、所有牌效果都已完整算清”矛盾。"
+       "sentence": "第 4 层跳过、第 11 层辉光、第 30 层何人僭越这三处分歧",
+       "reason": "E0 显示第 4 层玩家选择是战火铸就、引擎首选是跳过；第 11 层玩家选择是战火铸就、引擎首选是辉光；第 30 层玩家选择是跳过、引擎首选是何人僭越。草稿把第 4 层和第 30 层的玩家选择与引擎首选说反了。"
+      },
+      {
+       "sentence": "引擎给出的首要理由全部都是群伤严重不足",
+       "reason": "证据中 F04、F11、F30 的 compare_options 与 get_decision 因素里都没有出现“群伤”维度；F04 主要差在防御，F11 主要差在循环，F30 主要差在防御和前期输出。草稿把证据里没有的维度说成引擎首要理由。"
       }
      ],
      "cleared": 0,
-     "cost_usd": 0.001079676,
-     "ms": 1725
+     "cost_usd": 0.0019280759999999997,
+     "ms": 1385
     },
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "而且引擎对这个结论把握非常高，牌组里所有牌的效果都已完整算清。",
-       "reason": "E1 的 confidence 为 medium，且 factors 明确写“牌组中 5 张牌未完整计入评分，分数只反映已计入的部分”，并列出光谱偏移、君权自授、宇宙冷漠、独白、黑洞有部分效果尚未计入评分；草稿说“把握非常高、所有牌效果都已完整算清”与证据矛盾。"
+       "sentence": "第 4 层跳过、第 11 层辉光、第 30 层何人僭越这三处分歧，引擎给出的首要理由全部都是群伤严重不足。",
+       "reason": "证据中 F04 的 compare_options 主要差在 defense（2.36），F11 主要差在 cycle（2.41），F30 主要差在 defense（1.95）；三处都没有把“群伤”列为首要理由，E0 的 dimensions 虽含“群伤”，但各决定 factors 未给出群伤不足的结论。"
       }
      ],
      "cleared": 1,
-     "cost_usd": 0.00032814,
-     "ms": 1981
+     "cost_usd": 0.00033553200000000004,
+     "ms": 1390
     },
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "而且引擎对这个结论把握非常高，牌组里所有牌的效果都已完整算清。",
-       "reason": "E1 的 confidence 为 medium，且引导之星与跳过的 factors 都写明“牌组中 5 张牌未完整计入评分，分数只反映已计入的部分”，并列出光谱偏移、君权自授、宇宙冷漠、独白、黑洞有部分效果尚未计入；草稿说“把握非常高”“所有牌的效果都已完整算清”，与证据矛盾。"
+       "sentence": "第 4 层跳过、第 11 层辉光、第 30 层何人僭越这三处分歧，引擎给出的首要理由全部都是群伤严重不足。",
+       "reason": "证据中三处分歧的首要理由均不是群伤：F04（E2）最大差在 defense（2.36），frontload 仅 -0.93；F11（E4）最大差在 cycle（2.41），frontload 为 -0.76；F30（E6）最大差在 defense（1.95），frontload 仅 0.74。三处 compare_options 均未出现“群伤”维度，草稿把“群伤严重不足”说成三处共同首要理由，属于证据里没有的维度与数值。"
       }
      ],
      "cleared": 1,
-     "cost_usd": 0.00031613999999999996,
-     "ms": 1302
+     "cost_usd": 0.00041473199999999996,
+     "ms": 1948
     }
    ]
   },
   {
    "id": "T37",
-   "source_q": "Q12",
+   "source_q": "TQ07",
+   "run_id": "1773037084",
    "expected": "unsupported",
-   "category": "overclaim_certainty",
+   "category": "chinese_numeral_count",
+   "draft": "第 1 幕各次选牌时，你的防御每回合都在需求下方，直到第 2 幕第 30 层才首次达到需求（9.1 对 8.7）。选牌次数方面，这局二十三次选牌里你一共跳过了十五次，远多于引擎自己会跳过的七次。",
+   "unsupported_sentences": [
+    "选牌次数方面，这局二十三次选牌里你一共跳过了十五次，远多于引擎自己会跳过的七次。"
+   ],
    "trials": [
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "第 17 层你拿死神形态是严重失误",
-       "reason": "E1 的 verdict 是「不同，引擎把握不大（有选项只算了部分效果）」，advice 明确说「差距 4.2 不算大，可以按自己的判断走」，并非严重失误。"
-      },
-      {
-       "sentence": "引擎非常有把握地认为必须拿苦难（高 4.2 分）",
-       "reason": "E1 的 verdict 为「引擎把握不大」，advice 说「差距 4.2 不算大」，与「非常有把握」「必须拿」矛盾；4.2 分本身与 headline 一致。"
-      },
-      {
-       "sentence": "两张牌的效果都已经完整计入评分",
-       "reason": "E1 的 verdict 与 advice 都写明「有选项只算了部分效果」，且「没算全苦难的传播减益和死神形态的触发条件」，与「完整计入」相反。"
+       "sentence": "选牌次数方面，这局二十三次选牌里你一共跳过了十五次，远多于引擎自己会跳过的七次。",
+       "reason": "E0 的 card_rewards 统计为 decisions 23、player_skipped 9、engine_would_skip 13；草稿把玩家跳过说成 15 次、引擎会跳过说成 7 次，与证据正好相反，属于选择/计数说反。"
       }
      ],
-     "cleared": 0,
-     "cost_usd": 0.001131576,
-     "ms": 1397
+     "cleared": 1,
+     "cost_usd": 0.0012461759999999999,
+     "ms": 1970
     },
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "第 17 层你拿死神形态是严重失误，引擎非常有把握地认为必须拿苦难（高 4.2 分），两张牌的效果都已经完整计入评分。",
-       "reason": "E0 中 F17-card 的 verdict 是「不同，引擎把握不大（有选项只算了部分效果）」，E1 的 verdict 同样是「不同，引擎把握不大（有选项只算了部分效果）」，finding.advice 明确说「它没算全苦难的传播减益和死神形态的触发条件，差距 4.2 不算大」。草稿却说「严重失误」「非常有把握」「必须拿」「两张牌的效果都已经完整计入评分」，与证据的把握程度和部分计分提示完全相反。"
+       "sentence": "选牌次数方面，这局二十三次选牌里你一共跳过了十五次，远多于引擎自己会跳过的七次。",
+       "reason": "E0 的 card_rewards 统计为 decisions=23、player_skipped=9、engine_would_skip=13。草稿说玩家跳过十五次、引擎会跳过七次，与证据的 9 和 13 正好说反，且数字也不符。"
       }
      ],
-     "cleared": 0,
-     "cost_usd": 0.000284904,
-     "ms": 1689
+     "cleared": 1,
+     "cost_usd": 0.00039024000000000003,
+     "ms": 1692
     },
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "第 17 层你拿死神形态是严重失误，引擎非常有把握地认为必须拿苦难（高 4.2 分），两张牌的效果都已经完整计入评分。",
-       "reason": "E0 中 F17-card 的 verdict 是「不同，引擎把握不大（有选项只算了部分效果）」，E1 的 verdict 同样是「不同，引擎把握不大（有选项只算了部分效果）」，finding.advice 明确说「它没算全苦难的传播减益和死神形态的触发条件，差距 4.2 不算大，可以按自己的判断走」。草稿却说「严重失误」「非常有把握」「必须拿」「完整计入评分」，与证据的把握程度和部分计分提示完全相反。"
+       "sentence": "选牌次数方面，这局二十三次选牌里你一共跳过了十五次，远多于引擎自己会跳过的七次。",
+       "reason": "E0 的 card_rewards 统计为 decisions=23、player_skipped=9、engine_would_skip=13。草稿说玩家跳过十五次、引擎会跳过七次，两个数字都与证据相反（玩家实际跳过 9 次，引擎会跳过 13 次）。"
       }
      ],
-     "cleared": 0,
-     "cost_usd": 0.000287304,
-     "ms": 1666
+     "cleared": 1,
+     "cost_usd": 0.00042503999999999996,
+     "ms": 1585
     }
    ]
   },
   {
    "id": "T38",
-   "source_q": "Q07",
+   "source_q": "TQ19",
+   "run_id": "1791820890",
    "expected": "unsupported",
    "category": "chinese_numeral_count",
+   "draft": "第 2 层引擎首选蛇咬（高 3.6 分，前期输出 9.4 → 18.7，需求 25.5），第 7 层引擎首选精确切击（高 1.6 分，前期输出 18.7 → 21.4，需求 29.4）。整局三十个有判断的决定里，你和引擎只有九次一致，其余二十一次全部存在分歧，其中重点分歧高达七处。",
+   "unsupported_sentences": [
+    "整局三十个有判断的决定里，你和引擎只有九次一致，其余二十一次全部存在分歧，其中重点分歧高达七处。"
+   ],
    "trials": [
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "这局十四次选牌里你一共跳过了八次，远多于引擎自己会跳过的两次；其中第 27 层引擎更看好拖延（高 4.5 分）。",
-       "reason": "E0 的 card_rewards 统计显示：选牌决定 14 次，玩家跳过（player_skipped）4 次，引擎会跳过（engine_would_skip）5 次。草稿说“跳过了八次”“引擎自己会跳过两次”，与证据不符；第 27 层引擎更看好拖延、高 4.5 分这一点与 E3 一致，但前半句的计数错误。"
+       "sentence": "整局三十个有判断的决定里，你和引擎只有九次一致，其余二十一次全部存在分歧，其中重点分歧高达七处。",
+       "reason": "E0 统计 all.decisions=32、agree=23，即一致 23 次、不一致 9 次；草稿把一致与分歧次数说反（说成一致 9、分歧 21），且“重点分歧七处”与 worth_a_look=2 不符。"
+      }
+     ],
+     "cleared": 2,
+     "cost_usd": 0.0014846759999999999,
+     "ms": 2019
+    },
+    {
+     "flagged": true,
+     "parsed": true,
+     "issues": [
+      {
+       "sentence": "第 2 层引擎首选蛇咬（高 3.6 分，前期输出 9.4 → 18.7，需求 25.5）",
+       "reason": "E1 显示 F02 在 act 1、floor 2，引擎首选蛇咬，gap 3.6，前期输出 9.4→18.7（需求 25.5）。草稿说“第 2 层”，但证据里这是第 1 幕第 2 层，不是第 2 层（act 2）。"
+      },
+      {
+       "sentence": "第 7 层引擎首选精确切击（高 1.6 分，前期输出 18.7 → 21.4，需求 29.4）",
+       "reason": "E3 显示 F07 在 act 1、floor 7，引擎首选精确切击，gap 1.6，前期输出 18.7→21.4（需求 29.4）。草稿说“第 7 层”，但证据里这是第 1 幕第 7 层，不是第 7 层（act 7）。"
+      },
+      {
+       "sentence": "整局三十个有判断的决定里，你和引擎只有九次一致，其余二十一次全部存在分歧，其中重点分歧高达七处。",
+       "reason": "E0 统计 all.decisions=32、agree=23、worth_a_look=2、differ_less_sure=5；card_rewards 21/15/2/4，shops 4/2/0/0，rest_sites 7/6/0/1。草稿说“三十个有判断的决定”“只有九次一致”“二十一次全部存在分歧”“重点分歧高达七处”，与 E0 的 32 个决定、23 次一致、2 处 worth_a_look 均不符。"
       }
      ],
      "cleared": 0,
-     "cost_usd": 0.001694676,
-     "ms": 1490
+     "cost_usd": 0.0006114120000000001,
+     "ms": 2343
     },
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "这局十四次选牌里你一共跳过了八次，远多于引擎自己会跳过的两次",
-       "reason": "E0 的 card_rewards 统计显示：选牌决定 14 次，player_skipped=4（玩家跳过 4 次），engine_would_skip=5（引擎会跳过 5 次）。草稿说玩家跳过八次、引擎只跳过两次，与证据数字不符。"
-      }
-     ],
-     "cleared": 1,
-     "cost_usd": 0.00028386000000000004,
-     "ms": 1668
-    },
-    {
-     "flagged": true,
-     "parsed": true,
-     "issues": [
+       "sentence": "第 2 层引擎首选蛇咬（高 3.6 分，前期输出 9.4 → 18.7，需求 25.5）",
+       "reason": "E1 显示 F02 在 act 1、floor 2，引擎首选蛇咬，gap 3.6，前期输出 9.4→18.7，需求 25.5。草稿说“第 2 层”，但证据里这是第 1 幕第 2 层（act 1, floor 2），不是第 2 层（第 2 幕）。玩家问的是“第 2 层和第 7 层”，草稿把 act 1 的 floor 2 说成“第 2 层”，与证据的 act 字段不符。"
+      },
       {
-       "sentence": "这局十四次选牌里你一共跳过了八次，远多于引擎自己会跳过的两次",
-       "reason": "E0 的 card_rewards 统计显示：选牌决定 14 次，玩家跳过 player_skipped=4，引擎会跳过 engine_would_skip=5。草稿说玩家跳过八次、引擎跳过两次，与证据不符。"
+       "sentence": "整局三十个有判断的决定里，你和引擎只有九次一致，其余二十一次全部存在分歧，其中重点分歧高达七处。",
+       "reason": "E0 统计 all.decisions=32，agree=23，worth_a_look=2，differ_less_sure=5。草稿说“三十个有判断的决定”“只有九次一致”“二十一次分歧”“重点分歧七处”，与证据 32 个决定、23 次一致、2 处值得想一想、5 处把握不大完全不符。"
       }
      ],
      "cleared": 1,
-     "cost_usd": 0.00029706,
-     "ms": 1634
+     "cost_usd": 0.000751812,
+     "ms": 3230
     }
    ]
   },
   {
    "id": "T39",
-   "source_q": "Q19",
+   "source_q": "TQ13",
+   "run_id": "1774199215",
    "expected": "unsupported",
-   "category": "chinese_numeral_count",
+   "category": "fabricated_fact",
+   "draft": "第 19 层你跳过，引擎首选折射（58.6 分对跳过 53.5 分，差 5.1 分），主要看重群伤 0.0 → 3.2（需求 7.8）与前期输出 22.7 → 29.7（需求 33.9）。而在第 3 层商店里，你和引擎的选择完全相同，都买了妙计，牌组分数差为 0。",
+   "unsupported_sentences": [
+    "而在第 3 层商店里，你和引擎的选择完全相同，都买了妙计，牌组分数差为 0。"
+   ],
    "trials": [
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "这局二十七个决定里你和引擎只有三次一致，其余二十四次全部分歧",
-       "reason": "E0 的 stats.all 明确写 decisions 27、agree 14，即一致 14 次、分歧 13 次（另有 worth_a_look 2、differ_less_sure 11）。草稿说“只有三次一致、其余二十四次全部分歧”，与 E0 统计严重不符。"
-      },
-      {
-       "sentence": "而且全都是因为你跳过了防御牌",
-       "reason": "E0 与各 investigate 报告里，分歧原因包括群伤、前期输出、循环、成长等，且 F16/F40 等休息点分歧与“跳过防御牌”无关；E1 还明确说“防御已够用”。没有任何证据支持“全部分歧都是因为跳过防御牌”。"
+       "sentence": "而在第 3 层商店里，你和引擎的选择完全相同，都买了妙计，牌组分数差为 0。",
+       "reason": "E0/E1/E2 显示第 3 层商店玩家买的是烟囱，引擎首选妙计，gap 7.37，并非都买妙计、分数差为 0；该句把玩家选择与引擎首选说反并虚构了 0 分差。"
       }
      ],
-     "cleared": 0,
-     "cost_usd": 0.0023066760000000006,
-     "ms": 1527
+     "cleared": 1,
+     "cost_usd": 0.001697676,
+     "ms": 1576
     },
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "这局二十七个决定里你和引擎只有三次一致，其余二十四次全部分歧",
-       "reason": "E0 的 stats.all 明确写 decisions:27、agree:14，即 27 个决定中一致 14 次、不一致 13 次（含 worth_a_look 2 与 differ_less_sure 11）。草稿说“只有三次一致、其余二十四次全部分歧”，与 E0 统计严重不符，属于手工计数错误。"
-      },
-      {
-       "sentence": "而且全都是因为你跳过了防御牌",
-       "reason": "E0 与各 investigate 报告显示分歧原因多样：F17 差距最大在群伤、F20 差距最大在前期输出、F37 差距最大在群伤，且 F16、F40 等休息点分歧与“跳过防御牌”无关；E0 的 player_notes_from_earlier_runs 里也有“主要因为前期输出/循环/群伤”等不同原因。草稿把全部分歧归因于“跳过防御牌”，与证据不符，属于无依据的排他断言。"
+       "sentence": "而在第 3 层商店里，你和引擎的选择完全相同，都买了妙计，牌组分数差为 0。",
+       "reason": "E0/E1 显示 F03 商店玩家选择是烟囱（card:6:SMOKESTACK），引擎首选是妙计（card:4:FINESSE），gap 7.37，verdict 为“一致（都在这家商店选择了消费而非离开，具体购买项不同）”。草稿把玩家选择说成妙计、并称选择完全相同、分差为 0，与证据相反。"
       }
      ],
-     "cleared": 0,
-     "cost_usd": 0.000421812,
-     "ms": 2570
+     "cleared": 1,
+     "cost_usd": 0.000478188,
+     "ms": 2120
     },
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "这局二十七个决定里你和引擎只有三次一致，其余二十四次全部分歧，而且全都是因为你跳过了防御牌。",
-       "reason": "E0 的 stats.all 明确写 decisions 27、agree 14，即一致 14 次、分歧 13 次（含 worth_a_look 2 与 differ_less_sure 11），并非“只有三次一致、二十四次分歧”。另外“全都是因为你跳过了防御牌”也无依据：E0 的 verdict 里多处是“引擎把握不大/有选项只算了部分效果”，且 deck_trend 显示防御几乎每层都高于需求（below_need 为 false），并非跳过防御牌导致。"
+       "sentence": "而在第 3 层商店里，你和引擎的选择完全相同，都买了妙计，牌组分数差为 0。",
+       "reason": "E0/E1 显示 F03 商店玩家买的是烟囱（card:6:SMOKESTACK），引擎首选妙计（card:4:FINESSE），gap 7.37，verdict 为“一致（都在这家商店选择了消费而非离开，具体购买项不同）”。草稿说“都买了妙计、分数差为 0”与证据相反，把玩家选择与引擎首选说反，也把分差说错。"
       }
      ],
-     "cleared": 0,
-     "cost_usd": 0.00031141199999999995,
-     "ms": 1393
+     "cleared": 1,
+     "cost_usd": 0.000494988,
+     "ms": 2276
     }
    ]
   },
   {
    "id": "T40",
-   "source_q": "Q13",
+   "source_q": "TQ12",
+   "run_id": "1773983149",
    "expected": "unsupported",
-   "category": "chinese_numeral_count",
+   "category": "fabricated_fact",
+   "draft": "第 24 层你跳过，引擎首选折射（67.0 分对跳过 62.4 分，差 4.6 分），主要因为群伤每回合从 1.3 升到 3.7（需求 7.5），前期输出从 30.3 升到 37.1（需求 38.8）。引擎同时测算过：如果在第 24 层拿了折射，第 28 层就会自动跳过玻璃工艺，整幕还能额外多拿 80 金币。",
+   "unsupported_sentences": [
+    "引擎同时测算过：如果在第 24 层拿了折射，第 28 层就会自动跳过玻璃工艺，整幕还能额外多拿 80 金币。"
+   ],
    "trials": [
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "第 13 层引擎更看好锻造，因为牌组里全部六张牌的升级都已经算完，休息只估到 16.2 分远不如锻造。",
-       "reason": "E2 的 finding 明确说锻造只算出 2.25 分，因为能估值的升级只有 DEFEND_NECROBINDER，另有 5 张牌的升级未估值；草稿却说“全部六张牌的升级都已经算完”，与证据相反。另外 E2 的 verdict 是“引擎把握不大、差距不大”，草稿说“远不如锻造”夸大了差距。"
+       "sentence": "引擎同时测算过：如果在第 24 层拿了折射，第 28 层就会自动跳过玻璃工艺，整幕还能额外多拿 80 金币。",
+       "reason": "证据中没有 what_if 或任何关于第 24 层拿折射后第 28 层选择变化、整幕金币收益的测算；E2 只说明计入后续 3 次选牌抽样，未给出该因果或 80 金币数值。"
       }
      ],
-     "cleared": 0,
-     "cost_usd": 0.001133376,
-     "ms": 1323
+     "cleared": 1,
+     "cost_usd": 0.0016346759999999998,
+     "ms": 2081
     },
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "第 13 层引擎更看好锻造，因为牌组里全部六张牌的升级都已经算完，休息只估到 16.2 分远不如锻造。",
-       "reason": "E2 的 finding 明确说锻造只算出 2.25 分，因为能估值的升级只有 DEFEND_NECROBINDER，另有 5 张牌的升级未估值；草稿说“全部六张牌的升级都已经算完”与证据相反，且“远不如锻造”与 verdict“引擎把握不大、差距不大”矛盾。"
+       "sentence": "引擎同时测算过：如果在第 24 层拿了折射，第 28 层就会自动跳过玻璃工艺，整幕还能额外多拿 80 金币。",
+       "reason": "证据中没有任何 what_if 或调查员报告支持“第24层拿折射会导致第28层自动跳过玻璃工艺”，也没有任何“额外多拿80金币”的数值。E2/E4 只分别给出各层独立评分，未建模跨层联动或金币收益。"
       }
      ],
      "cleared": 0,
-     "cost_usd": 0.00025583999999999996,
-     "ms": 1564
+     "cost_usd": 0.000243252,
+     "ms": 1449
     },
     {
      "flagged": true,
      "parsed": true,
      "issues": [
       {
-       "sentence": "第 13 层引擎更看好锻造，因为牌组里全部六张牌的升级都已经算完，休息只估到 16.2 分远不如锻造。",
-       "reason": "E2 的 finding 明确说锻造只算出 2.25 分，因为能估值的升级只有 DEFEND_NECROBINDER，另有 5 张牌的升级未估值；草稿却说“全部六张牌的升级都已经算完”，与证据相反。另外 E2 的 verdict 是“引擎把握不大、差距不大”，草稿说“远不如锻造”夸大了差距程度。"
+       "sentence": "引擎同时测算过：如果在第 24 层拿了折射，第 28 层就会自动跳过玻璃工艺，整幕还能额外多拿 80 金币。",
+       "reason": "证据中没有任何 what_if 或调查员报告支持这一说法。E2 只提到“计入后续 3 次选牌（按卡池稀有度抽样）后的牌组适合度”，并未说明第 28 层会自动跳过玻璃工艺；E4 是第 28 层独立的首选玻璃工艺（65.1 对 62.1），也没有“拿了折射就会跳过玻璃工艺”的联动结论。金币方面，E2 显示第 24 层金币 151，E4 显示第 28 层金币 194，差 43，并非 80；而且金币变化属于路线/事件/商店等引擎不建模的内容。该句把证据里没有的联动和数值说成引擎测算结果，属于编造。"
       }
      ],
      "cleared": 0,
-     "cost_usd": 0.00026903999999999996,
-     "ms": 1793
+     "cost_usd": 0.00035965199999999996,
+     "ms": 1973
     }
    ]
   }

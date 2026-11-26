@@ -7,6 +7,7 @@ The database is rebuilt from tracked files only (``data/``), into
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 from typing import Mapping, Optional
 
@@ -35,6 +36,70 @@ def ensure_database(path: Path = DEFAULT_DATABASE) -> Path:
     return path
 
 
+def _apply_upgrade_delta(base: Optional[int], upgrade: Optional[Mapping], key: str) -> Optional[int]:
+    if base is None or not upgrade or key not in upgrade:
+        return base
+    raw = upgrade[key]
+    if isinstance(raw, bool):
+        return base
+    if isinstance(raw, (int, float)):
+        return int(base + raw)
+    if isinstance(raw, str):
+        text = raw.strip()
+        if text.startswith(("+", "-")):
+            try:
+                return int(base + int(text))
+            except ValueError:
+                return base
+    return base
+
+
+def restore_icons(
+    text: Optional[str],
+    vars_map: Optional[Mapping],
+    upgrade: Optional[Mapping] = None,
+    *,
+    upgraded: bool = False,
+) -> str:
+    """Restore inline star/energy icon amounts stripped from catalog Chinese descriptions."""
+    cleaned = re.sub(r"\s*\n\s*", " ", text or "")
+    if not cleaned:
+        return cleaned
+    v = vars_map or {}
+    stars = v.get("Stars")
+    energy = v.get("Energy")
+    if upgraded:
+        stars = _apply_upgrade_delta(stars, upgrade, "stars")
+        energy = _apply_upgrade_delta(energy, upgrade, "energy")
+    if stars is not None and energy is not None:
+        cleaned = re.sub(
+            r"获得与(?=[。，；]|$)",
+            f"获得 {energy} 点能量与 {stars} 颗星",
+            cleaned,
+        )
+        gains = [f"{stars} 颗星", f"{energy} 点能量"]
+        matches = list(re.finditer(r"获得(?=[。，；并]|$)", cleaned))
+        if len(matches) >= 2:
+            idx = 0
+
+            def _repl_pair(_match: re.Match) -> str:
+                nonlocal idx
+                piece = gains[idx] if idx < len(gains) else f"{energy} 点能量与 {stars} 颗星"
+                idx += 1
+                return f"获得 {piece}"
+
+            cleaned = re.sub(r"获得(?=[。，；并]|$)", _repl_pair, cleaned)
+        elif len(matches) == 1:
+            cleaned = re.sub(r"获得(?=[。，；并]|$)", f"获得 {energy} 点能量与 {stars} 颗星", cleaned)
+    elif stars is not None:
+        cleaned = re.sub(r"获得(?=[。，；并]|$)", f"获得 {stars} 颗星", cleaned)
+        cleaned = re.sub(rf"获得{re.escape(str(stars))}(?=[。，；并]|$)", f"获得 {stars} 颗星", cleaned)
+    elif energy is not None:
+        cleaned = re.sub(r"获得(?=[。，；并]|$)", f"获得 {energy} 点能量", cleaned)
+        cleaned = re.sub(rf"获得{re.escape(str(energy))}(?=[。，；并]|$)", f"获得 {energy} 点能量", cleaned)
+    return cleaned
+
+
 class Catalog:
     """Display names and descriptions (the game's own Chinese text) by ID."""
 
@@ -56,9 +121,18 @@ class Catalog:
         row = self.cards.get(card_id)
         if row is None:
             return None
-        keys = ("id", "name", "description", "cost", "type", "rarity", "color", "target", "damage", "block",
-                "hit_count", "cards_draw", "energy_gain", "keywords", "upgrade_description")
-        return {k: row.get(k) for k in keys if row.get(k) is not None}
+        keys = ("id", "name", "description", "cost", "star_cost", "type", "rarity", "color", "target", "damage",
+                "block", "hit_count", "cards_draw", "energy_gain", "keywords", "upgrade_description")
+        out = {k: row.get(k) for k in keys if row.get(k) is not None}
+        if "description" in out:
+            out["description"] = restore_icons(
+                out["description"], row.get("vars"), row.get("upgrade"), upgraded=False
+            )
+        if "upgrade_description" in out:
+            out["upgrade_description"] = restore_icons(
+                out["upgrade_description"], row.get("vars"), row.get("upgrade"), upgraded=True
+            )
+        return out
 
     def relic(self, relic_id: str) -> Optional[dict]:
         row = self.relics.get(relic_id)

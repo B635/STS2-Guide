@@ -6,7 +6,7 @@
 
 实时评分引擎（`advisor/deck_fitness.py`）依赖按类代码指纹锁定的程序集机制事实（`data/assembly/facts.json`），不信任自然语言描述正则。每次游戏版本更新（如 `0.111.0 → 0.113.1`），代码变动的条目会自动标为 `stale`，新增角色还会带来上百条未审实体。
 
-过去这些事实需要开发者在对话中手工分批起草、另开会话复核、再人工裁决。`fact_pipeline` 将这一流程工程化为**可重复运行的自动化 Code-to-Fact 多 Agent 管线**，覆盖卡牌（`cards:`）、能力（`powers:`）与遗物（`relics:`）三类实体，自动完成绝大多数条目的起草、确定性门禁校验与独立对抗复核，仅把存在分歧或触发新词表的少数条目交给人裁决。
+过去这些事实需要开发者在对话中手工分批起草、另开会话复核、再人工裁决。`fact_pipeline` 将这一流程工程化为**可重复运行的 Code-to-Fact 人机协作初筛与对抗复核管线**，覆盖卡牌（`cards:`）、能力（`powers:`）与遗物（`relics:`）三类实体：自动完成初稿起草、确定性门禁校验与独立对抗复核，先把缺词表、存在 Codex 冲突或复核分歧的高风险条目精准分流进人工队列（`needs_human`），其余条目输出为带 IL 证据的初筛通过草稿（`auto_approved.json`），经人工抽查确认后再经 `merge_fact_reviews.py` 合入生产 `facts.json`（不作为无人值守直接入库系统）。
 
 ## 2. 架构
 
@@ -32,10 +32,11 @@ Stage 2：独立对抗复核 Agent（Auditor，全新隔离上下文，最多 4 
   │
   ▼
 Stage 3：分流与受控返修
-  ├─ agree 且无新词表需求 → auto_approved（可直接对接 merge_fact_reviews.py）
+  ├─ agree 且无新词表需求且无 codex_conflicts → auto_approved（人机协作初筛通过，人工抽查后对接 merge_fact_reviews.py）
+  ├─ agree 但存在未消解 codex_conflicts → needs_human（reason=codex_conflict）
   ├─ disagree 且无新词表需求 → 带具体意见返修 1 轮（重新过门禁）→ 全新 Auditor 复审
-  │    ├─ 复审 agree → auto_approved（标记 revised=true）
-  │    └─ 仍 disagree → needs_human
+  │    ├─ 复审 agree 且无 codex_conflicts → auto_approved（标记 revised=true）
+  │    └─ 仍 disagree / 存在 codex_conflicts → needs_human
   └─ 触发 needs_new_vocabulary / 校验耗尽 / 超预算 → needs_human（输出 review-queue.md）
 ```
 
@@ -44,7 +45,7 @@ Stage 3：分流与受控返修
 | 模块 | 职责 |
 |---|---|
 | [`fact_pipeline/extractor.py`](../fact_pipeline/extractor.py) | 只读封装 `Sts2FactExtractor`（`--dump` / `--dump-any` / `--enum`）与磁盘缓存，支持测试夹具注入 |
-| [`fact_pipeline/validator.py`](../fact_pipeline/validator.py) | 复用 `merge_fact_reviews` 词表并收紧结构规则（禁止 `effects` 混入 `when`、禁用 `generate`、强制 `target`/`destination`/`offer_rewards`/trigger 键） |
+| [`fact_pipeline/validator.py`](../fact_pipeline/validator.py) | 复用 `merge_fact_reviews` 词表并收紧结构规则（禁止 `effects` 混入 `when`、禁用 `generate`、强制 `target`/`destination`/`offer_rewards`/trigger 键、校验 `add_card.card` 目录存在性并拦截 `when=="turn_start"` + `counter=="turn"` + `every>1` 永假组合） |
 | [`fact_pipeline/llm.py`](../fact_pipeline/llm.py) | OpenAI 兼容客户端（默认 DeepSeek），精确统计含缓存命中的费用，支持独立切换 Auditor 思考模式与跨模型 |
 | [`fact_pipeline/prompts.py`](../fact_pipeline/prompts.py) | 固定可缓存系统规范前缀 + 预取上下文 + 强制先独立读 IL 再给裁决的 Auditor 提示 |
 | [`fact_pipeline/pipeline.py`](../fact_pipeline/pipeline.py) | 实体状态机、严格上下文隔离、保留 `initial_draft` 供配对消融、并发执行与按指纹断点续跑 |
@@ -116,10 +117,11 @@ Stage 3：分流与受控返修
 
 > 注：本批次产物位于本地 `build/fact-pipeline/v0113-new-batch/`（`auto_approved.json` 与 `review-queue.md`），尚未自动合入 `feature/v0113` 的 `facts.json`，待人工抽查与裁决 13 条队列后再按 `merge_fact_reviews.py` 合入。
 
-## 6. 已知限制
+## 6. 已知限制与定位边界
 
-- **复杂能力与局外遗物（`powers` / `between_fights`）仍不可全自动直合**：在严格自动比较下，复杂能力与历史分歧难题的自动放行准确率尚不足以无人值守直接入库，当前定位是**高召回初筛与人机协作加速器**（先把约 20% 高难/缺词表条目精准挑出，并对常规卡牌/战斗遗物给出高质量初稿与 IL 证据，缩短人工审核耗时）。
+- **明确人机协作初筛定位，严禁无人值守直合生产 `facts.json`**：60 条盲测集上 `auto_approved` 的 Core 准确率为 **43.8%（21/48）**（其中常规战斗遗物 `100%`、愚者卡 `80%`、简单卡 `71.4%`，但 `powers` 仅 `27.3%`、`between_fights` 仅 `20%`、历史分歧难题 `0%`）。本管线的真实工程定位是**高召回人机协作初筛器**：自动拦截 100% 缺词表条目、阻断未消解 `codex_conflicts` 与拼写编造卡牌 ID，并为常规条目提供带 IL 证据的结构化初稿以大幅压缩人工审核成本；`auto_approved.json` 在合入生产事实库前仍须人工抽查与裁决。
 - **返修轮转化率偏低（盲测 11 次返修仅 1 次完全转正）**：当思考模式 Auditor 发现深层 IL 误读时，非思考模式的起草端在返修轮往往难以彻底重构复杂结构；后续若给返修轮也开启思考模式或交由 `v4-pro` 返修，有望显著提高挽回率。
+- **门禁通过率口径**：`evaluate.py` 的 `schema_final_pass` 严格要求最终 `validation.ok` 为真（无 `validation_problems`），避免 `needs_new_vocabulary=True` 但 schema 校验未通过的草稿虚增通过率。
 - **语义比较器对部分低频写法仍偏严**：如 `note_text`、`count_upgrade: 0`、`to` vs `destination` 会拉低自动指标；坚持不在测试集上回头改比较器以保评测诚实。
 
 ## 7. 运行命令

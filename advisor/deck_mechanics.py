@@ -312,6 +312,9 @@ class _Totals:
     dislodges: float = 0.0         # explicit dislodge_arrow returns per turn
     arrow_damage: float = 0.0      # powered arrow base damage per turn (for DislikeYou)
     arrow_aim_hits: float = 0.0    # resolved arrow hits * aim_multiplier per turn (for Aim)
+    max_turn_extra: float = 0.0    # flexible single-turn peak energy gain (support bound)
+    max_turn_loss: float = 0.0     # flexible single-turn peak energy loss
+    fixed_turn_energy: Dict[int, float] = field(default_factory=dict)  # net energy on fixed turns (1, 2, 3...)
     vulnerable: float = 0.0
     weak: float = 0.0
     poison_single: float = 0.0
@@ -1416,6 +1419,57 @@ def _held_share(rate: float, turns: float, delay: float = 0.0) -> float:
 
 
 _MISSING = object()
+_DUP_OWNER = object()
+
+
+def _has_zero_x_effect(card: CardProfile) -> bool:
+    """Whether an X-cost card still yields value when played at X=0."""
+
+    if card.powers:
+        return True
+    for generated in card.generates:
+        if generated.count is not None and generated.count > 0:
+            return True
+    for effect in card.effects:
+        if effect.get("hits_x"):
+            continue
+        if effect.get("per_x"):
+            if float(effect.get("x_bonus") or 0.0) != 0.0:
+                return True
+            continue
+        count_scale = effect.get("count_scale")
+        if isinstance(count_scale, Mapping) and count_scale.get("per") == "x_value":
+            base = float(count_scale.get("base") or 0.0) + (
+                float(count_scale.get("base_upgrade") or 0.0) if card.upgraded else 0.0
+            )
+            if base > 0.0:
+                return True
+            continue
+        return True
+    return False
+
+
+def _poisson_cost_states(base_c: float, delta: float, lam: float) -> list[tuple[float, float]]:
+    """Discrete (probability, cost) distribution for cost = max(0, base_c + delta * K), K ~ Poisson(lam)."""
+
+    if lam <= 1e-9 or delta == 0.0:
+        return [(1.0, base_c)]
+    if delta < 0.0 and base_c > 0.0:
+        k_max = min(20, max(1, int(math.ceil(base_c / (-delta)))))
+    else:
+        k_max = min(20, max(6, int(math.ceil(lam + 4.0 * math.sqrt(lam) + 2.0))))
+    states: list[tuple[float, float]] = []
+    prob = math.exp(-lam)
+    covered = 0.0
+    for k in range(k_max):
+        if prob > 0.0:
+            states.append((prob, max(0.0, base_c + delta * k)))
+            covered += prob
+        prob *= lam / float(k + 1)
+    tail = max(0.0, 1.0 - covered)
+    if tail > 0.0:
+        states.append((tail, max(0.0, base_c + delta * k_max)))
+    return states or [(1.0, base_c)]
 
 
 class _Engine:
@@ -1436,6 +1490,7 @@ class _Engine:
         # Unknown cards take a deck slot and may take a random upgrade too:
         # counted as targets that gain nothing from it.
         self.upgrade_pool = float(len(self.upgradable) + len(cards) - len(self.known))
+        self.upgraded_base = {id(c.upgraded_profile): c for c in self.upgradable}
         upgraded = list({id(c.upgraded_profile): c.upgraded_profile for c in self.upgradable}.values())
         owners = [*self.known, *upgraded]
         # Generated cards are extra card instances whose play rate follows
@@ -1484,12 +1539,14 @@ class _Engine:
         self.pass_drawn = 0.0               # cards drawn per turn (this pass)
         self.situation = situation
         self.params = params
-        # (mechanic, weight): relics always apply; powers by how much of the
-        # fight they are active, recomputed each pass (see ``_activate``).
-        self.relic_mechanics = [(m, 1.0) for relic in relics for m in relic.mechanics]
+        # (mechanic, weight, owner): relics have owner None; powers carry their
+        # source card (or _DUP_OWNER for extra identical copies) so single-turn
+        # energy peaks deduplicate copies and in-fight upgrades.
+        self.relic_mechanics = [(m, 1.0, None) for relic in relics for m in relic.mechanics]
         self.estimates: Dict[str, float] = {}
         self.rates: Dict[int, float] = {}
         self.x_value = 0.0
+        self.card_x: Dict[int, float] = {}
         self.play_totals: Dict[str, float] = {"Attack": 0.0, "Skill": 0.0, "OstyAttack": 0.0}
         self.status_made = 0.0   # Status cards created for the player per turn
         self.damage_dealt = 0.0  # damage per turn over all enemies (previous pass)
@@ -1514,9 +1571,9 @@ class _Engine:
         self.last_plays: Dict[int, float] = {}
         self._set_mechanics(self.relic_mechanics)
 
-    def _set_mechanics(self, weighted: Sequence[tuple[Mapping, float]]) -> None:
-        self.modifiers = [(m, w) for m, w in weighted if "modifier" in m]
-        self.events = [(m, w) for m, w in weighted if "modifier" not in m]
+    def _set_mechanics(self, weighted: Sequence[tuple]) -> None:
+        self.modifiers = [(m, w) for m, w, _ in weighted if "modifier" in m]
+        self.events = [(m, w, owner) for m, w, owner in weighted if "modifier" not in m]
 
     def _activate(self, plays: Mapping[int, float], drawn: float) -> None:
         """Weight each played card's powers by their expected active share."""
@@ -1524,7 +1581,11 @@ class _Engine:
         turns = self.situation.fight_turns
         first_turn = min(turns, (self.size / max(drawn, 1e-9) + 1.0) / 2.0)
         weighted = list(self.relic_mechanics)
+        seen_cards: set[int] = set()
         for card in self.cards:
+            first_copy = id(card) not in seen_cards
+            seen_cards.add(id(card))
+            owner = card if first_copy else _DUP_OWNER
             for use in card.powers:
                 rate = plays[id(card)]
                 if use.duration == "this_turn":
@@ -1548,7 +1609,7 @@ class _Engine:
                         # A fixed effect or a modifier: it is simply there for
                         # as many turns as it has stacks.
                         weight = min(1.0, rate * min(max(use.stacks, 1.0), turns))
-                    weighted.append((mechanic, weight))
+                    weighted.append((mechanic, weight, owner))
         self._set_mechanics(weighted)
 
     def _fight_share(self, flt: Optional[Mapping]) -> float:
@@ -1566,6 +1627,148 @@ class _Engine:
             for m, w in self.modifiers if m["modifier"] == name
         )
 
+    def _base_cost(self, card: CardProfile) -> Optional[float]:
+        if card.x_cost or card.cost is None:
+            return None
+        delta = sum(
+            float(m.get("add") or 0.0) * w for m, w in self.modifiers
+            if m["modifier"] == "energy_cost" and self._matches(card, m.get("filter"), None)
+        )
+        return max(0.0, card.cost + delta)
+
+    @staticmethod
+    def _afford_for_cost(
+        cost: float,
+        base_energy: float,
+        extra_energy: float,
+        max_turn_extra: float,
+        deficit: float,
+        max_turn_loss: float,
+    ) -> float:
+        if cost <= base_energy:
+            if deficit > 0.0 and cost > base_energy - max_turn_loss + 1e-9:
+                need_loss = max(1.0, base_energy - cost + 1.0)
+                return max(0.0, 1.0 - deficit / need_loss)
+            return 1.0
+        if extra_energy <= 0.0 or cost > base_energy + max_turn_extra + 1e-9:
+            return 0.0
+        return min(1.0, extra_energy / (cost - base_energy))
+
+    def _cost_states(
+        self,
+        card: CardProfile,
+        afford_fn,
+    ) -> list[tuple[float, float]]:
+        """Discrete (probability, cost) states for a non-X playable card."""
+
+        base_c = self._base_cost(card)
+        if base_c is None:
+            return []
+        rule = card.cost_rule
+        if not rule:
+            return [(1.0, base_c)]
+        turns = self.situation.fight_turns
+        rate = self.rates.get(id(card), 0.0)
+        draws = max(1.0, rate * turns)
+        if rule[0] == "after_first":
+            if afford_fn(base_c) <= 0.0:
+                return [(1.0, base_c)]
+            if draws <= 1.0:
+                return [(1.0, base_c)]
+            return [(1.0 / draws, base_c), ((draws - 1.0) / draws, max(0.0, rule[1]))]
+        if rule[0] == "per_own_play":
+            # Cost changes at the end of OnPlay, so once a play cost is unplayable
+            # the remaining draws stay stuck at that unplayable cost.
+            full = int(math.floor(draws))
+            rem = draws - full
+            states: list[tuple[float, float]] = []
+            remaining = 1.0
+            for k in range(full + (1 if rem > 1e-9 else 0)):
+                w = (1.0 / draws) if k < full else (rem / draws)
+                c_k = max(0.0, base_c + rule[1] * k)
+                if afford_fn(c_k) <= 0.0:
+                    states.append((remaining, c_k))
+                    remaining = 0.0
+                    break
+                states.append((w, c_k))
+                remaining = max(0.0, remaining - w)
+            if remaining > 1e-9 and states:
+                states.append((remaining, states[-1][1]))
+            return states or [(1.0, base_c)]
+        if rule[0] == "per_own_draw":
+            # AfterCardDrawn fires when the card is drawn, before it is played
+            # (draw #1 already gets 1 step of delta, draw #2 gets 2, etc.).
+            full = int(math.floor(draws))
+            rem = draws - full
+            states = [
+                (1.0 / draws, max(0.0, base_c + rule[1] * (k + 1)))
+                for k in range(full)
+            ]
+            if rem > 1e-9:
+                states.append((rem / draws, max(0.0, base_c + rule[1] * (full + 1))))
+            return states or [(1.0, max(0.0, base_c + rule[1]))]
+        if rule[0] == "free_if_osty_attacked":
+            others = self.play_totals["OstyAttack"] - (
+                self.last_plays.get(id(card), 0.0) if "OstyAttack" in card.tags else 0.0
+            )
+            p_free = self.estimates.get("osty_alive", 0.0) * (1.0 - math.exp(-max(0.0, others)))
+            return [(w, c) for w, c in ((p_free, 0.0), (1.0 - p_free, base_c)) if w > 0.0]
+        if rule[0] == "per_status_generated":
+            between = self.status_made / max(rate, 1.0 / turns)
+            return _poisson_cost_states(base_c, rule[1], max(0.0, between))
+        if rule[0] == "per_type_this_turn":
+            others = sum(
+                n * self.last_plays.get(id(c), 0.0) for c, n in self.copies
+                if c.card_type == rule[2]
+            ) - (self.last_plays.get(id(card), 0.0) if card.card_type == rule[2] else 0.0)
+            return _poisson_cost_states(base_c, rule[1], max(0.0, others / 2.0))
+        if rule[0] == "per_melodies_this_turn":
+            probs = [1.0 - math.exp(-self._other_melody_plays(t, card) / 2.0) for t in MELODY_TAGS]
+            dist = [1.0]
+            for p in probs:
+                nxt = [0.0] * (len(dist) + 1)
+                for idx, w in enumerate(dist):
+                    nxt[idx] += w * (1.0 - p)
+                    nxt[idx + 1] += w * p
+                dist = nxt
+            return [(w, max(0.0, base_c + rule[1] * m)) for m, w in enumerate(dist) if w > 0.0]
+        if rule[0] == "if_melody_played_this_turn":
+            prob = self._melody_any_prob(rule[2], card)
+            reduced = max(0.0, base_c + rule[1])
+            return [(w, c) for w, c in ((prob, reduced), (1.0 - prob, base_c)) if w > 0.0]
+        return [(1.0, base_c)]
+
+    def _cost_profile(
+        self,
+        card: CardProfile,
+        base_energy: float,
+        extra_energy: float,
+        max_turn_extra: float,
+        deficit: float,
+        max_turn_loss: float,
+    ) -> tuple[float, float, float, float, Optional[float]]:
+        """Return (free_share, paid_afford, paid_energy_per_draw, brick_cost, effective_cost)."""
+
+        if card.x_cost or card.cost is None:
+            return 0.0, 0.0, 0.0, 0.0, None
+        afford_fn = lambda c: self._afford_for_cost(
+            c, base_energy, extra_energy, max_turn_extra, deficit, max_turn_loss
+        )
+        states = self._cost_states(card, afford_fn)
+        free_share = paid_afford = paid_energy = brick_cost = mean_cost = 0.0
+        for weight, state_cost in states:
+            mean_cost += weight * state_cost
+            if state_cost <= 0.0:
+                free_share += weight
+                continue
+            a = afford_fn(state_cost)
+            paid_afford += weight * a
+            paid_energy += weight * a * state_cost
+            brick_cost += weight * (1.0 - a) * state_cost
+        total_playable = free_share + paid_afford
+        eff_cost = (paid_energy / total_playable) if total_playable > 1e-9 else mean_cost
+        return free_share, paid_afford, paid_energy, brick_cost, eff_cost
+
     def _cost(self, card: CardProfile) -> Optional[float]:
         """Printed cost after cost modifiers; X cards are priced separately.
 
@@ -1581,49 +1784,10 @@ class _Engine:
         return cost
 
     def _uncached_cost(self, card: CardProfile) -> Optional[float]:
-        if card.x_cost or card.cost is None:
+        states = self._cost_states(card, lambda _c: 1.0)
+        if not states:
             return None
-        delta = sum(
-            float(m.get("add") or 0.0) * w for m, w in self.modifiers
-            if m["modifier"] == "energy_cost" and self._matches(card, m.get("filter"), None)
-        )
-        cost = max(0.0, card.cost + delta)
-        rule = card.cost_rule
-        if rule:
-            turns = self.situation.fight_turns
-            rate = self.rates.get(id(card), 0.0)
-            plays = max(1.0, self.last_plays.get(id(card), rate) * turns)
-            if rule[0] == "after_first":
-                cost = (cost + (plays - 1.0) * rule[1]) / plays
-            elif rule[0] == "per_own_play":
-                cost = max(0.0, cost + rule[1] * (plays - 1.0) / 2.0)
-            elif rule[0] == "per_own_draw":
-                cost = max(0.0, cost + rule[1] * rate * turns / 2.0)
-            elif rule[0] == "free_if_osty_attacked":
-                # Free once Osty has attacked this turn (another Osty attack
-                # played first, with Osty alive).
-                others = self.play_totals["OstyAttack"] - (
-                    self.last_plays.get(id(card), 0.0) if "OstyAttack" in card.tags else 0.0
-                )
-                cost *= 1.0 - self.estimates.get("osty_alive", 0.0) * (1.0 - math.exp(-max(0.0, others)))
-            elif rule[0] == "per_status_generated":
-                # Status cards made for the owner between two plays of this card.
-                between = self.status_made / max(rate, 1.0 / turns)
-                cost = max(0.0, cost + rule[1] * between)
-            elif rule[0] == "per_type_this_turn":
-                # Cards of that type played earlier the same turn, on average half.
-                others = sum(
-                    self.last_plays.get(id(c), 0.0) for c in self.cards
-                    if c is not card and c.card_type == rule[2]
-                )
-                cost = max(0.0, cost + rule[1] * others / 2.0)
-            elif rule[0] == "per_melodies_this_turn":
-                melodies = self._melodies_for_card(card)
-                cost = max(0.0, cost + rule[1] * melodies)
-            elif rule[0] == "if_melody_played_this_turn":
-                prob = self._melody_any_prob(rule[2], card)
-                cost = max(0.0, cost + rule[1] * prob)
-        return cost
+        return sum(w * c for w, c in states)
 
     def _other_melody_plays(self, tag: str, card: Optional[CardProfile]) -> float:
         own = self.melody_source_plays.get(id(card), 0.0) if (card is not None and tag in card.tags) else 0.0
@@ -1656,7 +1820,7 @@ class _Engine:
         if "min_cost" in flt:
             # Energy actually paid: the modified cost, or the X spend. Cost
             # modifiers never filter on min_cost (rejected as unsupported).
-            paid = x_value if card.x_cost else self._cost(card)
+            paid = self.card_x.get(id(card), x_value) if card.x_cost else self._cost(card)
             if paid is None or paid < float(flt["min_cost"]):
                 return False
         return True
@@ -1674,6 +1838,7 @@ class _Engine:
     def run(self) -> tuple[Dict[str, float], tuple[str, ...]]:
         params, turns = self.params, self.situation.fight_turns
         extra_draw = extra_energy = block_estimate = star_supply = 0.0
+        max_turn_extra = max_turn_loss = 0.0
         previous = _Totals()
         previous_plays: Dict[int, float] = {}
         previous_discards = previous_chosen = 0.0
@@ -1711,7 +1876,7 @@ class _Engine:
             per_turn = min(1.0, drawn / size)
             self.per_turn = per_turn
             self.pass_size, self.pass_drawn = size, drawn
-            supply = base_energy + extra_energy
+            supply = max(0.0, base_energy + extra_energy)
             self.supply = supply
             rates = {
                 id(c): min(per_turn, 1.0 / turns) if c.once_per_fight else per_turn
@@ -1764,33 +1929,55 @@ class _Engine:
                 else:
                     held = created * elapsed * per_turn
                     rates[id(g.profile)] += min(created, held) if g.profile.once_per_fight else held
-            # A card costing more than the turn's permanent energy pool can only
-            # be played on turns that generate the extra energy (Markov upper
-            # bound: extra_energy / (cost - base_energy); 0 without extra energy).
-            # Its unplayable share does not consume playable energy, though it
-            # still dilutes draws and counts toward raw energy demand.
-            afford = {
-                id(c): (
-                    1.0 if (cost := self._cost(c)) is None or cost <= base_energy
-                    else (0.0 if extra_energy <= 0.0 else min(1.0, extra_energy / (cost - base_energy)))
+            # Cards above base_energy need both positive mean extra_energy and a
+            # reachable single-turn peak (cost <= base_energy + max_turn_extra);
+            # negative net energy (deficit > 0) also reduces playability of cards
+            # near base_energy. Cost-rule cards evaluate affordability across
+            # their discrete cost states rather than collapsing to a scalar mean.
+            deficit = max(0.0, -extra_energy)
+            free_share: Dict[int, float] = {}
+            paid_afford: Dict[int, float] = {}
+            paid_energy: Dict[int, float] = {}
+            brick_cost: Dict[int, float] = {}
+            for c, _ in self.copies:
+                fs, pa, pe, bc, eff_c = self._cost_profile(
+                    c, base_energy, extra_energy, max_turn_extra, deficit, max_turn_loss
                 )
-                for c, _ in self.copies
-            }
-            raw_demand = sum(
-                n * rates[id(c)] * cost
-                for c, n in self.copies if (cost := self._cost(c)) is not None
-            )
+                free_share[id(c)] = fs
+                paid_afford[id(c)] = pa
+                paid_energy[id(c)] = pe
+                brick_cost[id(c)] = bc
+                if not c.x_cost:
+                    self._cost_cache[id(c)] = eff_c
             demand = sum(
-                n * rates[id(c)] * afford[id(c)] * cost
-                for c, n in self.copies if (cost := self._cost(c)) is not None
+                n * rates[id(c)] * paid_energy[id(c)]
+                for c, n in self.copies if c.cost is not None and not c.x_cost
             )
-            self.energy_spent = min(supply, demand)
+            # Unplayable high-cost cards keep a size-invariant brick penalty so
+            # adding unrelated 0-cost cards cannot inflate energy by diluting a
+            # dead card's draw rate. In-fight upgraded profiles blend with their
+            # base deck card instead of double-counting.
+            brick_demand = 0.0
+            for c, n in self.copies:
+                if c.cost is None or c.x_cost:
+                    continue
+                if id(c) in self.known_set:
+                    eff_brick = brick_cost[id(c)]
+                    if c.upgraded_profile is not None and id(c.upgraded_profile) in brick_cost:
+                        eff_brick = (
+                            (1.0 - upgraded_share) * eff_brick
+                            + upgraded_share * brick_cost[id(c.upgraded_profile)]
+                        )
+                    brick_demand += n * eff_brick
+                elif id(c) not in self.upgraded_base:
+                    brick_demand += n * rates[id(c)] * brick_cost[id(c)]
+            energy_demand = demand + brick_demand
             playable = min(1.0, supply / demand) if demand > 0 else 1.0
             # A retained card waits in hand until it can be paid for, so it is
             # paid first; the other cards share what is left.
             kept_demand = sum(
-                n * rates[id(c)] * afford[id(c)] * cost for c, n in self.copies
-                if c.retain and (cost := self._cost(c)) is not None
+                n * rates[id(c)] * paid_energy[id(c)] for c, n in self.copies
+                if c.retain and c.cost is not None and not c.x_cost
             )
             kept_share = min(1.0, supply / kept_demand) if kept_demand > 0 else 1.0
             if kept_demand > 0 and demand > supply:
@@ -1800,13 +1987,26 @@ class _Engine:
             # X cards spend what the other plays leave, shared between them.
             x_value = max(0.0, supply - demand) / max(1.0, x_rate) if x_rate else 0.0
             self.x_value = x_value
+            self.card_x = {
+                id(c): (
+                    x_value if _has_zero_x_effect(c)
+                    else (max(1.0, x_value) if x_value > 0.0 else 0.0)
+                )
+                for c, _ in self.copies if c.x_cost
+            }
+            x_spent = x_rate * x_value if x_rate > 0.0 else 0.0
+            self.energy_spent = min(supply, demand + x_spent)
             plays = {
                 id(c): (
                     rates[id(c)] * (
-                        1.0 if c.x_cost or self._cost(c) == 0
-                        else afford[id(c)] * (kept_share if c.retain else playable)
+                        1.0 if _has_zero_x_effect(c) else min(1.0, x_value)
                     )
-                    if c.x_cost or self._cost(c) is not None else 0.0
+                    if c.x_cost else (
+                        rates[id(c)] * (
+                            free_share[id(c)] + paid_afford[id(c)] * (kept_share if c.retain else playable)
+                        )
+                        if c.cost is not None else 0.0
+                    )
                 )
                 for c, _ in self.copies
             }
@@ -1860,7 +2060,7 @@ class _Engine:
                 if any(e.get("kind") == "damage" and e.get("source") == "arrow" for e in c.effects)
             )
             non_arrow_hits = sum(
-                n * plays[id(c)] * self._hits(e)
+                n * plays[id(c)] * self._hits(e, self.card_x.get(id(c)) if c.x_cost else None)
                 for c, n in self.copies for e in c.effects
                 if e.get("kind") == "damage" and e.get("source") not in {"arrow", "osty"}
             )
@@ -1888,7 +2088,11 @@ class _Engine:
             self._estimate(previous, plays, drawn)
             # Copies share one profile: resolved once, applied for each copy
             # (``_apply`` is linear in the number of applications).
+            card_peak_energy: Dict[int, float] = {}
+            card_peak_loss: Dict[int, float] = {}
             for card, copies in self.copies:
+                card_x = self.card_x.get(id(card)) if card.x_cost else None
+                pos_gain = neg_loss = 0.0
                 for effect in card.effects:
                     resolved, chance = self._resolve(effect, card, plays[id(card)])
                     if (
@@ -1897,12 +2101,54 @@ class _Engine:
                         and not ({"has_arrow", "shot_succeeded"} & set(effect.get("condition") or ()))
                     ):
                         chance *= self.arrow_avail
-                    self._apply(totals, resolved, plays[id(card)] * chance * copies, x_value if card.x_cost else None)
+                    applied_times = plays[id(card)] * chance * copies
+                    self._apply(totals, resolved, applied_times, card_x)
+                    if resolved.get("kind") == "energy" and applied_times > 0.0:
+                        amt = float(resolved.get("amount") or 0.0)
+                        if card_x is not None and resolved.get("per_x"):
+                            amt *= card_x + float(resolved.get("x_bonus") or 0.0)
+                        scale = effect.get("scale")
+                        if isinstance(scale, Mapping) and scale.get("per") == "energy_after_cost":
+                            c_cost = self._cost(card) or 0.0
+                            peak_amt = float(effect.get("amount") or 0.0) + (
+                                float(scale.get("factor") or 0.0) * max(0.0, base_energy - c_cost)
+                            )
+                            amt = max(amt, peak_amt)
+                        if amt > 0.0:
+                            pos_gain += amt
+                        elif amt < 0.0:
+                            neg_loss += -amt
+                if pos_gain > 0.0:
+                    c_cost = 0.0 if (card.x_cost or (card.sly and previous_discards > 0)) else (self._cost(card) or 0.0)
+                    net_gain = max(0.0, pos_gain - c_cost)
+                    if net_gain > 0.0:
+                        card_peak_energy[id(card)] = net_gain
+                if neg_loss > 0.0:
+                    card_peak_loss[id(card)] = neg_loss
+            # Deduplicate in-fight upgraded virtual profiles against their deck base copy.
+            for card, copies in self.copies:
+                if id(card) in self.known_set:
+                    peak = card_peak_energy.get(id(card), 0.0)
+                    loss = card_peak_loss.get(id(card), 0.0)
+                    if card.upgraded_profile is not None:
+                        peak = max(peak, card_peak_energy.get(id(card.upgraded_profile), 0.0))
+                        loss = max(loss, card_peak_loss.get(id(card.upgraded_profile), 0.0))
+                    totals.max_turn_extra += copies * peak
+                    totals.max_turn_loss += copies * loss
+                elif id(card) not in self.upgraded_base:
+                    if id(card) in card_peak_energy:
+                        totals.max_turn_extra += max(1.0, math.ceil(plays[id(card)])) * card_peak_energy[id(card)]
+                    if id(card) in card_peak_loss:
+                        totals.max_turn_loss += max(1.0, math.ceil(plays[id(card)])) * card_peak_loss[id(card)]
             self._apply_damage_modifiers(totals, plays, x_value)
             self._apply_block_modifiers(totals, plays)
             self._apply_events(totals, plays, drawn, played, block_estimate, x_value)
             self._apply_orbs(totals)
             extra_draw, extra_energy, block_estimate = totals.draw, totals.energy, totals.block
+            peak_fixed_gain = max((v for v in totals.fixed_turn_energy.values() if v > 0.0), default=0.0)
+            peak_fixed_loss = max((-v for v in totals.fixed_turn_energy.values() if v < 0.0), default=0.0)
+            max_turn_extra = totals.max_turn_extra + peak_fixed_gain
+            max_turn_loss = totals.max_turn_loss + peak_fixed_loss
             star_supply = totals.stars
             previous = totals
             previous_plays = plays
@@ -1911,7 +2157,7 @@ class _Engine:
             self.last_plays = plays
             self._activate(plays, drawn)
         return (
-            self._capabilities(totals, drawn, size, supply, raw_demand, plays),
+            self._capabilities(totals, drawn, size, supply, energy_demand, plays),
             tuple(dict.fromkeys(totals.gaps)),
         )
 
@@ -2127,7 +2373,7 @@ class _Engine:
             "discard_pile": max(0.0, self.size - drawn) / 2.0,
             "cards_generated_this_combat": generated * elapsed,
             "prior_hits_on_target_this_turn": sum(
-                n * last.get(id(c), 0.0) * self._hits(e)
+                n * last.get(id(c), 0.0) * self._hits(e, self.card_x.get(id(c)) if c.x_cost else None)
                 for c, n in self.copies for e in c.effects if e.get("kind") == "damage"
             ) / 2.0,
             "osty_alive": alive,
@@ -2238,7 +2484,7 @@ class _Engine:
         estimates["star_cost_cards"] = self.deck_counts["star_cost"]
         estimates["melodies_this_turn"] = self._melodies_for_card(card)
         estimates["melody_cards_in_combat"] = self.deck_counts["melody_cards"]
-        estimates["x_value"] = self.x_value
+        estimates["x_value"] = self.card_x.get(id(card), self.x_value)
         # Energy left after paying for this card, at an average moment.
         estimates["energy_after_cost"] = max(0.0, self.supply - (self._cost(card) or 0.0)) / 2.0
         # Damage kept from the cards its earlier plays exhausted (Thrash).
@@ -2317,7 +2563,7 @@ class _Engine:
             return
         turns = self.situation.fight_turns
         if kind == "damage":
-            hits = self._hits(effect)
+            hits = self._hits(effect, x_value)
             target = effect.get("target") or "single"
             if target == "attacker":
                 target = "single"
@@ -2431,10 +2677,11 @@ class _Engine:
                     is_arrow = effect.get("source") == "arrow"
                     if from_arrow_only and not is_arrow:
                         continue
-                    hits = self._hits(effect)
+                    cx = self.card_x.get(id(card), x_value) if card.x_cost else None
+                    hits = self._hits(effect, cx)
                     base = float(effect.get("amount") or 0.0)
                     if card.x_cost and effect.get("per_x"):
-                        base *= x_value
+                        base *= cx
                     extra = float(modifier.get("add") or 0.0) * hits + (
                         float(modifier.get("multiply") or 1.0) - 1.0
                     ) * base * hits
@@ -2520,7 +2767,7 @@ class _Engine:
         if when == "damage_dealt":
             # Powered attack hits the owner (and its pet) lands per turn.
             hits = sum(
-                plays[id(c)] * self._hits(e)
+                plays[id(c)] * self._hits(e, self.card_x.get(id(c)) if c.x_cost else None)
                 for c in self.cards for e in c.effects
                 if e.get("kind") == "damage" and (
                     e.get("source") != "osty" or (mechanic.get("filter") or {}).get("dealer") == "owner_or_owner_pet"
@@ -2588,7 +2835,9 @@ class _Engine:
         block_estimate: float, x_value: float,
     ) -> None:
         turns = self.situation.fight_turns
-        for mechanic, weight in self.events:
+        power_peak_gain: Dict[int, float] = {}
+        power_peak_loss: Dict[int, float] = {}
+        for mechanic, weight, owner in self.events:
             share = weight * self._fight_share(mechanic.get("filter"))
             share *= self._condition(mechanic.get("condition") or {}, plays, drawn, played, totals)
             effect = mechanic["effect"]
@@ -2600,6 +2849,14 @@ class _Engine:
                 effect = {**effect, "instances": self._upgrade_instances(effect, moment)}
             if mechanic["when"] == "combat_start":
                 self._apply(totals, effect, share / turns, None, persist_share=share)
+                if effect.get("kind") == "energy" and share > 0.0 and owner is not _DUP_OWNER:
+                    amt = float(effect.get("amount") or 0.0)
+                    if owner is None:
+                        totals.fixed_turn_energy[1] = totals.fixed_turn_energy.get(1, 0.0) + amt
+                    elif amt > 0.0:
+                        power_peak_gain[id(owner)] = power_peak_gain.get(id(owner), 0.0) + amt
+                    elif amt < 0.0:
+                        power_peak_loss[id(owner)] = power_peak_loss.get(id(owner), 0.0) - amt
                 continue
             rate = self._event_rate(mechanic, plays, drawn, block_estimate, totals, x_value)
             fired_share, persist = _schedule(mechanic, turns)
@@ -2608,6 +2865,39 @@ class _Engine:
                 self._apply(totals, effect, times, None, persist_share=persist * share)
             else:
                 self._apply(totals, effect, times, None)
+            if effect.get("kind") == "energy" and times > 0.0 and owner is not _DUP_OWNER:
+                amt = float(effect.get("amount") or 0.0)
+                if amt > 0.0 and mechanic["when"] == "card_played":
+                    min_cost = float((mechanic.get("filter") or {}).get("min_cost") or 0.0)
+                    amt = max(0.0, amt - min_cost)
+                if owner is None:
+                    fixed_turns = mechanic.get("turns")
+                    if isinstance(fixed_turns, list) and fixed_turns:
+                        for t in fixed_turns:
+                            totals.fixed_turn_energy[int(t)] = totals.fixed_turn_energy.get(int(t), 0.0) + amt
+                    elif amt > 0.0:
+                        totals.max_turn_extra += amt
+                    elif amt < 0.0:
+                        totals.max_turn_loss += -amt
+                elif amt > 0.0:
+                    power_peak_gain[id(owner)] = power_peak_gain.get(id(owner), 0.0) + amt
+                elif amt < 0.0:
+                    power_peak_loss[id(owner)] = power_peak_loss.get(id(owner), 0.0) - amt
+        if power_peak_gain or power_peak_loss:
+            for card, copies in self.copies:
+                if id(card) in self.known_set:
+                    peak = power_peak_gain.get(id(card), 0.0)
+                    loss = power_peak_loss.get(id(card), 0.0)
+                    if card.upgraded_profile is not None:
+                        peak = max(peak, power_peak_gain.get(id(card.upgraded_profile), 0.0))
+                        loss = max(loss, power_peak_loss.get(id(card.upgraded_profile), 0.0))
+                    totals.max_turn_extra += copies * peak
+                    totals.max_turn_loss += copies * loss
+                elif id(card) not in self.upgraded_base:
+                    if id(card) in power_peak_gain:
+                        totals.max_turn_extra += max(1.0, math.ceil(plays[id(card)])) * power_peak_gain[id(card)]
+                    if id(card) in power_peak_loss:
+                        totals.max_turn_loss += max(1.0, math.ceil(plays[id(card)])) * power_peak_loss[id(card)]
 
     def _repeats_on_kill(self, effect: Mapping) -> float:
         """Extra rounds of a hit that repeats once per enemy it kills.
@@ -2642,9 +2932,9 @@ class _Engine:
         hits = self.situation.enemy_hits
         return float(hits) if hits is not None else 1.0 + self.situation.extra_enemies
 
-    def _hits(self, effect: Mapping) -> float:
+    def _hits(self, effect: Mapping, x_value: Optional[float] = None) -> float:
         if effect.get("hits_x"):
-            return self.x_value
+            return self.x_value if x_value is None else x_value
         hits = effect.get("hits")
         return 1.0 if hits is None else float(hits)
 
@@ -2692,12 +2982,22 @@ class _Engine:
                 totals.gaps.append(f"orb_fact_missing:{orb}")
                 continue
             share = rate / channel
-            passives = held * share * (1.0 + totals.orb_passives.get(orb, 0.0))
-            self._orb_effect(totals, fact, "passive", passives, focus, age)
-            self._orb_effect(totals, fact, "evoke", evokes * share, focus, age)
+            extra_passive = totals.orb_passives.get(orb, 0.0)
+            passives = held * share * (1.0 + extra_passive)
+            passive_peak = (
+                min(slots, float(math.ceil(rate * turns))) + (1.0 if extra_passive > 1e-9 else 0.0)
+                if rate * turns > 1e-9 else 0.0
+            )
+            evoke_peak = (
+                min(slots, float(math.ceil(evokes * share * turns)))
+                if evokes * share * turns > 1e-9 else 0.0
+            )
+            self._orb_effect(totals, fact, "passive", passives, focus, age, passive_peak)
+            self._orb_effect(totals, fact, "evoke", evokes * share, focus, age, evoke_peak)
 
     def _orb_effect(
         self, totals: _Totals, fact: Mapping, part: str, times: float, focus: float, age: float,
+        peak_instances: float = 0.0,
     ) -> None:
         spec = fact.get(part) or {}
         effect = spec.get("effect") or {}
@@ -2728,6 +3028,8 @@ class _Engine:
             totals.block_events += times
         elif kind == "energy":
             totals.energy += value * times
+            if times > 0.0 and value > 0.0 and peak_instances > 0.0:
+                totals.max_turn_extra += value * peak_instances
         elif kind not in {None, "orb_evoke_gain"}:
             totals.gaps.append(f"orb_effect_unsupported:{kind}")
 
@@ -2739,7 +3041,8 @@ class _Engine:
         turns = situation.fight_turns
         amplify = 1.0 + float(params["vulnerable_damage_bonus"]) * min(1.0, totals.vulnerable)
         attack_hits = sum(
-            plays[id(c)] * self._hits(e) * (self.arrow_avail if e.get("source") == "arrow" else 1.0)
+            plays[id(c)] * self._hits(e, self.card_x.get(id(c)) if c.x_cost else None)
+            * (self.arrow_avail if e.get("source") == "arrow" else 1.0)
             for c in self.cards for e in c.effects
             if e.get("kind") == "damage" and e.get("source") != "osty"
         )

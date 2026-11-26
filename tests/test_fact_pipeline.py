@@ -206,6 +206,47 @@ class ValidatorTests(unittest.TestCase):
         self.assertIn("every", text_r)
         self.assertIn("rewards", text_r)
 
+    def test_validator_checks_add_card_catalog_and_impossible_turn_start_counter(self):
+        ext, facts, cat, _ = _sample_inputs()
+        # Fabricated card ID in card effects and relic obtain must be rejected when catalog_cards is provided.
+        bad_card = _valid_card_fact()
+        bad_card["effects"] = [{"kind": "add_card", "card": "CURSE_OF_THE_BELL", "count": 1, "destination": "hand"}]
+        res_card = validate_fact(bad_card, ext, facts, catalog_cards=cat["cards"])
+        self.assertFalse(res_card.ok)
+        self.assertTrue(any("add_card.card" in p for p in res_card.problems))
+
+        # Valid catalog ID, valid C# class name, and dynamic copy descriptor all pass.
+        ok_card = _valid_card_fact()
+        ok_card["effects"] = [
+            {"kind": "add_card", "card": "ABRASIVE", "count": 1, "destination": "hand"},
+            {"kind": "add_card", "card": "Abrasive", "count": 1, "destination": "discard"},
+            {"kind": "add_card", "card": "copy_of_chosen", "count": 1, "destination": "hand"},
+        ]
+        res_ok = validate_fact(ok_card, ext, facts, catalog_cards=cat["cards"])
+        self.assertTrue(res_ok.ok, res_ok.problems)
+
+        # Relic obtain add_card with fabricated ID + impossible turn_start/counter=turn/every>1 trigger.
+        bad_relic = _valid_relic_fact()
+        bad_relic["category"] = "trigger"
+        bad_relic["obtain"] = [{"kind": "add_card", "card": "CURSEOFTHEBELL", "count": 1, "destination": "deck"}]
+        bad_relic["mechanics"] = [
+            {"when": "turn_start", "counter": "turn", "every": 4, "effect": {"kind": "draw", "amount": 2}}
+        ]
+        res_relic = validate_fact(bad_relic, ext, facts, catalog_cards=cat["cards"])
+        self.assertFalse(res_relic.ok)
+        joined = "\n".join(res_relic.problems)
+        self.assertIn("add_card.card", joined)
+        self.assertIn("impossible trigger combination", joined)
+
+        # Valid counter='combat' with turn_start and every=4 passes.
+        ok_relic = _valid_relic_fact()
+        ok_relic["category"] = "trigger"
+        ok_relic["mechanics"] = [
+            {"when": "turn_start", "counter": "combat", "every": 4, "effect": {"kind": "draw", "amount": 2}}
+        ]
+        res_relic_ok = validate_fact(ok_relic, ext, facts, catalog_cards=cat["cards"])
+        self.assertTrue(res_relic_ok.ok, res_relic_ok.problems)
+
 
 class ExtractorTests(unittest.TestCase):
     def test_fixture_provider_truncation_and_errors(self):
@@ -391,6 +432,54 @@ class PipelineStateMachineTests(unittest.TestCase):
         self.assertTrue(res.needs_new_vocabulary)
         self.assertEqual(len(llm.calls), 1)  # Did not waste Auditor tokens
 
+    def test_codex_conflict_blocks_auto_approval_on_initial_and_revised_audit(self):
+        ext, facts, cat, assembly = _sample_inputs()
+        conflicting = _valid_card_fact()
+        conflicting["cost"] = {"base": 2, "upgraded": 2}  # Codex says 3 -> codex_conflict
+
+        # Case 1: Initial audit agrees, but codex_conflicts is non-empty -> needs_human (codex_conflict).
+        llm1 = ScriptedLLMClient(
+            [
+                make_tool_response("submit_fact", {"fact": conflicting}, call_id="d1"),
+                make_tool_response("submit_audit", {"verdict": "agree", "issues": [], "notes": "IL ok"}, call_id="a1"),
+            ]
+        )
+        res1, _ = process_entity(
+            "cards:ABRASIVE",
+            extract_by_key=ext,
+            facts_by_key=facts,
+            catalog_by_type=cat,
+            assembly=assembly,
+            llm=llm1,
+        )
+        self.assertEqual(res1.outcome, "needs_human")
+        self.assertEqual(res1.reason, "codex_conflict")
+        self.assertTrue(res1.codex_conflicts)
+        self.assertNotIn("audit", res1.fact or {})
+
+        # Case 2: Revised audit agrees, still has codex_conflicts -> needs_human (codex_conflict).
+        llm2 = ScriptedLLMClient(
+            [
+                make_tool_response("submit_fact", {"fact": conflicting}, call_id="d1"),
+                make_tool_response("submit_audit", {"verdict": "disagree", "issues": ["Check cost"], "notes": "Disagree"}, call_id="a1"),
+                make_tool_response("submit_fact", {"fact": conflicting}, call_id="r1"),
+                make_tool_response("submit_audit", {"verdict": "agree", "issues": [], "notes": "Agreed after recheck"}, call_id="a2"),
+            ]
+        )
+        res2, _ = process_entity(
+            "cards:ABRASIVE",
+            extract_by_key=ext,
+            facts_by_key=facts,
+            catalog_by_type=cat,
+            assembly=assembly,
+            llm=llm2,
+        )
+        self.assertEqual(res2.outcome, "needs_human")
+        self.assertEqual(res2.reason, "codex_conflict")
+        self.assertTrue(res2.revised)
+        self.assertTrue(res2.codex_conflicts)
+        self.assertNotIn("audit", res2.fact or {})
+
     def test_skip_audit_ablation_and_batch_resume(self):
         ext, facts, cat, assembly = _sample_inputs()
         llm = ScriptedLLMClient(
@@ -566,6 +655,45 @@ class SemanticComparatorAndEvalTests(unittest.TestCase):
         self.assertAlmostEqual(metrics["auditor"]["false_alarm_rate"], 1.0)
         self.assertEqual(metrics["revision"]["fixed_bug"], 1)
         self.assertEqual(metrics["revision"]["kept_good"], 1)
+
+    def test_schema_final_pass_excludes_invalid_needs_new_vocabulary_draft(self):
+        gold_map = {
+            "cards:ABRASIVE": _valid_card_fact(thorns=4),
+            "powers:ACCURACY": _valid_power_fact(),
+        }
+        invalid_vocab = EntityPipelineResult(
+            entity_key="powers:ACCURACY",
+            entity_type="powers",
+            class_name="AccuracyPower",
+            fingerprint=FP_POWER,
+            outcome="needs_human",
+            reason="needs_new_vocabulary",
+            fact=_valid_power_fact(),
+            initial_draft=_valid_power_fact(),
+            initial_audit=None,
+            final_audit=None,
+            needs_new_vocabulary=True,
+            validation_problems=["powers:ACCURACY mechanics[0]: unknown modifier 'custom_mod'"],
+            schema_repairs=0,
+        )
+        valid_card = EntityPipelineResult(
+            entity_key="cards:ABRASIVE",
+            entity_type="cards",
+            class_name="Abrasive",
+            fingerprint=FP_CARD,
+            outcome="auto_approved",
+            reason="auditor_agreed",
+            fact=_valid_card_fact(thorns=4),
+            initial_draft=_valid_card_fact(thorns=4),
+            initial_audit=AuditOutcome(verdict="agree"),
+            final_audit=AuditOutcome(verdict="agree"),
+            validation_problems=[],
+            schema_repairs=0,
+        )
+        metrics = compute_eval_metrics([invalid_vocab, valid_card], gold_map)
+        self.assertEqual(metrics["schema_final_pass"], 1)
+        self.assertEqual(metrics["schema_first_pass"], 1)
+        self.assertAlmostEqual(metrics["schema_final_pass_rate"], 0.5)
 
 
 if __name__ == "__main__":

@@ -206,8 +206,30 @@ class RunReview:
             "options": _option_rows(rec, self.engine, _candidate_kinds(request)),
         }
 
-    def _finish(self, record: dict, chosen: Optional[str]) -> None:
+    def _finish(
+        self,
+        record: dict,
+        chosen: Optional[str],
+        *,
+        agree_override: Optional[bool] = None,
+        unjudged_reason: Optional[str] = None,
+    ) -> None:
         record["chosen"] = chosen
+        if unjudged_reason is not None:
+            record.update(tier=None, gap=None, not_strict_because=[unjudged_reason])
+            return
+        if agree_override is True:
+            if record["engine_top"] == chosen:
+                gap: Optional[float] = 0.0
+            else:
+                by_id = {o["id"]: o for o in record["options"]}
+                a, b = by_id.get(record["engine_top"]), by_id.get(chosen)
+                if a is not None and b is not None and a["deck_score"] is not None and b["deck_score"] is not None:
+                    gap = round(a["deck_score"] - b["deck_score"], 2)
+                else:
+                    gap = None
+            record.update(tier=0, gap=gap, not_strict_because=[])
+            return
         tier, gap, reasons = _tier(record["options"], record["engine_top"], chosen, record["confidence"],
                                    record["pick_margin"])
         record.update(tier=tier, gap=gap, not_strict_because=reasons)
@@ -263,26 +285,50 @@ class RunReview:
         unmatched = [b for b in bought if b not in ids]
         bought = [b for b in bought if b in ids]
         names = set(row["bought"]["relics"]) | set(row["bought"]["potions"])
-        bought += [c.candidate_id for c in request.candidates
-                   if c.candidate_id.startswith(("relic:", "potion:")) and c.label in names]
+        matched_named = [c for c in request.candidates
+                         if c.candidate_id.startswith(("relic:", "potion:")) and c.label in names]
+        bought += [c.candidate_id for c in matched_named]
+        unmatched_names = len(names - {c.label for c in matched_named})
         if row["bought"]["removed"]:
             bought.append("removal")
         bought_any = bool(bought or unmatched or unknown or names or row["bought"]["colorless"])
         record["bought"] = sorted(set(bought))
-        record["bought_unscored"] = len(unmatched) + unknown
+        record["bought_unscored"] = len(unmatched) + unknown + unmatched_names
         decision.record = record
-        # Buy or leave: compare the engine's pick with the player's best-scored purchase, or with leaving.
+        # Keep record["chosen"] faithful to the player's actual purchase; decouple
+        # shop buy-or-leave agreement from whether the exact item matched engine_top.
         top = record["engine_top"]
         if not bought_any:
             chosen = "leave"
-        elif top == "leave" or top is None:
-            scored = [o for o in record["options"] if o["id"] in record["bought"]]
-            chosen = max(scored, key=lambda o: o["deck_score"] or float("-inf"))["id"] if scored else None
-            if record["bought_unscored"] and chosen is not None:
-                chosen = None      # a purchase the engine could not price: buy or leave unknown
+            record["buy_or_leave_agree"] = None if top is None else (top == "leave")
+            self._finish(record, chosen)
         else:
-            chosen = top           # both bought something: buy-or-leave agrees
-        self._finish(record, chosen)
+            scored = [
+                o for o in record["options"]
+                if o["id"] in record["bought"] and o["deck_score"] is not None
+            ]
+            if scored:
+                chosen = max(scored, key=lambda o: (o["deck_score"], o["id"] == top))["id"]
+            elif record["bought"]:
+                chosen = record["bought"][0]
+            else:
+                chosen = "bought_unscored"
+
+            if top is None:
+                record["buy_or_leave_agree"] = None
+                self._finish(record, chosen)
+            elif top == "leave":
+                if record["bought_unscored"]:
+                    # A purchase the engine could not price: keep real chosen, mark buy-or-leave unjudged.
+                    record["buy_or_leave_agree"] = None
+                    self._finish(record, chosen, unjudged_reason="choice_not_scored")
+                else:
+                    record["buy_or_leave_agree"] = False
+                    self._finish(record, chosen)
+            else:
+                # Both engine and player chose to buy rather than leave.
+                record["buy_or_leave_agree"] = True
+                self._finish(record, chosen, agree_override=True)
 
     # ---------------------------------------------------------------- views
     def summary(self) -> dict:

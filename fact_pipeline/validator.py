@@ -57,7 +57,38 @@ class ValidationResult:
     engine_unsupported: List[str] = field(default_factory=list)
 
 
-def _check_effect(effect: Any, where: str, *, allow_when: bool = False) -> List[str]:
+DYNAMIC_CARD_REF_PREFIXES = ("copy_of_", "copy ", "one_card_")
+
+
+def _check_add_card_ref(
+    effect: Mapping[str, Any],
+    where: str,
+    valid_card_ids: Optional[Set[str]],
+    valid_card_classes: Optional[Set[str]],
+) -> List[str]:
+    card_ref = effect.get("card")
+    if not isinstance(card_ref, str) or valid_card_ids is None:
+        return []
+    text = card_ref.strip()
+    if not text:
+        return [f"{where}: add_card.card must not be empty"]
+    if text in valid_card_ids:
+        return []
+    if valid_card_classes is not None and text in valid_card_classes:
+        return []
+    if text.startswith(DYNAMIC_CARD_REF_PREFIXES):
+        return []
+    return [f"{where}: add_card.card {card_ref!r} is not in catalog_cards"]
+
+
+def _check_effect(
+    effect: Any,
+    where: str,
+    *,
+    allow_when: bool = False,
+    valid_card_ids: Optional[Set[str]] = None,
+    valid_card_classes: Optional[Set[str]] = None,
+) -> List[str]:
     if not isinstance(effect, dict):
         return [f"{where}: effect is not an object"]
     problems: List[str] = []
@@ -94,10 +125,17 @@ def _check_effect(effect: Any, where: str, *, allow_when: bool = False) -> List[
         dest = effect.get("destination")
         if dest is not None and dest not in VALID_DESTINATIONS:
             problems.append(f"{where}: destination must be one of {sorted(VALID_DESTINATIONS)} (got {dest!r})")
+        problems.extend(_check_add_card_ref(effect, where, valid_card_ids, valid_card_classes))
     return problems
 
 
-def _check_obtain_and_between(entry: Mapping[str, Any], key: str) -> List[str]:
+def _check_obtain_and_between(
+    entry: Mapping[str, Any],
+    key: str,
+    *,
+    valid_card_ids: Optional[Set[str]] = None,
+    valid_card_classes: Optional[Set[str]] = None,
+) -> List[str]:
     problems: List[str] = []
     if (entry.get("obtain") or entry.get("between_fights") or entry.get("obtain_params")) and not key.startswith("relics:"):
         problems.append(f"{key}: obtain / between_fights are relic fields")
@@ -113,6 +151,8 @@ def _check_obtain_and_between(entry: Mapping[str, Any], key: str) -> List[str]:
         count = effect.get("count")
         if count is not None and (isinstance(count, bool) or (not isinstance(count, (int, float)) and count != "all")):
             problems.append(f"{where}: count must be a number or \"all\"")
+        if effect.get("kind") == "add_card":
+            problems.extend(_check_add_card_ref(effect, where, valid_card_ids, valid_card_classes))
         if effect.get("kind") == "offer_rewards":
             rewards = effect.get("rewards")
             if not isinstance(rewards, list) or not rewards:
@@ -130,6 +170,8 @@ def _check_obtain_and_between(entry: Mapping[str, Any], key: str) -> List[str]:
             problems.append(f"{where}: unknown when {mechanic.get('when')!r}")
         elif not isinstance(mechanic.get("effect"), dict) or mechanic["effect"].get("kind") not in OBTAIN_KINDS:
             problems.append(f"{where}: effect needs an obtain kind")
+        elif mechanic["effect"].get("kind") == "add_card":
+            problems.extend(_check_add_card_ref(mechanic["effect"], where, valid_card_ids, valid_card_classes))
     params = entry.get("obtain_params")
     if params is not None and not isinstance(params, dict):
         problems.append(f"{key}: obtain_params must be an object")
@@ -231,12 +273,39 @@ def validate_fact(
         if not isinstance(duration, dict) or not isinstance(duration.get("kind"), str) or not duration["kind"].strip():
             problems.append(f"{key}: duration must be an object with a non-empty 'kind'")
 
-    problems.extend(_check_obtain_and_between(entry, key))
+    valid_card_ids: Optional[Set[str]] = None
+    valid_card_classes: Optional[Set[str]] = None
+    if catalog_cards is not None:
+        valid_card_ids = {str(cid) for cid in catalog_cards}
+        valid_card_classes = set()
+        for src in (facts_by_key, extract_by_key):
+            for k, v in src.items():
+                if k.startswith("cards:") and isinstance(v, Mapping):
+                    cid = k.split(":", 1)[1]
+                    cls_name = v.get("class")
+                    if cid in valid_card_ids and isinstance(cls_name, str) and cls_name:
+                        valid_card_classes.add(cls_name)
+
+    problems.extend(
+        _check_obtain_and_between(
+            entry,
+            key,
+            valid_card_ids=valid_card_ids,
+            valid_card_classes=valid_card_classes,
+        )
+    )
 
     effects = entry.get("effects")
     if isinstance(effects, list):
         for i, effect in enumerate(effects):
-            problems.extend(_check_effect(effect, f"{key} effects[{i}]"))
+            problems.extend(
+                _check_effect(
+                    effect,
+                    f"{key} effects[{i}]",
+                    valid_card_ids=valid_card_ids,
+                    valid_card_classes=valid_card_classes,
+                )
+            )
 
     mechanics = entry.get("mechanics")
     engine_unsupported: List[str] = []
@@ -259,7 +328,26 @@ def validate_fact(
                     problems.append(f"{where}: unexpected trigger mechanic keys {sorted(bad_keys)}")
                 if mechanic.get("when") not in WHEN:
                     problems.append(f"{where}: unknown when {mechanic.get('when')!r}")
-                problems.extend(_check_effect(mechanic.get("effect"), where))
+                every = mechanic.get("every")
+                if (
+                    mechanic.get("when") == "turn_start"
+                    and mechanic.get("counter") == "turn"
+                    and isinstance(every, (int, float))
+                    and not isinstance(every, bool)
+                    and every > 1
+                ):
+                    problems.append(
+                        f"{where}: impossible trigger combination when='turn_start' with counter='turn' and every={every} "
+                        "(turn_start fires at most once per turn; use counter='combat' or every_turns)"
+                    )
+                problems.extend(
+                    _check_effect(
+                        mechanic.get("effect"),
+                        where,
+                        valid_card_ids=valid_card_ids,
+                        valid_card_classes=valid_card_classes,
+                    )
+                )
             reason = unsupported_reason(mechanic)
             if reason:
                 engine_unsupported.append(f"{key}: {reason}")

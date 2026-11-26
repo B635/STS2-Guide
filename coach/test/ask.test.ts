@@ -1,8 +1,21 @@
 // The lead loop with a scripted model: plan, parallel investigators, budgets,
 // the program check and the critic, the rewrite and the cuts.
 import { describe, expect, it } from "vitest";
-import { MAX_HISTORY, MAX_INVESTIGATORS, MAX_LEAD_TOOL_CALLS, UNCONFIRMED, ask, checkAnswer, newSession, sentences, withoutCut } from "../src/ask.js";
+import {
+  MAX_HISTORY,
+  MAX_INVESTIGATORS,
+  MAX_LEAD_TOOL_CALLS,
+  UNCONFIRMED,
+  ask,
+  checkAnswer,
+  investigationHeadline,
+  newSession,
+  overview,
+  sentences,
+  withoutCut,
+} from "../src/ask.js";
 import type { AskEvent } from "../src/ask.js";
+import type { DecisionDetail, DecisionList } from "../src/schemas.js";
 import { Trace } from "../src/trace.js";
 import { fakeEngine, fakeLlm, TOOL_SPECS } from "./fakes.js";
 import type { Scripted } from "./fakes.js";
@@ -185,6 +198,142 @@ describe("lead agent", () => {
     expect(runs).toBeLessThan(MAX_HISTORY + 2);
     const lastLead = t.requests.filter((r) => r.stream).at(-1)!;
     expect(lastLead.messages.filter((m) => m.role === "user" && String(m.content).startsWith("问题")).length).toBe(MAX_HISTORY + 1);
+  });
+
+  it("renews cached investigation evidence so turn 6 still validates after turn 1 drops out", async () => {
+    // Turn 1 investigates F06-card (adding 6.9 / 8.9 / 8.5 to evidence).
+    // Turns 2-4 ask unrelated questions without investigating F06-card.
+    // Turn 5 reuses cached F06-card (must call keep() so Turn 5 owns a fresh evidence ID).
+    // Turn 6 cites 6.9 / 8.9 / 8.5 directly without calling tools -> must pass checkAnswer!
+    let qIdx = 0;
+    let qStep = 0;
+    const t = setup({
+      lead: (req) => {
+        if (req.tool_choice && typeof req.tool_choice === "object") return plan("先看概况。", ["F06-card"]);
+        qStep++;
+        if ((qIdx === 1 || qIdx === 5) && qStep === 1) {
+          return { calls: [{ name: "investigate", args: { decision_ids: ["F06-card"], focus: "防御" } }] };
+        }
+        if (qIdx === 1 || qIdx === 5 || qIdx === 6) {
+          return { content: GOOD_DRAFT };
+        }
+        return { content: "引擎的结果里看不出来。" };
+      },
+    });
+    for (let i = 1; i <= 5; i++) {
+      qIdx = i;
+      qStep = 0;
+      const ans = await ask(t.ctx, t.session, `追问 ${i}`, t.onEvent);
+      expect(ans.status).toBe("passed");
+      if (i === 5) {
+        expect(ans.investigators[0]?.cached).toBe(true);
+        expect(ans.evidence.some((e) => e.tool === "investigate")).toBe(true);
+      }
+    }
+    // Turn 1 has now been evicted from the 4-turn sliding window, while Turn 5 remains.
+    expect(t.session.turns).toHaveLength(MAX_HISTORY);
+    expect(t.session.turns[0]!.question).toBe("追问 2");
+    expect(t.session.reports.has("F06-card")).toBe(true);
+
+    qIdx = 6;
+    qStep = 0;
+    const turn6 = await ask(t.ctx, t.session, "第 6 层刚才说的防御数字是多少？", t.onEvent);
+    expect(turn6.checks.draft_program).toEqual([]);
+    expect(turn6.status).toBe("passed");
+    expect(turn6.final).toBe(GOOD_DRAFT);
+  });
+
+  it("never claims player and engine bought the same shop item when tier===0 but chosen!==engine_top", () => {
+    const shopDetail: DecisionDetail = {
+      id: "F15-shop",
+      kind: "shop",
+      floor: 15,
+      act: 1,
+      hp: 55,
+      max_hp: 80,
+      gold: 210,
+      engine_top: "card:2:OFFERING",
+      confidence: "medium",
+      chosen: "removal",
+      tier: 0,
+      gap: 4.2,
+      pick_margin: 1,
+      options: [
+        {
+          id: "card:2:OFFERING",
+          kind: "card",
+          entity_id: "OFFERING",
+          name: "祭品",
+          score: 48.2,
+          deck_score: 48.2,
+          rank: 1,
+          eligible: true,
+          fully_scored: true,
+          gaps: [],
+          factors: [{ code: "merchant:deck", delta: 5.2, message: "买祭品" }],
+          dimensions: {},
+        },
+        {
+          id: "removal",
+          kind: "other",
+          entity_id: null,
+          name: "删牌",
+          score: 44.0,
+          deck_score: 44.0,
+          rank: 2,
+          eligible: true,
+          fully_scored: true,
+          gaps: [],
+          factors: [{ code: "merchant:deck", delta: 1.0, message: "删打击" }],
+          dimensions: {},
+        },
+      ],
+    };
+    const head = investigationHeadline(shopDetail, { relation: "disagree", pair: { a: "card:2:OFFERING", b: "removal" } });
+    expect(head).not.toContain("都选了「祭品」");
+    expect(head).toContain("都在这家商店选择了消费而非离开，具体购买项不同");
+    expect(head).toContain("你选了「删牌」");
+    expect(head).toContain("引擎首选「祭品」");
+
+    const shopList: DecisionList = {
+      decisions: [
+        {
+          id: "F15-shop",
+          kind: "shop",
+          floor: 15,
+          act: 1,
+          chosen: "removal",
+          chosen_name: "删牌",
+          engine_top: "card:2:OFFERING",
+          engine_top_name: "祭品",
+          confidence: "medium",
+          tier: 0,
+          gap: 4.2,
+          not_strict_because: [],
+        },
+        {
+          id: "F22-shop",
+          kind: "shop",
+          floor: 22,
+          act: 2,
+          chosen: "bought_unscored",
+          chosen_name: null,
+          engine_top: "card:1:SOW",
+          engine_top_name: "播种",
+          confidence: "medium",
+          tier: 0,
+          gap: null,
+          not_strict_because: [],
+        },
+      ],
+      skipped: [],
+    };
+    const e0 = overview(SUMMARY, shopList, []) as { decisions: Array<{ player: string; engine: string; verdict: string }> };
+    expect(e0.decisions[0]!.player).toBe("删牌");
+    expect(e0.decisions[0]!.engine).toBe("祭品");
+    expect(e0.decisions[0]!.verdict).toContain("都在这家商店选择了消费而非离开，具体购买项不同");
+    expect(e0.decisions[1]!.player).toBe("已购买（未计分项）");
+    expect(e0.decisions[1]!.verdict).toContain("都在这家商店选择了消费而非离开，具体购买项不同");
   });
 });
 

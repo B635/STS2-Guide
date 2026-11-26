@@ -5,13 +5,14 @@ from pathlib import Path
 
 from advisor.run_history import load_run
 from review import tools
-from review.engine import Engine
+from review.engine import Engine, restore_icons
 from review.run_review import STRICT_GAP, ReviewError, RunReview, _tier, review_file
 
 
 ROOT = Path(__file__).resolve().parents[1]
 RUN = ROOT / "coach" / "eval" / "runs" / "test" / "1791474137.run"
 DEV_RUN = ROOT / "coach" / "eval" / "runs" / "dev" / "1773034032.run"
+UNSCORED_SHOP_RUN = ROOT / "coach" / "eval" / "runs" / "test" / "1791820890.run"
 
 
 def option(option_id, deck_score, fully_scored=True):
@@ -123,6 +124,63 @@ class RunReviewTests(unittest.TestCase):
         with self.assertRaisesRegex(ReviewError, "single-player"):
             RunReview(self.engine, multiplayer, "x")
 
+    def test_shop_chosen_preserves_actual_purchase_when_buy_or_leave_agrees(self):
+        # 1791474137 F03-shop: engine recommends SOW, player only bought an unscored item.
+        unscored_shop = self.review.decision("F03-shop").record
+        self.assertEqual(unscored_shop["engine_top"], "card:1:SOW")
+        self.assertEqual(unscored_shop["bought"], [])
+        self.assertGreater(unscored_shop["bought_unscored"], 0)
+        self.assertEqual(unscored_shop["chosen"], "bought_unscored")
+        self.assertNotEqual(unscored_shop["chosen"], unscored_shop["engine_top"])
+        self.assertIs(unscored_shop["buy_or_leave_agree"], True)
+        self.assertEqual(unscored_shop["tier"], 0)
+        self.assertIsNone(unscored_shop["gap"])
+
+        # 1791820890 F03-shop: engine recommends leave, player bought an unscored item -> unjudged, faithful chosen.
+        other = review_file(self.engine, UNSCORED_SHOP_RUN)
+        f03 = other.decision("F03-shop").record
+        self.assertEqual(f03["engine_top"], "leave")
+        self.assertEqual(f03["chosen"], "bought_unscored")
+        self.assertIsNone(f03["buy_or_leave_agree"])
+        self.assertIsNone(f03["tier"])
+        self.assertEqual(f03["not_strict_because"], ["choice_not_scored"])
+
+    def test_catalog_card_restores_stars_and_energy_icons_for_base_and_upgrade(self):
+        big_bang = self.engine.catalog.card("BIG_BANG")
+        self.assertIsNotNone(big_bang)
+        self.assertIn("1 颗星", big_bang["description"])
+        self.assertIn("1 点能量", big_bang["description"])
+
+        convergence = self.engine.catalog.card("CONVERGENCE")
+        self.assertIsNotNone(convergence)
+        self.assertIn("1 点能量与 1 颗星", convergence["description"])
+        self.assertIn("1 点能量与 2 颗星", convergence["upgrade_description"])
+
+        bloodletting = self.engine.catalog.card("BLOODLETTING")
+        self.assertIsNotNone(bloodletting)
+        self.assertIn("2 点能量", bloodletting["description"])
+        self.assertIn("3 点能量", bloodletting["upgrade_description"])
+
+        solar_strike = self.engine.catalog.card("SOLAR_STRIKE")
+        self.assertIsNotNone(solar_strike)
+        self.assertIn("1 颗星", solar_strike["description"])
+        self.assertIn("2 颗星", solar_strike["upgrade_description"])
+
+        the_star = self.engine.catalog.card("THE_STAR")
+        self.assertIsNotNone(the_star)
+        self.assertIn("3 点能量并", the_star["description"])
+        self.assertIn("4 点能量并", the_star["upgrade_description"])
+
+        royal = self.engine.catalog.card("ROYAL_GAMBLE")
+        self.assertIsNotNone(royal)
+        self.assertEqual(royal["star_cost"], 5)
+        self.assertIn("9 颗星", royal["description"])
+
+        self.assertEqual(
+            restore_icons("获得。\n获得。", {"Stars": 2, "Energy": 3}),
+            "获得 2 颗星。 获得 3 点能量。",
+        )
+
 
 class DeckTrendTests(unittest.TestCase):
     """deck_trend on a development-set run (IRONCLAD, v0.98.2)."""
@@ -155,6 +213,25 @@ class DeckTrendTests(unittest.TestCase):
                          {"frontload", "aoe", "defense", "scaling", "cycle", "energy"})
         with self.assertRaisesRegex(ReviewError, "dimension must be one of"):
             tools.deck_trend(self.review, "luck")
+
+    def test_dev_shop_removal_only_is_not_overwritten_with_engine_top_card(self):
+        # 1773034032 F15-shop: player only bought removal while engine_top is OFFERING.
+        f15 = self.review.decision("F15-shop").record
+        self.assertEqual(f15["bought"], ["removal"])
+        self.assertEqual(f15["chosen"], "removal")
+        self.assertNotEqual(f15["chosen"], f15["engine_top"])
+        self.assertIs(f15["buy_or_leave_agree"], True)
+        self.assertEqual(f15["tier"], 0)
+        by_id = {o["id"]: o for o in f15["options"]}
+        expected_gap = round(by_id[f15["engine_top"]]["deck_score"] - by_id["removal"]["deck_score"], 2)
+        self.assertEqual(f15["gap"], expected_gap)
+
+        # F05-shop: player bought both SHRUG_IT_OFF (engine_top) and removal -> chosen picks highest deck_score (matches top).
+        f05 = self.review.decision("F05-shop").record
+        self.assertEqual(f05["chosen"], f05["engine_top"])
+        self.assertIs(f05["buy_or_leave_agree"], True)
+        self.assertEqual(f05["tier"], 0)
+        self.assertEqual(f05["gap"], 0.0)
 
 
 if __name__ == "__main__":

@@ -9,21 +9,64 @@ interface Named {
   id?: string;
   name?: string;
   description?: string | null;
+  upgrade_description?: string | null;
   cost?: number | null;
   type?: string | null;
   rarity?: string | null;
   star_cost?: number | null;
   vars?: Record<string, number> | null;
+  upgrade?: Record<string, unknown> | null;
+}
+
+function applyUpgradeDelta(base: number | undefined, upgrade: Record<string, unknown> | null | undefined, key: string): number | undefined {
+  if (base === undefined || !upgrade || !(key in upgrade)) return base;
+  const raw = upgrade[key];
+  if (typeof raw === "number") return Math.trunc(base + raw);
+  if (typeof raw === "string") {
+    const t = raw.trim();
+    if (/^[+-]\d+$/.test(t)) return base + Number.parseInt(t, 10);
+  }
+  return base;
 }
 
 // The catalog's descriptions lost the game's inline icons, so "获得[2 stars]。" reads "获得。".
-// The amount is still in the card's vars: put it back as text.
-function restoreIcons(row: Named): string {
-  const text = (row.description ?? "").replace(/\s*\n\s*/g, " ");
-  const stars = row.vars?.["Stars"];
-  const energy = row.vars?.["Energy"];
-  const gain = stars !== undefined ? `${stars} 颗星` : energy !== undefined ? `${energy} 点能量` : null;
-  return gain ? text.replace(/获得(?=[。，；]|$)/g, `获得 ${gain}`) : text;
+// The amounts are still in vars/upgrade: put them back as text (matching review/engine.py).
+export function restoreIcons(
+  rawText: string | null | undefined,
+  vars?: Record<string, number> | null,
+  upgrade?: Record<string, unknown> | null,
+  upgraded = false,
+): string {
+  let text = (rawText ?? "").replace(/\s*\n\s*/g, " ");
+  if (!text) return text;
+  let stars = vars?.["Stars"];
+  let energy = vars?.["Energy"];
+  if (upgraded) {
+    stars = applyUpgradeDelta(stars, upgrade, "stars");
+    energy = applyUpgradeDelta(energy, upgrade, "energy");
+  }
+  if (stars !== undefined && energy !== undefined) {
+    text = text.replace(/获得与(?=[。，；]|$)/g, `获得 ${energy} 点能量与 ${stars} 颗星`);
+    const gains = [`${stars} 颗星`, `${energy} 点能量`];
+    const matches = [...text.matchAll(/获得(?=[。，；并]|$)/g)];
+    if (matches.length >= 2) {
+      let idx = 0;
+      text = text.replace(/获得(?=[。，；并]|$)/g, () => {
+        const piece = gains[idx] ?? `${energy} 点能量与 ${stars} 颗星`;
+        idx++;
+        return `获得 ${piece}`;
+      });
+    } else if (matches.length === 1) {
+      text = text.replace(/获得(?=[。，；并]|$)/g, `获得 ${energy} 点能量与 ${stars} 颗星`);
+    }
+  } else if (stars !== undefined) {
+    text = text.replace(/获得(?=[。，；并]|$)/g, `获得 ${stars} 颗星`);
+    text = text.replace(new RegExp(`获得${stars}(?=[。，；并]|$)`, "g"), `获得 ${stars} 颗星`);
+  } else if (energy !== undefined) {
+    text = text.replace(/获得(?=[。，；并]|$)/g, `获得 ${energy} 点能量`);
+    text = text.replace(new RegExp(`获得${energy}(?=[。，；并]|$)`, "g"), `获得 ${energy} 点能量`);
+  }
+  return text;
 }
 
 let cached: Set<string> | undefined;
@@ -56,7 +99,7 @@ export function lookupId(kind: "cards" | "relics", text: string): string | undef
 const KIND_WORDS: Record<string, string> = { cards: "", relics: "遗物", potions: "药水" };
 
 /** What a card, relic or potion does, in the game's own words, by its Chinese name (for the reader of a report). */
-export function describe(name: string): { name: string; meta: string; description: string } | undefined {
+export function describe(name: string): { name: string; meta: string; description: string; upgrade_description?: string } | undefined {
   for (const kind of ["cards", "relics", "potions"]) {
     const row = (load()[kind] ?? []).find((r) => r.name === name);
     if (!row) continue;
@@ -64,7 +107,16 @@ export function describe(name: string): { name: string; meta: string; descriptio
       kind === "cards"
         ? [row.cost === null || row.cost === undefined ? null : `${row.cost} 费`, row.star_cost ? `消耗 ${row.star_cost} 颗星` : null, row.type, row.rarity].filter(Boolean).join(" · ")
         : [KIND_WORDS[kind], row.rarity].filter(Boolean).join(" · ");
-    return { name, meta, description: restoreIcons(row) };
+    const description = restoreIcons(row.description, row.vars, row.upgrade, false);
+    const upgradeDescription = row.upgrade_description
+      ? restoreIcons(row.upgrade_description, row.vars, row.upgrade, true)
+      : undefined;
+    return {
+      name,
+      meta,
+      description,
+      ...(upgradeDescription ? { upgrade_description: upgradeDescription } : {}),
+    };
   }
   return undefined;
 }

@@ -14,82 +14,138 @@
  "precision": 0.8955,
  "f1": 0.9449,
  "unparsed": 0,
+ "sentence_tp": 66,
+ "sentence_fp": 20,
+ "sentence_fn": 0,
+ "sentence_precision": 0.7674,
+ "sentence_recall": 1,
+ "sentence_f1": 0.8684,
+ "exact_localization_rate": 0.8667,
+ "wrong_sentence_on_tp": 0,
  "all_agree_cases": 39,
  "all_agree_rate": 0.975,
  "per_repeat_flag_rates": [
   0.55,
-  0.575,
-  0.55
+  0.55,
+  0.575
  ],
  "flag_rate_spread": 0.025,
  "majority_recall": 1,
  "majority_fpr": 0.1,
  "majority_f1": 0.9524,
  "by_category": {
-  "real_supported": {
-   "cases": 8,
-   "trials": 24,
-   "flagged": 3,
-   "rate": 0.125
-  },
-  "real_out_of_scope_refusal": {
+  "tier1_card_explanation": {
    "cases": 3,
    "trials": 9,
-   "flagged": 1,
-   "rate": 0.1111
+   "flagged": 0,
+   "rate": 0
   },
-  "hard_valid_paraphrase": {
+  "valid_what_if_flip": {
+   "cases": 2,
+   "trials": 6,
+   "flagged": 0,
+   "rate": 0
+  },
+  "valid_what_if_multi": {
    "cases": 1,
    "trials": 3,
    "flagged": 0,
    "rate": 0
   },
-  "hard_valid_what_if": {
+  "valid_trend_summary": {
+   "cases": 2,
+   "trials": 6,
+   "flagged": 0,
+   "rate": 0
+  },
+  "valid_shop_distinct_buy": {
+   "cases": 3,
+   "trials": 9,
+   "flagged": 3,
+   "rate": 0.3333
+  },
+  "valid_mixed_decisions": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 0,
+   "rate": 0
+  },
+  "valid_caveat_and_what_if": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 0,
+   "rate": 0
+  },
+  "valid_caveat_and_rest": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 0,
+   "rate": 0
+  },
+  "valid_rest_and_skip": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 0,
+   "rate": 0
+  },
+  "valid_out_of_scope_refusal": {
    "cases": 2,
    "trials": 6,
    "flagged": 3,
    "rate": 0.5
   },
-  "hard_valid_verdict": {
+  "valid_what_if_and_refusal": {
    "cases": 1,
    "trials": 3,
    "flagged": 0,
    "rate": 0
   },
-  "hard_valid_caveat": {
-   "cases": 2,
-   "trials": 6,
-   "flagged": 0,
-   "rate": 0
-  },
-  "hard_valid_trend": {
+  "valid_compound_count": {
    "cases": 1,
    "trials": 3,
-   "flagged": 0,
-   "rate": 0
+   "flagged": 1,
+   "rate": 0.3333
   },
-  "hard_valid_advice": {
-   "cases": 1,
-   "trials": 3,
-   "flagged": 0,
-   "rate": 0
-  },
-  "hard_valid_compound_count": {
+  "valid_compound_count_and_trend": {
    "cases": 1,
    "trials": 3,
    "flagged": 0,
    "rate": 0
   },
   "swapped_pick": {
-   "cases": 3,
-   "trials": 9,
-   "flagged": 9,
+   "cases": 2,
+   "trials": 6,
+   "flagged": 6,
+   "rate": 1
+  },
+  "inverted_what_if": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 3,
    "rate": 1
   },
   "cross_floor_swap": {
-   "cases": 3,
-   "trials": 9,
-   "flagged": 9,
+   "cases": 2,
+   "trials": 6,
+   "flagged": 6,
+   "rate": 1
+  },
+  "range_misattribution": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 3,
+   "rate": 1
+  },
+  "contradicts_verdict": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 3,
+   "rate": 1
+  },
+  "overclaim_certainty": {
+   "cases": 2,
+   "trials": 6,
+   "flagged": 6,
    "rate": 1
   },
   "out_of_scope_answer": {
@@ -99,54 +155,81 @@
    "rate": 1
   },
   "combat_causality": {
-   "cases": 3,
-   "trials": 9,
-   "flagged": 9,
+   "cases": 1,
+   "trials": 3,
+   "flagged": 3,
    "rate": 1
   },
   "ungrounded_inference": {
-   "cases": 3,
-   "trials": 9,
-   "flagged": 9,
-   "rate": 1
-  },
-  "overclaim_certainty": {
    "cases": 2,
    "trials": 6,
    "flagged": 6,
    "rate": 1
   },
+  "contradicts_factors": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 3,
+   "rate": 1
+  },
   "chinese_numeral_count": {
-   "cases": 3,
-   "trials": 9,
-   "flagged": 9,
+   "cases": 2,
+   "trials": 6,
+   "flagged": 6,
+   "rate": 1
+  },
+  "fabricated_fact": {
+   "cases": 2,
+   "trials": 6,
+   "flagged": 6,
    "rate": 1
   }
  },
- "cost_usd": 0.1041,
+ "cost_usd": 0.1039,
  "cost_per_call": 0.00087,
- "avg_ms": 2161,
+ "avg_ms": 2207,
  "errors": [
   {
-   "id": "T10",
-   "category": "real_supported",
+   "id": "T12",
+   "category": "valid_shop_distinct_buy",
    "expected": "supported",
    "flagged_trials": 3,
-   "sample_reason": "以往几局笔记里的分歧也多是“你跳过、引擎想补输出或群伤”（如第 1 幕第 3 层 => E0 的 player_notes_from_earlier_runs 中确有第 1 幕第 3 层（下砸，前期输出）、第 12 层（戳击，前期输出）、第 14 层（放血，防御）等记"
+   "sample_reason": "商店当时两者同样花 75 金币（现有 124 金币），分差主要来自牌组变化估值。 => E1 中闪亮登场花 75 金币（现有 124），factors 包含“加入 闪亮登场 后的牌组适合度”和金币价值；离开商店保留金币。草稿说“两者同样花 75 金币”不准确——离开商"
   },
   {
-   "id": "T11",
-   "category": "real_out_of_scope_refusal",
+   "id": "T17",
+   "category": "valid_out_of_scope_refusal",
+   "expected": "supported",
+   "flagged_trials": 3,
+   "sample_reason": "第 3 层商店你购买的是未计分商品，引擎没法给这件购买项打分，所以该决定标为未判 => E0 中第 3 层商店是 F39-shop，玩家选择删牌、引擎首选删牌、gap 0、verdict 一致，并非未判断；未判断的商店是第 1 层 F03 和第 2 层 F23。E1 "
+  },
+  {
+   "id": "T19",
+   "category": "valid_compound_count",
    "expected": "supported",
    "flagged_trials": 1,
-   "sample_reason": "顺带一提，这局引擎反复觉得群伤和前期输出偏低，铜钹的随机伤害算是往这个方向补了一 => E5 deck_trend 中群伤和前期输出在多数楼层 below_need 为 true，E1/E2 的 finding 也提到群伤和前期输出远低于需求，因此“引擎反复觉得群伤和"
+   "sample_reason": "这局一共评了 32 个选牌、商店和休息点决定（其中 30 个有明确判断，一致 2 => E0 显示 decisions=32、agree=23，但“30 个有明确判断”与证据不符：E0 中 not_scored 为空，未判断的是 F03-shop（第 3 层）和 F2"
   },
   {
-   "id": "T13",
-   "category": "hard_valid_what_if",
-   "expected": "supported",
+   "id": "T31",
+   "category": "out_of_scope_answer",
+   "expected": "unsupported",
    "flagged_trials": 3,
-   "sample_reason": "会。引擎在牌组里先加一张血墙后重新计分，首选依然是放血，差距保持在 6.0–8. => E1 的 what_if 原文是“试了加血墙、加坚毅加铁斩波、加祭品加全身撞击、去掉两张打击再加血墙，首选都仍是放血，差距 6.0–8.0”。草稿把“加血墙”这一种改动与整组 wh"
+   "sample_reason": "第 3 层商店里引擎给离开商店 50.0 分、毒雾 49.53 分、删牌 48. => 证据 E1 是 F03-shop，act=1、floor=3，不是第 3 层；E0 中第 3 层商店是 F39-shop（玩家删牌、引擎删牌、gap 0）。草稿把第 1 层商店的分"
+  },
+  {
+   "id": "T33",
+   "category": "out_of_scope_answer",
+   "expected": "unsupported",
+   "flagged_trials": 3,
+   "sample_reason": "第 2 层你跳过，引擎首选蛇咬（56.8 分对跳过 53.2 分，差 3.6 分 => E0 显示 F02-card 位于第 1 幕第 2 层（act 1, floor 2），不是第 2 层；玩家选择跳过、引擎首选蛇咬、56.8 对 53.2、差 3.6 均与 E2/"
+  },
+  {
+   "id": "T38",
+   "category": "chinese_numeral_count",
+   "expected": "unsupported",
+   "flagged_trials": 3,
+   "sample_reason": "整局三十个有判断的决定里，你和引擎只有九次一致，其余二十一次全部存在分歧，其中重 => E0 统计 all.decisions=32、agree=23，即一致 23 次、不一致 9 次；草稿把一致与分歧次数说反（说成一致 9、分歧 21），且“重点分歧七处”与 wor"
   }
  ]
 }

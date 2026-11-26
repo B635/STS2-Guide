@@ -225,7 +225,13 @@ def compute_eval_metrics(
         final_cmp: ComparisonResult = compare_facts(key, res.fact, gold)
         init_cmp: ComparisonResult = compare_facts(key, res.initial_draft, gold)
 
-        if res.initial_draft is not None:
+        final_validation_ok = (
+            res.initial_draft is not None
+            and res.fact is not None
+            and not res.validation_problems
+            and res.reason not in ("schema_validation_failed", "revision_validation_failed", "il_extract_failed", "llm_error")
+        )
+        if final_validation_ok:
             schema_final_pass += 1
             if res.schema_repairs == 0:
                 schema_first_pass += 1

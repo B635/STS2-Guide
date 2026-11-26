@@ -2,7 +2,10 @@
 // game's names). Written by the program from the engine's records and the
 // verified findings; the model never writes HTML.
 
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import type { FlagResult } from "./agent.js";
+import { REPO_ROOT } from "./engine.js";
 import { KIND_LABELS, factorLabel, notStrictLabel, skippedLabel } from "./labels.js";
 import { characterName, describe, entityNames } from "./names.js";
 import { mentionedNames } from "./verifier.js";
@@ -49,7 +52,20 @@ if (copy) copy.addEventListener("click", async () => {
 `;
 }
 
-export const CURRENT_BUILD = "v0.111.0";
+const FALLBACK_BUILD = "v0.113.1";
+
+export function readCurrentBuild(compatPath = path.join(REPO_ROOT, "packaging", "compatibility.json")): string {
+  try {
+    const raw = JSON.parse(readFileSync(compatPath, "utf-8")) as { game?: { version?: unknown } };
+    const version = typeof raw.game?.version === "string" ? raw.game.version.trim() : "";
+    if (!version) return FALLBACK_BUILD;
+    return version.startsWith("v") ? version : `v${version}`;
+  } catch {
+    return FALLBACK_BUILD;
+  }
+}
+
+export const CURRENT_BUILD = readCurrentBuild();
 
 export interface ReportMeta {
   model: string | null;
@@ -62,6 +78,7 @@ const esc = (s: unknown) =>
   String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 
 function optionName(detail: DecisionDetail, id: string | null): string {
+  if (id === "bought_unscored") return "已购买（未计分项）";
   return detail.options.find((o) => o.id === id)?.name ?? id ?? "-";
 }
 
@@ -122,8 +139,20 @@ export function renderReport(pre: Prepass, explained: FlagResult[], summary: Sum
   const notShown = s.tier1.length - pre.flags.length;
   const rows = pre.decisions.decisions
     .map((d) => {
-      const tier = d.tier === 1 ? "值得想一想" : d.tier === 2 ? `不同（${notStrictLabel(d.not_strict_because)}）` : d.tier === 0 ? "一致" : "未判断";
-      return `<tr class="t${d.tier ?? "x"}"><td>${d.floor}</td><td>${esc(KIND_LABELS[d.kind])}</td><td>${esc(d.chosen_name ?? d.chosen ?? "-")}</td><td>${esc(d.engine_top_name ?? "-")}</td><td>${d.gap ?? ""}</td><td>${esc(tier)}</td></tr>`;
+      const chosenLabel = d.chosen_name ?? (d.chosen === "bought_unscored" ? "已购买（未计分项）" : d.chosen ?? "-");
+      const tier =
+        d.tier === 1
+          ? "值得想一想"
+          : d.tier === 2
+            ? `不同（${notStrictLabel(d.not_strict_because)}）`
+            : d.tier === 0
+              ? d.chosen !== d.engine_top
+                ? d.kind === "shop"
+                  ? "一致（均选择消费，具体购买项不同）"
+                  : "一致（具体选项不同）"
+                : "一致"
+              : "未判断";
+      return `<tr class="t${d.tier ?? "x"}"><td>${d.floor}</td><td>${esc(KIND_LABELS[d.kind])}</td><td>${esc(chosenLabel)}</td><td>${esc(d.engine_top_name ?? "-")}</td><td>${d.gap ?? ""}</td><td>${esc(tier)}</td></tr>`;
     })
     .join("\n");
   const skipped = pre.decisions.skipped

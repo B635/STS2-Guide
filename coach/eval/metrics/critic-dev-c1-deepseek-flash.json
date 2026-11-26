@@ -5,23 +5,31 @@
  "thinking": false,
  "cases": 20,
  "repeats": 3,
- "tp": 30,
- "fn": 0,
+ "tp": 29,
+ "fn": 1,
  "fp": 0,
  "tn": 30,
- "recall": 1,
+ "recall": 0.9667,
  "fpr": 0,
  "precision": 1,
- "f1": 1,
+ "f1": 0.9831,
  "unparsed": 0,
- "all_agree_cases": 20,
- "all_agree_rate": 1,
+ "sentence_tp": 33,
+ "sentence_fp": 0,
+ "sentence_fn": 3,
+ "sentence_precision": 1,
+ "sentence_recall": 0.9167,
+ "sentence_f1": 0.9565,
+ "exact_localization_rate": 0.9333,
+ "wrong_sentence_on_tp": 0,
+ "all_agree_cases": 19,
+ "all_agree_rate": 0.95,
  "per_repeat_flag_rates": [
   0.5,
   0.5,
-  0.5
+  0.45
  ],
- "flag_rate_spread": 0,
+ "flag_rate_spread": 0.05,
  "majority_recall": 1,
  "majority_fpr": 0,
  "majority_f1": 1,
@@ -59,8 +67,8 @@
   "ungrounded_inference": {
    "cases": 2,
    "trials": 6,
-   "flagged": 6,
-   "rate": 1
+   "flagged": 5,
+   "rate": 0.8333
   },
   "contradicts_verdict": {
    "cases": 2,
@@ -105,8 +113,16 @@
    "rate": 1
   }
  },
- "cost_usd": 0.0505,
- "cost_per_call": 0.00084,
- "avg_ms": 2035,
- "errors": []
+ "cost_usd": 0.0527,
+ "cost_per_call": 0.00088,
+ "avg_ms": 2226,
+ "errors": [
+  {
+   "id": "D11",
+   "category": "ungrounded_inference",
+   "expected": "unsupported",
+   "flagged_trials": 2,
+   "sample_reason": "先有血墙只是把防御这一项垫高，放血在输出和循环上的优势还在。 => E1 的 what_if 只说明加血墙后首选仍是放血，并未给出“血墙只垫高防御、放血在输出和循环上仍有优势”的逐项对比；这是草稿自行补充的机制解释，证据中没有对应数值或结论。"
+  }
+ ]
 }

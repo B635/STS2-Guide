@@ -1,6 +1,6 @@
 # STS2 Guide 当前实现状态
 
-> 更新时间：2026-11-23
+> 更新时间：2026-11-26
 >
 > 产品依据：[`product-spec.md`](product-spec.md)
 >
@@ -8,13 +8,27 @@
 
 ## 当前结论
 
-**当前开发分支 `feature/v0113`（游戏 0.113.1），未安装、未真机、不可标记为已发行。** 任务入口见 [TASK-029](tasks/TASK-029-game-v0113/README.md)。以下旧包记录属于各自版本，不作为新版验收依据。
+**当前开发分支 `feature/v0113`（`0.3.16-alpha.0` / Mod `0.3.16` / 游戏 `0.113.1`），未构建完整安装包与 `.pck`、未安装、未真机、不可标记为已发行。** 任务入口见 [TASK-029](tasks/TASK-029-game-v0113/README.md)。以下旧包记录属于各自版本，不作为新版验收依据。
 
-- 程序集事实：121 张新增卡牌已经独立复核并合入，当前版本合计 716/716 张卡有有效事实。尚有 126 个能力、17 件遗物和 2 个怪物待审。
-- 评分：从新版数据构建临时发行 SQLite，用生产 `card_profile` 检查基础与升级两档。90 条愚者颜色记录只有 13 条无已报告缺口；去掉 6 张标记为仅多人的牌是 13/84，不代表推荐准确率。抽查确认愚者防御为 5/8 格挡，Epic Retrieval 直接伤害正常计入、松脱回能没有虚计。
-- 工程：针对本机 0.113.1 程序集的 Mod 编译为 0 警告、0 错误。全量 unittest 从 839 项（16 个失败、1 个类初始化错误）到 844 项（同样的 16 个失败，无错误）：新增 3 项事实合并测试，原先被篝火 API 阻断的 2 项 Mod 行为测试已执行通过。兼容清单未提前切换，不应安装此开发产物。
+- 程序集事实（`sts2.dll` `62ecbe91…`）：卡牌 `716/716`、遗物 `315/315`、怪物 `117/117`、遭遇 `89 converted + 1 unknowable`、附魔 `22/22`、充能球 `5/5` 全部有效且 0 stale；能力 `218/304 converted`（40 条 v0.113.1 新增/愚者能力与 17 件新遗物、2 个新宠物怪物共 59 条已审并入，其余 86 条能力为历史未审积压）。
+- 评分与引擎覆盖（临时发行 SQLite + `scripts/report_engine_coverage.py`）：全量完整计分 `703/1271 (55%)`，其中 `FOOL 54/90 (60%)`（与 `SILENT 55/91 = 60%` 持平，高于 `NECROBINDER 51%` 与 `REGENT 55%`）、`RELIC 223/315 (71%)`、`POWER 78/218 (36%)`。愚者已共用评分内核接入箭槽守恒、扎穿、瞄准、拉伸、旋律与歌弓；并已完成 Wave 1A 能量与费用边界修复（单回合峰值额外能量 `max_turn_extra` 与负能量赤字 `max_turn_loss`、8 类 `cost_rule` 离散状态消除 Jensen 断崖、死卡尺寸无关 `brick_demand` 防止 0 费稀释虚增 `energy`、`X=0` 禁免费触发与 `energy_spent` 补计）。
+- 标准答案集（当前版本 79 题，临时发行 SQLite）：`33/79 (41.77%)`，`obvious_errors_first = 0`（无回退）。
+- 工程与自动验证：针对本机 `0.113.1` 程序集的 Mod C# DLL 编译 0 错误 0 警告、`GuideBehaviorTests` 通过；兼容清单已同步至 `0.3.16-alpha.0` / `0.113.1`（发行指纹 `a3c6d6b958dfb116…`），扩展能力（商店/篝火/祝福/事件/删牌）保持 `pending_validation`。Wave 1A 变更后核心与策略回归 `test_deck_fitness` / `test_golden_set` / `test_campfire_decision` / `test_merchant_decision` / `test_character_mechanics` **235 项 OK**、`test_neow_decision` / `test_event_decision` / `test_assembly_facts` **28 项 OK**；`0ff01bb` 基线上全量非阻塞 Python 套件 **775/775 OK**（Windows 沙箱内 `TestClient(app)` 测试与 Godot Mono 无头导出阻塞，需在沙箱外执行）。
+- 下一步距离可安装真机验收：完成 `feature/v0113` 其余 Wave 合并后，在沙箱外执行完整 `build_public_beta.ps1`（含 Godot `.pck` 导出、冻结 EXE、安装包与 payload 审计），关闭游戏后安装并完成含愚者第一幕在内的真机回归。
 
 ### 历史发行与验收记录
+
+**2026-11-24：`main@87900da`（TASK-028 / TASK-030 / TASK-031）——离线工具与引擎自动验证（未单发安装包）。**
+合入战后复盘与对话教练（`review/` + `coach/` + MCP server，含评测/评分表与 CI）、自动化 IL→事实提取与对抗审计流水线（`fact_pipeline/`，TASK-030 A1），以及 Critic 校准与高费卡（`> base_energy`）初步出牌门槛（TASK-031）。
+
+**2026-10-31：Guide `0.3.15-alpha.0` / Mod `0.3.15`（`bc3d7c4`，游戏 `0.111.0`，TASK-027）——已构建并私下分发，非公开正式验收。**
+策略包升级至 `extended-decision-policy-v10`，接入古神/Neow 遗物拾取与局外事实（`neow_relic_choice_v6`，CRN 16 样本对照）、基于牌组适合度引擎的商店与金币/生命换算（`merchant_deck_fitness_v7`），以及托盘对局记录导出/导入；发行指纹 `e57d3e0626add46d…`。扩展能力在公开兼容清单中仍保持 `pending_validation`。
+
+**2026-10-25：Guide `0.3.14-alpha.0` / Mod `0.3.14`（`251cef7`，游戏 `0.111.0`）——仅自动与构建阶段提交，已被 0.3.15 覆盖。**
+策略包 `extended-decision-policy-v9`（`card_reward:deck_fitness_3`、`event_structured_allowlist_v5`、`neow_relic_choice_v5`），引入选牌延迟优化（牌组评分缓存、同卡合并、4 前瞻场景）、与决策相关的置信度分级及接近平局提示；发行指纹 `141d9babd42024f9…`。
+
+**2026-10-24：Guide `0.3.13-alpha.0` / Mod `0.3.13`（`122448e`，游戏 `0.111.0`）——仅自动与构建阶段提交，已被 0.3.14 覆盖。**
+策略包 `extended-decision-policy-v8`（`card_reward:deck_fitness_2`、`campfire_structured_v5`），移除社区先验回退改为纯牌组适合度、补齐局内升级/过滤消耗/变牌稀释与回手牌建模，并按历史数据确立篝火 HP 60% 休息/锻造规则及锻造下界披露；发行指纹 `cc4fa09e3fb60b21…`。
 
 上一个已真机验证安装为 **Guide0.3.10-alpha.0 / Mod0.3.10**：TASK-023完美打击战前永久牌组基准、
 鲜血药水有限恢复机会和共用估计边界解释已独立审查，完整 **606项 / 54.972秒 / OK**，

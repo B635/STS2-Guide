@@ -7,89 +7,145 @@
  "repeats": 3,
  "tp": 60,
  "fn": 0,
- "fp": 17,
- "tn": 43,
+ "fp": 23,
+ "tn": 37,
  "recall": 1,
- "fpr": 0.2833,
- "precision": 0.7792,
- "f1": 0.8759,
+ "fpr": 0.3833,
+ "precision": 0.7229,
+ "f1": 0.8392,
  "unparsed": 0,
- "all_agree_cases": 36,
- "all_agree_rate": 0.9,
+ "sentence_tp": 65,
+ "sentence_fp": 34,
+ "sentence_fn": 1,
+ "sentence_precision": 0.6566,
+ "sentence_recall": 0.9848,
+ "sentence_f1": 0.7879,
+ "exact_localization_rate": 0.8833,
+ "wrong_sentence_on_tp": 0,
+ "all_agree_cases": 37,
+ "all_agree_rate": 0.925,
  "per_repeat_flag_rates": [
-  0.65,
-  0.65,
-  0.625
+  0.675,
+  0.725,
+  0.675
  ],
- "flag_rate_spread": 0.025,
+ "flag_rate_spread": 0.05,
  "majority_recall": 1,
- "majority_fpr": 0.25,
- "majority_f1": 0.8889,
+ "majority_fpr": 0.4,
+ "majority_f1": 0.8333,
  "by_category": {
-  "real_supported": {
-   "cases": 8,
-   "trials": 24,
-   "flagged": 2,
-   "rate": 0.0833
-  },
-  "real_out_of_scope_refusal": {
+  "tier1_card_explanation": {
    "cases": 3,
    "trials": 9,
    "flagged": 3,
    "rate": 0.3333
   },
-  "hard_valid_paraphrase": {
+  "valid_what_if_flip": {
+   "cases": 2,
+   "trials": 6,
+   "flagged": 2,
+   "rate": 0.3333
+  },
+  "valid_what_if_multi": {
    "cases": 1,
    "trials": 3,
-   "flagged": 3,
-   "rate": 1
+   "flagged": 0,
+   "rate": 0
   },
-  "hard_valid_what_if": {
+  "valid_trend_summary": {
+   "cases": 2,
+   "trials": 6,
+   "flagged": 0,
+   "rate": 0
+  },
+  "valid_shop_distinct_buy": {
+   "cases": 3,
+   "trials": 9,
+   "flagged": 6,
+   "rate": 0.6667
+  },
+  "valid_mixed_decisions": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 2,
+   "rate": 0.6667
+  },
+  "valid_caveat_and_what_if": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 0,
+   "rate": 0
+  },
+  "valid_caveat_and_rest": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 0,
+   "rate": 0
+  },
+  "valid_rest_and_skip": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 1,
+   "rate": 0.3333
+  },
+  "valid_out_of_scope_refusal": {
    "cases": 2,
    "trials": 6,
    "flagged": 3,
    "rate": 0.5
   },
-  "hard_valid_verdict": {
+  "valid_what_if_and_refusal": {
    "cases": 1,
    "trials": 3,
    "flagged": 3,
    "rate": 1
   },
-  "hard_valid_caveat": {
-   "cases": 2,
-   "trials": 6,
-   "flagged": 0,
-   "rate": 0
-  },
-  "hard_valid_trend": {
+  "valid_compound_count": {
    "cases": 1,
    "trials": 3,
    "flagged": 3,
    "rate": 1
   },
-  "hard_valid_advice": {
-   "cases": 1,
-   "trials": 3,
-   "flagged": 0,
-   "rate": 0
-  },
-  "hard_valid_compound_count": {
+  "valid_compound_count_and_trend": {
    "cases": 1,
    "trials": 3,
    "flagged": 0,
    "rate": 0
   },
   "swapped_pick": {
-   "cases": 3,
-   "trials": 9,
-   "flagged": 9,
+   "cases": 2,
+   "trials": 6,
+   "flagged": 6,
+   "rate": 1
+  },
+  "inverted_what_if": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 3,
    "rate": 1
   },
   "cross_floor_swap": {
-   "cases": 3,
-   "trials": 9,
-   "flagged": 9,
+   "cases": 2,
+   "trials": 6,
+   "flagged": 6,
+   "rate": 1
+  },
+  "range_misattribution": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 3,
+   "rate": 1
+  },
+  "contradicts_verdict": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 3,
+   "rate": 1
+  },
+  "overclaim_certainty": {
+   "cases": 2,
+   "trials": 6,
+   "flagged": 6,
    "rate": 1
   },
   "out_of_scope_answer": {
@@ -99,89 +155,123 @@
    "rate": 1
   },
   "combat_causality": {
-   "cases": 3,
-   "trials": 9,
-   "flagged": 9,
+   "cases": 1,
+   "trials": 3,
+   "flagged": 3,
    "rate": 1
   },
   "ungrounded_inference": {
-   "cases": 3,
-   "trials": 9,
-   "flagged": 9,
-   "rate": 1
-  },
-  "overclaim_certainty": {
    "cases": 2,
    "trials": 6,
    "flagged": 6,
    "rate": 1
   },
+  "contradicts_factors": {
+   "cases": 1,
+   "trials": 3,
+   "flagged": 3,
+   "rate": 1
+  },
   "chinese_numeral_count": {
-   "cases": 3,
-   "trials": 9,
-   "flagged": 9,
+   "cases": 2,
+   "trials": 6,
+   "flagged": 6,
+   "rate": 1
+  },
+  "fabricated_fact": {
+   "cases": 2,
+   "trials": 6,
+   "flagged": 6,
    "rate": 1
   }
  },
- "cost_usd": 0.0963,
- "cost_per_call": 0.0008,
- "avg_ms": 1963,
+ "cost_usd": 0.0946,
+ "cost_per_call": 0.00079,
+ "avg_ms": 1959,
  "errors": [
   {
-   "id": "T04",
-   "category": "real_supported",
+   "id": "T01",
+   "category": "tier1_card_explanation",
    "expected": "supported",
-   "flagged_trials": 1,
-   "sample_reason": "前期输出从 19.1 升到 20.2，防御从 6.4 略降到 6.1，仍高于需求 => 证据 E1 中引导之星的 factors 确实写了前期输出 19.1 → 20.2、防御 6.4 → 6.1、需求 4.8，数字都有依据；但草稿把“防御 6.1 仍高于需求 4.8"
+   "flagged_trials": 3,
+   "sample_reason": "判定为有把握且差距明显。 => E2 里这次决策的 confidence 是 medium（把握不大），verdict 写的是“引擎有把握且差距明显”，但 E0 对 F17 的 verdict 也是“不同，引擎有"
+  },
+  {
+   "id": "T05",
+   "category": "valid_what_if_flip",
+   "expected": "supported",
+   "flagged_trials": 2,
+   "sample_reason": "这两次跳过上，引擎都在意输出不足： => 证据里第7层翻越撑击的主要加分项是群伤（+3.62）和前期输出（+1.55），第12层连续反弹的主要加分项是前期输出（+2.56）。说两次都在意输出不足，第7层的主要因素是群伤，不"
   },
   {
    "id": "T09",
-   "category": "real_out_of_scope_refusal",
+   "category": "valid_shop_distinct_buy",
    "expected": "supported",
-   "flagged_trials": 1,
-   "sample_reason": "比如第二幕那几次跳过选牌，引擎更看好折射、寒流、刮削，理由分别落在群伤和前期输出 => 证据里 F21 折射的理由是群伤和前期输出（E1），F22 寒流的理由是防御（E2），F30 刮削的理由是前期输出和循环（E3），三处都能对上；但草稿把这三张牌统称为“第二幕那几次"
-  },
-  {
-   "id": "T10",
-   "category": "real_supported",
-   "expected": "supported",
-   "flagged_trials": 1,
-   "sample_reason": "整局看，前期输出和群伤几乎每次选牌都低于需求，防御则一直够用。 => deck_trend 里 F31 的群伤 have 0、need 0，below_need 为 false，并非“几乎每次”都低于需求；其余选牌的前期输出和群伤确实都低于需求，防御"
+   "flagged_trials": 3,
+   "sample_reason": "主要因为拿恶魔形态后每回合成长数值从 0.0 升到 2.6（需求 15.5），同 => 证据里成长数值和未计入项都有，但引擎把成长列为最大正差因素（+2.86），同时还有前期输出 -0.7、防御 -0.43 等负差因素；草稿把未完整计入评分说成“主要因为”的一部分，证"
   },
   {
    "id": "T11",
-   "category": "real_out_of_scope_refusal",
+   "category": "valid_mixed_decisions",
    "expected": "supported",
    "flagged_trials": 2,
-   "sample_reason": "顺带一提，这局引擎反复觉得群伤和前期输出偏低，铜钹的随机伤害算是往这个方向补了一 => E5 的 deck_trend 里 aoe 和 frontload 在多数决策点 below_need 为 true，方向有依据；但“铜钹的随机伤害补了一点”是引擎没有评估的（E6"
+   "sample_reason": "属于有把握且差距明显的分歧 => E1 的 confidence 是 medium，verdict 写的是“不同，引擎有把握且差距明显（复盘报告里的“值得想一想”）”，但引擎自己的把握字段是 medium；草稿把“"
   },
   {
    "id": "T12",
-   "category": "hard_valid_paraphrase",
+   "category": "valid_shop_distinct_buy",
    "expected": "supported",
    "flagged_trials": 3,
-   "sample_reason": "三项主要差在防御（6.8 → 7.4，需求 11.8）、前期输出（28.9 →  => 证据 E1 的 comparison 和 finding.reasons 里确实有这三项数值，但 finding.reasons 明确说防御是“两者差距最大的一项”，草稿却把三项并"
+   "sample_reason": "商店当时两者同样花 75 金币（现有 124 金币），分差主要来自牌组变化估值。 => 证据里只有闪亮登场花 75 金币（现有 124）；玩家选择是删牌，证据没有给出删牌的花费，也没有说两者同样花 75 金币。分差来源也没有证据说明是“牌组变化估值”。"
   },
   {
-   "id": "T13",
-   "category": "hard_valid_what_if",
+   "id": "T15",
+   "category": "valid_rest_and_skip",
    "expected": "supported",
-   "flagged_trials": 3,
-   "sample_reason": "会。引擎在牌组里先加一张血墙后重新计分，首选依然是放血，差距保持在 6.0–8. => 证据 E1 的 what_if 说：试了加血墙、加坚毅加铁斩波、加祭品加全身撞击、去掉两张打击再加血墙，首选都仍是放血，差距 6.0–8.0。草稿把“加血墙”这一种改动和 6.0–"
+   "flagged_trials": 1,
+   "sample_reason": "第 2 层你选战火铸就（48.5 分），引擎首选引导之星（54.5 分，高 6. => E1/E2 支持分数、首选、差距、把握和循环/防御数值；但 E1 的 confidence 是 medium，E0 的 verdict 写的是“引擎有把握且差距明显”，草稿说“判定"
   },
   {
-   "id": "T14",
-   "category": "hard_valid_verdict",
+   "id": "T17",
+   "category": "valid_out_of_scope_refusal",
    "expected": "supported",
    "flagged_trials": 3,
-   "sample_reason": "第 6 层引擎给血墙 43.6、剑柄打击 41.9、跳过 40.7，属于有把握且 => E4 中 F06-card 的 confidence 是 medium，verdict 写的是“不同，引擎有把握且差距明显（复盘报告里的“值得想一想”）”，但 E0 的 F06-c"
+   "sample_reason": "第 3 层商店你购买的是未计分商品，引擎没法给这件购买项打分，所以该决定标为未判 => 证据里第 3 层商店（F03-shop）是第 1 幕第 3 层，玩家“已购买（未计分项）”，引擎首选“离开商店”，verdict 为“未判断”；E1 中离开商店 deck_scor"
   },
   {
-   "id": "T16",
-   "category": "hard_valid_trend",
+   "id": "T18",
+   "category": "valid_what_if_and_refusal",
    "expected": "supported",
    "flagged_trials": 3,
-   "sample_reason": "这局分歧最大的四次都在防御或循环上：第 13 层预言比黑洞高 6.7 分（但黑洞 => 证据里能找到这四次决定的分差和方向（E2 的 6.7、E3 的 5.8、E5 的 5.3、E4 的 4），但“分歧最大的四次”这个排序在证据里没有依据：E0 里 F03（3.1）、"
+   "sample_reason": "至于第 35 层及之后的决定，因为第三幕 Boss 不在现有资料里（旧版本），引 => E0 的 not_scored 中 F35 起多数原因为“Boss 不在现有资料里（旧版本）”，但 F39 的原因为“有卡牌不在现有资料里（旧版本）”，并非全部因 Boss 未评分"
+  },
+  {
+   "id": "T19",
+   "category": "valid_compound_count",
+   "expected": "supported",
+   "flagged_trials": 3,
+   "sample_reason": "这局一共评了 32 个选牌、商店和休息点决定（其中 30 个有明确判断，一致 2 => E0 显示 decisions=32、agree=23，但“30 个有明确判断”在证据里找不到；E0 的 not_scored 为空，未判断的是 F03-shop（第 1 幕第 3"
+  },
+  {
+   "id": "T23",
+   "category": "inverted_what_if",
+   "expected": "unsupported",
+   "flagged_trials": 3,
+   "sample_reason": "把当时牌组改一改重算：即使牌组里先有猎杀者，引擎依然坚持选连续反弹；反而是先加入 => E5 显示加入猎杀者后引擎首选从连续反弹变为跳过（pick_changed=true）；E6 显示加入翻越撑击后引擎仍选连续反弹（pick_changed=false）。草稿把两个"
+  },
+  {
+   "id": "T31",
+   "category": "out_of_scope_answer",
+   "expected": "unsupported",
+   "flagged_trials": 3,
+   "sample_reason": "第 3 层商店里引擎给离开商店 50.0 分、毒雾 49.53 分、删牌 48. => 证据 E1 是 F03-shop，act=1、floor=3，不是第 3 层；这些分数属于第 1 层第 3 层的商店，草稿把层数安错了。"
+  },
+  {
+   "id": "T33",
+   "category": "out_of_scope_answer",
+   "expected": "unsupported",
+   "flagged_trials": 3,
+   "sample_reason": "第 2 层你跳过，引擎首选蛇咬（56.8 分对跳过 53.2 分，差 3.6 分 => 证据 E2/E3 显示这是第 1 幕第 2 层（act 1, floor 2）的选牌，不是第 2 层；草稿把层数说错了。分数、首选、分差和前期输出数值本身在证据里都有。"
   }
  ]
 }

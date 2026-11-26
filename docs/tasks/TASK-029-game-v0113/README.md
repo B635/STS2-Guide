@@ -1,8 +1,8 @@
 # TASK-029：转到游戏 v0.113.1（public-beta，新角色愚者）
 
-- 状态：进行中（第 1、2 步完成；第 3 步的卡牌事实和第 4 步的遗物局外事实已并入；未发行）
+- 状态：进行中（第 1–4 步及第 5/6 步源码与自动验证完成，含 Wave 1A 能量/费用边界修复；尚未导出 `.pck`/打包、未安装、未真机）
 - 决定：2026-11-15 用户决定数据与 Mod 以 public-beta v0.113.1 为准（主分支仍是 0.111.0，朋友继续用 0.3.15）。
-- 分支：`feature/v0113`（从 `feature/review-coach` 开出）。目录和程序集已迁移；卡牌事实已审齐，评分覆盖、全量回归、发行和真机尚未通过。
+- 分支：`feature/v0113`（从 `feature/review-coach` 开出）。目录、程序集、59 条新增事实、愚者共用引擎机制、0.3.16 兼容清单与自动回归均已完成；尚待沙箱外 `.pck`/安装包构建、安装及真机验收。
 
 ## 版本差异（提取器 `bin/next`，程序集 62ecbe91…）
 
@@ -54,3 +54,11 @@
 - 生产评分路径抽查：临时构建新版 SQLite 后运行 `scripts/report_engine_coverage.py`，愚者颜色的 90 条卡牌记录中，仅 13 条在基础和升级档都没有报告缺口（含目录中的多人牌，不是单人池的准确率）。`EPIC_RETRIEVAL` 只计算直接攻击，松脱回能报缺；`FLORESCENCE` 的生成牌增伤、`TRICK_SHOT` 的射击和有条件回手均报缺。不能据已审数量宣称角色可用。
 - 本机 0.113.1 的 `SmithRestSiteOption.OnSelect` 将参数 1 传给 `CardSelectorPrefs(UpgradeSelectionPrompt, int)`，该构造器用同一个整数设置选择上下限，再由 `FromDeckForUpgrade` 读取。替换 0.111.0 的 `SmithCount` 并对本机程序集验证调用点；Mod 编译 0 警告 0 错误，未安装，未启动游戏。
 - 自动回归从 839 项（16 失败、1 个类初始化错误）到 844 项（16 失败，无错误）；逐名比较，剩余失败均在改动前基线中。新增 3 项事实合并测试及恢复运行的 2 项 Mod 行为测试都通过。下一步单列兼容清单、旧目录断言和真实评分行为回归，不将这 16 项统一视为可更新的旧测试。
+- 2026-11-25（`0ff01bb`）：第 3 步新增事实（17 件遗物、40 个 v0.113.1 新增/愚者能力、2 个宠物怪物，共 59 条）完成独立审查并合入 `data/assembly/facts.json`；当前卡牌 716/716、遗物 315/315、怪物 117/117、遭遇 89+1、附魔 22/22、充能球 5/5、能力 218/304 converted（其余 86 条能力为旧版历史积压），全部 0 stale。愚者共用评分内核接入箭槽守恒 `arrow_avail`、扎穿概率 `impaled_prob`、瞄准 `Aim`、拉伸 `Stretch`、旋律 `Wah/Cho/Ki` 与歌弓 `SONG_BOW`，并修复独立审查发现的 16 处事实/数学/回退边界问题；生产覆盖率 `ALL 703/1271 (55%)`、`FOOL 54/90 (60%)`、`RELIC 223/315 (71%)`。兼容清单与协议示例同步至 `0.3.16-alpha.0` / Mod `0.3.16` / 游戏 `0.113.1`（发行指纹 `a3c6d6b9…`）；Mod C# DLL 0 错误 0 警告、`GuideBehaviorTests` 通过、全量非阻塞 Python 套件 `775/775 OK`（未打包 `.pck`/安装包、未安装、未真机）。
+- 2026-11-26（Wave 1A）：完成 `advisor/deck_mechanics.py` 四项能量与费用边界修复：
+  1. 跟踪单回合峰值额外能量 `max_turn_extra`（按固定回合 `fixed_turn_energy` 区分不同回合、对局内升级 `upgraded_profile` 去重，并覆盖卡牌/遗物/能力事件/Plasma 充能球）及负能量赤字 `max_turn_loss`，阻止单张 `+1` 能量源（`WISP`/`HAPPY_FLOWER`/`LANTERN`/未升级 `DOUBLE_ENERGY`）解锁 5 费 `METEOR_STRIKE` 或自举 Plasma；
+  2. 为全部 8 类 `cost_rule` 引入离散 `(probability, state_cost)` 分布评估可打出度，消除 `KINGLY_KICK`、`CODA`、`MODDED`/`FRANTIC_ESCAPE` 及 `per_type_this_turn` 降费卡在 `E[cost] > base_energy` 处的 Jensen 断崖；
+  3. 用与牌组尺寸无关且去重 `upgraded_profile` 的 `brick_demand` 替换 `raw_demand`，防止死卡稀释使无关 0 费卡虚增 `capabilities["energy"]`，同时保持加入不可打出高费卡必拉低 `energy`；
+  4. 无非 X 基础效果的 X 费卡在 `x_value <= 0` 时 `plays = 0`（防止免费触发 `SHURIKEN`/`ORNAMENTAL_FAN` 等），保留 `TEMPEST+`/`MALAISE+` 等 `X=0` 有效卡，并将 X 费消耗计入 `self.energy_spent`（`HELIX_DRILL` 生效）。
+  新增 5 项边界回归单测后，`test_deck_fitness` / `test_golden_set` / `test_campfire_decision` / `test_merchant_decision` / `test_character_mechanics` **235/235 OK**，`test_neow_decision` / `test_event_decision` / `test_assembly_facts` **28/28 OK**；79 题金样本 `33/79 (41.77%)`、`obvious_errors_first = 0`（无回退）。
+- 距离 v0.113.1 可安装真机验收剩余步骤：① 合并其余 Wave 改动后在沙箱外运行完整 `scripts/build_public_beta.ps1`（含 Godot `.pck` 导出、冻结 EXE、安装包及 payload 审计）；② 关闭游戏后安装并核对 Mod 三件套与发行指纹；③ 完成含愚者第一幕及常规角色在内的真机回归验收。
