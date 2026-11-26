@@ -186,6 +186,7 @@ class PystrayTrayBackend:
         *,
         title: str = "STS2 Guide",
         open_logs: Callable[[], None] | None = None,
+        open_latest_review: Callable[[], None] | None = None,
         export_diagnostics: Callable[[], None] | None = None,
         export_run_records: Callable[[], None] | None = None,
         version_lines: Mapping[str, str] | None = None,
@@ -193,6 +194,7 @@ class PystrayTrayBackend:
     ) -> None:
         self.title = title
         self._open_logs = open_logs
+        self._open_latest_review = open_latest_review
         self._export_diagnostics = export_diagnostics
         self._export_run_records = export_run_records
         self._version_lines = tuple(
@@ -201,6 +203,7 @@ class PystrayTrayBackend:
         )
         self._icon_path = None if icon_path is None else Path(icon_path)
         self._icon = None
+        self._last_notice: str | None = None
         self._snapshot = ControllerSnapshot(
             ControllerState.IDLE,
             False,
@@ -209,6 +212,24 @@ class PystrayTrayBackend:
             None,
             0,
         )
+
+    @property
+    def last_notice(self) -> str | None:
+        return self._last_notice
+
+    def notify(self, message: str, title: str | None = None) -> None:
+        text = str(message)
+        self._last_notice = text
+        if self._icon is None:
+            return
+        try:
+            self._icon.update_menu()
+        except Exception:
+            pass
+        try:
+            self._icon.notify(text, title or self.title)
+        except (NotImplementedError, OSError, RuntimeError):
+            pass
 
     def start(self, request_exit: Callable[[], None]) -> None:
         try:
@@ -248,10 +269,17 @@ class PystrayTrayBackend:
                 return "兼容：正在核验"
             return "兼容：通过"
 
+        def notice_text(_item=None) -> str:
+            return f"提示：{self._last_notice}" if self._last_notice else ""
+
         def invoke(callback: Callable[[], None] | None):
             def handler(_icon, _item) -> None:
-                if callback is not None:
+                if callback is None:
+                    return
+                try:
                     callback()
+                except Exception:
+                    LOGGER.exception("Tray menu action failed.")
             return handler
 
         def exit_handler(_icon, _item) -> None:
@@ -270,6 +298,12 @@ class PystrayTrayBackend:
                 lambda _icon, _item: None,
                 enabled=False,
             ),
+            pystray.MenuItem(
+                notice_text,
+                lambda _icon, _item: None,
+                enabled=False,
+                visible=lambda _item: bool(self._last_notice),
+            ),
             *(
                 pystray.MenuItem(
                     f"{key}: {value}",
@@ -280,6 +314,7 @@ class PystrayTrayBackend:
             ),
             pystray.Menu.SEPARATOR,
             pystray.MenuItem("打开日志目录", invoke(self._open_logs)),
+            pystray.MenuItem("打开最近一局赛后复盘", invoke(self._open_latest_review)),
             pystray.MenuItem("导出对局记录", invoke(self._export_run_records)),
             pystray.MenuItem("导出脱敏诊断", invoke(self._export_diagnostics)),
             pystray.MenuItem("完全退出", exit_handler),

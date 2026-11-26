@@ -17,6 +17,7 @@ from realtime.controller import (
     WindowsGuideController,
 )
 from realtime.diagnostics import DiagnosticSnapshot, export_diagnostics_zip
+from realtime.post_run_review import PostRunReviewAction
 from realtime.run_records import export_run_records as write_run_records
 from realtime.file_bridge import default_exchange_dir
 from realtime.installation import (
@@ -158,6 +159,11 @@ class StatusTrayBackend:
     def activate(self) -> None:
         self.backend.activate()
 
+    def notify(self, message: str, title: str | None = None) -> None:
+        notifier = getattr(self.backend, "notify", None)
+        if callable(notifier):
+            notifier(message, title)
+
     def stop(self) -> None:
         try:
             self.backend.stop()
@@ -281,9 +287,25 @@ def build_public_beta_controller(args) -> WindowsGuideController:
         write_run_records(output_dir, default_exchange_dir(), manifest.guide.version)
         _open_directory(output_dir)
 
+    def notify_tray(message: str) -> None:
+        tray = status_holder.get("tray")
+        if tray is not None:
+            tray.notify(message)
+
+    review_exchange_dir = (
+        Path(args.checkpoint).parent
+        if getattr(args, "checkpoint", None) is not None
+        else default_exchange_dir()
+    )
+    open_latest_review = PostRunReviewAction(
+        exchange_dir=review_exchange_dir,
+        notify=notify_tray,
+    )
+
     graphical = PystrayTrayBackend(
         title="STS2 Guide",
         open_logs=lambda: _open_directory(args.log_file.parent),
+        open_latest_review=open_latest_review,
         export_diagnostics=export_diagnostics,
         export_run_records=export_run_records,
         version_lines={

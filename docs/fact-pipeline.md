@@ -45,6 +45,7 @@ Stage 3：分流与受控返修
 | 模块 | 职责 |
 |---|---|
 | [`fact_pipeline/extractor.py`](../fact_pipeline/extractor.py) | 只读封装 `Sts2FactExtractor`（`--dump` / `--dump-any` / `--enum`）与磁盘缓存，支持测试夹具注入 |
+| [`fact_pipeline/router.py`](../fact_pipeline/router.py) | 确定性静态 IL 复杂度评分与分级自适应路由器 `ComplexityRouter`（`simple` / `medium` / `hard` 与返修升级、高风险放行门禁及离线风险仿真） |
 | [`fact_pipeline/validator.py`](../fact_pipeline/validator.py) | 复用 `merge_fact_reviews` 词表并收紧结构规则（禁止 `effects` 混入 `when`、禁用 `generate`、强制 `target`/`destination`/`offer_rewards`/trigger 键、校验 `add_card.card` 目录存在性并拦截 `when=="turn_start"` + `counter=="turn"` + `every>1` 永假组合） |
 | [`fact_pipeline/llm.py`](../fact_pipeline/llm.py) | OpenAI 兼容客户端（默认 DeepSeek），精确统计含缓存命中的费用，支持独立切换 Auditor 思考模式与跨模型 |
 | [`fact_pipeline/prompts.py`](../fact_pipeline/prompts.py) | 固定可缓存系统规范前缀 + 预取上下文 + 强制先独立读 IL 再给裁决的 Auditor 提示 |
@@ -96,6 +97,40 @@ Stage 3：分流与受控返修
 | `relics_out_of_combat` | 5 | 5 | **20.0% (1/5)** | `between_fights` 细节字段表达自由度过高 |
 | `cards_hard` / `relics_hard` | 9 | 7 | **0.0% (0/7)** | 历史上人工双审即存在分歧的极难条目，包含 `SELF_DEPRECATE` 升级增量误写、条件漏标等真实错误 |
 
+### 4.3 复杂度自适应路由与离线风险权衡（`ComplexityRouter`，`--routing auto|fixed`）
+
+针对 `test-p3` 暴露出的明显难度断层（简单卡牌 `71.4%–80.0%` vs `powers` `27.3%`、`between_fights` `20.0%`、`hard` `0.0%`，且 11 次返修仅 1 次完全转正、8 条 `revised_auditor_agreed` 几乎全错），新增纯静态 IL 复杂度路由器 [`fact_pipeline/router.py`](../fact_pipeline/router.py)（CLI 参数 `--routing auto|fixed`，默认 `fixed` 保持向后兼容）：
+
+- **确定性静态特征评分（调 Drafter 前零 LLM 开销）**：综合扫描实体类别（`powers`/`relics`/`monsters` 先验；无钩子 `<30` 行标记型 power 保留 `simple`）、非元数据游戏钩子数（`>= 2` 显著加权）、跨战斗持久状态与局外钩子（`AfterObtained`/`AfterCombatEnd`/`SavedProperty`/实例字段写 `stfld` 等）、异步状态机 `<...>d__` / 闭包 `<>c` 数量、以及条件分支密度与调用数，分为 `simple`（`<= 2`）、`medium`（`3–5`）、`hard`（`>= 6`）三档。
+- **自适应路由与门禁策略（`--routing auto`）**：
+  - `simple`：保持低成本非思考 Flash 快速通道；
+  - `medium`：自动开启 `drafter_thinking=True` 与 `auditor_thinking=True`，并将工具额度提升至 `8/5`；
+  - `hard`：自动开启双端思考模式、升级起草模型至 `--hard-model`（默认 `deepseek-v4-pro`）、工具额度提至 `10/6`，并默认收紧自动放行门禁（即使复核 `agree` 也分流 `needs_human`，`reason="high_risk_tier_requires_human"`）；
+  - **返修轮升级**：凡首轮 Auditor `disagree` 进入返修轮，一律开启 `drafter_thinking=True`、提额至 `6` 次工具调用（`medium`/`hard` 或多条 issue 同步升级模型），且默认要求返修条目进入人工确认（`reason="revised_requires_human_review"`）。
+
+**可复现离线风险分层与门禁权衡**（完全使用领域先验规则、未对测试集调参，直接对已落盘的 `dev-p3.json` 与 `test-p3.json` 结合 `sts2-extract.json` + 本地 IL 缓存运行 `simulate_routing_policy`）：
+
+1. **静态复杂度分档的单调风险区分度（`test-p3`，60 条盲测）**：
+
+| 静态 IL 复杂度档位 | 条数（占比） | 原 `p3` 自动通过数 | 原 `p3` 自动通过 Core 准确率 | 原 `p3` 整体 Core 准确率 | `--routing auto` 动作 |
+|---|---:|---:|---:|---:|---|
+| `simple`（`score <= 2`） | 23（38.3%） | 21 | **57.1%（12/21）** | 52.2%（12/23） | 保持低成本 Flash 快速通道 |
+| `medium`（`score 3–5`） | 15（25.0%） | 11 | **45.5%（5/11）** | 33.3%（5/15） | 开启起草思考模式 + 提额 |
+| `hard`（`score >= 6`） | 22（36.7%） | 16 | **25.0%（4/16）** | 18.2%（4/22） | 升级模型与思考 + 收紧自动放行 |
+
+> 注：在 24 条开发集 `dev-p3` 上，`simple` 档原 `p3` 自动通过 Core 准确率为 **100.0%（7/7）**，而 `medium` 为 `50.0%（4/8）`、`hard` 为 `57.1%（4/7）`（整体 `44.4%`）。
+
+2. **门禁阈值权衡（离线重放 `test-p3` 60 条，仅计门禁分流下界，尚未计入 `medium`/`hard` 开启思考与返修升级带来的实网准确率提升）**：
+
+| 放行门禁策略 | 自动通过率 | 自动通过 Core 准确率 | 相比基线多拦错条数 | 误分流正确条数 | 人工队列真实含错率 |
+|---|---:|---:|---:|---:|---:|
+| 基线 `fixed`（全档 + 返修均可自动通过） | 80.0%（48/60） | 43.8%（21/48） | 0 | 0 | 100.0%（12/12） |
+| 仅拦截 `hard` 档（`max_tier=medium, allow_rev=True`） | 53.3%（32/60） | 53.1%（17/32，**+9.4pp**） | +12 | 4 | 85.7%（24/28） |
+| **默认 `auto`（`max_tier=medium, allow_rev=False`）** | **45.0%（27/60）** | **63.0%（17/27，+19.2pp）** | **+17** | **4** | **87.9%（29/33）** |
+| 最严门禁（`max_tier=simple, allow_rev=False`） | 28.3%（17/60） | **70.6%（12/17，+26.8pp）** | +22 | 9 | 79.1%（34/43） |
+
+> 关键观察：禁止返修轮自动放行（`allow_rev=False`）在 `test-p3` 上额外拦截了 **5 条** 漏网错误（`12 → 17`），且**零额外误分流正确条目**（`4 → 4`），使自动通过 Core 准确率由 `43.8%` 跃升至 **`63.0%`（+19.2pp）**，同时人工审核队列仍有 **87.9%（29/33）** 是真正需要修正的条目。待沙箱外联网跑一次 `--routing auto` 实网评测，即可进一步验证 `medium`/`hard` 与返修轮开启思考/模型升级的净准确率增益与成本曲线。
+
 ## 5. `v0.113.1` 实战跑批（M4）
 
 使用定稿配置 `p3`（`deepseek-flash` 起草 + `--auditor-thinking` 独立复核）对 `v0.113.1` 全部 **57 条新增未审实体**（17 件新遗物 + 40 个新增能力）执行一次真实批处理（结果目录 `build/fact-pipeline/v0113-new-batch/`，汇总留档见 [`fact_pipeline/eval/metrics/v0113-new-batch-summary.json`](../fact_pipeline/eval/metrics/v0113-new-batch-summary.json)）：
@@ -134,9 +169,9 @@ python -m unittest tests/test_fact_pipeline.py -v
 python -m fact_pipeline eval export-branch --branch feature/v0113
 python -m fact_pipeline eval split --extract build/fact-pipeline/v0113-inputs/sts2-extract.json --facts build/fact-pipeline/v0113-inputs/facts.json
 
-# 运行离线评测（需要 DEEPSEEK_API_KEY）
-python -m fact_pipeline eval run dev --extract build/fact-pipeline/v0113-inputs/sts2-extract.json --facts build/fact-pipeline/v0113-inputs/facts.json --knowledge build/fact-pipeline/v0113-inputs/knowledge.json --auditor-thinking --out build/fact-pipeline/eval/dev-p3
+# 运行离线评测（需要 DEEPSEEK_API_KEY；支持 --routing auto|fixed）
+python -m fact_pipeline eval run dev --extract build/fact-pipeline/v0113-inputs/sts2-extract.json --facts build/fact-pipeline/v0113-inputs/facts.json --knowledge build/fact-pipeline/v0113-inputs/knowledge.json --auditor-thinking --routing auto --out build/fact-pipeline/eval/dev-auto
 
 # 对未审实体实战跑批（输出 auto_approved.json 与 review-queue.md）
-python -m fact_pipeline run --extract build/fact-pipeline/v0113-inputs/sts2-extract.json --facts build/fact-pipeline/v0113-inputs/facts.json --knowledge build/fact-pipeline/v0113-inputs/knowledge.json --states unreviewed stale --types relics powers --auditor-thinking --out build/fact-pipeline/v0113-run
+python -m fact_pipeline run --extract build/fact-pipeline/v0113-inputs/sts2-extract.json --facts build/fact-pipeline/v0113-inputs/facts.json --knowledge build/fact-pipeline/v0113-inputs/knowledge.json --states unreviewed stale --types relics powers --auditor-thinking --routing auto --out build/fact-pipeline/v0113-run
 ```

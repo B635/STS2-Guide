@@ -38,6 +38,7 @@ class FakeTray:
         self.started = False
         self.stopped = False
         self.snapshots = []
+        self.notices = []
 
     def start(self, request_exit):
         self.started = True
@@ -48,6 +49,9 @@ class FakeTray:
 
     def activate(self):
         return
+
+    def notify(self, message, title=None):
+        self.notices.append((message, title))
 
     def stop(self):
         self.stopped = True
@@ -252,6 +256,29 @@ class PublicBetaShellTests(unittest.TestCase):
                 controller.snapshot().compatibility_reasons,
                 ("game_directory_not_found",),
             )
+            self.assertIsNotNone(controller.tray.backend._open_latest_review)
+
+    def test_status_tray_notify_forwards_without_altering_status_schema(self):
+        with tempfile.TemporaryDirectory() as tempdir:
+            path = Path(tempdir) / "runtime-status.json"
+            inner = FakeTray()
+            tray = StatusTrayBackend(inner, path, "b" * 64)
+            tray.start(lambda: None)
+            tray.update(
+                ControllerSnapshot(
+                    ControllerState.IDLE,
+                    False,
+                    False,
+                    (),
+                    None,
+                    0,
+                )
+            )
+            tray.notify("尚未发现已结束的对局记录")
+            self.assertEqual(inner.notices, [("尚未发现已结束的对局记录", None)])
+            payload = json.loads(path.read_text(encoding="utf-8"))
+            self.assertNotIn("notice", payload)
+            tray.stop()
 
 
 if __name__ == "__main__":

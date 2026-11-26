@@ -6,8 +6,13 @@ from types import MappingProxyType
 
 from advisor.card_reward import recommend_card_reward
 from advisor.data_sources import LocalCardTierSource
+from advisor.deck_fitness import (
+    DECK_FITNESS_V4_POLICY_VERSION,
+    DeckFitnessPolicy,
+    DeckFitnessV4Policy,
+)
 from advisor.scoring_preferences import DEFAULT_SCORING_PREFERENCES, ScoringPreferences
-from advisor.versions import CARD_REWARD_POLICY_VERSION
+from advisor.versions import CARD_REWARD_POLICY_VERSION, DECK_FITNESS_POLICY_VERSION
 from advisor.decision_core import (
     CARD_REWARD,
     CandidateAssessment,
@@ -236,3 +241,32 @@ class CardRewardPolicy:
             policy_version=CARD_REWARD_POLICY_VERSION,
             world_sequence=request.world.sequence,
         )
+
+
+CARD_REWARD_POLICY_FACTORIES = {
+    CARD_REWARD_POLICY_VERSION: lambda repo, preferences=DEFAULT_SCORING_PREFERENCES, **kw: CardRewardPolicy(
+        repo, local_tiers=kw.get("local_tiers"), preferences=preferences
+    ),
+    DECK_FITNESS_POLICY_VERSION: lambda repo, preferences=DEFAULT_SCORING_PREFERENCES, **kw: DeckFitnessPolicy(
+        repo, preferences=preferences
+    ),
+    DECK_FITNESS_V4_POLICY_VERSION: lambda repo, preferences=DEFAULT_SCORING_PREFERENCES, **kw: DeckFitnessV4Policy(
+        repo, preferences=preferences, **{k: v for k, v in kw.items() if k != "local_tiers"}
+    ),
+}
+
+
+def create_card_reward_policy(
+    version: str,
+    repository: RelationalRepository,
+    *,
+    preferences: ScoringPreferences = DEFAULT_SCORING_PREFERENCES,
+    **kwargs,
+):
+    """Instantiate a registered card-reward policy by version identifier."""
+
+    factory = CARD_REWARD_POLICY_FACTORIES.get(version)
+    if factory is None:
+        supported = ", ".join(sorted(CARD_REWARD_POLICY_FACTORIES))
+        raise ValueError(f"Unknown card-reward policy version {version!r}; expected one of: {supported}")
+    return factory(repository, preferences=preferences, **kwargs)

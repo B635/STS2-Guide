@@ -5,7 +5,7 @@ from pathlib import Path
 
 from advisor.card_reward_guard import ERROR_GAP, GuardedCardRewardPolicy
 from advisor.decision_core import CARD_REWARD, PolicyRegistry
-from advisor.deck_fitness import DeckFitnessPolicy
+from advisor.deck_fitness import DECK_FITNESS_V4_POLICY_VERSION, DeckFitnessPolicy, DeckFitnessV4Policy
 from advisor.golden_set import card_reward_request, load_golden_set
 from advisor.versions import ACTIVE_CARD_REWARD_POLICY_VERSION, DECK_FITNESS_POLICY_VERSION
 from realtime.processor import RealtimeEventProcessor
@@ -65,6 +65,20 @@ class GuardedCardRewardPolicyTests(unittest.TestCase):
             result = PolicyRegistry([policy]).recommend(self.request)
         self.assertEqual((result.status, result.recommended_candidate_id), ("uncertain", None))
         self.assertEqual(result.policy_version, DECK_FITNESS_POLICY_VERSION)
+        self.assertIn(ERROR_GAP, result.data_gaps)
+        self.assertTrue(all(row.score is None for row in result.candidates))
+
+    def test_guarded_v4_failure_preserves_primary_policy_version(self):
+        class FailingV4(DeckFitnessV4Policy):
+            def recommend(self, request):
+                raise RuntimeError("v4 boom")
+
+        policy = GuardedCardRewardPolicy(FailingV4(self.repository))
+        with self.assertLogs("advisor.card_reward_guard", level="ERROR"):
+            result = PolicyRegistry([policy]).recommend(self.request)
+        self.assertEqual((result.status, result.recommended_candidate_id), ("uncertain", None))
+        self.assertEqual(result.policy_version, DECK_FITNESS_V4_POLICY_VERSION)
+        self.assertEqual(result.payload.get("method"), "deck_fitness_4")
         self.assertIn(ERROR_GAP, result.data_gaps)
         self.assertTrue(all(row.score is None for row in result.candidates))
 

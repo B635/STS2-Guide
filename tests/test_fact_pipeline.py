@@ -7,7 +7,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from fact_pipeline.cli import sanitize_facts_for_eval
+from fact_pipeline.cli import build_parser, sanitize_facts_for_eval
 from fact_pipeline.compare import compare_facts
 from fact_pipeline.evaluate import compute_eval_metrics, create_stratified_split
 from fact_pipeline.extractor import (
@@ -16,8 +16,9 @@ from fact_pipeline.extractor import (
     FixtureAssemblyProvider,
     MAX_DUMP_CHARS,
 )
-from fact_pipeline.llm import DEFAULT_MODEL, LLMResponse, LLMUsage, ScriptedLLMClient, make_tool_response
+from fact_pipeline.llm import COMPARISON_MODEL, DEFAULT_MODEL, LLMResponse, LLMUsage, ScriptedLLMClient, make_tool_response
 from fact_pipeline.pipeline import AuditOutcome, EntityPipelineResult, PipelineConfig, process_entity, run_batch
+from fact_pipeline.router import ComplexityRouter, score_complexity, simulate_routing_policy
 from fact_pipeline.validator import validate_fact
 
 
@@ -694,6 +695,183 @@ class SemanticComparatorAndEvalTests(unittest.TestCase):
         self.assertEqual(metrics["schema_final_pass"], 1)
         self.assertEqual(metrics["schema_first_pass"], 1)
         self.assertAlmostEqual(metrics["schema_final_pass_rate"], 0.5)
+
+
+class ComplexityRouterTests(unittest.TestCase):
+    def test_static_il_scorer_separates_simple_medium_and_hard_entities(self):
+        simple_card = score_complexity(
+            "cards",
+            {"overrides": ["OnPlay", "OnUpgrade", "get_CanonicalVars"], "calls": ["DamageCmd::Attack"]},
+            "type Strike\nmethod OnPlay\n  ldc.i4.6\n  ret\n",
+        )
+        self.assertEqual(simple_card.tier, "simple")
+        self.assertLessEqual(simple_card.score, 2)
+
+        medium_power = score_complexity(
+            "powers",
+            {"overrides": ["ModifyDamageAdditive", "get_StackType"], "calls": []},
+            "type AccuracyPower\nmethod ModifyDamageAdditive\n  brfalse.s IL_0010\n  ret\n",
+        )
+        self.assertEqual(medium_power.tier, "medium")
+
+        hard_relic = score_complexity(
+            "relics",
+            {
+                "overrides": ["AfterObtained", "AfterCombatEnd", "AfterSideTurnStart"],
+                "calls": ["PlayerCmd::GainGold", "CardCmd::Upgrade"],
+            },
+            "\n".join(
+                [
+                    "type ComplexRelic",
+                    "type ComplexRelic.<>c__DisplayClass1_0",
+                    "type ComplexRelic.<AfterObtained>d__2",
+                    "type ComplexRelic.<AfterCombatEnd>d__3",
+                    "  stfld ComplexRelic::_counter",
+                    "  call SavedProperty",
+                ]
+                + ["  brtrue.s L1"] * 12
+            ),
+        )
+        self.assertEqual(hard_relic.tier, "hard")
+        self.assertGreaterEqual(hard_relic.score, 6)
+        self.assertIn("AfterObtained", hard_relic.signals.out_of_combat_hooks)
+        self.assertGreaterEqual(len(hard_relic.signals.hook_methods), 3)
+
+        monster = score_complexity(
+            "monsters",
+            {"overrides": ["AfterTurnStart", "BeforeAttack"], "calls": []},
+            "type BossMonster\n  brfalse L1\n",
+        )
+        self.assertEqual(monster.tier, "hard")
+
+    def test_auto_routing_escalates_medium_thinking_and_gates_hard_entities(self):
+        ext, facts, cat, assembly = _sample_inputs()
+        # 1) Simple card in auto mode keeps fast non-thinking drafter and allows auto_approve.
+        llm_simple = ScriptedLLMClient(
+            [
+                make_tool_response("submit_fact", {"fact": _valid_card_fact()}, call_id="d1"),
+                make_tool_response("submit_audit", {"verdict": "agree", "issues": [], "notes": "ok"}, call_id="a1"),
+            ]
+        )
+        res_simple, _ = process_entity(
+            "cards:ABRASIVE",
+            extract_by_key=ext,
+            facts_by_key=facts,
+            catalog_by_type=cat,
+            assembly=assembly,
+            llm=llm_simple,
+            config=PipelineConfig(routing="auto"),
+        )
+        self.assertEqual(res_simple.complexity_tier, "simple")
+        self.assertEqual(res_simple.outcome, "auto_approved")
+        self.assertFalse(llm_simple.calls[0]["thinking"])
+        self.assertEqual(llm_simple.calls[0]["model"], DEFAULT_MODEL)
+
+        # 2) Medium power in auto mode enables drafter thinking and auditor thinking.
+        llm_medium = ScriptedLLMClient(
+            [
+                make_tool_response("submit_fact", {"fact": _valid_power_fact()}, call_id="d1"),
+                make_tool_response("submit_audit", {"verdict": "agree", "issues": [], "notes": "ok"}, call_id="a1"),
+            ]
+        )
+        res_med, _ = process_entity(
+            "powers:ACCURACY",
+            extract_by_key=ext,
+            facts_by_key=facts,
+            catalog_by_type=cat,
+            assembly=assembly,
+            llm=llm_medium,
+            config=PipelineConfig(routing="auto"),
+        )
+        self.assertEqual(res_med.complexity_tier, "medium")
+        self.assertEqual(res_med.outcome, "auto_approved")
+        self.assertTrue(llm_medium.calls[0]["thinking"])
+        self.assertTrue(llm_medium.calls[1]["thinking"])
+
+        # 3) Hard relic escalates to COMPARISON_MODEL + thinking, and tightens auto-approve to needs_human.
+        ext["relics:GOLD_PEARL"]["overrides"] = ["AfterObtained", "AfterCombatEnd", "AfterRoomEntered"]
+        hard_assembly = FixtureAssemblyProvider(
+            dumps={
+                "GoldPearl": (
+                    "type GoldPearl\ntype GoldPearl.<>c\ntype GoldPearl.<AfterObtained>d__1\n"
+                    "type GoldPearl.<AfterCombatEnd>d__2\n  stfld GoldPearl::_saved\n  call SavedProperty\n"
+                )
+            }
+        )
+        llm_hard = ScriptedLLMClient(
+            [
+                make_tool_response("submit_fact", {"fact": _valid_relic_fact()}, call_id="d1"),
+                make_tool_response("submit_audit", {"verdict": "agree", "issues": [], "notes": "ok"}, call_id="a1"),
+            ]
+        )
+        res_hard, _ = process_entity(
+            "relics:GOLD_PEARL",
+            extract_by_key=ext,
+            facts_by_key=facts,
+            catalog_by_type=cat,
+            assembly=hard_assembly,
+            llm=llm_hard,
+            config=PipelineConfig(routing="auto", auto_approve_max_tier="medium"),
+        )
+        self.assertEqual(res_hard.complexity_tier, "hard")
+        self.assertEqual(llm_hard.calls[0]["model"], COMPARISON_MODEL)
+        self.assertTrue(llm_hard.calls[0]["thinking"])
+        self.assertEqual(res_hard.outcome, "needs_human")
+        self.assertEqual(res_hard.reason, "high_risk_tier_requires_human")
+
+    def test_auto_routing_escalates_revision_round_and_requires_human_by_default(self):
+        ext, facts, cat, assembly = _sample_inputs()
+        llm = ScriptedLLMClient(
+            [
+                make_tool_response("submit_fact", {"fact": _valid_card_fact(thorns=2)}, call_id="d1"),
+                make_tool_response(
+                    "submit_audit",
+                    {"verdict": "disagree", "issues": ["wrong thorns", "missing upgrade"], "notes": "fix thorns"},
+                    call_id="a1",
+                ),
+                make_tool_response("submit_fact", {"fact": _valid_card_fact(thorns=4)}, call_id="r1"),
+                make_tool_response("submit_audit", {"verdict": "agree", "issues": [], "notes": "fixed"}, call_id="a2"),
+            ]
+        )
+        res, _ = process_entity(
+            "cards:ABRASIVE",
+            extract_by_key=ext,
+            facts_by_key=facts,
+            catalog_by_type=cat,
+            assembly=assembly,
+            llm=llm,
+            config=PipelineConfig(routing="auto"),
+        )
+        # Initial drafter was non-thinking flash; revision escalated to thinking + COMPARISON_MODEL (>=2 issues).
+        self.assertFalse(llm.calls[0]["thinking"])
+        self.assertTrue(llm.calls[2]["thinking"])
+        self.assertEqual(llm.calls[2]["model"], COMPARISON_MODEL)
+        self.assertEqual(len(res.route_decisions), 2)
+        self.assertEqual(res.outcome, "needs_human")
+        self.assertEqual(res.reason, "revised_requires_human_review")
+
+    def test_cli_parses_routing_flag_and_offline_simulator_computes_tradeoff(self):
+        parser = build_parser()
+        ns_auto = parser.parse_args(["run", "--routing", "auto", "--out", "build/tmp"])
+        ns_fixed = parser.parse_args(["eval", "run", "test", "--routing", "fixed", "--out", "build/tmp"])
+        self.assertEqual(ns_auto.routing, "auto")
+        self.assertEqual(ns_fixed.routing, "fixed")
+
+        a_simple = score_complexity("cards", {"overrides": ["OnPlay"]}, "type A\n")
+        a_hard = score_complexity("monsters", {"overrides": ["H1", "H2"]}, "type M\n  stfld M::_x\n")
+        rows = [
+            {"entity_key": "cards:A", "outcome": "auto_approved", "final_core_match": True, "revised": False, "cost_usd": 0.01},
+            {"entity_key": "monsters:M", "outcome": "auto_approved", "final_core_match": False, "revised": False, "cost_usd": 0.02},
+        ]
+        sim = simulate_routing_policy(
+            rows,
+            {"cards:A": a_simple, "monsters:M": a_hard},
+            auto_approve_max_tier="medium",
+            allow_revised_auto_approve=False,
+        )
+        self.assertEqual(sim["baseline"]["auto_core_precision"], 0.5)
+        self.assertEqual(sim["gated"]["auto_core_precision"], 1.0)
+        self.assertEqual(sim["gated"]["bugs_intercepted_vs_baseline"], 1)
 
 
 if __name__ == "__main__":

@@ -22,13 +22,14 @@ from fact_pipeline.extractor import (
     resolve_default_dll,
     resolve_default_extractor,
 )
-from fact_pipeline.llm import DEFAULT_MODEL, OpenAIChatClient
+from fact_pipeline.llm import COMPARISON_MODEL, DEFAULT_MODEL, OpenAIChatClient
 from fact_pipeline.pipeline import (
     EntityPipelineResult,
     PipelineConfig,
     run_batch,
     write_review_queue_markdown,
 )
+from fact_pipeline.router import COMPLEXITY_TIERS, ROUTING_MODES
 from fact_pipeline.validator import SUPPORTED_ENTITY_TYPES
 from storage.assembly_facts import (
     DEFAULT_EXTRACT_PATH,
@@ -148,6 +149,10 @@ def _cmd_run(args: argparse.Namespace) -> int:
         auditor_thinking=True if args.auditor_thinking else None,
         skip_audit=args.skip_audit,
         max_revision_rounds=0 if args.no_revision else 1,
+        routing=args.routing,
+        hard_drafter_model=args.hard_model,
+        auto_approve_max_tier=args.auto_approve_max_tier,
+        allow_revised_auto_approve=args.allow_revised_auto_approve,
     )
 
     def _on_done(res: EntityPipelineResult, done: int, total: int) -> None:
@@ -249,6 +254,10 @@ def _cmd_eval_run(args: argparse.Namespace) -> int:
         auditor_thinking=True if args.auditor_thinking else None,
         skip_audit=args.skip_audit,
         max_revision_rounds=0 if args.no_revision else 1,
+        routing=args.routing,
+        hard_drafter_model=args.hard_model,
+        auto_approve_max_tier=args.auto_approve_max_tier,
+        allow_revised_auto_approve=args.allow_revised_auto_approve,
     )
 
     def _on_done(res: EntityPipelineResult, done: int, total: int) -> None:
@@ -349,6 +358,10 @@ def build_parser() -> argparse.ArgumentParser:
     p_run.add_argument("--auditor-thinking", action="store_true")
     p_run.add_argument("--skip-audit", action="store_true")
     p_run.add_argument("--no-revision", action="store_true")
+    p_run.add_argument("--routing", default="fixed", choices=list(ROUTING_MODES))
+    p_run.add_argument("--hard-model", default=COMPARISON_MODEL)
+    p_run.add_argument("--auto-approve-max-tier", default="medium", choices=["none"] + list(COMPLEXITY_TIERS))
+    p_run.add_argument("--allow-revised-auto-approve", action="store_true")
     p_run.add_argument("--workers", type=int, default=2)
     p_run.add_argument("--force", action="store_true")
     p_run.add_argument("--out", type=Path, required=True)
@@ -386,6 +399,10 @@ def build_parser() -> argparse.ArgumentParser:
     p_erun.add_argument("--auditor-thinking", action="store_true")
     p_erun.add_argument("--skip-audit", action="store_true")
     p_erun.add_argument("--no-revision", action="store_true")
+    p_erun.add_argument("--routing", default="fixed", choices=list(ROUTING_MODES))
+    p_erun.add_argument("--hard-model", default=COMPARISON_MODEL)
+    p_erun.add_argument("--auto-approve-max-tier", default="medium", choices=["none"] + list(COMPLEXITY_TIERS))
+    p_erun.add_argument("--allow-revised-auto-approve", action="store_true")
     p_erun.add_argument("--workers", type=int, default=3)
     p_erun.add_argument("--force", action="store_true")
     p_erun.add_argument("--out", type=Path, required=True)

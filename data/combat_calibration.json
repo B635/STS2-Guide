@@ -1,0 +1,527 @@
+{
+  "schema_version": 1,
+  "dimensions": [
+    "frontload",
+    "scaling",
+    "aoe",
+    "defense",
+    "consistency",
+    "energy"
+  ],
+  "transform": {
+    "kind": "deck_fitness_concave_satisfaction",
+    "cap": 2.0,
+    "surplus_slope": 0.25
+  },
+  "dataset": {
+    "sources": [
+      "build\\collected-runs",
+      "coach\\eval\\runs\\dev"
+    ],
+    "excluded_test_runs": 15,
+    "test_split_leakage": 0,
+    "valid_runs": 54,
+    "valid_fights": 558,
+    "counts": {
+      "excluded_test_split": 15,
+      "files_scanned": 120,
+      "valid_runs": 73,
+      "valid_abandoned_runs": 45,
+      "abandoned_final_fight_excluded": 29,
+      "multiplayer_excluded": 32,
+      "deck_replay_mismatch": 5,
+      "duplicate_run": 10,
+      "encounter_unconverted": 12
+    },
+    "fights_by_stratum": {
+      "act1:BOSS": 30,
+      "act1:ELITE": 32,
+      "act1:MONSTER": 247,
+      "act2:BOSS": 19,
+      "act2:ELITE": 18,
+      "act2:MONSTER": 137,
+      "act3:BOSS": 7,
+      "act3:ELITE": 4,
+      "act3:MONSTER": 64
+    },
+    "fights_by_character": {
+      "DEFECT": 119,
+      "IRONCLAD": 101,
+      "NECROBINDER": 118,
+      "REGENT": 147,
+      "SILENT": 73
+    }
+  },
+  "cv_metrics": {
+    "cv_scheme": "GroupKFold(n_splits=5, group=run_id)",
+    "distinct_runs": 54,
+    "overall": {
+      "n": 558,
+      "oof_mae": 7.6541,
+      "naive_stratum_mae": 7.6801,
+      "oof_pinball_q75": 3.4997,
+      "naive_stratum_pinball_q75": 3.4894,
+      "oof_spearman_mean": 0.5127,
+      "oof_spearman_q75": 0.518,
+      "oof_q75_coverage": 0.7419
+    },
+    "by_kind": {
+      "MONSTER": {
+        "n": 448,
+        "oof_mae": 6.3864,
+        "naive_stratum_mae": 6.4096,
+        "oof_pinball_q75": 3.0285,
+        "naive_stratum_pinball_q75": 3.037,
+        "oof_spearman_mean": 0.2755,
+        "oof_spearman_q75": 0.2808,
+        "oof_q75_coverage": 0.7455
+      },
+      "ELITE": {
+        "n": 54,
+        "oof_mae": 11.9005,
+        "naive_stratum_mae": 11.9074,
+        "oof_pinball_q75": 5.1563,
+        "naive_stratum_pinball_q75": 5.0486,
+        "oof_spearman_mean": 0.0916,
+        "oof_spearman_q75": 0.0299,
+        "oof_q75_coverage": 0.7407
+      },
+      "BOSS": {
+        "n": 56,
+        "oof_mae": 13.7012,
+        "naive_stratum_mae": 13.7679,
+        "oof_pinball_q75": 5.6726,
+        "naive_stratum_pinball_q75": 5.6049,
+        "oof_spearman_mean": 0.2201,
+        "oof_spearman_q75": 0.2243,
+        "oof_q75_coverage": 0.7143
+      }
+    },
+    "by_act": {
+      "act1": {
+        "n": 309,
+        "oof_mae": 6.1528,
+        "naive_stratum_mae": 6.2152,
+        "oof_pinball_q75": 3.0109,
+        "naive_stratum_pinball_q75": 3.0277,
+        "oof_spearman_mean": 0.4449,
+        "oof_spearman_q75": 0.4445,
+        "oof_q75_coverage": 0.7411
+      },
+      "act2": {
+        "n": 174,
+        "oof_mae": 9.097,
+        "naive_stratum_mae": 9.1063,
+        "oof_pinball_q75": 3.8983,
+        "naive_stratum_pinball_q75": 3.8657,
+        "oof_spearman_mean": 0.4212,
+        "oof_spearman_q75": 0.432,
+        "oof_q75_coverage": 0.7471
+      },
+      "act3": {
+        "n": 75,
+        "oof_mae": 10.4922,
+        "naive_stratum_mae": 10.4067,
+        "oof_pinball_q75": 4.5893,
+        "naive_stratum_pinball_q75": 4.5183,
+        "oof_spearman_mean": 0.0802,
+        "oof_spearman_q75": 0.0604,
+        "oof_q75_coverage": 0.7333
+      }
+    }
+  },
+  "global": {
+    "key": "global",
+    "act": null,
+    "fight_kind": null,
+    "sample_count": 558,
+    "mean": {
+      "intercept": 22.95534,
+      "attack_load_coef": 0.000239,
+      "hp_saved_weights": {
+        "frontload": 0.142071,
+        "scaling": 0.0,
+        "aoe": 0.282592,
+        "defense": 0.110951,
+        "consistency": 0.163222,
+        "energy": 0.0
+      }
+    },
+    "q75": {
+      "intercept": 31.080221,
+      "attack_load_coef": 0.000132,
+      "hp_saved_weights": {
+        "frontload": 0.155605,
+        "scaling": 0.0,
+        "aoe": 0.238062,
+        "defense": 0.061436,
+        "consistency": 0.010303,
+        "energy": 0.0
+      }
+    }
+  },
+  "by_kind": {
+    "BOSS": {
+      "key": "BOSS",
+      "act": null,
+      "fight_kind": "BOSS",
+      "sample_count": 56,
+      "mean": {
+        "intercept": 34.675266,
+        "attack_load_coef": 0.001293,
+        "hp_saved_weights": {
+          "frontload": 0.126692,
+          "scaling": 0.0,
+          "aoe": 0.445516,
+          "defense": 0.093918,
+          "consistency": 0.06813,
+          "energy": 0.0
+        }
+      },
+      "q75": {
+        "intercept": 48.644814,
+        "attack_load_coef": 0.000784,
+        "hp_saved_weights": {
+          "frontload": 0.168337,
+          "scaling": 0.0,
+          "aoe": 0.302422,
+          "defense": 0.051493,
+          "consistency": 0.0,
+          "energy": 0.0
+        }
+      }
+    },
+    "ELITE": {
+      "key": "ELITE",
+      "act": null,
+      "fight_kind": "ELITE",
+      "sample_count": 54,
+      "mean": {
+        "intercept": 21.054937,
+        "attack_load_coef": 0.0,
+        "hp_saved_weights": {
+          "frontload": 0.143891,
+          "scaling": 0.002044,
+          "aoe": 0.239656,
+          "defense": 0.115185,
+          "consistency": 0.164257,
+          "energy": 0.008262
+        }
+      },
+      "q75": {
+        "intercept": 33.484294,
+        "attack_load_coef": 0.000202,
+        "hp_saved_weights": {
+          "frontload": 0.184466,
+          "scaling": 0.003273,
+          "aoe": 0.181462,
+          "defense": 0.068509,
+          "consistency": 0.023969,
+          "energy": 0.0
+        }
+      }
+    },
+    "MONSTER": {
+      "key": "MONSTER",
+      "act": null,
+      "fight_kind": "MONSTER",
+      "sample_count": 448,
+      "mean": {
+        "intercept": 5.849369,
+        "attack_load_coef": 0.001178,
+        "hp_saved_weights": {
+          "frontload": 0.324494,
+          "scaling": 0.0,
+          "aoe": 0.494164,
+          "defense": 0.184587,
+          "consistency": 0.0,
+          "energy": 0.0
+        }
+      },
+      "q75": {
+        "intercept": 13.365456,
+        "attack_load_coef": 0.000959,
+        "hp_saved_weights": {
+          "frontload": 0.302746,
+          "scaling": 0.0,
+          "aoe": 0.337091,
+          "defense": 0.139413,
+          "consistency": 0.0,
+          "energy": 0.0
+        }
+      }
+    }
+  },
+  "by_stratum": {
+    "act1:BOSS": {
+      "key": "act1:BOSS",
+      "act": 1,
+      "fight_kind": "BOSS",
+      "sample_count": 30,
+      "mean": {
+        "intercept": 31.342009,
+        "attack_load_coef": 0.001725,
+        "hp_saved_weights": {
+          "frontload": 0.10974,
+          "scaling": 0.002416,
+          "aoe": 0.464095,
+          "defense": 0.094137,
+          "consistency": 0.023767,
+          "energy": 0.0
+        }
+      },
+      "q75": {
+        "intercept": 40.778914,
+        "attack_load_coef": 0.000759,
+        "hp_saved_weights": {
+          "frontload": 0.148759,
+          "scaling": 0.001208,
+          "aoe": 0.327467,
+          "defense": 0.036114,
+          "consistency": 0.0,
+          "energy": 0.0
+        }
+      }
+    },
+    "act1:ELITE": {
+      "key": "act1:ELITE",
+      "act": 1,
+      "fight_kind": "ELITE",
+      "sample_count": 32,
+      "mean": {
+        "intercept": 20.77381,
+        "attack_load_coef": 0.0,
+        "hp_saved_weights": {
+          "frontload": 0.144198,
+          "scaling": 0.00178,
+          "aoe": 0.235881,
+          "defense": 0.110638,
+          "consistency": 0.179178,
+          "energy": 0.003667
+        }
+      },
+      "q75": {
+        "intercept": 27.155817,
+        "attack_load_coef": 0.0,
+        "hp_saved_weights": {
+          "frontload": 0.200191,
+          "scaling": 0.004554,
+          "aoe": 0.161138,
+          "defense": 0.065218,
+          "consistency": 0.023958,
+          "energy": 0.0
+        }
+      }
+    },
+    "act1:MONSTER": {
+      "key": "act1:MONSTER",
+      "act": 1,
+      "fight_kind": "MONSTER",
+      "sample_count": 247,
+      "mean": {
+        "intercept": 3.943101,
+        "attack_load_coef": 0.00094,
+        "hp_saved_weights": {
+          "frontload": 0.356947,
+          "scaling": 0.0,
+          "aoe": 0.597975,
+          "defense": 0.191999,
+          "consistency": 0.019416,
+          "energy": 0.0
+        }
+      },
+      "q75": {
+        "intercept": 8.63888,
+        "attack_load_coef": 0.000981,
+        "hp_saved_weights": {
+          "frontload": 0.354193,
+          "scaling": 0.0,
+          "aoe": 0.464753,
+          "defense": 0.154362,
+          "consistency": 0.0,
+          "energy": 0.0
+        }
+      }
+    },
+    "act2:BOSS": {
+      "key": "act2:BOSS",
+      "act": 2,
+      "fight_kind": "BOSS",
+      "sample_count": 19,
+      "mean": {
+        "intercept": 45.302248,
+        "attack_load_coef": 0.001279,
+        "hp_saved_weights": {
+          "frontload": 0.118313,
+          "scaling": 0.001012,
+          "aoe": 0.442002,
+          "defense": 0.10356,
+          "consistency": 0.087207,
+          "energy": 0.00451
+        }
+      },
+      "q75": {
+        "intercept": 54.090412,
+        "attack_load_coef": 0.000741,
+        "hp_saved_weights": {
+          "frontload": 0.160259,
+          "scaling": 0.000506,
+          "aoe": 0.266126,
+          "defense": 0.0591,
+          "consistency": 0.014742,
+          "energy": 0.00713
+        }
+      }
+    },
+    "act2:ELITE": {
+      "key": "act2:ELITE",
+      "act": 2,
+      "fight_kind": "ELITE",
+      "sample_count": 18,
+      "mean": {
+        "intercept": 26.521949,
+        "attack_load_coef": 0.00011,
+        "hp_saved_weights": {
+          "frontload": 0.15469,
+          "scaling": 0.002227,
+          "aoe": 0.224809,
+          "defense": 0.128713,
+          "consistency": 0.195011,
+          "energy": 0.012037
+        }
+      },
+      "q75": {
+        "intercept": 33.813338,
+        "attack_load_coef": 0.000442,
+        "hp_saved_weights": {
+          "frontload": 0.195055,
+          "scaling": 0.003344,
+          "aoe": 0.17349,
+          "defense": 0.07334,
+          "consistency": 0.048227,
+          "energy": 0.005368
+        }
+      }
+    },
+    "act2:MONSTER": {
+      "key": "act2:MONSTER",
+      "act": 2,
+      "fight_kind": "MONSTER",
+      "sample_count": 137,
+      "mean": {
+        "intercept": 9.182614,
+        "attack_load_coef": 0.001205,
+        "hp_saved_weights": {
+          "frontload": 0.344848,
+          "scaling": 0.010707,
+          "aoe": 0.44862,
+          "defense": 0.229847,
+          "consistency": 0.16598,
+          "energy": 0.052128
+        }
+      },
+      "q75": {
+        "intercept": 16.272139,
+        "attack_load_coef": 0.000523,
+        "hp_saved_weights": {
+          "frontload": 0.294008,
+          "scaling": 0.005083,
+          "aoe": 0.337304,
+          "defense": 0.150034,
+          "consistency": 0.054869,
+          "energy": 0.00322
+        }
+      }
+    },
+    "act3:BOSS": {
+      "key": "act3:BOSS",
+      "act": 3,
+      "fight_kind": "BOSS",
+      "sample_count": 7,
+      "mean": {
+        "intercept": 51.238989,
+        "attack_load_coef": 0.001207,
+        "hp_saved_weights": {
+          "frontload": 0.144386,
+          "scaling": 0.0,
+          "aoe": 0.469722,
+          "defense": 0.094493,
+          "consistency": 0.0753,
+          "energy": 0.000384
+        }
+      },
+      "q75": {
+        "intercept": 61.100673,
+        "attack_load_coef": 0.000739,
+        "hp_saved_weights": {
+          "frontload": 0.179977,
+          "scaling": 0.006679,
+          "aoe": 0.316607,
+          "defense": 0.055867,
+          "consistency": 0.008847,
+          "energy": 0.004518
+        }
+      }
+    },
+    "act3:ELITE": {
+      "key": "act3:ELITE",
+      "act": 3,
+      "fight_kind": "ELITE",
+      "sample_count": 4,
+      "mean": {
+        "intercept": 8.019939,
+        "attack_load_coef": 0.000193,
+        "hp_saved_weights": {
+          "frontload": 0.141051,
+          "scaling": 0.000674,
+          "aoe": 0.239177,
+          "defense": 0.119688,
+          "consistency": 0.16436,
+          "energy": 0.006553
+        }
+      },
+      "q75": {
+        "intercept": 20.617028,
+        "attack_load_coef": 0.00049,
+        "hp_saved_weights": {
+          "frontload": 0.180797,
+          "scaling": 0.003949,
+          "aoe": 0.1811,
+          "defense": 0.073053,
+          "consistency": 0.022169,
+          "energy": 0.0
+        }
+      }
+    },
+    "act3:MONSTER": {
+      "key": "act3:MONSTER",
+      "act": 3,
+      "fight_kind": "MONSTER",
+      "sample_count": 64,
+      "mean": {
+        "intercept": 11.730305,
+        "attack_load_coef": 0.001089,
+        "hp_saved_weights": {
+          "frontload": 0.335863,
+          "scaling": 0.020731,
+          "aoe": 0.45525,
+          "defense": 0.18113,
+          "consistency": 0.011647,
+          "energy": 0.0
+        }
+      },
+      "q75": {
+        "intercept": 18.794254,
+        "attack_load_coef": 0.001117,
+        "hp_saved_weights": {
+          "frontload": 0.332985,
+          "scaling": 0.013192,
+          "aoe": 0.34112,
+          "defense": 0.143017,
+          "consistency": 0.013096,
+          "energy": 0.0
+        }
+      }
+    }
+  }
+}

@@ -1,5 +1,7 @@
 // The lead loop with a scripted model: plan, parallel investigators, budgets,
 // the program check and the critic, the rewrite and the cuts.
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { describe, expect, it } from "vitest";
 import {
   MAX_HISTORY,
@@ -15,6 +17,8 @@ import {
   withoutCut,
 } from "../src/ask.js";
 import type { AskEvent } from "../src/ask.js";
+import { askMetrics, askResultsDir, loadQuestions, questionsFile, renderAskSheet } from "../src/askeval.js";
+import { EVAL_DIR } from "../src/evaluate.js";
 import type { DecisionDetail, DecisionList } from "../src/schemas.js";
 import { Trace } from "../src/trace.js";
 import { fakeEngine, fakeLlm, TOOL_SPECS } from "./fakes.js";
@@ -360,5 +364,62 @@ describe("program check of an answer", () => {
     expect(checkAnswer("见F15-card。", evidence, NAMES)).toHaveLength(1);
     expect(checkAnswer("引擎的 what_if 里试过。", evidence, NAMES)).toHaveLength(1);
     expect(checkAnswer("第 15 层的选牌。", evidence, NAMES)).toEqual([]);
+  });
+});
+
+describe("askeval dev/test sets and held-out questions-ask-test.json", () => {
+  it("resolves distinct question files, result dirs, metrics set tags, and sheets for dev vs test", () => {
+    expect(path.basename(questionsFile("dev"))).toBe("ask-questions-dev.json");
+    expect(path.basename(questionsFile("test"))).toBe("questions-ask-test.json");
+    expect(askResultsDir("deepseek-flash", "dev")).toContain("ask-dev");
+    expect(askResultsDir("deepseek-flash", "test")).toContain("ask-test");
+
+    const emptyDev = askMetrics("deepseek-flash", [], "dev");
+    const emptyTest = askMetrics("deepseek-flash", [], "test");
+    expect(emptyDev.set).toBe("dev");
+    expect(emptyTest.set).toBe("test");
+
+    const sheetHtml = renderAskSheet([], "test");
+    expect(sheetHtml).toContain("追问评分 · test");
+    expect(sheetHtml).toContain("SET:ask-test");
+    expect(sheetHtml).toContain("ask-test.json");
+  });
+
+  it("validates 30 held-out test questions covering all 15 test runs with zero dev leakage", () => {
+    const split = JSON.parse(readFileSync(path.join(EVAL_DIR, "split.json"), "utf-8")) as {
+      dev: string[];
+      test: string[];
+    };
+    const devRuns = new Set(split.dev);
+    const testRuns = new Set(split.test);
+
+    const devQs = loadQuestions("dev");
+    const testQs = loadQuestions("test");
+    expect(devQs).toHaveLength(20);
+    expect(testQs).toHaveLength(30);
+
+    const seenIds = new Set<string>();
+    const coveredTestRuns = new Set<string>();
+    const kinds = new Set<string>();
+    const seenRunOrder = new Set<string>();
+
+    for (const q of testQs) {
+      expect(seenIds.has(q.id)).toBe(false);
+      seenIds.add(q.id);
+      expect(devRuns.has(q.run)).toBe(false);
+      expect(testRuns.has(q.run)).toBe(true);
+      coveredTestRuns.add(q.run);
+      kinds.add(q.kind);
+      expect(q.question.trim().length).toBeGreaterThan(8);
+      expect(q.expect.trim().length).toBeGreaterThan(10);
+      if (q.kind === "follow_up") {
+        // Every follow-up must appear after at least one earlier question on the same run.
+        expect(seenRunOrder.has(q.run)).toBe(true);
+      }
+      seenRunOrder.add(q.run);
+    }
+
+    expect(coveredTestRuns.size).toBe(15);
+    expect([...kinds].sort()).toEqual(["card", "decision", "follow_up", "notes", "out_of_scope", "pattern"]);
   });
 });

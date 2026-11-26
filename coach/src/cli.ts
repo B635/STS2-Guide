@@ -7,7 +7,7 @@
 // coach ratings import <file>                          keep the text the report's "复制评分" copied
 // coach ask <file.run> [--question Q]... [--questions FILE] [--json] [--no-notes] [--out DIR]
 //   follow-up questions about one run: a terminal chat, or the given questions answered in order
-// coach eval ask run|metrics|sheet dev [--only RUN_OR_ID,...]   the fixed follow-up questions (dev runs only)
+// coach eval ask run|metrics|sheet [dev|test] [--set dev|test] [--only RUN_OR_ID,...]   the fixed follow-up questions
 
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
@@ -34,7 +34,7 @@ const USAGE = [
   "       coach eval run|metrics|sheet <dev|test> [--model M] [--thinking]",
   "       coach ratings import <file>",
   "       coach ask <file.run> [--question Q]... [--questions FILE] [--json] [--no-notes] [--out DIR]",
-  "       coach eval ask run|metrics|sheet dev [--only RUN_OR_ID,...]",
+  "       coach eval ask run|metrics|sheet [dev|test] [--set dev|test] [--only RUN_OR_ID,...] [--model M]",
   "       coach eval critic <dev|test> [--variant b5|c1|c2] [--repeats N] [--model M]",
 ].join("\n");
 
@@ -57,19 +57,19 @@ async function askCommand(runFile: string, options: { model: string; out: string
   }
 }
 
-async function evalAsk(action: string | undefined, model: string, only: string | undefined): Promise<number> {
-  if (action === "run") await recordAsk(model, only ? new Set(only.split(",")) : undefined);
+async function evalAsk(action: string | undefined, set: EvalSet, model: string, only: string | undefined): Promise<number> {
+  if (action === "run") await recordAsk(model, only ? new Set(only.split(",")) : undefined, set);
   else if (action === "sheet") {
-    const file = path.join(EVAL_DIR, "rating-sheet-ask-dev.html");
-    writeFileSync(file, renderAskSheet(loadAskRecorded(model)), "utf-8");
+    const file = path.join(EVAL_DIR, `rating-sheet-ask-${set}.html`);
+    writeFileSync(file, renderAskSheet(loadAskRecorded(model, set), set), "utf-8");
     console.log(`rating sheet: ${file}`);
     return 0;
   } else if (action !== "metrics") {
     console.error(USAGE);
     return 2;
   }
-  const result = askMetrics(model, loadAskRecorded(model));
-  const file = path.join(EVAL_DIR, "metrics", `ask-dev-${model}.json`);
+  const result = askMetrics(model, loadAskRecorded(model, set), set);
+  const file = path.join(EVAL_DIR, "metrics", `ask-${set}-${model}.json`);
   mkdirSync(path.dirname(file), { recursive: true });
   writeFileSync(file, JSON.stringify(result, null, 1) + "\n", "utf-8");
   console.log(JSON.stringify(result, null, 1));
@@ -109,6 +109,7 @@ async function main(argv: string[]): Promise<number> {
       question: { type: "string", multiple: true, default: [] },
       questions: { type: "string" },
       only: { type: "string" },
+      set: { type: "string" },
       variant: { type: "string", default: "c1" },
       repeats: { type: "string", default: "3" },
     },
@@ -129,12 +130,12 @@ async function main(argv: string[]): Promise<number> {
     return 0;
   }
   if (command === "eval" && runFile === "ask") {
-    // Part B is evaluated on the development runs only.
-    if (positionals[3] !== "dev") {
-      console.error("coach eval ask works on the dev set only\n" + USAGE);
+    const rawSet = values.set ?? positionals[3] ?? "dev";
+    if (rawSet !== "dev" && rawSet !== "test") {
+      console.error(`coach eval ask --set must be dev or test (got ${rawSet})\n` + USAGE);
       return 2;
     }
-    return evalAsk(positionals[2], values.model, values.only);
+    return evalAsk(positionals[2], rawSet, values.model, values.only);
   }
   if (command === "ask" && runFile) {
     const questions = [...values.question, ...(values.questions ? parseQuestions(readFileSync(values.questions, "utf-8")) : [])];

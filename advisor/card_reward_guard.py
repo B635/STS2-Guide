@@ -33,4 +33,7 @@ class GuardedCardRewardPolicy:
             return self.primary.recommend(request)
         except Exception:  # a failure must not take the whole event down
             LOGGER.exception("Deck-fitness policy failed; the decision is shown as uncertain.")
+            uncertain = getattr(self.primary, "_uncertain", None)
+            if callable(uncertain):
+                return uncertain(request, (ERROR_GAP,))
             return DeckFitnessPolicy._uncertain(request, (ERROR_GAP,))

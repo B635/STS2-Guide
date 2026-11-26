@@ -5,13 +5,13 @@ from __future__ import annotations
 import json
 import re
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Mapping, Optional, Sequence, Tuple
 
 from fact_pipeline import PIPELINE_VERSION
 from fact_pipeline.extractor import AssemblyProvider, AssemblyProviderError
-from fact_pipeline.llm import DEFAULT_MODEL, LLMClient, LLMResponse, LLMUsage, ToolCall
+from fact_pipeline.llm import COMPARISON_MODEL, DEFAULT_MODEL, LLMClient, LLMResponse, LLMUsage, ToolCall
 from fact_pipeline.prompts import (
     AUDITOR_TOOLS,
     DRAFTER_TOOLS,
@@ -21,6 +21,7 @@ from fact_pipeline.prompts import (
     build_entity_context,
     build_revision_prompt,
 )
+from fact_pipeline.router import ComplexityRouter, RouteDecision
 from fact_pipeline.validator import ValidationResult, prepare_mergeable_entry, validate_fact
 
 # Explicit named budgets per entity.
@@ -44,10 +45,36 @@ class PipelineConfig:
     max_auditor_tools: int = MAX_AUDITOR_TOOL_CALLS
     max_revision_rounds: int = MAX_REVISION_ROUNDS
     reviewed_by_tag: str = PIPELINE_VERSION
+    routing: str = "fixed"  # "fixed" | "auto"
+    hard_drafter_model: Optional[str] = COMPARISON_MODEL
+    hard_auditor_model: Optional[str] = None
+    auto_approve_max_tier: str = "medium"
+    allow_revised_auto_approve: bool = False
 
     @property
     def use_auditor_thinking(self) -> bool:
         return self.thinking if self.auditor_thinking is None else self.auditor_thinking
+
+    def build_router(self) -> ComplexityRouter:
+        return ComplexityRouter(
+            mode=self.routing,
+            hard_drafter_model=self.hard_drafter_model,
+            hard_auditor_model=self.hard_auditor_model,
+            auto_approve_max_tier=self.auto_approve_max_tier,
+            allow_revised_auto_approve=self.allow_revised_auto_approve,
+        )
+
+    def with_route(self, route: RouteDecision) -> "PipelineConfig":
+        return replace(
+            self,
+            drafter_model=route.drafter_model,
+            auditor_model=route.auditor_model,
+            thinking=route.drafter_thinking,
+            auditor_thinking=route.auditor_thinking,
+            max_drafter_tools=route.max_drafter_tools,
+            max_revision_tools=route.max_revision_tools,
+            max_auditor_tools=route.max_auditor_tools,
+        )
 
 
 @dataclass
@@ -95,6 +122,10 @@ class EntityPipelineResult:
     latency_ms: int = 0
     drafter_model: str = DEFAULT_MODEL
     auditor_model: str = DEFAULT_MODEL
+    complexity_tier: Optional[str] = None
+    complexity_score: Optional[int] = None
+    routing_mode: str = "fixed"
+    route_decisions: List[Dict[str, Any]] = field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -122,6 +153,10 @@ class EntityPipelineResult:
             "latency_ms": self.latency_ms,
             "drafter_model": self.drafter_model,
             "auditor_model": self.auditor_model,
+            "complexity_tier": self.complexity_tier,
+            "complexity_score": self.complexity_score,
+            "routing_mode": self.routing_mode,
+            "route_decisions": list(self.route_decisions),
         }
 
     @classmethod
@@ -172,6 +207,14 @@ class EntityPipelineResult:
             latency_ms=int(data.get("latency_ms", 0)),
             drafter_model=str(data.get("drafter_model", DEFAULT_MODEL)),
             auditor_model=str(data.get("auditor_model", DEFAULT_MODEL)),
+            complexity_tier=data.get("complexity_tier"),
+            complexity_score=(
+                int(data["complexity_score"])
+                if data.get("complexity_score") is not None
+                else None
+            ),
+            routing_mode=str(data.get("routing_mode", "fixed")),
+            route_decisions=list(data.get("route_decisions") or ()),
         )
 
 
@@ -618,9 +661,52 @@ def process_entity(
         catalog_entry=catalog_entry,
     )
 
+    router = config.build_router()
+    assessment = router.assess(entity_type, extract_entry, il_dump)
+    initial_route = router.route_initial(
+        assessment,
+        drafter_model=config.drafter_model,
+        auditor_model=config.auditor_model,
+        thinking=config.thinking,
+        auditor_thinking=config.use_auditor_thinking,
+        max_drafter_tools=config.max_drafter_tools,
+        max_revision_tools=config.max_revision_tools,
+        max_auditor_tools=config.max_auditor_tools,
+    )
+    route_decisions: List[Dict[str, Any]] = [initial_route.to_dict()]
+    trace.append(
+        {
+            "stage": "router",
+            "event": "initial_route",
+            "assessment": assessment.to_dict(),
+            "route": initial_route.to_dict(),
+        }
+    )
+    stage1_config = config.with_route(initial_route)
+    active_drafter_model = stage1_config.drafter_model
+    active_auditor_model = stage1_config.auditor_model
+
     total_usage = LLMUsage()
     stage_usage: Dict[str, Dict[str, Any]] = {}
     total_latency = 0
+
+    def _result(**kwargs: Any) -> EntityPipelineResult:
+        return EntityPipelineResult(
+            entity_key=entity_key,
+            entity_type=entity_type,
+            class_name=class_name,
+            fingerprint=fingerprint,
+            drafter_model=active_drafter_model,
+            auditor_model=active_auditor_model,
+            complexity_tier=assessment.tier,
+            complexity_score=assessment.score,
+            routing_mode=config.routing,
+            route_decisions=list(route_decisions),
+            usage=total_usage,
+            stage_usage=stage_usage,
+            latency_ms=total_latency,
+            **kwargs,
+        )
 
     try:
         # Stage 1: Initial Draft
@@ -643,8 +729,8 @@ def process_entity(
             extract_by_key=extract_by_key,
             facts_by_key=facts_by_key,
             catalog_cards=catalog_cards,
-            config=config,
-            max_read_tools=config.max_drafter_tools,
+            config=stage1_config,
+            max_read_tools=stage1_config.max_drafter_tools,
             trace=trace,
         )
         total_usage = total_usage.add(d_usage)
@@ -653,11 +739,7 @@ def process_entity(
 
         if draft_new_vocab:
             return (
-                EntityPipelineResult(
-                    entity_key=entity_key,
-                    entity_type=entity_type,
-                    class_name=class_name,
-                    fingerprint=fingerprint,
+                _result(
                     outcome="needs_human",
                     reason="needs_new_vocabulary",
                     fact=initial_draft,
@@ -670,22 +752,13 @@ def process_entity(
                     validation_problems=val1.problems,
                     schema_repairs=d_repairs,
                     drafter_tool_calls=d_tools,
-                    usage=total_usage,
-                    stage_usage=stage_usage,
-                    latency_ms=total_latency,
-                    drafter_model=config.drafter_model,
-                    auditor_model=config.auditor_model,
                 ),
                 trace,
             )
 
         if initial_draft is None or not val1.ok:
             return (
-                EntityPipelineResult(
-                    entity_key=entity_key,
-                    entity_type=entity_type,
-                    class_name=class_name,
-                    fingerprint=fingerprint,
+                _result(
                     outcome="needs_human",
                     reason="schema_validation_failed",
                     fact=None,
@@ -695,11 +768,6 @@ def process_entity(
                     validation_problems=val1.problems,
                     schema_repairs=d_repairs,
                     drafter_tool_calls=d_tools,
-                    usage=total_usage,
-                    stage_usage=stage_usage,
-                    latency_ms=total_latency,
-                    drafter_model=config.drafter_model,
-                    auditor_model=config.auditor_model,
                 ),
                 trace,
             )
@@ -707,17 +775,13 @@ def process_entity(
         if config.skip_audit:
             merged = prepare_mergeable_entry(
                 initial_draft,
-                reviewed_by=f"{config.reviewed_by_tag} ({config.drafter_model})",
+                reviewed_by=f"{config.reviewed_by_tag} ({active_drafter_model})",
                 audit_by="skipped_ablation",
                 audit_verdict="agree",
                 audit_notes="Audit skipped (drafter-only ablation run).",
             )
             return (
-                EntityPipelineResult(
-                    entity_key=entity_key,
-                    entity_type=entity_type,
-                    class_name=class_name,
-                    fingerprint=fingerprint,
+                _result(
                     outcome="auto_approved",
                     reason="audit_skipped",
                     fact=merged,
@@ -727,11 +791,6 @@ def process_entity(
                     codex_conflicts=val1.codex_conflicts,
                     schema_repairs=d_repairs,
                     drafter_tool_calls=d_tools,
-                    usage=total_usage,
-                    stage_usage=stage_usage,
-                    latency_ms=total_latency,
-                    drafter_model=config.drafter_model,
-                    auditor_model=config.auditor_model,
                 ),
                 trace,
             )
@@ -747,7 +806,7 @@ def process_entity(
             llm=llm,
             assembly=assembly,
             facts_by_key=facts_by_key,
-            config=config,
+            config=stage1_config,
             trace=trace,
         )
         total_usage = total_usage.add(audit1.usage)
@@ -757,11 +816,7 @@ def process_entity(
 
         if audit1.needs_new_vocabulary:
             return (
-                EntityPipelineResult(
-                    entity_key=entity_key,
-                    entity_type=entity_type,
-                    class_name=class_name,
-                    fingerprint=fingerprint,
+                _result(
                     outcome="needs_human",
                     reason="needs_new_vocabulary",
                     fact=initial_draft,
@@ -774,11 +829,6 @@ def process_entity(
                     schema_repairs=d_repairs,
                     drafter_tool_calls=d_tools,
                     auditor_tool_calls=auditor_tools,
-                    usage=total_usage,
-                    stage_usage=stage_usage,
-                    latency_ms=total_latency,
-                    drafter_model=config.drafter_model,
-                    auditor_model=config.auditor_model,
                 ),
                 trace,
             )
@@ -786,11 +836,7 @@ def process_entity(
         if audit1.verdict == "agree":
             if val1.codex_conflicts:
                 return (
-                    EntityPipelineResult(
-                        entity_key=entity_key,
-                        entity_type=entity_type,
-                        class_name=class_name,
-                        fingerprint=fingerprint,
+                    _result(
                         outcome="needs_human",
                         reason="codex_conflict",
                         fact=initial_draft,
@@ -801,27 +847,34 @@ def process_entity(
                         schema_repairs=d_repairs,
                         drafter_tool_calls=d_tools,
                         auditor_tool_calls=auditor_tools,
-                        usage=total_usage,
-                        stage_usage=stage_usage,
-                        latency_ms=total_latency,
-                        drafter_model=config.drafter_model,
-                        auditor_model=config.auditor_model,
+                    ),
+                    trace,
+                )
+            if not initial_route.allow_auto_approve:
+                return (
+                    _result(
+                        outcome="needs_human",
+                        reason="high_risk_tier_requires_human",
+                        fact=initial_draft,
+                        initial_draft=initial_draft,
+                        initial_audit=audit1,
+                        final_audit=audit1,
+                        codex_conflicts=val1.codex_conflicts,
+                        schema_repairs=d_repairs,
+                        drafter_tool_calls=d_tools,
+                        auditor_tool_calls=auditor_tools,
                     ),
                     trace,
                 )
             merged = prepare_mergeable_entry(
                 initial_draft,
-                reviewed_by=f"{config.reviewed_by_tag} ({config.drafter_model})",
-                audit_by=f"{config.reviewed_by_tag}-auditor ({config.auditor_model})",
+                reviewed_by=f"{config.reviewed_by_tag} ({active_drafter_model})",
+                audit_by=f"{config.reviewed_by_tag}-auditor ({active_auditor_model})",
                 audit_verdict="agree",
                 audit_notes=audit1.notes,
             )
             return (
-                EntityPipelineResult(
-                    entity_key=entity_key,
-                    entity_type=entity_type,
-                    class_name=class_name,
-                    fingerprint=fingerprint,
+                _result(
                     outcome="auto_approved",
                     reason="auditor_agreed",
                     fact=merged,
@@ -832,22 +885,13 @@ def process_entity(
                     schema_repairs=d_repairs,
                     drafter_tool_calls=d_tools,
                     auditor_tool_calls=auditor_tools,
-                    usage=total_usage,
-                    stage_usage=stage_usage,
-                    latency_ms=total_latency,
-                    drafter_model=config.drafter_model,
-                    auditor_model=config.auditor_model,
                 ),
                 trace,
             )
 
         if audit1.verdict != "disagree" or config.max_revision_rounds <= 0:
             return (
-                EntityPipelineResult(
-                    entity_key=entity_key,
-                    entity_type=entity_type,
-                    class_name=class_name,
-                    fingerprint=fingerprint,
+                _result(
                     outcome="needs_human",
                     reason="auditor_disagreed" if audit1.verdict == "disagree" else "auditor_budget_exhausted",
                     fact=initial_draft,
@@ -858,16 +902,18 @@ def process_entity(
                     schema_repairs=d_repairs,
                     drafter_tool_calls=d_tools,
                     auditor_tool_calls=auditor_tools,
-                    usage=total_usage,
-                    stage_usage=stage_usage,
-                    latency_ms=total_latency,
-                    drafter_model=config.drafter_model,
-                    auditor_model=config.auditor_model,
                 ),
                 trace,
             )
 
-        # Stage 3: One bounded revision round + fresh re-audit
+        # Stage 3: One bounded revision round + fresh re-audit (router may escalate reasoning)
+        rev_route = router.route_revision(assessment, initial_route, audit_issues=audit1.issues)
+        route_decisions.append(rev_route.to_dict())
+        trace.append({"stage": "router", "event": "revision_route", "route": rev_route.to_dict()})
+        rev_config = config.with_route(rev_route)
+        active_drafter_model = rev_config.drafter_model
+        active_auditor_model = rev_config.auditor_model
+
         rev_prompt = build_revision_prompt(entity_context, initial_draft, audit1.issues, audit1.notes)
         (
             revised_draft,
@@ -888,8 +934,8 @@ def process_entity(
             extract_by_key=extract_by_key,
             facts_by_key=facts_by_key,
             catalog_cards=catalog_cards,
-            config=config,
-            max_read_tools=config.max_revision_tools,
+            config=rev_config,
+            max_read_tools=rev_config.max_revision_tools,
             trace=trace,
         )
         total_usage = total_usage.add(r_usage)
@@ -900,11 +946,7 @@ def process_entity(
 
         if rev_new_vocab:
             return (
-                EntityPipelineResult(
-                    entity_key=entity_key,
-                    entity_type=entity_type,
-                    class_name=class_name,
-                    fingerprint=fingerprint,
+                _result(
                     outcome="needs_human",
                     reason="needs_new_vocabulary",
                     fact=revised_draft or initial_draft,
@@ -919,22 +961,13 @@ def process_entity(
                     schema_repairs=d_repairs,
                     drafter_tool_calls=d_tools,
                     auditor_tool_calls=auditor_tools,
-                    usage=total_usage,
-                    stage_usage=stage_usage,
-                    latency_ms=total_latency,
-                    drafter_model=config.drafter_model,
-                    auditor_model=config.auditor_model,
                 ),
                 trace,
             )
 
         if revised_draft is None or not val2.ok:
             return (
-                EntityPipelineResult(
-                    entity_key=entity_key,
-                    entity_type=entity_type,
-                    class_name=class_name,
-                    fingerprint=fingerprint,
+                _result(
                     outcome="needs_human",
                     reason="revision_validation_failed",
                     fact=initial_draft,
@@ -947,11 +980,6 @@ def process_entity(
                     schema_repairs=d_repairs,
                     drafter_tool_calls=d_tools,
                     auditor_tool_calls=auditor_tools,
-                    usage=total_usage,
-                    stage_usage=stage_usage,
-                    latency_ms=total_latency,
-                    drafter_model=config.drafter_model,
-                    auditor_model=config.auditor_model,
                 ),
                 trace,
             )
@@ -966,7 +994,7 @@ def process_entity(
             llm=llm,
             assembly=assembly,
             facts_by_key=facts_by_key,
-            config=config,
+            config=rev_config,
             trace=trace,
         )
         total_usage = total_usage.add(audit2.usage)
@@ -975,19 +1003,37 @@ def process_entity(
         auditor_tools += audit2.tool_calls
 
         if audit2.verdict == "agree" and not audit2.needs_new_vocabulary and not val2.codex_conflicts:
+            if not rev_route.allow_auto_approve:
+                rev_gate_reason = (
+                    "high_risk_tier_requires_human"
+                    if assessment.tier == "hard"
+                    else "revised_requires_human_review"
+                )
+                return (
+                    _result(
+                        outcome="needs_human",
+                        reason=rev_gate_reason,
+                        fact=revised_draft,
+                        initial_draft=initial_draft,
+                        initial_audit=audit1,
+                        final_audit=audit2,
+                        revised=True,
+                        codex_conflicts=val2.codex_conflicts,
+                        schema_repairs=d_repairs,
+                        drafter_tool_calls=d_tools,
+                        auditor_tool_calls=auditor_tools,
+                    ),
+                    trace,
+                )
             merged = prepare_mergeable_entry(
                 revised_draft,
-                reviewed_by=f"{config.reviewed_by_tag} ({config.drafter_model}, revised)",
-                audit_by=f"{config.reviewed_by_tag}-auditor ({config.auditor_model})",
+                reviewed_by=f"{config.reviewed_by_tag} ({active_drafter_model}, revised)",
+                audit_by=f"{config.reviewed_by_tag}-auditor ({active_auditor_model})",
                 audit_verdict="agree",
                 audit_notes=audit2.notes,
             )
             return (
-                EntityPipelineResult(
-                    entity_key=entity_key,
-                    entity_type=entity_type,
-                    class_name=class_name,
-                    fingerprint=fingerprint,
+                _result(
                     outcome="auto_approved",
                     reason="revised_auditor_agreed",
                     fact=merged,
@@ -999,11 +1045,6 @@ def process_entity(
                     schema_repairs=d_repairs,
                     drafter_tool_calls=d_tools,
                     auditor_tool_calls=auditor_tools,
-                    usage=total_usage,
-                    stage_usage=stage_usage,
-                    latency_ms=total_latency,
-                    drafter_model=config.drafter_model,
-                    auditor_model=config.auditor_model,
                 ),
                 trace,
             )
@@ -1015,11 +1056,7 @@ def process_entity(
         else:
             reason = "auditor_disagreed_after_revision"
         return (
-            EntityPipelineResult(
-                entity_key=entity_key,
-                entity_type=entity_type,
-                class_name=class_name,
-                fingerprint=fingerprint,
+            _result(
                 outcome="needs_human",
                 reason=reason,
                 fact=revised_draft,
@@ -1033,22 +1070,13 @@ def process_entity(
                 schema_repairs=d_repairs,
                 drafter_tool_calls=d_tools,
                 auditor_tool_calls=auditor_tools,
-                usage=total_usage,
-                stage_usage=stage_usage,
-                latency_ms=total_latency,
-                drafter_model=config.drafter_model,
-                auditor_model=config.auditor_model,
             ),
             trace,
         )
     except Exception as exc:
         trace.append({"stage": "pipeline", "event": "llm_error", "error": repr(exc)})
         return (
-            EntityPipelineResult(
-                entity_key=entity_key,
-                entity_type=entity_type,
-                class_name=class_name,
-                fingerprint=fingerprint,
+            _result(
                 outcome="needs_human",
                 reason="llm_error",
                 fact=None,
@@ -1056,11 +1084,6 @@ def process_entity(
                 initial_audit=None,
                 final_audit=None,
                 validation_problems=[str(exc)],
-                usage=total_usage,
-                stage_usage=stage_usage,
-                latency_ms=total_latency,
-                drafter_model=config.drafter_model,
-                auditor_model=config.auditor_model,
             ),
             trace,
         )
@@ -1080,8 +1103,15 @@ def write_review_queue_markdown(results: Sequence[EntityPipelineResult], out_pat
     if not pending:
         lines.append("All entries passed validation and independent audit.")
     for item in pending:
+        tier_suffix = (
+            f" | Complexity: `{item.complexity_tier}` (score={item.complexity_score})"
+            if item.complexity_tier is not None
+            else ""
+        )
         lines.append(f"## `{item.entity_key}` (`{item.class_name}`)")
-        lines.append(f"- Reason: `{item.reason}` | Revised: `{item.revised}` | Cost: `${item.usage.cost_usd:.5f}`")
+        lines.append(
+            f"- Reason: `{item.reason}` | Revised: `{item.revised}`{tier_suffix} | Cost: `${item.usage.cost_usd:.5f}`"
+        )
         if item.needs_new_vocabulary and item.vocabulary_gap_note:
             lines.append(f"- Vocabulary gap: {item.vocabulary_gap_note}")
         if item.validation_problems:
@@ -1205,12 +1235,17 @@ def run_batch(
         "pipeline_version": PIPELINE_VERSION,
         "drafter_model": config.drafter_model,
         "auditor_model": config.auditor_model,
+        "routing": config.routing,
         "skip_audit": config.skip_audit,
         "total": len(ordered),
         "auto_approved": len(auto_approved),
         "needs_human": len(needs_human),
         "revised": sum(1 for r in ordered if r.revised),
         "needs_new_vocabulary": sum(1 for r in ordered if r.needs_new_vocabulary),
+        "by_complexity_tier": {
+            tier: sum(1 for r in ordered if r.complexity_tier == tier)
+            for tier in ("simple", "medium", "hard")
+        },
         "usage": total_usage.to_dict(),
         "avg_cost_usd": round(total_usage.cost_usd / len(ordered), 6) if ordered else 0.0,
     }

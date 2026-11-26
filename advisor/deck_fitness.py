@@ -29,8 +29,14 @@ from types import MappingProxyType
 from typing import Dict, List, Mapping, Optional, Sequence
 
 from advisor.boss_context import build_boss_preparation
+from advisor.combat_calibration import CombatCalibrationModel, load_calibration_model
 from advisor.encounter_turns import encounter_turns
 from advisor.monster_turns import mean
+from advisor.turn_micro_sim import (
+    DEFAULT_CRN_TRAJECTORIES,
+    MicroSimResult,
+    compare_candidates_crn,
+)
 from advisor.deck_mechanics import (
     ORB_TYPES,
     CardProfile,
@@ -56,6 +62,8 @@ from advisor.scoring_preferences import DEFAULT_SCORING_PREFERENCES, ScoringPref
 # Scoring kernel v2; the ``_1`` suffix versions the deck-fitness parameters.
 from advisor.versions import DECK_FITNESS_POLICY_VERSION
 from storage.relational import RelationalRepository
+
+DECK_FITNESS_V4_POLICY_VERSION = "card_reward:deck_fitness_4"
 
 PARAMETERS_KEY = "deck_fitness_v1"
 DIMENSIONS = ("frontload", "aoe", "defense", "scaling", "cycle", "energy")
@@ -689,6 +697,8 @@ def _legacy_payload(
     best: Optional[str],
     status: str,
     extra: Mapping,
+    *,
+    method: str = "deck_fitness_3",
 ) -> dict:
     """The schema-bound legacy ``advice`` object. The Mod reads the generic
     recommendation; ``known`` and ``decision_status`` mark every number here
@@ -704,7 +714,7 @@ def _legacy_payload(
         for index, (candidate, score) in enumerate(rows)
     ] or [{"card_id": "none", "option_index": 0, "score": 0.0, "known": False}]
     return {
-        "method": "deck_fitness_3",
+        "method": method,
         "decision_status": status,
         "recommendations": cards,
         "skip_candidate": {
@@ -855,6 +865,7 @@ class DeckContext:
 
 class DeckFitnessPolicy:
     decision_type = CARD_REWARD
+    policy_version = DECK_FITNESS_POLICY_VERSION
 
     def __init__(
         self,
@@ -1138,6 +1149,7 @@ class DeckFitnessPolicy:
         # Rank on unrounded fitness; the displayed score keeps one decimal.
         raw_by_id: Dict[str, float] = {}
         added_by_id: Dict[str, CardProfile] = {}
+        after_by_id: Dict[str, Fitness] = {}
         for candidate in request.candidates:
             if candidate.candidate_id == "skip":
                 if candidate.eligible:
@@ -1180,6 +1192,7 @@ class DeckFitnessPolicy:
                 partly_scored.append(candidate.candidate_id)
             raw_by_id[candidate.candidate_id] = after.raw
             added_by_id[candidate.candidate_id] = profile
+            after_by_id[candidate.candidate_id] = after
             name = self._card_name(card_id)
             # The reasons stay readable: the exact gap codes are in data_gaps.
             own_notes = ({
@@ -1269,6 +1282,17 @@ class DeckFitnessPolicy:
                 ) if a.candidate_id == "skip" else a
                 for a in assessments
             ]
+        raw_by_id, assessments, legacy_rows, stage2_debug = self._refine_stage2(
+            request=request,
+            context=context,
+            baseline=baseline,
+            after_by_id=after_by_id,
+            added_by_id=added_by_id,
+            partly_scored=partly_scored,
+            raw_by_id=raw_by_id,
+            assessments=assessments,
+            legacy_rows=legacy_rows,
+        )
         # Order by the score as shown (one decimal): a card level with skip
         # on screen has not beaten it, so skip comes first; the unrounded
         # value only separates cards that show the same score.
@@ -1323,26 +1347,30 @@ class DeckFitnessPolicy:
             *(f"capture_warning:{w}" for w in request.world.capture_warnings),
         )))
         skip = next((a for a in assessments if a.candidate_id == "skip"), None)
+        debug_payload = {
+            "act": request.world.act,
+            "floor": request.world.floor,
+            "needs": dict(needs.values),
+            "weights": dict(needs.weights),
+            "fight_mix": dict(needs.fight_mix),
+            "baseline_capabilities": dict(baseline.capabilities),
+        }
+        if stage2_debug:
+            debug_payload["stage2"] = stage2_debug
         payload = _legacy_payload(
             legacy_rows,
             skip.score if skip else None,
             best,
             status,
-            {
-                "act": request.world.act,
-                "floor": request.world.floor,
-                "needs": dict(needs.values),
-                "weights": dict(needs.weights),
-                "fight_mix": dict(needs.fight_mix),
-                "baseline_capabilities": dict(baseline.capabilities),
-            },
+            debug_payload,
+            method=self.policy_version.split(":", 1)[-1],
         )
         return Recommendation(
             decision_id=request.decision_id,
             decision_type=request.decision_type,
             payload=MappingProxyType(payload),
             world_sequence=request.world.sequence,
-            policy_version=DECK_FITNESS_POLICY_VERSION,
+            policy_version=self.policy_version,
             candidates=tuple(assessments),
             recommended_candidate_id=best,
             status=status,
@@ -1350,17 +1378,35 @@ class DeckFitnessPolicy:
             data_gaps=data_gaps,
         )
 
-    @staticmethod
-    def _uncertain(request: DecisionRequest, gaps: Sequence[str]) -> Recommendation:
+    def _refine_stage2(
+        self,
+        *,
+        request: DecisionRequest,
+        context: DeckContext,
+        baseline: Fitness,
+        after_by_id: Mapping[str, Fitness],
+        added_by_id: Mapping[str, CardProfile],
+        partly_scored: Sequence[str],
+        raw_by_id: Dict[str, float],
+        assessments: List[CandidateAssessment],
+        legacy_rows: List[tuple[DecisionCandidate, Optional[float]]],
+    ) -> tuple[Dict[str, float], List[CandidateAssessment], List[tuple[DecisionCandidate, Optional[float]]], Dict]:
+        """Stage-2 hook (no-op in ``deck_fitness_3``; overridden by ``deck_fitness_4``)."""
+
+        return raw_by_id, assessments, legacy_rows, {}
+
+    @classmethod
+    def _uncertain(cls, request: DecisionRequest, gaps: Sequence[str]) -> Recommendation:
         return Recommendation(
             decision_id=request.decision_id,
             decision_type=request.decision_type,
             payload=MappingProxyType(_legacy_payload(
                 [(c, None) for c in request.candidates if c.candidate_id != "skip"],
                 None, None, "uncertain", {},
+                method=cls.policy_version.split(":", 1)[-1],
             )),
             world_sequence=request.world.sequence,
-            policy_version=DECK_FITNESS_POLICY_VERSION,
+            policy_version=cls.policy_version,
             candidates=tuple(
                 CandidateAssessment(
                     candidate_id=c.candidate_id, label=c.label, display_index=c.display_index,
@@ -1373,3 +1419,244 @@ class DeckFitnessPolicy:
             confidence="low",
             data_gaps=tuple(dict.fromkeys(gaps)),
         )
+
+
+class DeckFitnessV4Policy(DeckFitnessPolicy):
+    """Two-stage card-reward policy (``card_reward:deck_fitness_4``).
+
+    Stage 1 runs the analytical deck-fitness screening of ``deck_fitness_3``.
+    Stage 2 refines close top candidates (within ``close_gap`` points of the
+    Stage-1 leader, up to Top-3 cards + skip) using:
+    1) Monotone-constrained real-combat HP-loss calibration weights
+       (``data/combat_calibration.json``);
+    2) Fixed-seed Common-Random-Numbers (CRN, ``K=24``) discrete turn
+       micro-simulation measuring hand clumping, ``Retain`` holding, and
+       worst-25% tail risk ``CVaR_0.25(Delta HP)``.
+    """
+
+    policy_version = DECK_FITNESS_V4_POLICY_VERSION
+
+    def __init__(
+        self,
+        repository: RelationalRepository,
+        preferences: ScoringPreferences = DEFAULT_SCORING_PREFERENCES,
+        *,
+        calibration_model: Optional[CombatCalibrationModel] = None,
+        crn_trajectories: int = DEFAULT_CRN_TRAJECTORIES,
+        close_gap: float = 4.5,
+        max_stage2_cards: int = 3,
+        calibration_scale: float = 0.50,
+        downside_scale: float = 0.12,
+        retain_tail_scale: float = 0.08,
+        clump_penalty: float = 0.40,
+        max_stage2_shift: float = 2.0,
+    ):
+        super().__init__(repository, preferences=preferences)
+        self._calibration_model = (
+            calibration_model if calibration_model is not None else load_calibration_model()
+        )
+        self.crn_trajectories = max(4, int(crn_trajectories))
+        self.close_gap = float(close_gap)
+        self.max_stage2_cards = max(1, int(max_stage2_cards))
+        self.calibration_scale = float(calibration_scale)
+        self.downside_scale = float(downside_scale)
+        self.retain_tail_scale = float(retain_tail_scale)
+        self.clump_penalty = float(clump_penalty)
+        self.max_stage2_shift = float(max_stage2_shift)
+
+    def warm_up(self) -> None:
+        super().warm_up()
+        if self._calibration_model is None:
+            self._calibration_model = load_calibration_model()
+
+    def _refine_stage2(
+        self,
+        *,
+        request: DecisionRequest,
+        context: DeckContext,
+        baseline: Fitness,
+        after_by_id: Mapping[str, Fitness],
+        added_by_id: Mapping[str, CardProfile],
+        partly_scored: Sequence[str],
+        raw_by_id: Dict[str, float],
+        assessments: List[CandidateAssessment],
+        legacy_rows: List[tuple[DecisionCandidate, Optional[float]]],
+    ) -> tuple[Dict[str, float], List[CandidateAssessment], List[tuple[DecisionCandidate, Optional[float]]], Dict]:
+        if len(raw_by_id) < 2 or not added_by_id:
+            return raw_by_id, assessments, legacy_rows, {}
+
+        # Stage-1 frontier selection: candidates within close_gap of the leader.
+        ordered = sorted(raw_by_id, key=lambda cid: (-raw_by_id[cid], cid != "skip"))
+        leader_score = raw_by_id[ordered[0]]
+        close_ids = [cid for cid in ordered if leader_score - raw_by_id[cid] <= self.close_gap]
+        close_cards = [cid for cid in close_ids if cid in added_by_id][: self.max_stage2_cards]
+        # Skip Stage 2 if one option clearly dominates (no close rival).
+        if not close_cards or len(close_ids) < 2:
+            return raw_by_id, assessments, legacy_rows, {"triggered": False, "close_candidates": close_cards}
+
+        needs, situation, params = context.needs, context.situation, context.params
+        route_mode = str(request.world.route_mode or "balanced").lower()
+        tail_weight = (
+            0.50 if route_mode == "survival"
+            else (0.25 if route_mode == "growth" else 0.35)
+        )
+        hp_pressure = 1.0 + 0.6 * (1.0 - max(0.0, min(1.0, float(situation.hp_ratio))))
+        attack_load = float(situation.incoming_attack) * float(situation.fight_turns)
+
+        crn_targets: Dict[str, Optional[CardProfile]] = {"skip": None}
+        for cid in close_cards:
+            crn_targets[cid] = added_by_id[cid]
+        sim_results: Dict[str, MicroSimResult] = compare_candidates_crn(
+            request.decision_id,
+            context.deck,
+            crn_targets,
+            context.relics,
+            situation,
+            params,
+            trajectories=self.crn_trajectories,
+        )
+        skip_sim = sim_results["skip"]
+        skip_tail_spread = skip_sim.cvar25_hp_loss - skip_sim.mean_hp_loss
+        partly_set = set(partly_scored)
+
+        # Pre-compute calibration HP-saved across close cards so card-vs-card
+        # empirical re-weighting is zero-sum and preserves skip's pick_margin.
+        cal_details: Dict[str, tuple[float, float, float]] = {}
+        for cid in close_cards:
+            if self._calibration_model is not None and cid in after_by_id:
+                cal = self._calibration_model.marginal_hp_saved(
+                    baseline.capabilities,
+                    after_by_id[cid].capabilities,
+                    needs.values,
+                    act=int(request.world.act or 1),
+                    fight_mix=needs.fight_mix,
+                    attack_load=attack_load,
+                    tail_weight=tail_weight,
+                )
+                cal_details[cid] = (
+                    float(cal["blended_hp_saved"]),
+                    float(cal["mean_hp_saved"]),
+                    float(cal["q75_hp_saved"]),
+                )
+            else:
+                cal_details[cid] = (0.0, 0.0, 0.0)
+        cal_mean_blended = (
+            sum(v[0] for v in cal_details.values()) / len(cal_details)
+            if len(cal_details) >= 2 else 0.0
+        )
+
+        updated_raw = dict(raw_by_id)
+        extra_factors: Dict[str, List[dict]] = {}
+        debug_cands: Dict[str, dict] = {
+            "skip": {
+                "mean_hp_loss": round(skip_sim.mean_hp_loss, 3),
+                "cvar25_hp_loss": round(skip_sim.cvar25_hp_loss, 3),
+                "clump_rate": round(skip_sim.clump_rate, 3),
+                "mean_turns": round(skip_sim.mean_turns, 2),
+            }
+        }
+
+        for cid in close_cards:
+            cal_saved, cal_mean_saved, cal_q75_saved = cal_details[cid]
+            cal_rel = (cal_saved - cal_mean_blended) if len(cal_details) >= 2 else 0.0
+
+            cand_sim = sim_results[cid]
+            sim_mean_saved = skip_sim.mean_hp_loss - cand_sim.mean_hp_loss
+            sim_cvar_saved = skip_sim.cvar25_hp_loss - cand_sim.cvar25_hp_loss
+            sim_risk_saved = (1.0 - tail_weight) * sim_mean_saved + tail_weight * sim_cvar_saved
+            cand_tail_spread = cand_sim.cvar25_hp_loss - cand_sim.mean_hp_loss
+            tail_spread_saved = skip_tail_spread - cand_tail_spread
+            clump_delta = cand_sim.clump_rate - skip_sim.clump_rate
+
+            # Orthogonal Stage-2 signals that Stage-1 mean-field misses without
+            # double-counting average single-fight value against skip pick_margin:
+            # 1) Zero-sum empirical HP-saved differential across close cards;
+            # 2) Discrete-execution downside risk (cards that lose HP or clump hands);
+            # 3) Cross-turn Retain spike-turn tail-spread savings.
+            if cid in partly_set:
+                downside_risk = 0.0
+                clump_excess = 0.0
+            else:
+                downside_risk = min(0.0, sim_risk_saved)
+                clump_excess = max(0.0, clump_delta)
+
+            retain_gain = (
+                max(0.0, tail_spread_saved)
+                if (added_by_id[cid].retain and cand_sim.retain_saves > 0.0)
+                else 0.0
+            )
+            cal_delta = self.calibration_scale * cal_rel * hp_pressure
+            sim_delta = (
+                self.downside_scale * downside_risk * hp_pressure
+                + self.retain_tail_scale * retain_gain * hp_pressure
+                - self.clump_penalty * clump_excess
+            )
+            total_delta = max(
+                -self.max_stage2_shift,
+                min(self.max_stage2_shift, cal_delta + sim_delta),
+            )
+            updated_raw[cid] = raw_by_id[cid] + total_delta
+
+            c_factors: List[dict] = []
+            if abs(cal_delta) >= 0.05:
+                c_factors.append({
+                    "code": "deck_fitness:combat_calibration",
+                    "delta": round(cal_delta, 2),
+                    "message": (
+                        f"实战战损校准：预期场均减伤 {cal_mean_saved:+.1f} HP，"
+                        f"高危分位(Q75) {cal_q75_saved:+.1f} HP"
+                    ),
+                })
+            if abs(sim_delta) >= 0.05:
+                clump_note = (
+                    f"，高费卡手率 {clump_excess:+.0%}" if clump_excess >= 0.05 else ""
+                )
+                retain_note = (
+                    f"，保留留牌挡峰值 {cand_sim.retain_saves:.1f} 次" if retain_gain > 0.0 else ""
+                )
+                c_factors.append({
+                    "code": "deck_fitness:turn_micro_sim",
+                    "delta": round(sim_delta, 2),
+                    "message": (
+                        f"CRN 离散回合微模拟(K={cand_sim.trajectories})：均值战损 {sim_mean_saved:+.1f} HP，"
+                        f"尾部风险 CVaR25 {sim_cvar_saved:+.1f} HP{clump_note}{retain_note}"
+                    ),
+                })
+            extra_factors[cid] = c_factors
+            debug_cands[cid] = {
+                "cal_mean_hp_saved": round(cal_mean_saved, 3),
+                "cal_q75_hp_saved": round(cal_q75_saved, 3),
+                "cal_delta": round(cal_delta, 3),
+                "sim_mean_hp_saved": round(sim_mean_saved, 3),
+                "sim_cvar25_hp_saved": round(sim_cvar_saved, 3),
+                "sim_tail_spread_saved": round(tail_spread_saved, 3),
+                "sim_clump_delta": round(clump_delta, 3),
+                "sim_delta": round(sim_delta, 3),
+                "total_stage2_delta": round(total_delta, 3),
+                "mean_hp_loss": round(cand_sim.mean_hp_loss, 3),
+                "cvar25_hp_loss": round(cand_sim.cvar25_hp_loss, 3),
+                "clump_rate": round(cand_sim.clump_rate, 3),
+                "retain_saves": round(cand_sim.retain_saves, 3),
+            }
+
+        updated_assessments = [
+            replace(
+                a,
+                score=round(updated_raw[a.candidate_id], 1),
+                factors=(*a.factors, *extra_factors.get(a.candidate_id, ())),
+            ) if a.candidate_id in extra_factors else a
+            for a in assessments
+        ]
+        updated_legacy = [
+            (c, round(updated_raw[c.candidate_id], 1) if c.candidate_id in extra_factors else s)
+            for c, s in legacy_rows
+        ]
+        debug_info = {
+            "triggered": True,
+            "trajectories": self.crn_trajectories,
+            "close_candidates": close_cards,
+            "tail_weight": tail_weight,
+            "hp_pressure": round(hp_pressure, 3),
+            "candidates": debug_cands,
+        }
+        return updated_raw, updated_assessments, updated_legacy, debug_info
